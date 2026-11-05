@@ -1,0 +1,167 @@
+# Signed AAB to the Google Play internal testing track after every successful
+# CI run of a push to main (cicd-pipeline.md §2). Pull requests and forks
+# never reach this workflow.
+name: release
+
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false # two close merges ship in order
+
+jobs:
+  internal:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment: play-internal
+    permissions:
+      contents: write # only for the build-<versionCode> tag (last step)
+    outputs:
+      name: ${{ steps.version.outputs.name }}
+      code: ${{ steps.version.outputs.code }}
+    env:
+      PLAY_SA_JSON_FILE: ${{ runner.temp }}/play-internal.json
+      ANDROID_UPLOAD_KEYSTORE_PATH: ${{ runner.temp }}/upload.jks
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }} # exactly what passed CI
+          # The write token is not left in .git/config for the build, third
+          # party actions, pub and Gradle; only the tag step receives it.
+          persist-credentials: false
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version-file: .flutter-version
+          channel: stable
+          cache: true
+
+      - name: Write secret files (removed at the end, even on failure)
+        env:
+          GOOGLE_SERVICES_B64: ${{ secrets.FIREBASE_PROD_GOOGLE_SERVICES_JSON_B64 }}
+          PROD_DEFINES_B64: ${{ secrets.FIREBASE_PROD_DEFINES_JSON_B64 }}
+          KEYSTORE_B64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_B64 }}
+          PLAY_SA_JSON: ${{ secrets.PLAY_INTERNAL_SA_JSON }}
+        run: |
+          echo "$GOOGLE_SERVICES_B64" | base64 -d > android/app/google-services.json
+          mkdir -p config
+          echo "$PROD_DEFINES_B64" | base64 -d > config/firebase_prod.json
+          echo "$KEYSTORE_B64" | base64 -d > "$ANDROID_UPLOAD_KEYSTORE_PATH"
+          printf '%s' "$PLAY_SA_JSON" > "$PLAY_SA_JSON_FILE"
+
+      - name: Versions
+        id: version
+        run: |
+          name="$(grep -E '^version:' pubspec.yaml | sed -E 's/version: *([^+]+).*/\1/')"
+          code="$(tool/play_api.sh next-version-code)"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "versionName $name, versionCode $code"
+
+      - name: Build the signed app bundle
+        env:
+          ANDROID_UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
+          ANDROID_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
+          ANDROID_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEY_PASSWORD }}
+          GOOGLE_SERVER_CLIENT_ID: ${{ vars.GOOGLE_SERVER_CLIENT_ID }}
+        run: >
+          flutter build appbundle --release
+          --dart-define=FIREBASE_ENV=prod
+          --dart-define-from-file=config/firebase_prod.json
+          --dart-define=GOOGLE_SERVER_CLIENT_ID="$GOOGLE_SERVER_CLIENT_ID"
+          --build-name=${{ steps.version.outputs.name }}
+          --build-number=${{ steps.version.outputs.code }}
+          --split-debug-info=build/symbols
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: vinoozy-${{ steps.version.outputs.name }}-${{ steps.version.outputs.code }}
+          path: |
+            build/app/outputs/bundle/release/app-release.aab
+            build/symbols
+          retention-days: 30
+
+      - name: Upload to the internal testing track
+        uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5 # v1.1.5
+        with:
+          serviceAccountJson: ${{ env.PLAY_SA_JSON_FILE }}
+          packageName: com.vinoozy.app
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          track: internal
+          status: completed
+
+      - name: Tag the exact commit of this build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: build-${{ steps.version.outputs.code }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          git tag "$TAG" "$SHA"
+          # Token passed for this push only, never written to .git/config.
+          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" \
+            push origin "refs/tags/$TAG"
+
+      - name: Remove secret files
+        if: always()
+        run: |
+          rm -f android/app/google-services.json config/firebase_prod.json \
+            "$ANDROID_UPLOAD_KEYSTORE_PATH" "$PLAY_SA_JSON_FILE"
+
+  # Crashlytics debug symbols, in a job of their own: it holds none of the
+  # signing, Play or Firebase-config secrets of `internal`. Keyless auth through
+  # Workload Identity Federation (environment `crashlytics-symbols`, role
+  # roles/firebasecrashlytics.admin only, docs/firebase-setup.md §4), and
+  # firebase-tools from package-lock.json (`npm ci`), never `npx --yes`.
+  # Skipped until the WIF service account and the app id are configured.
+  crashlytics-symbols:
+    needs: internal
+    if: vars.FIREBASE_ANDROID_APP_ID != '' && vars.CRASHLYTICS_WIF_SERVICE_ACCOUNT != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: crashlytics-symbols
+    permissions:
+      contents: read
+      id-token: write # Workload Identity Federation, this job only
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          distribution: temurin
+          java-version: '17' # the Crashlytics upload tool runs on Java
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: vinoozy-${{ needs.internal.outputs.name }}-${{ needs.internal.outputs.code }}
+          path: build
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.CRASHLYTICS_WIF_SERVICE_ACCOUNT }}
+      - name: Upload debug symbols to Crashlytics
+        env:
+          FIREBASE_ANDROID_APP_ID: ${{ vars.FIREBASE_ANDROID_APP_ID }}
+        run: >
+          npx firebase crashlytics:symbols:upload
+          --app="$FIREBASE_ANDROID_APP_ID" build/symbols

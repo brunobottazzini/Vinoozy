@@ -1,0 +1,90 @@
+# Manual deploy of Firestore rules and indexes to production
+# (cicd-pipeline.md §4). Never triggered by a merge: merge, then deploy the
+# rules, then promote the app. Keyless auth through Workload Identity
+# Federation, accepted only from this repository and the firebase-prod
+# environment.
+name: firebase-deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: A v* tag or a commit contained in main
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify-ref:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      sha: ${{ steps.check.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: The ref must be a v* tag or a commit of main
+        id: check
+        env:
+          REF: ${{ inputs.ref }}
+        run: |
+          sha="$(git rev-parse --verify "$REF^{commit}")"
+          if git show-ref --verify --quiet "refs/tags/$REF" && [[ "$REF" == v* ]]; then
+            echo "tag $REF -> $sha"
+          elif git merge-base --is-ancestor "$sha" origin/main; then
+            echo "commit $sha is contained in main"
+          else
+            echo "$REF is neither a v* tag nor a commit of main" >&2
+            exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+  rules:
+    needs: verify-ref
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.verify-ref.outputs.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: >
+          npx firebase emulators:exec --only firestore --project demo-vinoozy
+          "npm --prefix test/rules test -- u1.rules.test.mjs compat/"
+
+  deploy:
+    needs: [verify-ref, rules]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: firebase-prod
+    permissions:
+      contents: read
+      id-token: write # Workload Identity Federation, this job only
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.verify-ref.outputs.sha }}
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+      - run: >
+          npx firebase deploy --only firestore:rules,firestore:indexes
+          --project "${{ vars.FIREBASE_PROD_PROJECT_ID }}" --non-interactive

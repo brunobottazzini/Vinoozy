@@ -1,0 +1,60 @@
+# Security Requirements — u1-skeleton
+
+Fonti: `requirements.md` (NFR4, NFR5, NFR6, NFR8), `functional-spec.md` e `rules.md` di U1 (BR1.1–BR1.4, BR2.1–BR2.4, BR3.1–BR3.4, BR4.1), `contract-summary.md` (C3), `decisions.md` (ADR-004), `team.md` (Deployment), risposte in `nfr-requirements-questions.md` (Q1 App Check già nello scheletro, Q2 Crashlytics anonimo).
+
+Questo documento chiude anche i tre punti importanti rimasti aperti all'approvazione del design funzionale: creazione della cantina personale, modifiche in coda di un altro account, errori di sincronizzazione.
+
+## Accesso e regole di sicurezza
+
+| ID | Requisito | Verifica |
+|----|-----------|----------|
+| NFR4.1 | Solo il provider Google è attivo in Firebase Authentication (accesso anonimo ed email disattivati). Le regole richiedono `request.auth != null` e `request.auth.token.firebase.sign_in_provider == 'google.com'`. | Test delle regole nell'emulatore: richiesta senza autenticazione rifiutata; richiesta con token anonimo rifiutata. |
+| NFR4.2 | `users/{uid}`: lettura e scrittura solo se `request.auth.uid == uid`. `allow create` richiede `createdAt == request.time` e `schemaVersion == 1`; `allow update` vieta di cambiare `createdAt` e `schemaVersion`; `allow delete` falso in U1. | Test delle regole: B non legge `users/A`; aggiornamento di `createdAt` rifiutato. |
+| NFR4.3 | `cellars/{cellarId}` (cantina personale), regole separate per operazione. `allow get`: `cellarId == request.auth.uid` (anche se il documento non esiste) oppure `resource.data.ownerId == request.auth.uid`. `allow create`: `cellarId == request.auth.uid` e `request.resource.data.ownerId == request.auth.uid` e `schemaVersion == 1`. `allow update`: solo il proprietario, e solo il campo `name` può cambiare (`ownerId`, `createdAt`, `schemaVersion` invariati). `allow delete`: falso in U1. `allow list`: solo con filtro `ownerId == request.auth.uid`. | Test delle regole: lettura di `cellars/{uid}` inesistente consentita al proprietario; creazione di `cellars/{altro}` rifiutata; `set` che cambia `createdAt` o `ownerId` su una cantina esistente rifiutata. |
+| NFR4.4 | `cellars/{cellarId}/wines/{wineId}`: lettura e scrittura solo se `get(/databases/$(database)/documents/cellars/$(cellarId)).data.ownerId == request.auth.uid`. Le regole per le persone invitate si aggiungono nello stesso file con u7-sharing. | Test delle regole: B non legge né scrive i vini di A. |
+| NFR4.5 | Validazione dei vini nelle regole, uguale a quella del modulo. Alla creazione: `name` stringa di 1–120 caratteri; `vintage` nullo o intero tra 1900 e l'anno di `request.time` + 1 (un anno di tolleranza per l'orologio del telefono); `quantity` intero tra 1 e 99; `updatedBy == request.auth.uid`; solo i campi di C3. Negli aggiornamenti `quantity` resta un intero ma **non** ha limite inferiore: come da ADR-004 e C3, decrementi contemporanei possono portarla sotto 0, l'app la mostra come 0 e la corregge alla scrittura successiva. | Test delle regole: ogni campo fuori limite alla creazione rifiutato; due decrementi che portano a -1 accettati. |
+| NFR4.6 | App Check con Play Integrity attivo dallo scheletro (Q1). Prerequisiti: app registrata in Play Console, Play Integrity collegata al progetto Firebase, impronta SHA-256 della chiave di firma di Google Play registrata in Firebase. Si parte in modalità di controllo; diventa obbligatorio per Firestore quando, per 7 giorni di test interno, almeno il 99% delle richieste risulta verificato. L'emulatore Firebase non applica App Check, quindi test e CI non usano token di debug. Il provider di debug serve solo nelle build di debug su un telefono reale, con un token che resta sul computer dello sviluppatore e non entra né nel repository né nei segreti. | Console App Check: percentuale di richieste verificate; build di debug con provider di debug. |
+| NFR4.7 | Nessun segreto nel repository. `google-services.json` e `firebase_options.dart` del progetto di produzione, la chiave di firma e le credenziali Play e Firebase stanno solo nei segreti di GitHub Actions e vengono scritti nel job di build. Per i test e per lo sviluppo locale si usa un progetto dimostrativo `demo-vinoozy` (i progetti `demo-*` funzionano solo con l'emulatore e non hanno credenziali reali); la sua configurazione è nel repository. | Controllo in CI: il repository non contiene la configurazione di produzione né file `.jks`/`.keystore`. |
+| NFR4.8 | Connessioni solo cifrate (TLS degli SDK Firebase). `usesCleartextTraffic=false`, con eccezione solo per l'host dell'emulatore nelle build di debug. | Revisione del manifest e della configurazione di rete. |
+| NFR4.9 | Cambio di account sullo stesso telefono (BR1.4). **Registro delle modifiche in attesa** sul telefono (`shared_preferences`): prima di ogni scrittura su Firestore l'app attende il salvataggio di `pendingOwnerUid`, `pendingOwnerEmail` e di un contatore `pendingSeq` incrementato. Così, se il processo muore, il registro c'è già. A ogni avvio con sessione e dopo ogni scrittura, l'app chiama `waitForPendingWrites()` ricordando il `pendingSeq` di partenza; quando termina, cancella il registro solo se `pendingSeq` non è cambiato nel frattempo (altrimenti richiama `waitForPendingWrites()`). All'accesso di un account diverso con il registro presente, l'app blocca l'ingresso *prima* di aprire dati e offre due uscite: "Accedi con <pendingOwnerEmail>" oppure "Elimina le modifiche non salvate di <pendingOwnerEmail>" con conferma. In entrambi i casi l'utente può uscire dall'app. | Test end-to-end: A offline aggiunge un vino e chiude l'app; B è bloccato; A rientra con la rete e il vino arriva nel cloud. B conferma l'eliminazione e vede una cantina vuota. Unit test: una scrittura durante `waitForPendingWrites()` lascia il registro. |
+| NFR4.10 | Reset dei dati locali (eliminazione confermata, oppure account diverso senza registro): `terminate()`, poi `clearPersistence()`, poi si cancella il registro. L'istanza di Firestore si riprende con le stesse impostazioni (memoria offline e cache illimitata, emulatore nelle build di test) e i provider Riverpod che tengono ascoltatori su Firestore vengono invalidati prima di aprire la cantina del nuovo account. Se `clearPersistence()` fallisce, l'accesso resta bloccato con "Riprova". | Test d'integrazione: dopo il reset, la cantina del nuovo account si apre e non mostra dati del precedente. |
+| NFR4.11 | Creazione della cantina personale (BR1.3). Richiede rete, come il primo accesso. L'app esegue una transazione sul server: legge `cellars/{uid}` e la crea solo se non esiste. Due client in gara non possono sovrascriversi, perché la transazione si ripete e la seconda trova il documento; le regole (NFR4.3) rifiutano comunque un cambio di `ownerId` o `createdAt`. A ogni avvio con sessione e rete si ripete il controllo "assicura la cantina". `users/{uid}` si crea con una transazione solo se manca; poi si aggiornano solo `displayName` ed `email`, così `onboardingSeen` e `createdAt` non si azzerano. | Test d'integrazione nell'emulatore: due client creano in parallelo una sola cantina con un solo `createdAt`; `onboardingSeen` resta `true` dopo un nuovo accesso. |
+
+## Integrità e durabilità
+
+| ID | Requisito | Verifica |
+|----|-----------|----------|
+| NFR6.1 | Memoria offline di Firestore attiva con cache illimitata, così le modifiche in coda non vengono mai scartate dalla pulizia della cache. | Test d'integrazione: dopo il riavvio dell'app offline le modifiche sono presenti. |
+| NFR6.2 | Errori di sincronizzazione in un punto unico: ogni scrittura passa dal repository, che aggancia la gestione degli errori al Future della scrittura e li pubblica su un flusso dell'app. Un ascoltatore alla radice dell'app, non la schermata del modulo, mostra "Modifica non consentita: <nome del vino>". Il modulo si chiude dopo il salvataggio locale, senza aspettare il cloud. | Test: una scrittura rifiutata dall'emulatore mostra il messaggio anche dopo la chiusura del modulo. |
+| NFR6.3 | Rifiuto dopo un riavvio (il Future della scrittura è andato perso). L'app tiene un **giornale delle creazioni** sul telefono, con ID e nome del vino, scritto prima della scrittura su Firestore. Quando `waitForPendingWrites()` termina dopo un avvio, per ogni voce del giornale legge il vino dal server. Se il vino non esiste, la creazione è stata rifiutata: l'app mostra "Il vino <nome> non è stato salvato nel cloud" con "Aggiungi di nuovo", che riapre il modulo già compilato. Le voci si cancellano quando il vino risulta sul server. Le cause note sono App Check obbligatorio, sessione scaduta o regole cambiate. L'orologio del telefono è coperto dalla tolleranza di NFR4.5, la cantina mancante da NFR4.11. In U1 si scrivono solo creazioni; gli aggiornamenti arrivano con u4-cellar, che estende il giornale. | Test end-to-end: con l'emulatore, una regola che rifiuta la creazione e l'app riavviata prima dell'invio mostra il messaggio e il modulo compilato. |
+| NFR6.4 | Salvataggio: se la scrittura locale fallisce subito (errore della cache o del registro), il modulo resta aperto con i dati, "Salva" si riattiva e compare "Impossibile salvare, riprova". In tutti gli altri casi "Salva" resta disattivato fino alla chiusura del modulo. | Test dei widget con repository che fallisce. |
+
+## Privacy
+
+| ID | Requisito | Verifica |
+|----|-----------|----------|
+| NFR8.1 | Dati raccolti in U1: email e nome dell'account Google, cantina e vini. Sul telefono, fuori da Firestore, solo `lastUid`, `pendingOwnerUid`, `pendingOwnerEmail`, `pendingSeq` e il giornale delle creazioni (ID e nome del vino). Questi dati servono a non perdere modifiche e vengono cancellati con il reset di NFR4.10. | Revisione del modello dati rispetto a C3. |
+| NFR8.2 | Crashlytics (Q2): nessun `setUserIdentifier` e nessuna chiave personalizzata con dati dell'utente. I messaggi di log e di errore inviati non contengono uid, email, nomi di vini né percorsi di documenti. Crashlytics usa il proprio identificatore di installazione, che non è collegato all'account. Disattivato nelle build di debug e nei test. | Revisione del codice di inizializzazione e dei messaggi di errore. |
+| NFR8.3 | Dichiarazione Data Safety in Play Console coerente con NFR8.1 e NFR8.2 (email e nome per l'account; rapporti di crash; nessuna condivisione con terzi), compilata prima del primo rilascio sul canale di test interno. | Controllo manuale prima del rilascio. |
+| NFR8.4 | Backup automatico di Android disattivato (`allowBackup=false`): il registro delle modifiche e la cache di Firestore non vengono copiati su un altro telefono. | Revisione del manifest. |
+| NFR8.5 | Non applicabile a U1: cancellazione dell'account (delivered by u8-account); foto delle etichette (delivered by u6-label-recognition). | — |
+
+## Costo del servizio
+
+| ID | Requisito | Verifica |
+|----|-----------|----------|
+| NFR5.4 | Il progetto di produzione usa il piano Blaze (deciso in Feasibility: serve per Storage e Cloud Functions), con budget di fatturazione Cloud e avviso a 1 €. L'avviso informa ma non blocca la spesa: la protezione è l'uso tenuto lontano dalle quote gratuite (NFR5.2) e App Check (NFR4.6). | Controllo manuale prima del rilascio. |
+
+## Minacce considerate (STRIDE ridotto)
+
+| Minaccia | Mitigazione |
+|----------|-------------|
+| Spoofing: un'app falsa usa la configurazione pubblica di Firebase | NFR4.6 App Check (dopo l'attivazione obbligatoria) |
+| Spoofing: accesso con un provider non previsto | NFR4.1 |
+| Tampering: scritture con campi fuori limite o di un altro utente | NFR4.3–NFR4.5 |
+| Information disclosure: un utente legge la cantina di un altro | NFR4.2–NFR4.4 |
+| Information disclosure: dati di A visibili a B sullo stesso telefono | NFR4.9, NFR4.10, NFR8.4 |
+| Abuso della quota gratuita | NFR4.6 riduce le richieste non autentiche; NFR5.4 avvisa di una spesa ma non la impedisce (rischio accettato, budget 1 €) |
+| Perdita di dati per cambio di account o rifiuto del cloud | NFR4.9, NFR6.3 |
+
+Nessun codice dell'app aggira l'autenticazione: l'unica eccezione è l'host dell'emulatore nelle build di debug (NFR4.8).

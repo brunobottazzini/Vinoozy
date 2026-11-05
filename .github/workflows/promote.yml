@@ -1,0 +1,83 @@
+# Manual promotion to production (cicd-pipeline.md §3). The play-production
+# environment requires the owner's approval, given only after the smoke test
+# of docs/release-checklist.md. `halt` is the rollback (§6).
+name: promote
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionCode:
+        description: versionCode already on the internal testing track
+        required: true
+        type: string
+      fraction:
+        description: Staged rollout fraction for "promote"
+        required: true
+        type: choice
+        options: ['0.2', '1.0']
+        default: '0.2'
+      action:
+        description: promote, complete (100%) or halt (stop the rollout)
+        required: true
+        type: choice
+        options: [promote, complete, halt]
+
+permissions:
+  contents: read
+
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: play-production
+    env:
+      PLAY_SA_JSON_FILE: ${{ runner.temp }}/play-production.json
+      VERSION_CODE: ${{ inputs.versionCode }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Validate the input
+        run: |
+          [[ "$VERSION_CODE" =~ ^[0-9]+$ ]] || { echo "versionCode must be a number" >&2; exit 1; }
+      - name: Write the Play credentials
+        env:
+          PLAY_SA_JSON: ${{ secrets.PLAY_PRODUCTION_SA_JSON }}
+        run: printf '%s' "$PLAY_SA_JSON" > "$PLAY_SA_JSON_FILE"
+      - name: Run ${{ inputs.action }}
+        env:
+          ACTION: ${{ inputs.action }}
+          FRACTION: ${{ inputs.fraction }}
+        run: |
+          case "$ACTION" in
+            promote) tool/play_api.sh promote "$VERSION_CODE" "$FRACTION" ;;
+            complete) tool/play_api.sh complete "$VERSION_CODE" ;;
+            halt) tool/play_api.sh halt "$VERSION_CODE" ;;
+          esac
+      - name: Remove the credentials
+        if: always()
+        run: rm -f "$PLAY_SA_JSON_FILE"
+
+  # After a completed rollout: tag v<versionName>+<versionCode> on the commit
+  # of build-<versionCode>. The versionCode in the tag avoids collisions when
+  # one versionName ships twice (Infrastructure Design review 2).
+  tag:
+    needs: production
+    if: inputs.action == 'complete' || (inputs.action == 'promote' && inputs.fraction == '1.0')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    env:
+      VERSION_CODE: ${{ inputs.versionCode }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Tag the release commit
+        run: |
+          [[ "$VERSION_CODE" =~ ^[0-9]+$ ]] || exit 1
+          commit="$(git rev-list -n 1 "build-$VERSION_CODE")"
+          name="$(git show "$commit:pubspec.yaml" | grep -E '^version:' | sed -E 's/version: *([^+]+).*/\1/')"
+          tag="v${name}+${VERSION_CODE}"
+          git tag "$tag" "$commit"
+          git push origin "$tag"
+          echo "Tagged $tag on $commit"

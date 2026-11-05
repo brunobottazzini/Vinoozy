@@ -1,0 +1,118 @@
+{
+  "stage": "code-generation",
+  "unit": "u1-skeleton",
+  "version": 1,
+  "writes": [
+    {
+      "path": ".gitignore"
+    },
+    {
+      "path": ".firebaserc"
+    },
+    {
+      "path": ".flutter-version"
+    },
+    {
+      "path": ".metadata"
+    },
+    {
+      "path": ".nvmrc"
+    },
+    {
+      "path": ".github/"
+    },
+    {
+      "path": "README.md"
+    },
+    {
+      "path": "analysis_options.yaml"
+    },
+    {
+      "path": "android/.gitignore"
+    },
+    {
+      "path": "android/app/build.gradle.kts"
+    },
+    {
+      "path": "android/app/src/debug/"
+    },
+    {
+      "path": "android/app/src/main/AndroidManifest.xml"
+    },
+    {
+      "path": "android/app/src/main/kotlin/"
+    },
+    {
+      "path": "android/app/src/main/res/"
+    },
+    {
+      "path": "android/app/src/profile/"
+    },
+    {
+      "path": "android/build.gradle.kts"
+    },
+    {
+      "path": "android/gradle.properties"
+    },
+    {
+      "path": "android/gradle/wrapper/gradle-wrapper.properties"
+    },
+    {
+      "path": "android/settings.gradle.kts"
+    },
+    {
+      "path": "docs/firebase-setup.md"
+    },
+    {
+      "path": "docs/release-checklist.md"
+    },
+    {
+      "path": "firebase.json"
+    },
+    {
+      "path": "firestore.indexes.json"
+    },
+    {
+      "path": "firestore.rules"
+    },
+    {
+      "path": "integration_test/"
+    },
+    {
+      "path": "l10n.yaml"
+    },
+    {
+      "path": "lib/"
+    },
+    {
+      "path": "package.json"
+    },
+    {
+      "path": "package-lock.json"
+    },
+    {
+      "path": "pubspec.yaml"
+    },
+    {
+      "path": "pubspec.lock"
+    },
+    {
+      "path": "test/helpers/"
+    },
+    {
+      "path": "test/rules/"
+    },
+    {
+      "path": "test/u1/"
+    },
+    {
+      "path": "test/widget_test.dart"
+    },
+    {
+      "path": "test_driver/"
+    },
+    {
+      "path": "tool/"
+    }
+  ]
+}

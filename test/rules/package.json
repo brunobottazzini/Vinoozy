@@ -1,0 +1,9 @@
+{
+  "name": "vinoozy-rules-tests",
+  "private": true,
+  "type": "module",
+  "description": "Firestore security rules tests (NFR7.2). Dependencies come from the pinned root package.json.",
+  "scripts": {
+    "test": "node run-tests.mjs"
+  }
+}

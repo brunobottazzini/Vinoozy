@@ -1,0 +1,187 @@
+# CI on every push and every pull request to main (cicd-pipeline.md §1).
+# No job uses secrets, so fork pull requests run the same checks. All five
+# check jobs are required status checks of the protected main branch.
+name: ci
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # Work branches cancel superseded runs; every merge on main completes, so no
+  # merge is skipped by release.yml.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  FIREBASE_ENV: demo
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version-file: .flutter-version
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed .
+
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version-file: .flutter-version
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter gen-l10n
+      - run: flutter analyze --fatal-infos
+      # NFR4.7: no production configuration or signing material in the repo.
+      - name: No production config or keystores committed
+        run: |
+          if git ls-files | grep -E '(^|/)google-services\.json$|config/firebase_prod\.json$|\.jks$|\.keystore$'; then
+            echo "Production configuration or signing material is committed" >&2
+            exit 1
+          fi
+
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version-file: .flutter-version
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      # NFR7.1: every file of lib/ counts, untested files as 0%.
+      - run: dart run tool/gen_coverage_helper.dart
+      - run: flutter test --coverage
+      - run: tool/check_coverage.sh 80
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: coverage
+          path: coverage/lcov.info
+          retention-days: 14
+      # Step 13 build test: the release build must not contain the E2E hooks.
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: tool/check_release_build.sh
+
+  rules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # v* tags for the compatibility tests
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: >
+          npx firebase emulators:exec --only firestore --project demo-vinoozy
+          "npm --prefix test/rules test -- u1.rules.test.mjs compat/"
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version-file: .flutter-version
+          channel: stable
+          cache: true
+      - run: npm ci
+      - run: flutter pub get
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: e2e-${{ runner.os }}-api34-${{ hashFiles('pubspec.lock', 'android/**/*.kts') }}
+      - name: Start the Firebase emulators (Auth + Firestore, demo-vinoozy)
+        run: |
+          npx firebase emulators:start --only auth,firestore --project demo-vinoozy > emulators.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sf http://127.0.0.1:8080 >/dev/null && curl -sf http://127.0.0.1:9099 >/dev/null && exit 0
+            sleep 2
+          done
+          cat emulators.log
+          exit 1
+      # The Android emulator reaches the runner's loopback as 10.0.2.2.
+      # After the in-process tests, tool/e2e_force_stop.sh kills the app with
+      # `adb shell am force-stop`, restarts it with `adb shell am start` and
+      # checks the wine queued offline is still there and syncs (NFR6.1,
+      # NFR6.3). android-emulator-runner stops at the first failing line.
+      - name: End-to-end tests (attempt 1)
+        id: attempt1
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          script: |
+            touch e2e-started
+            flutter test integration_test --dart-define=FIREBASE_ENV=demo --dart-define=E2E=true
+            tool/e2e_force_stop.sh
+      # One automatic retry only when the Android emulator never booted (an
+      # infrastructure error); a test failure is never retried.
+      - name: End-to-end tests (retry after an emulator boot failure)
+        if: steps.attempt1.outcome == 'failure' && hashFiles('e2e-started') == ''
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          script: |
+            flutter test integration_test --dart-define=FIREBASE_ENV=demo --dart-define=E2E=true
+            tool/e2e_force_stop.sh
+      - name: Fail when the tests failed
+        if: steps.attempt1.outcome == 'failure' && hashFiles('e2e-started') != ''
+        run: exit 1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: emulators-log
+          path: emulators.log
+          retention-days: 7

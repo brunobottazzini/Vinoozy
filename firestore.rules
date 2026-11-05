@@ -1,0 +1,151 @@
+rules_version = '2';
+
+// Vinoozy security rules (security-design.md §2, NFR4.1-NFR4.5, NFR4.11).
+// Shared file: u1-skeleton owns the common functions, users and the owner's
+// cellar; u7-sharing will extend the cellar/wine conditions for invited people.
+// Every rule change must keep accepting the writes of the app version still in
+// production (test/rules/compat/).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- Common functions -------------------------------------------------
+
+    // Google is the only provider (NFR4.1): anonymous and email tokens fail.
+    function signedIn() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider == 'google.com';
+    }
+
+    function uid() {
+      return request.auth.uid;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function onlyChanged(fields) {
+      return incoming().diff(existing()).affectedKeys().hasOnly(fields);
+    }
+
+    // One document read per wine read or write (counted in NFR5.2).
+    function cellarOwner(cellarId) {
+      return get(/databases/$(database)/documents/cellars/$(cellarId)).data.ownerId;
+    }
+
+    // ---- users/{userId} (NFR4.2) -----------------------------------------
+
+    function validUserCreate() {
+      let data = incoming();
+      let fields = ['displayName', 'email', 'onboardingSeen', 'createdAt', 'schemaVersion'];
+      return data.keys().hasOnly(fields)
+        && data.keys().hasAll(fields)
+        && data.displayName is string
+        && data.email is string
+        && data.onboardingSeen == false
+        && data.createdAt == request.time
+        && data.schemaVersion == 1;
+    }
+
+    function validUserUpdate() {
+      let data = incoming();
+      return onlyChanged(['displayName', 'email', 'onboardingSeen'])
+        && data.displayName is string
+        && data.email is string
+        && data.onboardingSeen is bool;
+    }
+
+    match /users/{userId} {
+      allow get: if signedIn() && userId == uid();
+      allow create: if signedIn() && userId == uid() && validUserCreate();
+      allow update: if signedIn() && userId == uid() && validUserUpdate();
+      allow list, delete: if false;
+    }
+
+    // ---- cellars/{cellarId} (NFR4.3, NFR4.11) ----------------------------
+
+    function validCellarName(name) {
+      return name is string && name.size() >= 1 && name.size() <= 60;
+    }
+
+    function validCellarCreate() {
+      let data = incoming();
+      let fields = ['ownerId', 'name', 'createdAt', 'schemaVersion'];
+      return data.keys().hasOnly(fields)
+        && data.keys().hasAll(fields)
+        && data.ownerId == uid()
+        && data.createdAt == request.time
+        && data.schemaVersion == 1
+        && validCellarName(data.name);
+    }
+
+    match /cellars/{cellarId} {
+      // Short circuit: the owner may read cellars/{uid} even before it exists.
+      allow get: if signedIn() && (cellarId == uid() || resource.data.ownerId == uid());
+      allow list: if signedIn() && resource.data.ownerId == uid();
+      allow create: if signedIn() && cellarId == uid() && validCellarCreate();
+      allow update: if signedIn()
+        && resource.data.ownerId == uid()
+        && onlyChanged(['name'])
+        && validCellarName(incoming().name);
+      allow delete: if false;
+
+      // ---- cellars/{cellarId}/wines/{wineId} (NFR4.4, NFR4.5) ------------
+
+      function wineFields() {
+        return ['name', 'producer', 'vintage', 'wineType', 'region', 'denomination',
+                'quantity', 'window', 'pairings', 'createdAt', 'updatedAt', 'updatedBy'];
+      }
+
+      function validWineName(name) {
+        return name is string && name.size() >= 1 && name.size() <= 120;
+      }
+
+      // One year of tolerance for a phone clock ahead of the server (NFR4.5).
+      function validVintage(vintage) {
+        return vintage == null
+          || (vintage is int && vintage >= 1900 && vintage <= request.time.year() + 1);
+      }
+
+      function validWineCreate() {
+        let data = incoming();
+        return data.keys().hasOnly(wineFields())
+          && data.keys().hasAll(['name', 'quantity', 'createdAt', 'updatedAt', 'updatedBy'])
+          && validWineName(data.name)
+          && validVintage(data.get('vintage', null))
+          && data.quantity is int
+          && data.quantity >= 1
+          && data.quantity <= 99
+          && data.updatedBy == uid()
+          && data.createdAt == request.time
+          && data.updatedAt == request.time;
+      }
+
+      // Quantity changes arrive as increments and may go below 0 with
+      // concurrent decrements (ADR-004): no lower bound on update.
+      function validWineUpdate() {
+        let data = incoming();
+        let changed = data.diff(existing()).affectedKeys();
+        return data.keys().hasOnly(wineFields())
+          && !changed.hasAny(['createdAt'])
+          && data.updatedBy == uid()
+          && data.updatedAt == request.time
+          && data.quantity is int
+          && (!changed.hasAny(['name']) || validWineName(data.name))
+          && (!changed.hasAny(['vintage']) || validVintage(data.get('vintage', null)));
+      }
+
+      match /wines/{wineId} {
+        allow read: if signedIn() && cellarOwner(cellarId) == uid();
+        allow create: if signedIn() && cellarOwner(cellarId) == uid() && validWineCreate();
+        allow update: if signedIn() && cellarOwner(cellarId) == uid() && validWineUpdate();
+        // U1 has no delete; u4-cellar opens it.
+        allow delete: if false;
+      }
+    }
+  }
+}

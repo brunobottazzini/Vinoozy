@@ -1,0 +1,109 @@
+{
+  "stage": "functional-design",
+  "unit": "u1-skeleton",
+  "upstream_ids": [
+    "AC1.1.1",
+    "AC1.1.2",
+    "AC1.1.3",
+    "AC2.1.1",
+    "AC2.1.2",
+    "AC2.1.3",
+    "AC2.1.4",
+    "AC9.1.1",
+    "AC9.1.2",
+    "AC9.1.3",
+    "AC9.2.1",
+    "AC10.1.1",
+    "AC10.1.2",
+    "AC10.1.3"
+  ],
+  "coverage": [
+    {
+      "id": "AC1.1.1",
+      "status": "OK",
+      "target": "BR1.1, BR1.3, BR1.4; la parte 'vedo il Cruscotto' delivered by u5-dashboard (in U1 si apre la Cantina)"
+    },
+    {
+      "id": "AC1.1.2",
+      "status": "OK",
+      "target": "BR1.1"
+    },
+    {
+      "id": "AC1.1.3",
+      "status": "OK",
+      "target": "BR1.2"
+    },
+    {
+      "id": "AC2.1.1",
+      "status": "N/A",
+      "target": "suggerimenti durante la scrittura delivered by u4-cellar"
+    },
+    {
+      "id": "AC2.1.2",
+      "status": "OK",
+      "target": "BR2.3, BR2.4"
+    },
+    {
+      "id": "AC2.1.3",
+      "status": "OK",
+      "target": "BR2.1, BR2.2"
+    },
+    {
+      "id": "AC2.1.4",
+      "status": "N/A",
+      "target": "misura dei 30 secondi con suggerimenti delivered by u4-cellar"
+    },
+    {
+      "id": "AC9.1.1",
+      "status": "OK",
+      "target": "BR1.4, BR3.1, BR3.2"
+    },
+    {
+      "id": "AC9.1.2",
+      "status": "OK",
+      "target": "BR3.1, BR3.2"
+    },
+    {
+      "id": "AC9.1.3",
+      "status": "OK",
+      "target": "BR3.3"
+    },
+    {
+      "id": "AC9.2.1",
+      "status": "N/A",
+      "target": "nessuna modifica di quantità dopo la creazione in U1: comandi delivered by u4-cellar, prova con due persone by u7-sharing; BR3.4 resta come vincolo del livello dati con test nell'emulatore"
+    },
+    {
+      "id": "AC10.1.1",
+      "status": "OK",
+      "target": "BR5.1"
+    },
+    {
+      "id": "AC10.1.2",
+      "status": "OK",
+      "target": "BR5.2"
+    },
+    {
+      "id": "AC10.1.3",
+      "status": "OK",
+      "target": "BR5.3 per la Cantina e le schermate di U1; il Cruscotto delivered by u5-dashboard"
+    }
+  ],
+  "reverse": [
+    {
+      "id": "BR2.5",
+      "status": "N/A",
+      "target": "vincolo di FR2.7 (solo 0,75 L), nessun criterio di accettazione dedicato"
+    },
+    {
+      "id": "BR4.1",
+      "status": "N/A",
+      "target": "regola di sicurezza da NFR4 e contract C3, verificata nell'emulatore"
+    },
+    {
+      "id": "BR3.4",
+      "status": "N/A",
+      "target": "vincolo del livello dati da FR9.4; il criterio AC9.2.1 è coperto da u4-cellar e u7-sharing"
+    }
+  ]
+}

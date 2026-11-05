@@ -1,0 +1,75 @@
+{
+  "description": "Every Firestore write shape of each released app version, in order. When a unit adds or changes a write, append a new version here and keep the old ones: the rules must accept the writes of the app still in production (cicd-pipeline.md §4). Placeholders: $uid, $serverTimestamp, $increment:<n>, $currentYear.",
+  "versions": [
+    {
+      "app": "u1-skeleton",
+      "writes": [
+        {
+          "label": "profile created on first sign-in (UserRepository.ensureProfile)",
+          "op": "set",
+          "path": "users/$uid",
+          "data": {
+            "displayName": "User A",
+            "email": "user-a@example.com",
+            "onboardingSeen": false,
+            "createdAt": "$serverTimestamp",
+            "schemaVersion": 1
+          }
+        },
+        {
+          "label": "profile refreshed on later sign-ins",
+          "op": "update",
+          "path": "users/$uid",
+          "data": { "displayName": "User A", "email": "user-a@example.com" }
+        },
+        {
+          "label": "personal cellar created (CellarRepository.ensurePersonalCellar)",
+          "op": "set",
+          "path": "cellars/$uid",
+          "data": {
+            "ownerId": "$uid",
+            "name": "La mia cantina",
+            "schemaVersion": 1,
+            "createdAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "wine created with vintage (WineRepository.create)",
+          "op": "set",
+          "path": "cellars/$uid/wines/compat-w1",
+          "data": {
+            "name": "Barolo",
+            "vintage": 2016,
+            "quantity": 2,
+            "updatedBy": "$uid",
+            "createdAt": "$serverTimestamp",
+            "updatedAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "wine created without vintage",
+          "op": "set",
+          "path": "cellars/$uid/wines/compat-w2",
+          "data": {
+            "name": "Barbera d'Asti Superiore DOCG",
+            "vintage": null,
+            "quantity": 1,
+            "updatedBy": "$uid",
+            "createdAt": "$serverTimestamp",
+            "updatedAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "quantity changed as an increment (WineRepository.incrementQuantity)",
+          "op": "update",
+          "path": "cellars/$uid/wines/compat-w1",
+          "data": {
+            "quantity": "$increment:-1",
+            "updatedAt": "$serverTimestamp",
+            "updatedBy": "$uid"
+          }
+        }
+      ]
+    }
+  ]
+}

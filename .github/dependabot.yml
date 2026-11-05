@@ -1,0 +1,16 @@
+# Weekly updates of pinned actions (by SHA), Dart packages and the npm tooling
+# of the rules tests (cicd-pipeline.md §7).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: pub
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly

@@ -1,0 +1,30 @@
+{
+  "stage": "domain-design",
+  "upstream_ids": ["US1.1","US1.2","US1.3","US2.1","US2.2","US2.3","US3.1","US3.2","US3.3","US3.4","US4.1","US4.2","US5.1","US5.2","US6.1","US6.2","US7.1","US8.1","US8.2","US8.3","US8.4","US9.1","US9.2","US10.1"],
+  "coverage": [
+    { "id": "US1.1", "status": "OK", "target": "Account" },
+    { "id": "US1.2", "status": "OK", "target": "Account" },
+    { "id": "US1.3", "status": "OK", "target": "Account" },
+    { "id": "US2.1", "status": "OK", "target": "Cellar" },
+    { "id": "US2.2", "status": "OK", "target": "LabelRecognition" },
+    { "id": "US2.3", "status": "OK", "target": "Cellar" },
+    { "id": "US3.1", "status": "OK", "target": "Cellar" },
+    { "id": "US3.2", "status": "OK", "target": "Cellar" },
+    { "id": "US3.3", "status": "OK", "target": "Cellar" },
+    { "id": "US3.4", "status": "OK", "target": "Cellar" },
+    { "id": "US4.1", "status": "OK", "target": "Estimation" },
+    { "id": "US4.2", "status": "OK", "target": "Estimation" },
+    { "id": "US5.1", "status": "OK", "target": "Dashboard" },
+    { "id": "US5.2", "status": "OK", "target": "Dashboard" },
+    { "id": "US6.1", "status": "OK", "target": "Cellar" },
+    { "id": "US6.2", "status": "OK", "target": "DrinkingRecord" },
+    { "id": "US7.1", "status": "OK", "target": "Estimation" },
+    { "id": "US8.1", "status": "OK", "target": "Sharing" },
+    { "id": "US8.2", "status": "OK", "target": "Sharing" },
+    { "id": "US8.3", "status": "OK", "target": "Sharing" },
+    { "id": "US8.4", "status": "OK", "target": "Sharing" },
+    { "id": "US9.1", "status": "OK", "target": "Sync" },
+    { "id": "US9.2", "status": "OK", "target": "Sync" },
+    { "id": "US10.1", "status": "N/A", "target": "Lingua, tema e accessibilita' sono trasversali allo strato di presentazione, senza logica di dominio propria; coperti in functional-design e nfr-requirements" }
+  ]
+}

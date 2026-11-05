@@ -1,0 +1,45 @@
+name: vinoozy
+description: "Vinoozy: your wine cellar, at the right time."
+# Private app: never published to pub.dev.
+publish_to: 'none'
+
+# versionName (semver) is read from here by release.yml; the build number is
+# replaced in CI with the next Google Play versionCode (--build-number).
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.7
+
+# Versions chosen at Code Generation as the latest stable, mutually compatible
+# releases (tech-stack-decisions.md); pubspec.lock is committed.
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cloud_firestore: ^7.1.0
+  connectivity_plus: ^7.3.2
+  firebase_app_check: ^0.5.1
+  firebase_auth: ^7.0.1
+  firebase_core: ^5.1.0
+  firebase_crashlytics: ^6.0.1
+  flutter_riverpod: ^3.4.3
+  google_sign_in: ^7.2.0
+  intl: ^0.20.3
+  shared_preferences: ^2.5.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  # Only for test_driver/integration_test.dart (tool/e2e_force_stop.sh).
+  flutter_driver:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  mocktail: ^1.0.5
+
+flutter:
+  uses-material-design: true
+  # Generates lib/l10n/app_localizations*.dart from the ARB files (l10n.yaml).
+  generate: true
