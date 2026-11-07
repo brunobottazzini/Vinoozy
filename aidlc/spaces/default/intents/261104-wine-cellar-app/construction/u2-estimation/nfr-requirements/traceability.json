@@ -1,0 +1,15 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u2-estimation",
+  "upstream_ids": ["NFR1", "NFR2", "NFR3", "NFR4", "NFR5", "NFR6", "NFR7", "NFR8"],
+  "coverage": [
+    { "id": "NFR1", "status": "N/A", "target": "velocità di inserimento delivered by u4-cellar; U2 non ha interfaccia" },
+    { "id": "NFR2", "status": "OK", "target": "NFR2.1, NFR2.2, NFR2.3" },
+    { "id": "NFR3", "status": "N/A", "target": "accessibilità delivered by u4-cellar e u5-dashboard; U2 non ha interfaccia né testi" },
+    { "id": "NFR4", "status": "OK", "target": "NFR4.1, NFR4.2 (BR4.5, BR1.6), NFR4.3, NFR4.4 (BR4.4) per la parte che riguarda una libreria pura; accesso e regole del cloud delivered by u1-skeleton e u7-sharing" },
+    { "id": "NFR5", "status": "N/A", "target": "nessun servizio cloud in U2; costo zero" },
+    { "id": "NFR6", "status": "N/A", "target": "U2 non salva dati; durabilità delivered by u1-skeleton e u4-cellar" },
+    { "id": "NFR7", "status": "OK", "target": "NFR7.1, NFR7.2, NFR7.3, NFR7.4, NFR7.5" },
+    { "id": "NFR8", "status": "OK", "target": "NFR8.1 per la parte che riguarda una libreria pura (nessun dato personale); cancellazione dell'account delivered by u8-account" }
+  ]
+}

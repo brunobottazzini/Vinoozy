@@ -22,21 +22,23 @@ Fonti: `security-design.md`, `performance-design.md`, `logical-components.md` (N
 | Cloud Firestore | database | `(default)`, `europe-west8`, modalità nativa; regole da `firestore.rules`; nessun indice composto in U1 | NFR4.2–NFR4.5, NFR6.1 |
 | Firebase App Check | protezione | Provider Play Integrity collegato all'app Android; impronta SHA-256 della chiave di firma di Google Play registrata; Firestore in modalità di controllo, poi obbligatorio (99% per 7 giorni) | NFR4.6 |
 | Firebase Crashlytics | crash | Attivo solo in release; nessun identificatore utente | NFR8.2 |
-| Fatturazione Cloud | costo | Piano Blaze; budget mensile di 1 € con avvisi email al 50%, 90% e 100% | NFR5.3, NFR5.4 |
+| Fatturazione Cloud | costo | Progetto `vinoozy-d6f45` creato il 2026-11-05 sul piano gratuito **Spark**, usato solo per le prove via cavo sul telefono del proprietario (nessun addebito possibile, nessun utente esterno). **Prima della prima pubblicazione su Google Play** (anche sul canale di test interno) il progetto passa a **Blaze** con budget mensile di 1 € e avvisi email al 50%, 90% e 100%, come richiedono NFR5.3 e NFR5.4: è un passo di `docs/firebase-setup.md` e dello smoke test. | NFR5.3, NFR5.4 |
 | Firebase Emulator Suite | test | Auth `9099`, Firestore `8080`, UI disattivata in CI; progetto `demo-vinoozy` | NFR4.7, team.md |
 | Google Play Console | distribuzione | App `com.vinoozy.app` (nome del pacchetto definitivo), firma gestita da Google Play (Play App Signing), canali "Test interno" e "Produzione" | team.md Deployment |
-| GitHub Actions | CI/CD | Vedi `cicd-pipeline.md`; ambienti GitHub `play-internal`, `play-production`, `firebase-prod` | team.md Way of Working |
+| GitHub Actions | CI/CD | Vedi `cicd-pipeline.md`; ambienti GitHub `play-internal`, `play-production`, `firebase-prod`, `crashlytics-symbols` | team.md Way of Working |
 
 ## Repository pubblico: protezioni
 
 | Protezione | Configurazione | Motivo |
 |------------|----------------|--------|
-| Nessun segreto nel codice | `google-services.json` e `options_prod.dart` in `.gitignore`; generati dal job di build | NFR4.7 |
+| Nessun segreto nel codice | `google-services.json` e `config/firebase_prod.json` in `.gitignore`; ricostruiti dal job di build; un controllo di `ci.yml` fallisce se compaiono tra i file tracciati | NFR4.7 |
 | Scansione dei segreti | GitHub secret scanning e push protection attivi | Blocca un push che contiene una chiave |
 | Ramo `main` protetto | Solo squash merge, storia lineare, tutti i controlli richiesti verdi, nessun push diretto (anche per l'amministratore) | team.md Way of Working |
 | Fork | I workflow usano `pull_request` (mai `pull_request_target`); le richieste da fork non ricevono segreti né pubblicano build; i workflow dei nuovi contributori richiedono approvazione | Evita che codice esterno legga i segreti |
 | Permessi dei workflow | `permissions: contents: read` predefinito; permessi in più solo nel job che li usa | Minimo privilegio |
 | Azioni di terze parti | Fissate per SHA del commit; aggiornate da Dependabot | Protezione da modifiche malevole alle azioni |
+| Ambiente dei simboli | `crashlytics-symbols` limitato al ramo `main`, senza approvazione: carica solo i simboli di debug | Evita che un ramo qualsiasi ottenga il token WIF |
+| Artifact dei workflow | AAB e simboli conservati 7 giorni (non 30): nel repository pubblico chiunque abbia un account GitHub può scaricarli. Non contengono segreti; i simboli rendono solo più leggibile il codice | Riduce l'esposizione |
 | Ambienti con approvazione | `play-production` e `firebase-prod` richiedono l'approvazione del proprietario; tutti gli ambienti sono limitati a `main` (e `firebase-prod` anche ai tag `v*`) | team.md: produzione e regole solo con approvazione manuale |
 
 ## Identità per la CI
@@ -47,7 +49,8 @@ Fonti: `security-design.md`, `performance-design.md`, `logical-components.md` (N
 | Account di servizio Google Play `play-internal-publisher` | `release.yml` | Sulla sola app Vinoozy: solo "Rilascia nei canali di test" (niente produzione) | Segreto `PLAY_INTERNAL_SA_JSON` nel solo ambiente `play-internal` |
 | Account di servizio Google Play `play-production-publisher` | `promote.yml` | Sulla sola app Vinoozy: "Rilascia in produzione" | Segreto `PLAY_PRODUCTION_SA_JSON` nel solo ambiente `play-production`, con approvazione |
 | Chiave di caricamento Android (upload key) | `release.yml` | Firma il bundle prima del caricamento; la chiave di firma finale la custodisce Google Play | Segreti `ANDROID_UPLOAD_KEYSTORE_B64`, `ANDROID_UPLOAD_KEYSTORE_PASSWORD`, `ANDROID_UPLOAD_KEY_ALIAS`, `ANDROID_UPLOAD_KEY_PASSWORD` nell'ambiente `play-internal` |
-| Configurazione Firebase di produzione | `release.yml` | Non è una credenziale, ma resta fuori dal repository (NFR4.7) | Segreti `FIREBASE_PROD_GOOGLE_SERVICES_JSON_B64`, `FIREBASE_PROD_OPTIONS_DART_B64` |
+| Configurazione Firebase di produzione | `release.yml` | Non è una credenziale, ma resta fuori dal repository (NFR4.7) | Segreti `FIREBASE_PROD_GOOGLE_SERVICES_JSON_B64`, `FIREBASE_PROD_DEFINES_JSON_B64` (contenuto di `config/firebase_prod.json`, passato con `--dart-define-from-file`) |
+| Federazione d'identità (WIF) GitHub → Google Cloud, account `crashlytics-symbols` | job `crashlytics-symbols` di `release.yml` | Solo `roles/firebasecrashlytics.admin` (il ruolo predefinito più ristretto che consente il caricamento dei file di simboli) e `roles/serviceusage.serviceUsageConsumer` sul solo progetto di produzione. Stesso provider OIDC di `firebase-deploy.yml`, quindi accettata solo dal repository `brunobottazzini/Vinoozy`; l'account si impersona solo dall'ambiente `crashlytics-symbols`. Il job ha come unici permessi `contents: read` e `id-token: write` e non riceve segreti di firma, Play o configurazione | Nessuna chiave: token a breve scadenza (aggiunta in Code Generation, accettata dal proprietario il 2026-11-05) |
 
 Se la chiave di caricamento viene persa o esposta, si chiede a Google Play di sostituirla; la chiave di firma finale non è mai uscita da Google.
 

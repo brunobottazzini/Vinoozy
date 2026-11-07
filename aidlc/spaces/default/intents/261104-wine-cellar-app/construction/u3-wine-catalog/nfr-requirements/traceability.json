@@ -1,0 +1,56 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u3-wine-catalog",
+  "upstream_ids": [
+    "NFR1",
+    "NFR2",
+    "NFR3",
+    "NFR4",
+    "NFR5",
+    "NFR6",
+    "NFR7",
+    "NFR8"
+  ],
+  "coverage": [
+    {
+      "id": "NFR1",
+      "status": "OK",
+      "target": "performance-requirements.md NFR1.1-NFR1.5 (suggerimenti mentre si scrive, etichetta, timeout, cache)"
+    },
+    {
+      "id": "NFR2",
+      "status": "OK",
+      "target": "scalability-requirements.md NFR2.1-NFR2.3 (500 vini, limiti per telefono verso OFF, dimensione della cache)"
+    },
+    {
+      "id": "NFR3",
+      "status": "N/A",
+      "target": "accessibilità delivered by u4-cellar e u6-label-recognition; U3 non ha interfaccia"
+    },
+    {
+      "id": "NFR4",
+      "status": "OK",
+      "target": "security-requirements.md NFR4.1-NFR4.6 (HTTPS e lettura a flusso, dati inviati, User-Agent, risposte non fidate, validazione, attribuzione ODbL)"
+    },
+    {
+      "id": "NFR5",
+      "status": "OK",
+      "target": "scalability-requirements.md NFR5.1 (costo 0: nessun servizio cloud, OFF gratuito)"
+    },
+    {
+      "id": "NFR6",
+      "status": "OK",
+      "target": "reliability-requirements.md NFR6.1-NFR6.4; observability-requirements.md NFR6.6-NFR6.8"
+    },
+    {
+      "id": "NFR7",
+      "status": "OK",
+      "target": "tech-stack-decisions.md NFR7.1-NFR7.4 (copertura, test per regola, formattazione, benchmark)"
+    },
+    {
+      "id": "NFR8",
+      "status": "OK",
+      "target": "security-requirements.md NFR8.1-NFR8.2 (cache cancellata, informativa e scheda dati); observability-requirements.md NFR8.3 (nessun testo dell'utente nei log)"
+    }
+  ]
+}

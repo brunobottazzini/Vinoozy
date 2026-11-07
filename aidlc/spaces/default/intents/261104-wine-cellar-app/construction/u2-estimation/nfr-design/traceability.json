@@ -1,0 +1,15 @@
+{
+  "stage": "nfr-design",
+  "unit": "u2-estimation",
+  "upstream_ids": ["NFR2.1", "NFR2.2", "NFR2.3", "NFR4.1", "NFR4.2", "NFR4.3", "NFR4.4", "NFR8.1"],
+  "coverage": [
+    { "id": "NFR2.1", "status": "OK", "target": "logical-components.md > Prestazioni: budget CI 10 ms, misura sul telefono 25 ms, StatusCalculator a interi" },
+    { "id": "NFR2.2", "status": "OK", "target": "logical-components.md > Prestazioni: AliasIndex final di primo livello, test identical, confronto tra blocchi; security-design.md §3 tabelle citate solo in tables.dart e nell'indice" },
+    { "id": "NFR2.3", "status": "OK", "target": "logical-components.md > Prestazioni: ricerca per parola iniziale nell'AliasIndex, soglia 4 ms per 500 nomi" },
+    { "id": "NFR4.1", "status": "OK", "target": "security-design.md §1 superficie minima e tool/check_estimation_purity.sh" },
+    { "id": "NFR4.2", "status": "OK", "target": "security-design.md §2 Validation per tutte e 4 le funzioni, EstimationArgumentError con codice" },
+    { "id": "NFR4.3", "status": "OK", "target": "security-design.md §2 testi esterni passati così come sono, massimo 5" },
+    { "id": "NFR4.4", "status": "OK", "target": "security-design.md §3 parole vietate, solo const/final di primo livello, test di determinismo con Random(42)" },
+    { "id": "NFR8.1", "status": "OK", "target": "security-design.md §4 nessun campo personale, test sui campi di WineFacts" }
+  ]
+}

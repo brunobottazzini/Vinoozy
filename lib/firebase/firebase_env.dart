@@ -61,3 +61,9 @@ class FirebaseEnvConfig {
 /// Compile-time flag: the end-to-end test hooks are compiled in only when
 /// this is true, so release builds tree-shake them away.
 const bool kIsE2EBuild = bool.fromEnvironment('E2E');
+
+/// Compile-time flag of the on-phone measurement builds
+/// (`--dart-define=PERF=true`, u5-dashboard performance-design.md): only then
+/// the Dashboard emits its "ready" signal. Normal builds tree-shake that
+/// branch away (checked by tool/check_release_build.sh).
+const bool kIsPerfBuild = bool.fromEnvironment('PERF');

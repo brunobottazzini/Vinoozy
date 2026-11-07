@@ -5,6 +5,10 @@ import '../../cellar/data/retry.dart';
 import '../../cellar/domain/user_profile.dart';
 import '../app_user.dart';
 
+/// Field of `users/{uid}` added by u8-account (C3): the account deletion
+/// started; the account is not used until it ends (BR1.7, BR1.10).
+const String deletionStartedAtField = 'deletionStartedAt';
+
 /// Access to `users/{uid}` (logical-components.md: UserRepository).
 class UserRepository {
   UserRepository({required this._db, this._sleep = realSleep});
@@ -42,5 +46,47 @@ class UserRepository {
       }),
       sleep: _sleep,
     );
+  }
+
+  /// u8-account BR1.7 step 1: sets `deletionStartedAt` to the server time.
+  ///
+  /// The profile may be missing (U1 creates it in the background): it is then
+  /// created with the U1 fields plus `deletionStartedAt`. A value already
+  /// present is never rewritten (the rules forbid it, NFR4.2), so the step
+  /// can be repeated (NFR6.1). Errors are thrown to the runner.
+  Future<void> markDeletionStarted(AppUser user) {
+    final ref = _db.doc(userPath(user.uid));
+    return _db.runTransaction<void>((transaction) async {
+      final snapshot = await transaction.get(ref);
+      if (!snapshot.exists) {
+        transaction.set<Map<String, dynamic>>(ref, {
+          ...UserProfile.createFields(
+            displayName: user.displayName,
+            email: user.email,
+          ),
+          UserProfileFields.createdAt: FieldValue.serverTimestamp(),
+          deletionStartedAtField: FieldValue.serverTimestamp(),
+        });
+      } else if (snapshot.data()?[deletionStartedAtField] == null) {
+        transaction.update(ref, {
+          deletionStartedAtField: FieldValue.serverTimestamp(),
+        });
+      }
+    });
+  }
+
+  /// Whether `users/{uid}.deletionStartedAt` is set (BR1.8), read from the
+  /// server or, without network, from the cache. Throws when neither can
+  /// answer: the gate then decides from the local signal only.
+  Future<bool> isDeletionStarted(String uid) async {
+    final snapshot = await _db.doc(userPath(uid)).get();
+    return snapshot.exists && snapshot.data()?[deletionStartedAtField] != null;
+  }
+
+  /// u8-account BR1.7 step 6: deletes `users/{uid}` if it still exists.
+  Future<void> deleteProfile(String uid) async {
+    final ref = _db.doc(userPath(uid));
+    final snapshot = await ref.get(const GetOptions(source: Source.server));
+    if (snapshot.exists) await ref.delete();
   }
 }

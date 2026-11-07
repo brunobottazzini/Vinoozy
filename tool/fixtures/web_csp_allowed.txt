@@ -1,0 +1,13 @@
+# Origins the account deletion page may reach at run time (u8-account
+# infrastructure-specification.md, "Seconda correzione"). Each page's CSP
+# must list exactly these, no more, no fewer (tool/check_web_pins.sh).
+https://accounts.google.com
+https://apis.google.com
+https://content-firebaseappcheck.googleapis.com
+https://firebaseappcheck.googleapis.com
+https://firestore.googleapis.com
+https://identitytoolkit.googleapis.com
+https://securetoken.googleapis.com
+https://vinoozy-d6f45.firebaseapp.com
+https://www.google.com/recaptcha/
+https://www.gstatic.com/recaptcha/

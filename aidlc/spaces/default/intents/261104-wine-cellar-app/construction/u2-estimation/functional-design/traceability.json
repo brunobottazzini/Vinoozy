@@ -1,0 +1,30 @@
+{
+  "stage": "functional-design",
+  "unit": "u2-estimation",
+  "upstream_ids": [
+    "AC4.1.1",
+    "AC4.1.2",
+    "AC4.1.3",
+    "AC4.2.1",
+    "AC4.2.2",
+    "AC4.2.3",
+    "AC7.1.1",
+    "AC7.1.2"
+  ],
+  "coverage": [
+    { "id": "AC4.1.1", "status": "OK", "target": "BR1.4, BR3.1 (calcolo: finestra, fonte catalog e fiducia da C1, alta, media o bassa); la visualizzazione nel dettaglio è di u4-cellar" },
+    { "id": "AC4.1.2", "status": "OK", "target": "BR1.1, BR1.2, BR1.7, BR2.1, BR2.2, BR3.1 (stima interna con source internalRules); la visualizzazione è di u4-cellar" },
+    { "id": "AC4.1.3", "status": "OK", "target": "BR2.1, BR2.2, BR1.3, BR1.5, BR4.4 (stima interna senza rete, ricalcolo segnalato); il ricalcolo alla prima connessione è di u4-cellar" },
+    { "id": "AC4.2.1", "status": "OK", "target": "BR3.2, BR3.3" },
+    { "id": "AC4.2.2", "status": "OK", "target": "BR3.2, BR3.3" },
+    { "id": "AC4.2.3", "status": "N/A", "target": "icona e testo dello stato delivered by u4-cellar e u5-dashboard; U2 fornisce solo il valore dello stato" },
+    { "id": "AC7.1.1", "status": "OK", "target": "BR4.2" },
+    { "id": "AC7.1.2", "status": "OK", "target": "BR4.1 (abbinamenti per tipologia con source internalRules); l'indicazione a schermo è di u4-cellar" }
+  ],
+  "reverse": [
+    { "id": "BR1.6", "status": "N/A", "target": "regola di robustezza sul profilo esterno, nessun criterio di accettazione dedicato" },
+    { "id": "BR4.3", "status": "N/A", "target": "richiesta del proprietario in questa fase (avviso di stima generica GENERIC_ESTIMATE e tipologia a mano); il criterio a schermo sarà in u4-cellar" },
+    { "id": "BR1.7", "status": "N/A", "target": "mappatura tecnica delle tipologie tra C1, C2 e C3, nessun criterio di accettazione dedicato" },
+    { "id": "BR4.5", "status": "N/A", "target": "validazione tecnica degli ingressi della libreria, nessun criterio di accettazione dedicato" }
+  ]
+}

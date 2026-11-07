@@ -1,18 +1,23 @@
 {
   "name": "vinoozy-tooling",
   "private": true,
-  "description": "Pinned Node tooling for Vinoozy: Firebase Emulator Suite and Firestore security rules tests. No global installs.",
+  "description": "Pinned Node tooling for Vinoozy: Firebase Emulator Suite, Firestore security rules tests and the account deletion web page (bundle and tests). No global installs.",
   "license": "UNLICENSED",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
     "emulators": "firebase emulators:start --only auth,firestore --project demo-vinoozy",
-    "test:rules": "firebase emulators:exec --only firestore --project demo-vinoozy \"npm --prefix test/rules test -- u1.rules.test.mjs compat/\""
+    "test:rules": "firebase emulators:exec --only firestore --project demo-vinoozy \"npm --prefix test/rules test -- u1.rules.test.mjs u7.rules.test.mjs u4.rules.test.mjs u8.rules.test.mjs compat/\"",
+    "test:web": "firebase emulators:exec --only firestore,auth --project demo-vinoozy \"c8 --check-coverage --lines 80 --include docs/account-deletion/account-deletion.js --reporter text --reporter lcov --report-dir coverage/web node --test --test-concurrency=1 test/web/*.test.mjs\"",
+    "build:web": "tool/build_web_bundle.sh"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "6.0.0",
+    "c8": "12.0.0",
+    "esbuild": "0.28.2",
     "firebase": "13.2.0",
-    "firebase-tools": "14.27.0"
+    "firebase-tools": "14.27.0",
+    "playwright": "1.65.0"
   }
 }

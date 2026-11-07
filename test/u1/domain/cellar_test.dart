@@ -57,6 +57,40 @@ void main() {
       expect(cellar.name, '');
       expect(cellar.createdAt, isNull);
       expect(cellar.schemaVersion, currentSchemaVersion);
+      expect(cellar.memberSlots, 0);
+      expect(cellar.memberOpKey, isNull);
+    });
+
+    test('fromMap reads memberSlots and memberOpKey of u7-sharing', () {
+      final cellar = Cellar.fromMap('user-a', {
+        CellarFields.ownerId: 'user-a',
+        CellarFields.memberSlots: 2,
+        CellarFields.memberOpKey: 'b@example.com',
+      });
+
+      expect(cellar.memberSlots, 2);
+      expect(cellar.memberOpKey, 'b@example.com');
+    });
+
+    test('a missing, negative or mistyped memberSlots counts 0 and never '
+        'throws', () {
+      expect(Cellar.fromMap('c', const {}).memberSlots, 0);
+      expect(
+        Cellar.fromMap('c', {CellarFields.memberSlots: -1}).memberSlots,
+        0,
+      );
+      expect(
+        Cellar.fromMap('c', {CellarFields.memberSlots: '2'}).memberSlots,
+        0,
+      );
+      expect(
+        Cellar.fromMap('c', {CellarFields.memberSlots: 1.0}).memberSlots,
+        1,
+      );
+      expect(
+        Cellar.fromMap('c', {CellarFields.memberOpKey: 4}).memberOpKey,
+        isNull,
+      );
     });
 
     test('FirestoreValues rejects non-finite doubles', () {

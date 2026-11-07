@@ -6,13 +6,19 @@ Fonti: `unit-of-work.md` e `unit-of-work-dependency.md` (Units Generation), `com
 
 | # | Provider Unit | Consumer | Mechanism | Owner |
 |---|---------------|----------|-----------|-------|
-| C1 | u3-wine-catalog | u4-cellar, u6-label-recognition | Firebase callable functions (HTTPS) | u3-wine-catalog |
+| C1 | u3-wine-catalog | u4-cellar, u6-label-recognition | Interfaccia Dart `WineCatalog` dentro l'app (aggiornato 2026-11-05; in origine callable Firebase) | u3-wine-catalog |
 | C2 | u2-estimation | u4-cellar, u5-dashboard | Libreria Dart (API pubblica del pacchetto) | u2-estimation |
 | C3 | u1-skeleton | u4-cellar, u5-dashboard, u6-label-recognition, u7-sharing, u8-account | Modello dati Firestore condiviso + regole di sicurezza | u1-skeleton (dati), u7-sharing (regole dei permessi) |
 | C4 | u7-sharing | u8-account, u4-cellar | Interfaccia Dart (servizio di condivisione) | u7-sharing |
-| C5 | Base dati vini esterna (da scegliere) | u3-wine-catalog | HTTPS del fornitore, dietro un adattatore | u3-wine-catalog (adattatore) |
+| C5 | Open Food Facts (API pubblica, dati ODbL) | u3-wine-catalog | HTTPS di Open Food Facts, dietro un adattatore | u3-wine-catalog (adattatore) |
 
-## C1 — WineCatalog callable functions (v1)
+## C1 — WineCatalog (v1)
+
+**Aggiornamento del 2026-11-05 (Functional Design di U3, scelta del proprietario Q1/Q2):** C1 non è più servito da funzioni callable ma da un'interfaccia Dart `WineCatalog` dentro l'app, con le stesse operazioni e gli stessi tipi qui sotto (i percorsi `v1-...` diventano i metodi `suggestWines`, `matchLabelText`, `getWineProfile`). Il cambio di meccanismo non richiede una `v2`: nessuna versione pubblicata dell'app usa ancora C1 (U4 e U6 non sono costruiti). Aggiunte compatibili: `lookupBarcode(code) -> WineCandidate?`; `suggestExternal(query, locale) -> SuggestResult` (solo risultati di Open Food Facts, chiamata da U4 dopo una pausa nella scrittura); in `suggestWines` il parametro facoltativo `cellarWines` (vini della cantina passati da U4); in `WineCandidate` i campi `source` (`internal`, `cellar`, `openFoodFacts`) e `barcode`. Se un giorno servirà un fornitore con chiave, una funzione cloud servirà questa stessa interfaccia. La specifica originale resta sotto come riferimento dei tipi.
+
+**Errori dell'interfaccia Dart:** solo `CatalogArgumentError` (con codice `queryTooShort`, `queryTooLong`, `textTooLong`, `invalidBarcode`) per ingressi non validi. Nessun'altra eccezione: rete assente, Open Food Facts lento, fuori servizio o con risposte non valide danno risultati solo interni, `matched: false` o `null`. "Non trovato" non è un errore.
+
+Specifica originale (riferimento dei tipi):
 
 Chiamate solo da utenti autenticati (Firebase controlla il token); limite di 60 richieste al minuto per utente; timeout lato app 8 secondi; nessun dato personale inoltrato al fornitore esterno.
 
@@ -148,6 +154,11 @@ shared-schema:
     - "senza annata: stima con confidence low"
 ```
 
+**Aggiunte compatibili del 2026-11-05 (richieste da U3, proprietario U2):** funzioni di catalogo, pure come le altre:
+- `normalizeWineText(text) -> String`: la normalizzazione usata nel riconoscimento (minuscole, senza accenti, apostrofi e punteggiatura come spazi).
+- `recognizeDenomination(text) -> RecognizedDenomination?`: denominazione riconosciuta per parole intere, con `key`, `displayName`, `wineType`, `region` e `qualifier`.
+- `denominationCatalog -> List<DenominationInfo>`: elenco costante delle denominazioni, con `key`, `displayName` (es. "Barolo DOCG"), `aliases` (le varianti dei nomi), `wineType` e `region`.
+
 ## C3 — Modello dati Firestore condiviso (v1)
 
 ```yaml
@@ -174,6 +185,28 @@ shared-schema:
     users: "ognuno legge e scrive solo users/{uid}"
 ```
 
+**Aggiunte compatibili di C3 v1 (2026-11-06, design di u7-sharing)**, tutte campi facoltativi che i consumatori ignorano se non li conoscono:
+- in `members`: `ownerName` (stringa, 1–100 caratteri), `inviteeName` (stringa, 1–100 caratteri, dopo l'attivazione), `closedBy` (`owner` | `invitee`), `updatedAt` (timestamp);
+- in `cellars`: `memberSlots` (intero da 0 a 2, limite di FR8.1 portato da 5 a 2 il 2026-11-06, numero di inviti `invited` + `active`; se manca vale 0) e `memberOpKey` (stringa, la chiave dell'invito cambiato nello stesso batch del contatore);
+- la chiave di `members` è l'email in minuscolo (`inviteeEmail`);
+- `drinkingRecords.drankOn` è una stringa data `YYYY-MM-DD`.
+
+**Aggiunte compatibili di C3 v1 (2026-11-06, design di u4-cellar)**, campi facoltativi:
+- in `wines`:
+  - `matchKey` (stringa ≤ 400, chiave dei doppioni da nome, produttore e annata normalizzati);
+  - `baseWindow` (`DrinkingWindow`, stima di base senza riscontri; `window` resta la finestra effettiva);
+  - `windowAdjustment` (`{ kind: tooYoung | justRight | pastPeak, year: int, recordId: string }`);
+- in `drinkingRecords`:
+  - `condition` (`tooYoung` | `justRight` | `pastPeak`) e `updatedAt` (timestamp);
+  - si possono aggiornare solo `rating`, `notes`, `drankOn`, `condition` e `updatedAt`, da chi ha registrato la bevuta o dal proprietario;
+  - chi l'ha registrata può eliminarla entro 10 minuti ("Annulla");
+- in `cellars`: `matchKeyBackfill` (booleano);
+- `wines` e `drinkingRecords`: l'eliminazione è riservata al proprietario.
+
+Dettagli in `construction/u4-cellar/functional-design/functional-spec.md`.
+
+I dettagli sono in `construction/u7-sharing/functional-design/functional-spec.md`, sezione "Meccanismi senza funzioni nel cloud".
+
 La copia di `ownerId` in ogni `members` permette alle regole e a Sharing di verificare il proprietario senza leggere `cellars` (chiarisce la dipendenza Sharing–Cellar segnalata in Domain Design). Il wine, la sua stima e gli abbinamenti stanno nello stesso documento: eliminando il vino si elimina anche la stima.
 
 ## C4 — Sharing service (v1)
@@ -194,7 +227,7 @@ shared-schema:
 
 ## C5 — Base dati vini esterna (adattatore)
 
-U3 incapsula il fornitore dietro un'interfaccia interna con le stesse tre operazioni di C1 (`suggest`, `matchText`, `profile`). Il formato del fornitore non esce mai da U3; cambiare fornitore cambia solo l'adattatore. Timeout verso il fornitore 5 secondi; risposte memorizzate per 30 giorni per nome+annata per restare nella quota gratuita.
+U3 incapsula il fornitore dietro un'interfaccia interna con le operazioni `search` e `product` (aggiornato il 2026-11-05). Il fornitore è Open Food Facts: API pubblica senza chiave, dati con licenza ODbL, identificativo obbligatorio `Vinoozy/<versione> (<contatto>)`. Il formato del fornitore non esce mai da U3; cambiare fornitore cambia solo l'adattatore. Timeout verso il fornitore 5 secondi; risposte riuscite memorizzate sul telefono per 30 giorni; limiti sul telefono di 8 ricerche e 60 letture di prodotto in 60 secondi (finestra mobile), sotto i limiti pubblicati da Open Food Facts.
 
 ## Contract ownership rules
 
@@ -208,6 +241,6 @@ U3 incapsula il fornitore dietro un'interfaccia interna con le stesse tre operaz
 
 | Contract | Question | Blocks |
 |----------|----------|--------|
-| C5 | Quale base dati vini esterna usare (disponibilità, quota gratuita, licenza dei dati) | u3-wine-catalog |
-| C1 | Il limite di 60 richieste al minuto va confermato rispetto alla quota del fornitore scelto | u3-wine-catalog |
+| C5 | ~~Quale base dati vini esterna usare~~ Risolta il 2026-11-05: catalogo interno + Open Food Facts (Functional Design di U3, Q1) | — |
+| C1 | ~~Limite di 60 richieste al minuto~~ Risolta il 2026-11-05: sostituito dai limiti sul telefono verso Open Food Facts (C5) | — |
 | C3 | Cosa fare delle bevute registrate da una persona che cancella l'account in cantine altrui (anonimizzare `recordedBy` o mantenerlo) | u8-account |

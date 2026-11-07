@@ -2,6 +2,9 @@ plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    // Line coverage of the label photo classes (u6-label-recognition
+    // cicd-pipeline.md §1): jacocoLabelReport below.
+    jacoco
 }
 
 // Release signing material comes only from environment variables that
@@ -52,6 +55,26 @@ android {
             // Never fall back to the debug key: an unsigned bundle is rejected
             // by Google Play instead of shipping with the wrong key.
             signingConfig = if (hasUploadKey) signingConfigs.getByName("upload") else null
+            // u6-label-recognition: the unused ML Kit scripts (see the file).
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+        }
+    }
+
+    // JVM tests of the native label code with Robolectric (u6 cicd-pipeline.md
+    // §1): `./gradlew :app:testDebugUnitTest :app:jacocoLabelReport`.
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            all { test ->
+                test.extensions.configure(JacocoTaskExtension::class) {
+                    // Robolectric loads the classes with its own class loader.
+                    isIncludeNoLocationClasses = true
+                    excludes = listOf("jdk.internal.*")
+                }
+            }
         }
     }
 }
@@ -64,4 +87,69 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // EXIF orientation of the label photos (u6 security-design.md §3).
+    implementation("androidx.exifinterface:exifinterface:1.4.2")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.17")
+    testImplementation("androidx.test:core:1.7.0")
+}
+
+// With isIncludeAndroidResources the unit-test package reads the merged
+// assets, which the Flutter plugin also writes: order the two tasks.
+tasks.matching { it.name == "packageDebugUnitTestForUnitTest" }.configureEach {
+    dependsOn(tasks.matching { it.name == "copyFlutterAssetsDebug" })
+}
+
+jacoco {
+    toolVersion = "0.8.14"
+}
+
+// The two native classes of the label photo (u6 cicd-pipeline.md §1). The
+// threshold is an input (team.md, Copertura): never lower it to pass a build.
+val labelCoverageClasses = listOf(
+    "com/vinoozy/vinoozy/LabelImagePreparer*.class",
+    "com/vinoozy/vinoozy/SharedImageReceiver*.class",
+)
+val labelCoverageMinimum = "0.80".toBigDecimal()
+
+fun JacocoReportBase.labelCoverageInputs() {
+    dependsOn("testDebugUnitTest")
+    classDirectories.setFrom(
+        fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
+            include(labelCoverageClasses)
+        },
+    )
+    sourceDirectories.setFrom(files("src/main/kotlin"))
+    executionData.setFrom(
+        fileTree(layout.buildDirectory) { include("jacoco/testDebugUnitTest.exec") },
+    )
+}
+
+val jacocoLabelVerification by tasks.registering(JacocoCoverageVerification::class) {
+    group = "verification"
+    description = "Fails below 80% line coverage of LabelImagePreparer and SharedImageReceiver."
+    labelCoverageInputs()
+    violationRules {
+        rule {
+            limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = labelCoverageMinimum
+            }
+        }
+    }
+}
+
+tasks.register<JacocoReport>("jacocoLabelReport") {
+    group = "verification"
+    description = "Coverage report of the label photo classes, then the 80% check."
+    labelCoverageInputs()
+    reports {
+        xml.required = true
+        html.required = true
+    }
+    finalizedBy(jacocoLabelVerification)
 }

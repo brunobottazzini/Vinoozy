@@ -1,0 +1,182 @@
+{
+  "stage": "nfr-design",
+  "unit": "u3-wine-catalog",
+  "upstream_ids": [
+    "NFR1.1",
+    "NFR1.2",
+    "NFR1.3",
+    "NFR1.4",
+    "NFR1.5",
+    "NFR4.1",
+    "NFR4.2",
+    "NFR4.3",
+    "NFR4.4",
+    "NFR4.5",
+    "NFR8.1",
+    "NFR8.2",
+    "NFR4.6",
+    "NFR2.1",
+    "NFR2.2",
+    "NFR2.3",
+    "NFR5.1",
+    "NFR6.6",
+    "NFR6.1",
+    "NFR6.2",
+    "NFR6.3",
+    "NFR6.4",
+    "NFR6.7",
+    "NFR6.8",
+    "NFR8.3",
+    "NFR7.1",
+    "NFR7.2",
+    "NFR7.3",
+    "NFR7.4"
+  ],
+  "coverage": [
+    {
+      "id": "NFR1.1",
+      "status": "OK",
+      "target": "performance-design.md > Catalogo interno; Benchmark in CI (5 ms)"
+    },
+    {
+      "id": "NFR1.2",
+      "status": "OK",
+      "target": "performance-design.md > Benchmark in CI (10 ms); Misura sul telefono"
+    },
+    {
+      "id": "NFR1.3",
+      "status": "OK",
+      "target": "performance-design.md > Chiamate a OFF; security-design.md §1 timeout 5 s"
+    },
+    {
+      "id": "NFR1.4",
+      "status": "OK",
+      "target": "performance-design.md > Cache in memoria; Benchmark (1 ms)"
+    },
+    {
+      "id": "NFR1.5",
+      "status": "OK",
+      "target": "performance-design.md > Costruzione unica; Benchmark (20 ms)"
+    },
+    {
+      "id": "NFR4.1",
+      "status": "OK",
+      "target": "security-design.md §1 host fisso, followRedirects = false, lettura a flusso fino a 1 MB"
+    },
+    {
+      "id": "NFR4.2",
+      "status": "OK",
+      "target": "security-design.md §1 dati inviati; cellarWines mai all'adattatore"
+    },
+    {
+      "id": "NFR4.3",
+      "status": "OK",
+      "target": "security-design.md §2 CatalogConfig, OFF spento senza contatto, tool/check_off_config.sh"
+    },
+    {
+      "id": "NFR4.4",
+      "status": "OK",
+      "target": "security-design.md §3 parsing tipizzato, pulizia, troncamento"
+    },
+    {
+      "id": "NFR4.5",
+      "status": "OK",
+      "target": "security-design.md §4 CatalogArgumentError nel coordinatore"
+    },
+    {
+      "id": "NFR4.6",
+      "status": "OK",
+      "target": "security-design.md §6 source = openFoodFacts, chiave offAttribution, offLicenseUrl"
+    },
+    {
+      "id": "NFR8.1",
+      "status": "OK",
+      "target": "security-design.md §5 backup già escluso da U1 con test di non regressione; reliability-design.md > Cancellazione sicura (epoca, file e .tmp, catalogSessionProvider)"
+    },
+    {
+      "id": "NFR8.2",
+      "status": "OK",
+      "target": "security-design.md §7 righe della checklist di rilascio"
+    },
+    {
+      "id": "NFR2.1",
+      "status": "OK",
+      "target": "scalability-design.md > Cantine grandi; performance-design.md > Catalogo interno"
+    },
+    {
+      "id": "NFR2.2",
+      "status": "OK",
+      "target": "scalability-design.md > Budget delle richieste (finestra mobile)"
+    },
+    {
+      "id": "NFR2.3",
+      "status": "OK",
+      "target": "scalability-design.md > Dimensione della cache; reliability-design.md > scritture serializzate"
+    },
+    {
+      "id": "NFR5.1",
+      "status": "OK",
+      "target": "scalability-design.md > Costo (grep in CI, Crashlytics solo dal registratore)"
+    },
+    {
+      "id": "NFR6.6",
+      "status": "OK",
+      "target": "observability-design.md > Registratore iniettato (off_suspended senza testi)"
+    },
+    {
+      "id": "NFR6.1",
+      "status": "OK",
+      "target": "reliability-design.md > Senza rete"
+    },
+    {
+      "id": "NFR6.2",
+      "status": "OK",
+      "target": "reliability-design.md > Esiti di una richiesta; Circuit breaker"
+    },
+    {
+      "id": "NFR6.3",
+      "status": "OK",
+      "target": "reliability-design.md > Circuit breaker (nessun nuovo tentativo)"
+    },
+    {
+      "id": "NFR6.4",
+      "status": "OK",
+      "target": "reliability-design.md > Cache resistente ai guasti"
+    },
+    {
+      "id": "NFR6.7",
+      "status": "OK",
+      "target": "observability-design.md > Metriche di salute (CatalogHealth)"
+    },
+    {
+      "id": "NFR6.8",
+      "status": "OK",
+      "target": "observability-design.md > Soglia di attenzione"
+    },
+    {
+      "id": "NFR8.3",
+      "status": "OK",
+      "target": "observability-design.md > Registratore iniettato (solo enum e numeri), debugLogging; security-design.md §4 CatalogArgumentError senza valori"
+    },
+    {
+      "id": "NFR7.1",
+      "status": "OK",
+      "target": "logical-components.md > nucleo e piattaforma testabili con dipendenze iniettate; copertura nel job unit"
+    },
+    {
+      "id": "NFR7.2",
+      "status": "OK",
+      "target": "logical-components.md > componenti per regola, test con ID delle regole"
+    },
+    {
+      "id": "NFR7.3",
+      "status": "OK",
+      "target": "security-design.md §2 tool/check_off_config.sh nel job analyze, accanto a format e analyze"
+    },
+    {
+      "id": "NFR7.4",
+      "status": "OK",
+      "target": "performance-design.md > Benchmark in CI con dart run sul nucleo puro"
+    }
+  ]
+}

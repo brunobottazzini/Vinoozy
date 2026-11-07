@@ -1,5 +1,5 @@
 {
-  "description": "Every Firestore write shape of each released app version, in order. When a unit adds or changes a write, append a new version here and keep the old ones: the rules must accept the writes of the app still in production (cicd-pipeline.md §4). Placeholders: $uid, $serverTimestamp, $increment:<n>, $currentYear.",
+  "description": "Every Firestore write shape of each released app version, in order. When a unit adds or changes a write, append a new version here and keep the old ones: the rules must accept the writes of the app still in production (cicd-pipeline.md §4). Placeholders: $uid, $inviteeUid, $inviteeEmail, $serverTimestamp, $deleteField, $increment:<n>, $currentYear. Optional per write: \"as\": \"invitee\" (the invited person writes), \"op\": \"batch\" with \"writes\", \"op\": \"delete\", and \"requiresRules\": \"<feature>\" for writes that need rules not yet in production (skipped by direction 2 only; the feature must be in RULES_FEATURES of .github/workflows/promote.yml).",
   "versions": [
     {
       "app": "u1-skeleton",
@@ -68,6 +68,628 @@
             "updatedAt": "$serverTimestamp",
             "updatedBy": "$uid"
           }
+        }
+      ]
+    },
+    {
+      "app": "u7-sharing",
+      "writes": [
+        {
+          "label": "profile created on first sign-in (UserRepository.ensureProfile)",
+          "op": "set",
+          "path": "users/$uid",
+          "data": {
+            "displayName": "User A",
+            "email": "user-a@example.com",
+            "onboardingSeen": false,
+            "createdAt": "$serverTimestamp",
+            "schemaVersion": 1
+          }
+        },
+        {
+          "label": "profile refreshed on later sign-ins",
+          "op": "update",
+          "path": "users/$uid",
+          "data": { "displayName": "User A", "email": "user-a@example.com" }
+        },
+        {
+          "label": "personal cellar created (CellarRepository.ensurePersonalCellar)",
+          "op": "set",
+          "path": "cellars/$uid",
+          "data": {
+            "ownerId": "$uid",
+            "name": "La mia cantina",
+            "schemaVersion": 1,
+            "createdAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "wine created with vintage (WineRepository.create)",
+          "op": "set",
+          "path": "cellars/$uid/wines/compat-w1",
+          "data": {
+            "name": "Barolo",
+            "vintage": 2016,
+            "quantity": 2,
+            "updatedBy": "$uid",
+            "createdAt": "$serverTimestamp",
+            "updatedAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "wine created without vintage",
+          "op": "set",
+          "path": "cellars/$uid/wines/compat-w2",
+          "data": {
+            "name": "Barbera d'Asti Superiore DOCG",
+            "vintage": null,
+            "quantity": 1,
+            "updatedBy": "$uid",
+            "createdAt": "$serverTimestamp",
+            "updatedAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "quantity changed as an increment (WineRepository.incrementQuantity)",
+          "op": "update",
+          "path": "cellars/$uid/wines/compat-w1",
+          "data": {
+            "quantity": "$increment:-1",
+            "updatedAt": "$serverTimestamp",
+            "updatedBy": "$uid"
+          }
+        },
+        {
+          "label": "invitation with the counter (SharingRepository.invite)",
+          "requiresRules": "sharing",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "set",
+              "path": "cellars/$uid/members/$inviteeEmail",
+              "data": {
+                "inviteeEmail": "$inviteeEmail",
+                "permission": "read",
+                "status": "invited",
+                "invitedAt": "$serverTimestamp",
+                "ownerId": "$uid",
+                "ownerName": "User A",
+                "updatedAt": "$serverTimestamp"
+              }
+            },
+            {
+              "op": "update",
+              "path": "cellars/$uid",
+              "data": { "memberSlots": "$increment:1", "memberOpKey": "$inviteeEmail" }
+            }
+          ]
+        },
+        {
+          "label": "activation by the invited person (SharingRepository.activate)",
+          "requiresRules": "sharing",
+          "as": "invitee",
+          "op": "update",
+          "path": "cellars/$uid/members/$inviteeEmail",
+          "data": {
+            "status": "active",
+            "inviteeUserId": "$inviteeUid",
+            "inviteeName": "compat-invitee",
+            "updatedAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "permission changed to edit (SharingRepository.changePermission)",
+          "requiresRules": "sharing",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "update",
+              "path": "cellars/$uid/members/$inviteeEmail",
+              "data": { "permission": "edit", "updatedAt": "$serverTimestamp" }
+            }
+          ]
+        },
+        {
+          "label": "wine created by the invited person with edit",
+          "requiresRules": "sharing",
+          "as": "invitee",
+          "op": "set",
+          "path": "cellars/$uid/wines/compat-w3",
+          "data": {
+            "name": "Nebbiolo",
+            "vintage": 2019,
+            "quantity": 1,
+            "updatedBy": "$inviteeUid",
+            "createdAt": "$serverTimestamp",
+            "updatedAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "quantity changed by the invited person with edit",
+          "requiresRules": "sharing",
+          "as": "invitee",
+          "op": "update",
+          "path": "cellars/$uid/wines/compat-w1",
+          "data": {
+            "quantity": "$increment:-1",
+            "updatedAt": "$serverTimestamp",
+            "updatedBy": "$inviteeUid"
+          }
+        },
+        {
+          "label": "the invited person leaves (SharingRepository.leave)",
+          "requiresRules": "sharing",
+          "as": "invitee",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "update",
+              "path": "cellars/$uid/members/$inviteeEmail",
+              "data": {
+                "status": "revoked",
+                "closedBy": "invitee",
+                "updatedAt": "$serverTimestamp"
+              }
+            },
+            {
+              "op": "update",
+              "path": "cellars/$uid",
+              "data": { "memberSlots": "$increment:-1", "memberOpKey": "$inviteeEmail" }
+            }
+          ]
+        },
+        {
+          "label": "a closed access invited again (SharingRepository.invite)",
+          "requiresRules": "sharing",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "update",
+              "path": "cellars/$uid/members/$inviteeEmail",
+              "data": {
+                "status": "invited",
+                "permission": "read",
+                "invitedAt": "$serverTimestamp",
+                "closedBy": "$deleteField",
+                "updatedAt": "$serverTimestamp"
+              }
+            },
+            {
+              "op": "update",
+              "path": "cellars/$uid",
+              "data": { "memberSlots": "$increment:1", "memberOpKey": "$inviteeEmail" }
+            }
+          ]
+        },
+        {
+          "label": "revocation by the owner (SharingRepository.revoke)",
+          "requiresRules": "sharing",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "update",
+              "path": "cellars/$uid/members/$inviteeEmail",
+              "data": {
+                "status": "revoked",
+                "closedBy": "owner",
+                "updatedAt": "$serverTimestamp"
+              }
+            },
+            {
+              "op": "update",
+              "path": "cellars/$uid",
+              "data": { "memberSlots": "$increment:-1", "memberOpKey": "$inviteeEmail" }
+            }
+          ]
+        },
+        {
+          "label": "a closed access deleted for good (SharingRepository.deleteClosed)",
+          "requiresRules": "sharing",
+          "op": "batch",
+          "writes": [{ "op": "delete", "path": "cellars/$uid/members/$inviteeEmail" }]
+        },
+        {
+          "label": "wine deleted by the owner (opened by u7-sharing for u4-cellar)",
+          "requiresRules": "sharing",
+          "op": "delete",
+          "path": "cellars/$uid/wines/compat-w2"
+        }
+      ]
+    },
+    {
+      "app": "u4-cellar",
+      "writes": [
+        {
+          "label": "profile created on first sign-in (UserRepository.ensureProfile)",
+          "op": "set",
+          "path": "users/$uid",
+          "data": {
+            "displayName": "User A",
+            "email": "user-a@example.com",
+            "onboardingSeen": false,
+            "createdAt": "$serverTimestamp",
+            "schemaVersion": 1
+          }
+        },
+        {
+          "label": "personal cellar created (CellarRepository.ensurePersonalCellar)",
+          "op": "set",
+          "path": "cellars/$uid",
+          "data": {
+            "ownerId": "$uid",
+            "name": "La mia cantina",
+            "schemaVersion": 1,
+            "createdAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "a wine left by an earlier version, without matchKey (setup of the backfill)",
+          "op": "set",
+          "path": "cellars/$uid/wines/compat-w0",
+          "data": {
+            "name": "Barolo",
+            "vintage": 2016,
+            "quantity": 2,
+            "updatedBy": "$uid",
+            "createdAt": "$serverTimestamp",
+            "updatedAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "wine created with matchKey and estimate (WineRepository.addWine)",
+          "requiresRules": "cellar",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "set",
+              "path": "cellars/$uid/wines/compat-w1",
+              "data": {
+                "name": "Barbaresco",
+                "vintage": 2019,
+                "quantity": 1,
+                "updatedBy": "$uid",
+                "producer": "Cantina Esempio",
+                "wineType": "redStructured",
+                "denomination": "Barbaresco DOCG",
+                "matchKey": "barbaresco|cantina esempio|2019",
+                "baseWindow": {
+                  "startYear": 2023, "peakYear": 2027, "endYear": 2034,
+                  "confidence": "medium", "source": "internalRules", "basis": "denomination"
+                },
+                "window": {
+                  "startYear": 2023, "peakYear": 2027, "endYear": 2034,
+                  "confidence": "medium", "source": "internalRules", "basis": "denomination"
+                },
+                "pairings": { "items": [], "categoryKeys": ["braisedRedMeat", "game"], "source": "internalRules" },
+                "createdAt": "$serverTimestamp",
+                "updatedAt": "$serverTimestamp"
+              }
+            }
+          ]
+        },
+        {
+          "label": "matchKey backfill of an earlier wine (MatchKeyBackfill.run)",
+          "requiresRules": "cellar",
+          "op": "batch",
+          "writes": [
+            { "op": "update", "path": "cellars/$uid/wines/compat-w0", "data": { "matchKey": "barolo||2016" } }
+          ]
+        },
+        {
+          "label": "backfill flag of the cellar (MatchKeyBackfill.run)",
+          "requiresRules": "cellar",
+          "op": "update",
+          "path": "cellars/$uid",
+          "data": { "matchKeyBackfill": true }
+        },
+        {
+          "label": "bottles added to a duplicate (WineRepository.addBottles)",
+          "requiresRules": "cellar",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "update",
+              "path": "cellars/$uid/wines/compat-w1",
+              "data": { "quantity": "$increment:2", "updatedAt": "$serverTimestamp", "updatedBy": "$uid" }
+            }
+          ]
+        },
+        {
+          "label": "wine edited (WineRepository.updateWine)",
+          "requiresRules": "cellar",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "update",
+              "path": "cellars/$uid/wines/compat-w1",
+              "data": {
+                "name": "Barbaresco Riserva",
+                "producer": "Cantina Esempio",
+                "vintage": 2019,
+                "wineType": "redStructured",
+                "region": null,
+                "denomination": "Barbaresco DOCG",
+                "matchKey": "barbaresco riserva|cantina esempio|2019",
+                "baseWindow": {
+                  "startYear": 2024, "peakYear": 2029, "endYear": 2037,
+                  "confidence": "medium", "source": "internalRules", "basis": "denomination",
+                  "qualifier": "riserva"
+                },
+                "window": {
+                  "startYear": 2024, "peakYear": 2029, "endYear": 2037,
+                  "confidence": "medium", "source": "internalRules", "basis": "denomination",
+                  "qualifier": "riserva"
+                },
+                "windowAdjustment": null,
+                "pairings": { "items": [], "categoryKeys": ["game"], "source": "internalRules" },
+                "quantity": "$increment:-1",
+                "updatedAt": "$serverTimestamp",
+                "updatedBy": "$uid"
+              }
+            }
+          ]
+        },
+        {
+          "label": "drink recorded: quantity -1 and the record (DrinkingRecordRepository.drink)",
+          "requiresRules": "cellar",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "update",
+              "path": "cellars/$uid/wines/compat-w1",
+              "data": { "quantity": "$increment:-1", "updatedAt": "$serverTimestamp", "updatedBy": "$uid" }
+            },
+            {
+              "op": "set",
+              "path": "cellars/$uid/drinkingRecords/compat-r1",
+              "data": {
+                "wineId": "compat-w1",
+                "wineName": "Barbaresco Riserva",
+                "vintage": 2019,
+                "drankOn": "2026-11-06",
+                "recordedBy": "$uid",
+                "createdAt": "$serverTimestamp"
+              }
+            }
+          ]
+        },
+        {
+          "label": "rating, notes and condition of a drink (DrinkingRecordRepository.updateRecord)",
+          "requiresRules": "cellar",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "update",
+              "path": "cellars/$uid/drinkingRecords/compat-r1",
+              "data": {
+                "rating": 4,
+                "notes": "Ancora giovane",
+                "drankOn": "2026-11-06",
+                "condition": "tooYoung",
+                "updatedAt": "$serverTimestamp"
+              }
+            }
+          ]
+        },
+        {
+          "label": "feedback applied to the window (WineRepository.setEstimate)",
+          "requiresRules": "cellar",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "update",
+              "path": "cellars/$uid/wines/compat-w1",
+              "data": {
+                "baseWindow": {
+                  "startYear": 2024, "peakYear": 2029, "endYear": 2037,
+                  "confidence": "medium", "source": "internalRules", "basis": "denomination",
+                  "qualifier": "riserva"
+                },
+                "window": {
+                  "startYear": 2027, "peakYear": 2032, "endYear": 2040,
+                  "confidence": "low", "source": "internalRules", "basis": "denomination",
+                  "qualifier": "riserva"
+                },
+                "windowAdjustment": { "kind": "tooYoung", "year": 2026, "recordId": "compat-r1" },
+                "pairings": { "items": [], "categoryKeys": ["game"], "source": "internalRules" },
+                "updatedAt": "$serverTimestamp",
+                "updatedBy": "$uid"
+              }
+            }
+          ]
+        },
+        {
+          "label": "Undo: the drink deleted and the bottle back (DrinkingRecordRepository.undo)",
+          "requiresRules": "cellar",
+          "op": "batch",
+          "writes": [
+            { "op": "delete", "path": "cellars/$uid/drinkingRecords/compat-r1" },
+            {
+              "op": "update",
+              "path": "cellars/$uid/wines/compat-w1",
+              "data": { "quantity": "$increment:1", "updatedAt": "$serverTimestamp", "updatedBy": "$uid" }
+            }
+          ]
+        },
+        {
+          "label": "a second drink, for the deletion",
+          "requiresRules": "cellar",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "update",
+              "path": "cellars/$uid/wines/compat-w1",
+              "data": { "quantity": "$increment:-1", "updatedAt": "$serverTimestamp", "updatedBy": "$uid" }
+            },
+            {
+              "op": "set",
+              "path": "cellars/$uid/drinkingRecords/compat-r2",
+              "data": {
+                "wineId": "compat-w1",
+                "wineName": "Barbaresco Riserva",
+                "vintage": 2019,
+                "drankOn": "2026-11-06",
+                "recordedBy": "$uid",
+                "createdAt": "$serverTimestamp"
+              }
+            }
+          ]
+        },
+        {
+          "label": "a second entry of the same wine, saved offline (WineRepository.addWine)",
+          "requiresRules": "cellar",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "set",
+              "path": "cellars/$uid/wines/compat-w2",
+              "data": {
+                "name": "Barolo",
+                "vintage": 2016,
+                "quantity": 1,
+                "updatedBy": "$uid",
+                "matchKey": "barolo||2016",
+                "createdAt": "$serverTimestamp",
+                "updatedAt": "$serverTimestamp"
+              }
+            }
+          ]
+        },
+        {
+          "label": "possible duplicate merged into the older entry (WineRepository.mergeInto)",
+          "requiresRules": "cellar",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "update",
+              "path": "cellars/$uid/wines/compat-w0",
+              "data": { "quantity": "$increment:1", "updatedAt": "$serverTimestamp", "updatedBy": "$uid" }
+            },
+            { "op": "delete", "path": "cellars/$uid/wines/compat-w2" }
+          ]
+        },
+        {
+          "label": "wine deleted with its drinks (WineRepository.deleteWineWithRecords)",
+          "requiresRules": "cellar",
+          "op": "batch",
+          "writes": [
+            { "op": "delete", "path": "cellars/$uid/drinkingRecords/compat-r2" },
+            { "op": "delete", "path": "cellars/$uid/wines/compat-w1" }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "u8-account",
+      "writes": [
+        {
+          "label": "profile created on first sign-in (UserRepository.ensureProfile)",
+          "op": "set",
+          "path": "users/$uid",
+          "data": {
+            "displayName": "User A",
+            "email": "user-a@example.com",
+            "onboardingSeen": false,
+            "createdAt": "$serverTimestamp",
+            "schemaVersion": 1
+          }
+        },
+        {
+          "label": "personal cellar created (CellarRepository.ensurePersonalCellar)",
+          "op": "set",
+          "path": "cellars/$uid",
+          "data": {
+            "ownerId": "$uid",
+            "name": "La mia cantina",
+            "schemaVersion": 1,
+            "createdAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "a wine to delete",
+          "op": "set",
+          "path": "cellars/$uid/wines/compat-w1",
+          "data": {
+            "name": "Barolo",
+            "vintage": 2016,
+            "quantity": 1,
+            "updatedBy": "$uid",
+            "createdAt": "$serverTimestamp",
+            "updatedAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "an invitation to revoke (SharingRepository.invite)",
+          "requiresRules": "sharing",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "set",
+              "path": "cellars/$uid/members/$inviteeEmail",
+              "data": {
+                "inviteeEmail": "$inviteeEmail",
+                "permission": "read",
+                "status": "invited",
+                "invitedAt": "$serverTimestamp",
+                "ownerId": "$uid",
+                "ownerName": "User A",
+                "updatedAt": "$serverTimestamp"
+              }
+            },
+            {
+              "op": "update",
+              "path": "cellars/$uid",
+              "data": { "memberSlots": "$increment:1", "memberOpKey": "$inviteeEmail" }
+            }
+          ]
+        },
+        {
+          "label": "deletion started: deletionStartedAt (UserRepository.markDeletionStarted)",
+          "requiresRules": "account",
+          "op": "update",
+          "path": "users/$uid",
+          "data": { "deletionStartedAt": "$serverTimestamp" }
+        },
+        {
+          "label": "own invitation revoked (FirestoreDeletionBackend.revoke)",
+          "requiresRules": "sharing",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "update",
+              "path": "cellars/$uid/members/$inviteeEmail",
+              "data": { "status": "revoked", "closedBy": "owner", "updatedAt": "$serverTimestamp" }
+            },
+            {
+              "op": "update",
+              "path": "cellars/$uid",
+              "data": { "memberSlots": "$increment:-1", "memberOpKey": "$inviteeEmail" }
+            }
+          ]
+        },
+        {
+          "label": "own invitation deleted (FirestoreDeletionBackend.deleteInvitation)",
+          "requiresRules": "sharing",
+          "op": "delete",
+          "path": "cellars/$uid/members/$inviteeEmail"
+        },
+        {
+          "label": "wines deleted in a batch of 400 (FirestoreDeletionBackend.deletePage)",
+          "requiresRules": "sharing",
+          "op": "batch",
+          "writes": [{ "op": "delete", "path": "cellars/$uid/wines/compat-w1" }]
+        },
+        {
+          "label": "own cellar deleted (FirestoreDeletionBackend.deleteCellar)",
+          "requiresRules": "account",
+          "op": "delete",
+          "path": "cellars/$uid"
+        },
+        {
+          "label": "profile deleted (UserRepository.deleteProfile)",
+          "requiresRules": "account",
+          "op": "delete",
+          "path": "users/$uid"
         }
       ]
     }

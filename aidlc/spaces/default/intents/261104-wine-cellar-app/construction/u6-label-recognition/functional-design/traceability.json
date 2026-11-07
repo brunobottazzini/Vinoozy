@@ -1,0 +1,12 @@
+{
+  "stage": "functional-design",
+  "unit": "u6-label-recognition",
+  "upstream_ids": ["AC2.2.1", "AC2.2.2", "AC2.2.3", "AC2.2.4", "AC2.2.5"],
+  "coverage": [
+    { "id": "AC2.2.1", "status": "OK", "target": "FR2.2, FR2.4: functional-spec.md BR1.7, BR1.8, BR1.9, BR1.14; frontend-components.md LabelReadingScreen, LabelProposalSheet" },
+    { "id": "AC2.2.2", "status": "OK", "target": "FR2.3: functional-spec.md BR1.10, BR1.15; frontend-components.md AddWineScreen (U4) con valori iniziali" },
+    { "id": "AC2.2.3", "status": "OK", "target": "FR2.2: functional-spec.md BR1.11, BR1.12, BR1.13; frontend-components.md LabelUnreadableView" },
+    { "id": "AC2.2.4", "status": "OK", "target": "FR2.2: functional-spec.md BR1.2, BR1.5; frontend-components.md LabelCaptureFlow, PermissionDeniedView" },
+    { "id": "AC2.2.5", "status": "OK", "target": "FR2.2 (importazione, 2026-11-06): functional-spec.md BR1.1, BR1.3, BR1.4, BR1.6; frontend-components.md AddChoiceScreen, SharedImageHandler" }
+  ]
+}

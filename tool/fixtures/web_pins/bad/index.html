@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.example.com https://apis.google.com; object-src 'none'; base-uri 'none'">
+  <title>bad fixture</title>
+</head>
+<body>
+<button onclick="go()">go</button>
+<script>console.log('inline');</script>
+<script src="https://cdn.example.com/firebase.js"></script>
+<script type="module" src="./app.bundle.js"></script>
+</body>
+</html>

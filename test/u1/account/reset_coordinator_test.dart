@@ -60,6 +60,19 @@ void main() {
     },
   );
 
+  test(
+    'u8-account: openCellar false records no last user (deleted account)',
+    () async {
+      await ledger.setLastUid('user-a');
+      final outcome = await coordinator().reset('user-a', openCellar: false);
+
+      expect(outcome, ResetOutcome.completed);
+      final state = await ledger.read();
+      expect(state.owner, isNull);
+      expect(state.lastUid, isNull);
+    },
+  );
+
   test('plan B keeps resetPending and asks for a restart', () async {
     final outcome = await coordinator(inProcess: false).reset('user-b');
 

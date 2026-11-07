@@ -8,6 +8,10 @@
 //
 // Every test empties the emulators and the phone's local state first, so the
 // tests do not depend on their order.
+//
+// Since u5-dashboard the app opens on the Dashboard: the U1 checks reach the
+// cellar list through the "Cantina" tab (waitFor in e2e_helpers.dart opens
+// it while the Dashboard is on screen).
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -256,6 +260,73 @@ void main() {
     );
   });
 
+  // "Caso con rifiuto iniziale" (functional-spec.md, W1 step 7). With the
+  // repository rules the owner can always read cellars/{uid}, so the
+  // rejection is produced on the wines listener: the cellar exists but its
+  // ownerId is another account, and the real rules answer permission-denied.
+  // The read of the cellar itself is rejected only by other rules (e.g. not
+  // deployed); that case is covered by test/u1/ui/cellar_retry_test.dart.
+  testWidgets('10. a listener rejected by the rules shows the cellar error; '
+      'access restored, "Riprova" opens the cellar without a restart', (
+    tester,
+  ) async {
+    final cellarError = find.byKey(const Key('cellar-error'));
+    bool addEnabled() =>
+        tester
+            .widget<ButtonStyleButton>(
+              find.byKey(const Key('cellar-add-button')),
+            )
+            .onPressed !=
+        null;
+
+    await freshStart(tester);
+    await signIn(tester, userA, then: cellarEmpty);
+    final uid = currentUid;
+    await signOut(tester);
+
+    await setCloudCellarOwner(uid, 'someone-else');
+    await signIn(tester, userA, then: cellarError);
+    expect(addEnabled(), isFalse);
+    // Riverpod retries a failed provider by itself for about 38 s; past
+    // that, as on the phone, only "Riprova" can reopen the listeners.
+    final retriesOver = DateTime.now().add(const Duration(seconds: 45));
+    while (DateTime.now().isBefore(retriesOver)) {
+      await tester.pump(const Duration(milliseconds: 500));
+    }
+    expect(cellarError, findsOneWidget);
+    expect(addEnabled(), isFalse);
+
+    await setCloudCellarOwner(uid, uid);
+    await tester.tap(find.byKey(const Key('cellar-retry-button')));
+    await waitFor(tester, cellarEmpty);
+
+    expect(cellarError, findsNothing);
+    expect(addEnabled(), isTrue);
+  });
+
+  // u5-dashboard (security-design.md §5, NFR7.5): the first screen after
+  // sign-in is the Dashboard, and a wine added from the Cantina tab enters
+  // its counts.
+  testWidgets('11. after sign-in the Dashboard opens; an added wine enters '
+      'its counts', (tester) async {
+    final dashboardEmpty = find.byKey(const Key('dashboard-empty'));
+    await freshStart(tester);
+    await signIn(tester, userA, then: dashboardEmpty, viaCellarTab: false);
+
+    await addWine(tester, name: 'Barolo', vintage: '2016', quantity: 2);
+    await tester.tap(find.byKey(const Key('home-nav-dashboard')));
+    await waitFor(
+      tester,
+      find.byKey(const Key('dashboard-content')),
+      viaCellarTab: false,
+    );
+
+    final total = tester.widget<Text>(find.byKey(const Key('dashboard-total')));
+    expect(total.data, contains('2'));
+    // Not estimated yet (no window before U4): "2 ... to estimate".
+    expect(find.byKey(const Key('chart-status-to-estimate')), findsOneWidget);
+  });
+
   testWidgets('9. cold start shows the cellar list within 4 s (NFR2.1)', (
     tester,
   ) async {
@@ -268,7 +339,14 @@ void main() {
       await FirebaseFirestore.instance.terminate();
       final stopwatch = Stopwatch()..start();
       await launchApp(tester);
-      await waitFor(tester, find.byType(WineListTile));
+      // The app now opens on the Dashboard; the Cantina tab is built at the
+      // same time in the IndexedStack, so the measure of the list is the
+      // same as before u5-dashboard, without a tap in it.
+      await waitFor(
+        tester,
+        find.byType(WineListTile, skipOffstage: false),
+        viaCellarTab: false,
+      );
       // The first run warms up and is excluded.
       if (run > 0) samples.add(stopwatch.elapsedMilliseconds);
     }

@@ -1,5 +1,5 @@
 # CI on every push and every pull request to main (cicd-pipeline.md §1).
-# No job uses secrets, so fork pull requests run the same checks. All five
+# No job uses secrets, so fork pull requests run the same checks. All seven
 # check jobs are required status checks of the protected main branch.
 name: ci
 
@@ -34,6 +34,30 @@ jobs:
       - run: flutter pub get
       - run: dart format --output=none --set-exit-if-changed .
 
+  # The repository becomes public for the account deletion page (u8): every
+  # push scans the whole history for secrets with gitleaks (CI Pipeline Q3).
+  # Pinned release binary checked against the published SHA-256; no token,
+  # no licence key, no third-party action.
+  secrets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GITLEAKS_VERSION: 8.30.1
+      GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # the whole history
+      - name: Install gitleaks
+        run: |
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -sSfL -o "$RUNNER_TEMP/$archive" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${archive}"
+          echo "${GITLEAKS_SHA256}  $RUNNER_TEMP/$archive" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP" gitleaks
+      - name: Scan the history for secrets
+        run: '"$RUNNER_TEMP/gitleaks" git --redact --no-banner --exit-code 1 .'
+
   analyze:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -47,6 +71,44 @@ jobs:
       - run: flutter pub get
       - run: flutter gen-l10n
       - run: flutter analyze --fatal-infos
+      # Wine catalog (u3 NFR4.3, NFR5.1): no Open Food Facts contact in the
+      # repository or the workflows, no email in lib/, no Firestore in
+      # lib/catalog/, a pure-Dart lib/catalog/core/.
+      - run: tool/check_off_config.sh
+      # Dashboard (u5 NFR4.1): lib/dashboard/ reads only, no Firebase or
+      # write repositories, a pure-Dart domain/; then the check of the check,
+      # which must pass on an ok/ fixture and fail on a bad/ one.
+      - run: tool/check_dashboard_readonly.sh
+      - run: tool/check_dashboard_readonly_test.sh
+      # Cellar (u4 NFR7.2): every rule BR1.1-BR1.20 is in a test name, BR1.10
+      # never counting as BR1.1; then the check of the check (ok/ passes,
+      # missing_br1_1/ fails).
+      - run: tool/check_rule_ids.sh BR1. 20 test/cellar test/rules/u4.rules.test.mjs
+      - run: tool/check_rule_ids_test.sh
+      # Label photo (u6 NFR7.2): every rule BR1.1-BR1.15 is in a test name.
+      - run: tool/check_rule_ids.sh BR1. 15 test/label
+      # Label photo (u6 NFR4.1, NFR5.2): no Firestore or Storage import in
+      # lib/label/; then the check of the check (ok/ passes,
+      # firestore_import/ fails).
+      - run: tool/check_label_imports.sh
+      - run: tool/check_label_imports_test.sh
+      # Account (u8 NFR7.2): every rule BR1.1-BR1.13 is in a test name.
+      - run: tool/check_rule_ids.sh BR1. 13 test/account test/rules/u8.rules.test.mjs
+      # Account deletion page (u8 NFR4.7, infrastructure-specification.md
+      # "Seconda correzione"): app.bundle.js rebuilt with the pinned esbuild
+      # and firebase is identical, scripts only local, CSP with exactly the
+      # allowed origins, three languages; then the check of the check.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: tool/check_web_pins.sh
+      - run: tool/check_web_pins_test.sh
+      # The check pages.yml runs on firebase-config.js before publishing
+      # (review R-04): its test, which also proves the placeholders in the
+      # repository are refused.
+      - run: tool/check_web_config_test.sh
       # NFR4.7: no production configuration or signing material in the repo.
       - name: No production config or keystores committed
         run: |
@@ -69,19 +131,95 @@ jobs:
       # NFR7.1: every file of lib/ counts, untested files as 0%.
       - run: dart run tool/gen_coverage_helper.dart
       - run: flutter test --coverage
-      - run: tool/check_coverage.sh 80
+      # Project coverage (80%, no exclusions) counts the estimation package
+      # too: its lcov is appended to the app's (u2 cicd-pipeline.md §3).
+      - name: Estimation package coverage
+        working-directory: packages/estimation
+        run: |
+          dart pub get
+          dart test --coverage=coverage
+          dart run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib
+      - run: cat coverage/lcov.info packages/estimation/coverage/lcov.info > coverage/merged.lcov.info
+      - run: tool/check_coverage.sh 80 coverage/merged.lcov.info
+      # Wine catalog (u3 NFR7.1): lib/catalog/ alone at 80% too.
+      - run: tool/check_coverage.sh 80 coverage/lcov.info lib/catalog/
+      # Dashboard (u5 team.md, Copertura): lib/dashboard/ alone at 80% too.
+      - run: tool/check_coverage.sh 80 coverage/lcov.info lib/dashboard/
+      # Sharing (u7 NFR7.1): lib/sharing/ alone at 80% too.
+      - run: tool/check_coverage.sh 80 coverage/lcov.info lib/sharing/
+      # Cellar (u4 NFR7.1): lib/cellar/ alone at 80% too.
+      - run: tool/check_coverage.sh 80 coverage/lcov.info lib/cellar/
+      # Label photo (u6 NFR7.1): lib/label/ alone at 80% too.
+      - run: tool/check_coverage.sh 80 coverage/lcov.info lib/label/
+      # Account (u8 NFR7.1): lib/account/ alone at 80% too.
+      - run: tool/check_coverage.sh 80 coverage/lcov.info lib/account/
+      # Wine catalog speed gate (u3 NFR1.1, NFR1.2, NFR1.4, NFR1.5, NFR7.4):
+      # re-runs a measure once when over its threshold, exits 1 on a second
+      # breach.
+      - run: dart run benchmark/catalog_benchmark.dart
+      # Dashboard speed gate (u5 NFR2.2): compute on 500 wines <= 10 ms,
+      # median of 10 after 3 warm-up rounds, one re-run, then exit 1.
+      - run: dart run benchmark/dashboard_benchmark.dart
+      # Cellar speed gate (u4 NFR2.1, NFR2.4): filters on 500 wines <= 20 ms,
+      # effective window on 500 wines <= 5 ms, one re-run, then exit 1.
+      - run: dart run benchmark/cellar_benchmark.dart
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: coverage
           path: coverage/lcov.info
           retention-days: 14
-      # Step 13 build test: the release build must not contain the E2E hooks.
+      # Step 13 build test: the release build must not contain the E2E hooks
+      # nor the Dashboard PERF signal (u5); still two builds.
       - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
         with:
           distribution: temurin
           java-version: '17'
+      # Label photo (u6 NFR4.4, NFR4.5, NFR8.1): JVM tests of
+      # LabelImagePreparer and SharedImageReceiver with Robolectric; the
+      # JaCoCo task fails below 80% of their lines.
+      - name: Native label tests (Robolectric, JaCoCo 80%)
+        working-directory: android
+        run: ./gradlew :app:testDebugUnitTest :app:jacocoLabelReport
+      # Since u6 the build test also checks the merged release manifest
+      # (no camera or photo permission, share filter image/* only).
       - run: tool/check_release_build.sh
+      # App size (u6 NFR2.3) is not a merge gate: the owner decided on
+      # 2026-11-06 that a heavier app is acceptable. tool/check_app_size.sh
+      # stays available for a manual measure.
+
+  # Pure Dart estimation package (u2-estimation, cicd-pipeline.md §1):
+  # format, analysis, purity, tests, 90% coverage of lib/ and the speed gate.
+  estimation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: packages/estimation
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version-file: .flutter-version
+          channel: stable
+          cache: true
+      - run: dart pub get
+      - run: dart format --output=none --set-exit-if-changed .
+      - run: dart analyze --fatal-infos
+      - run: ../../tool/check_estimation_purity.sh
+      - run: dart test --coverage=coverage
+      - run: |
+          dart run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib
+          ../../tool/check_coverage.sh 90 coverage/lcov.info
+      # Speed gate (NFR2.1 a, NFR2.2, NFR2.3): the script re-runs a measure
+      # once when it is over its threshold and exits 1 on a second breach.
+      - run: dart run benchmark/estimation_benchmark.dart
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: estimation-coverage
+          path: packages/estimation/coverage/lcov.info
+          retention-days: 14
 
   rules:
     runs-on: ubuntu-latest
@@ -99,9 +237,25 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: >
-          npx firebase emulators:exec --only firestore --project demo-vinoozy
-          "npm --prefix test/rules test -- u1.rules.test.mjs compat/"
+      # package.json is the only list of the rules test files (u7-sharing
+      # cicd-pipeline.md §1): U1, U7 (6x9 matrix, transitions, counter,
+      # fields, identity), U4 (wine fields, backfill, drinks update and
+      # delete, cellar flag), U8 (users and cellars deletion,
+      # deletionStartedAt, the whole deletion) and the compatibility with the
+      # deployed versions.
+      - run: npm run test:rules
+      # u8 NFR7.6: the account deletion page against the Firestore and Auth
+      # emulators (rules of this commit loaded explicitly, Google sign-in
+      # simulated), c8 at 80% of the lines of account-deletion.js, and the
+      # bundle in headless Chromium (start, no CSP error).
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:web
+      # u7 NFR4.7 and u4 NFR4.8: the collection-group index of the
+      # invitations and the composite index of the History, then the check
+      # of the check (ok.json passes, missing.json and missing_history.json
+      # fail, each with its own message).
+      - run: tool/check_firestore_indexes.sh
+      - run: tool/check_firestore_indexes_test.sh
 
   e2e:
     runs-on: ubuntu-latest
@@ -158,6 +312,11 @@ jobs:
           api-level: 34
           arch: x86_64
           target: google_apis
+          # Build and Test 2026-11-07: with the default single core every
+          # step was 5-10x slower and the timed tests failed. The free Linux
+          # runners have 4 vCPU and 16 GB.
+          cores: 4
+          ram-size: 4096M
           disable-animations: true
           script: |
             touch e2e-started
@@ -172,6 +331,11 @@ jobs:
           api-level: 34
           arch: x86_64
           target: google_apis
+          # Build and Test 2026-11-07: with the default single core every
+          # step was 5-10x slower and the timed tests failed. The free Linux
+          # runners have 4 vCPU and 16 GB.
+          cores: 4
+          ram-size: 4096M
           disable-animations: true
           script: |
             flutter test integration_test --dart-define=FIREBASE_ENV=demo --dart-define=E2E=true

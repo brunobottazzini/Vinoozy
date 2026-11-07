@@ -1,0 +1,12 @@
+# Performance Requirements — u5-dashboard
+
+Fonti: `requirements.md` (NFR2), `functional-spec.md` e `rules.md` di U5 (BR1.1–BR1.9), `stories.md` (AC5.2.3), riepilogo confermato in `nfr-requirements-questions.md`.
+
+**Telefono di riferimento:** lo stesso delle altre unità, cioè un Android di fascia media con 4 GB di RAM e Android 10 o superiore. Sul telefono del proprietario (OnePlus 12, fascia alta) le soglie si dimezzano, come per U2 e U3.
+
+| ID | Requisito | Verifica |
+|----|-----------|----------|
+| NFR2.1 | Con 500 bottiglie (anche 500 vini diversi) e senza rete, il Cruscotto con lista e tre grafici è visibile entro 2 secondi dall'apertura dell'app con utente già collegato (AC5.2.3), avvio a freddo compreso. **Misura:** dal tocco sull'icona, cioè dall'avvio del processo, al primo frame in cui la chiave `dashboard-content` è presente con i conteggi caricati. Il segnale lo registra l'app con `Timeline` / `FlutterView` in profilo. | **Sul telefono**, una volta per versione con `flutter drive --profile` (`integration_test_perf/`), mediana di 5 avvii a freddo: sotto 2 s sul telefono di riferimento, sotto 1 s sul telefono del proprietario. Fa parte della checklist di rilascio. **In CI** non c'è una soglia di tempo sull'emulatore, che è troppo variabile: il test end-to-end verifica solo che il Cruscotto compaia con 500 vini. La parte di calcolo è coperta da NFR2.2. |
+| NFR2.2 | Il calcolo di `DashboardSummary` (stati, lista, tre grafici) su 500 vini richiede meno di 50 ms sul telefono di riferimento ed è un solo passaggio sui vini (BR1.9). | Benchmark della funzione pura in CI, con mediana di 10 giri dopo 3 di riscaldamento e soglia di 10 ms su `ubuntu-latest`. Misura sul telefono sotto 25 ms. |
+| NFR2.3 | Il ricalcolo avviene solo quando cambiano i vini, il giorno o la tipologia del terzo grafico. Il cambio del selettore non ricalcola gli stati. | Test con un contatore delle chiamate al calcolo. |
+| NFR2.4 | Lo scorrimento del Cruscotto resta fluido: in uno scorrimento completo, in profilo, il 99° percentile del tempo di costruzione e di disegno dei frame resta sotto il periodo di aggiornamento dello schermo del telefono (8,3 ms a 120 Hz sul telefono del proprietario, 16,7 ms a 60 Hz sul telefono di riferimento). La lista "da bere presto" ha al massimo 10 righe. | `integration_test_perf/` con `traceAction` e il riepilogo dei tempi dei frame (`FrameTimingSummarizer`), una volta per versione, con il risultato annotato nella checklist. |

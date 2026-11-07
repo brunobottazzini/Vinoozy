@@ -18,6 +18,7 @@ import 'package:vinoozy/sync/snapshot_meta.dart';
 import '../../helpers/fakes.dart';
 import '../../helpers/service_mocks.dart';
 import '../../helpers/ui_harness.dart';
+import '../../sharing/sharing_harness.dart' show noSharingOverrides;
 
 const userA = AppUser(
   uid: 'user-a',
@@ -40,7 +41,7 @@ Wine wine(String id, String name, {int? vintage, int quantity = 1}) =>
 class CellarFixture {
   CellarFixture() {
     when(() => cellars.watchCellar('user-a')).thenAnswer((_) => cellar.stream);
-    when(() => wines.watchWines('user-a'))
+    when(() => wines.watchCellarWines('user-a'))
         .thenAnswer((_) => winesStream.stream);
     when(() => watcher.trigger()).thenAnswer((_) async {});
     registerFallbackValue(
@@ -66,6 +67,7 @@ class CellarFixture {
     localLedgerProvider.overrideWithValue(ledger),
     idGeneratorProvider.overrideWithValue(SequenceIdGenerator()),
     clockProvider.overrideWithValue(FakeClock(DateTime(2026, 11, 5))),
+    ...noSharingOverrides(),
   ];
 
   Future<void> emit(
@@ -110,6 +112,16 @@ void main() {
     expect(addButton(tester).onPressed, isNull);
   });
 
+  testWidgets('while the cellar is prepared no Firestore listener is opened '
+      '(W1.6, security-design.md §6)', (tester) async {
+    await pump(tester, CellarSetup.preparing);
+    await tester.pump(const Duration(seconds: 1));
+
+    verifyNever(() => fixture.cellars.watchCellar(any()));
+    verifyNever(() => fixture.wines.watchCellarWines(any()));
+    expect(find.byKey(const Key('offline-banner')), findsNothing);
+  });
+
   testWidgets('a failed setup shows the error and "Riprova" (BR1.3)', (
     tester,
   ) async {
@@ -130,7 +142,9 @@ void main() {
     expect(addButton(tester).onPressed, isNotNull);
   });
 
-  testWidgets('wines show name, vintage, quantity and "Stima in arrivo"', (
+  // u4-cellar BR1.7: the row shows the status ("Da stimare" without an
+  // estimate) instead of the U1 placeholder "Stima in arrivo".
+  testWidgets('wines show name, vintage, quantity and their status', (
     tester,
   ) async {
     await pump(tester, CellarSetup.ready);
@@ -142,9 +156,14 @@ void main() {
       ],
     );
 
+    Finder inRow(String id, String text) => find.descendant(
+      of: find.byKey(ValueKey(id)),
+      matching: find.text(text),
+    );
     expect(find.text('Barolo'), findsOneWidget);
-    expect(find.text('2016 · Stima in arrivo'), findsOneWidget);
-    expect(find.text('Senza annata · Stima in arrivo'), findsOneWidget);
+    expect(inRow('w1', '2016'), findsOneWidget);
+    expect(inRow('w1', 'Da stimare'), findsOneWidget);
+    expect(inRow('w2', 'Senza annata'), findsOneWidget);
     expect(find.text('x2'), findsOneWidget);
     expect(find.text('x0'), findsOneWidget, reason: 'ADR-004');
     expect(find.byKey(const ValueKey('w1')), findsOneWidget);

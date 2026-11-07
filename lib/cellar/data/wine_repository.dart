@@ -7,9 +7,16 @@ import '../../app/error_reporter.dart';
 import '../../sync/ledger/local_ledger.dart';
 import '../../sync/snapshot_meta.dart';
 import '../../sync/sync_error_bus.dart';
+import '../domain/drinking_record.dart';
+import '../domain/match_key.dart';
+import '../domain/quantity.dart';
+import '../domain/quantity_delta.dart';
 import '../domain/wine.dart';
 import '../domain/wine_draft.dart';
+import '../domain/wine_estimate.dart';
+import 'cellar_errors.dart';
 import 'firestore_codec.dart';
+import 'server_or_cache.dart';
 
 /// Result of a save attempt as seen by the form.
 sealed class SaveOutcome {
@@ -57,6 +64,42 @@ WriteErrorKind classifyWriteError(Object error) {
   return WriteErrorKind.transient;
 }
 
+/// Result of [WineRepository.deleteWineWithRecords] (BR1.14).
+enum DeleteOutcome {
+  /// The wine and its drinks are deleted on the server.
+  deleted,
+
+  /// Deleted on the phone, offline: the drinks not downloaded yet are purged
+  /// when the network is back.
+  queued,
+
+  /// A part was refused twice: the wine stays.
+  failed,
+}
+
+/// What one u4-cellar wine write needs for its ledger ticket and errors.
+class _WriteContext {
+  const _WriteContext({
+    required this.cellarId,
+    required this.user,
+    required this.wineId,
+    required this.wineName,
+    required this.sensitive,
+    required this.reason,
+    this.entry,
+  });
+
+  final String cellarId;
+  final AppUser user;
+  final String wineId;
+  final String wineName;
+  final List<String> sensitive;
+  final String reason;
+
+  /// A journal entry for a creation (the rejected-wine notice of U1).
+  final JournalEntry? entry;
+}
+
 /// A snapshot of the wines of a cellar, sorted by name, with its metadata.
 class WinesSnapshot {
   const WinesSnapshot({required this.wines, required this.meta});
@@ -77,6 +120,8 @@ class WineRepository {
     required this._bus,
     required this._reporter,
     this._onWriteStarted,
+    this._readTimeout = const Duration(seconds: 1),
+    this._maxBatchWrites = 400,
   });
 
   final FirebaseFirestore _db;
@@ -84,6 +129,13 @@ class WineRepository {
   final SyncErrorBus _bus;
   final ErrorReporter _reporter;
   final void Function()? _onWriteStarted;
+
+  /// How long a duplicate or drinks query waits for the server before it
+  /// reads the cache (performance-design.md §1: 1 s).
+  final Duration _readTimeout;
+
+  /// Operations per batch of a deletion (NFR5.5: 400).
+  final int _maxBatchWrites;
 
   /// Creates [draft] in [cellarId] (BR2.4, BR3.1).
   ///
@@ -144,6 +196,8 @@ class WineRepository {
         (_) => _onCreateConfirmed(ticket, draft.id),
         onError: (Object error, StackTrace stack) => _onWriteError(
           ticket: ticket,
+          cellarId: cellarId,
+          uid: user.uid,
           wineId: draft.id,
           wineName: draft.name,
           error: error,
@@ -201,6 +255,8 @@ class WineRepository {
         (_) {},
         onError: (Object error, StackTrace stack) => _onWriteError(
           ticket: ticket,
+          cellarId: cellarId,
+          uid: user.uid,
           wineId: wineId,
           wineName: wineName,
           error: error,
@@ -214,23 +270,477 @@ class WineRepository {
     return const SaveAccepted();
   }
 
-  /// The single listener of the wines of [cellarId], with metadata changes
-  /// (NFR5.1, NFR2.4). Wines are sorted by name on the client.
-  Stream<WinesSnapshot> watchWines(String cellarId) => _db
+  /// The single listener of the wines still in [cellarId], with metadata
+  /// changes (NFR5.1, NFR2.4): `where quantity > 0` since u4-cellar (BR1.7),
+  /// so the finished wines are never read in daily use. A negative stored
+  /// value, shown as 0, is a finished wine too. Wines are sorted by name on
+  /// the client. It replaces `watchWines` of U1 for every consumer (Cellar,
+  /// Dashboard, sharing).
+  Stream<WinesSnapshot> watchCellarWines(String cellarId) => _db
       .collection(winesPath(cellarId))
+      .where(WineFields.quantity, isGreaterThan: 0)
       .snapshots(includeMetadataChanges: true)
       .map(
         (snapshot) => WinesSnapshot(
-          wines: [
-            for (final doc in snapshot.docs)
-              Wine.fromMap(doc.id, decodeDocument(doc.data())),
-          ]..sort(Wine.compareByName),
+          wines: _winesOf(snapshot.docs)..sort(Wine.compareByName),
           meta: SnapshotMeta(
             hasPendingWrites: snapshot.metadata.hasPendingWrites,
             isFromCache: snapshot.metadata.isFromCache,
           ),
         ),
       );
+
+  static List<Wine> _winesOf(
+    Iterable<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
+  ) => [
+    for (final doc in docs) Wine.fromMap(doc.id, decodeDocument(doc.data())),
+  ];
+
+  /// One wine, present or finished (BR1.7 archive, BR1.16): a single
+  /// document listener; `null` while it does not exist.
+  Stream<Wine?> watchWine(String cellarId, String wineId) => _db
+      .doc(winePath(cellarId, wineId))
+      .snapshots()
+      .map(
+        (doc) => doc.exists
+            ? Wine.fromMap(doc.id, decodeDocument(doc.data()))
+            : null,
+      );
+
+  /// The finished wines of [cellarId] ("Drunk", BR1.7), read once and only
+  /// when the archive is opened, sorted by name.
+  Future<List<Wine>> fetchArchived(String cellarId) async {
+    final snapshot = await _db
+        .collection(winesPath(cellarId))
+        .where(WineFields.quantity, isLessThanOrEqualTo: 0)
+        .get();
+    return _winesOf(snapshot.docs)..sort(Wine.compareByName);
+  }
+
+  /// The wines of [cellarId] with [matchKey], finished ones included (BR1.4),
+  /// oldest first: from the server within [_readTimeout], else from the
+  /// unlimited cache (NFR5.3: one query per save).
+  Future<List<Wine>> findByMatchKey(String cellarId, String matchKey) async {
+    final query = _db
+        .collection(winesPath(cellarId))
+        .where(WineFields.matchKey, isEqualTo: matchKey);
+    final read = await readServerOrCache(query, _readTimeout);
+    return _winesOf(read.snapshot.docs)..sort(Wine.compareByAge);
+  }
+
+  /// Creates [draft] with its u4-cellar details, `matchKey` and [estimate]
+  /// (BR1.1-BR1.5, BR1.18). Like [create]: awaits only the ledger, then
+  /// writes without waiting for the network.
+  Future<SaveOutcome> addWine({
+    required String cellarId,
+    required AppUser user,
+    required WineDraft draft,
+    WineEstimate estimate = WineEstimate.none,
+  }) {
+    final fields = <String, Object?>{
+      ...draft.toCreateFields(uid: user.uid),
+      WineFields.producer: ?draft.producer,
+      WineFields.wineType: ?draft.wineType,
+      WineFields.region: ?draft.region,
+      WineFields.denomination: ?draft.denomination,
+      WineFields.matchKey: matchKeyOf(
+        draft.name,
+        draft.producer,
+        draft.vintage,
+      ),
+      for (final entry in estimate.toFields().entries)
+        if (entry.value != null) entry.key: entry.value,
+      WineFields.createdAt: FieldValue.serverTimestamp(),
+      WineFields.updatedAt: FieldValue.serverTimestamp(),
+    };
+    return _commit(
+      _WriteContext(
+        cellarId: cellarId,
+        user: user,
+        wineId: draft.id,
+        wineName: draft.name,
+        sensitive: [draft.name, ?draft.producer, ?draft.denomination],
+        reason: CellarErrorReasons.saveFailed,
+        entry: JournalEntry(
+          wineId: draft.id,
+          cellarId: cellarId,
+          name: draft.name,
+          ownerUid: user.uid,
+        ),
+      ),
+      (batch) => batch.set(_db.doc(winePath(cellarId, draft.id)), fields),
+    );
+  }
+
+  /// Adds [n] bottles to [wine] (BR1.15): `increment(n − s)` when the stored
+  /// value s is negative, so the result is n. Used by "+", by the duplicate
+  /// dialog and by "Undo".
+  ///
+  /// Refused, with no write, when the shown quantity would go over 99
+  /// (BR1.3 cap, review R-05).
+  Future<SaveOutcome> addBottles({
+    required String cellarId,
+    required AppUser user,
+    required Wine wine,
+    required int n,
+  }) async {
+    if (!QuantityDelta.canIncrease(wine.storedQuantity, n)) {
+      return SaveFailure(
+        RangeError.range(
+          wine.quantity + n,
+          QuantityLimits.min,
+          QuantityLimits.max,
+          'quantity',
+        ),
+      );
+    }
+    return _updateWine(cellarId, user, wine, CellarErrorReasons.saveFailed, {
+      WineFields.quantity: FieldValue.increment(
+        QuantityDelta.forIncrease(wine.storedQuantity, n),
+      ),
+    });
+  }
+
+  /// Removes one bottle ("−", BR1.15). Refused while the shown value is 0.
+  Future<SaveOutcome> removeBottle({
+    required String cellarId,
+    required AppUser user,
+    required Wine wine,
+  }) async {
+    if (!QuantityDelta.canDecrease(wine.storedQuantity)) {
+      return SaveFailure(StateError('no bottle to remove'));
+    }
+    return _updateWine(cellarId, user, wine, CellarErrorReasons.saveFailed, {
+      WineFields.quantity: FieldValue.increment(-1),
+    });
+  }
+
+  /// Saves the edit form (BR1.13): the texts, `matchKey`, [estimate] and the
+  /// quantity as a change towards [targetQuantity], never below 0.
+  Future<SaveOutcome> updateWine({
+    required String cellarId,
+    required AppUser user,
+    required Wine before,
+    required WineDraft draft,
+    required int targetQuantity,
+    required WineEstimate estimate,
+  }) {
+    final delta = QuantityDelta.forEdit(before.storedQuantity, targetQuantity);
+    return _updateWine(
+      cellarId,
+      user,
+      before,
+      CellarErrorReasons.saveFailed,
+      {
+        WineFields.name: draft.name,
+        WineFields.producer: draft.producer,
+        WineFields.vintage: draft.vintage,
+        WineFields.wineType: draft.wineType,
+        WineFields.region: draft.region,
+        WineFields.denomination: draft.denomination,
+        WineFields.matchKey: matchKeyOf(
+          draft.name,
+          draft.producer,
+          draft.vintage,
+        ),
+        ...estimate.toFields(),
+        if (delta != 0) WineFields.quantity: FieldValue.increment(delta),
+      },
+      sensitive: [draft.name, ?draft.producer, ?draft.denomination],
+    );
+  }
+
+  /// Writes the estimate of [wine] (BR1.5, BR1.6, BR1.12). Callers write
+  /// only with `canEdit` (BR1.19).
+  Future<SaveOutcome> setEstimate({
+    required String cellarId,
+    required AppUser user,
+    required Wine wine,
+    required WineEstimate estimate,
+    String reason = CellarErrorReasons.estimateRefreshFailed,
+  }) => _updateWine(cellarId, user, wine, reason, estimate.toFields());
+
+  /// Merges a possible duplicate (BR1.20) in one batch: the bottles of
+  /// [newer] go to [older] (BR1.15), then [newer] is deleted. The caller
+  /// checks that the user is the owner and that [newer] has no drinks.
+  Future<SaveOutcome> mergeInto({
+    required String cellarId,
+    required AppUser user,
+    required Wine older,
+    required Wine newer,
+  }) async {
+    final moved = newer.quantity;
+    // The merged entry keeps the 99-bottle cap (BR1.3, review R-05).
+    if (moved > 0 && !QuantityDelta.canIncrease(older.storedQuantity, moved)) {
+      return SaveFailure(
+        RangeError.range(
+          older.quantity + moved,
+          QuantityLimits.min,
+          QuantityLimits.max,
+          'quantity',
+        ),
+      );
+    }
+    final increment = moved > 0
+        ? QuantityDelta.forIncrease(older.storedQuantity, moved)
+        : QuantityDelta.forEdit(older.storedQuantity, older.quantity);
+    return _commit(
+      _WriteContext(
+        cellarId: cellarId,
+        user: user,
+        wineId: older.id,
+        wineName: older.name,
+        sensitive: [...sensitiveOfWine(older), ...sensitiveOfWine(newer)],
+        reason: CellarErrorReasons.mergeFailed,
+      ),
+      (batch) => batch
+        ..update(_db.doc(winePath(cellarId, older.id)), {
+          WineFields.quantity: FieldValue.increment(increment),
+          WineFields.updatedAt: FieldValue.serverTimestamp(),
+          WineFields.updatedBy: user.uid,
+        })
+        ..delete(_db.doc(winePath(cellarId, newer.id))),
+    );
+  }
+
+  /// Deletes [wine] and all its drinks (BR1.14, NFR5.5): batches of at most
+  /// [_maxBatchWrites] operations, the wine last.
+  ///
+  /// - Online (the drinks were read from the server): each part is awaited.
+  ///   A refused part, e.g. a drink deleted meanwhile by an "Undo" on another
+  ///   phone, is retried once with the drinks read again from the server.
+  ///   A second failure stops, reports `cellar_delete_failed` and returns
+  ///   [DeleteOutcome.failed]: the wine stays, the caller queues a purge.
+  /// - Offline (cache read): every part is queued on the phone at once and
+  ///   [DeleteOutcome.queued] asks the caller to purge the drinks this phone
+  ///   has not downloaded yet when the network is back (NFR6.6).
+  Future<DeleteOutcome> deleteWineWithRecords({
+    required String cellarId,
+    required AppUser user,
+    required Wine wine,
+  }) async {
+    final sensitive = [user.uid, user.email, ...sensitiveOfWine(wine)];
+    final WriteTicket ticket;
+    try {
+      ticket = await _ledger.beginWrite(uid: user.uid, email: user.email);
+    } catch (error, stack) {
+      await _report(error, stack, CellarErrorReasons.deleteFailed, sensitive);
+      return DeleteOutcome.failed;
+    }
+    try {
+      final read = await _recordIdsOf(cellarId, wine.id, serverOnly: false);
+      if (!read.fromServer) {
+        for (final batch in _deleteBatches(cellarId, wine.id, read.ids)) {
+          unawaited(
+            batch.commit().then(
+              (_) {},
+              onError: (Object error, StackTrace stack) =>
+                  _onDeleteError(ticket, error, stack, sensitive),
+            ),
+          );
+        }
+        _onWriteStarted?.call();
+        return DeleteOutcome.queued;
+      }
+      if (await _commitAll(cellarId, wine.id, read.ids)) {
+        return DeleteOutcome.deleted;
+      }
+      final again = await _recordIdsOf(cellarId, wine.id, serverOnly: true);
+      if (await _commitAll(cellarId, wine.id, again.ids)) {
+        return DeleteOutcome.deleted;
+      }
+      await _report(
+        StateError('delete part refused twice'),
+        StackTrace.current,
+        CellarErrorReasons.deleteFailed,
+        sensitive,
+      );
+      return DeleteOutcome.failed;
+    } catch (error, stack) {
+      await _report(error, stack, CellarErrorReasons.deleteFailed, sensitive);
+      return DeleteOutcome.failed;
+    }
+  }
+
+  /// Completes a deletion left half done (RecordReconciler `purgeRecords`,
+  /// NFR6.6): reads the drinks of [wineId] from the server, deletes them in
+  /// parts and then the wine. Throws when a part fails, so the entry stays.
+  Future<void> purgeRecords(String cellarId, String wineId) async {
+    final read = await _recordIdsOf(cellarId, wineId, serverOnly: true);
+    for (final batch in _deleteBatches(cellarId, wineId, read.ids)) {
+      await batch.commit();
+    }
+  }
+
+  Future<bool> _commitAll(
+    String cellarId,
+    String wineId,
+    List<String> recordIds,
+  ) async {
+    try {
+      for (final batch in _deleteBatches(cellarId, wineId, recordIds)) {
+        await batch.commit();
+      }
+      _onWriteStarted?.call();
+      return true;
+    } on FirebaseException {
+      return false;
+    }
+  }
+
+  /// The delete batches: drinks in parts of [_maxBatchWrites], the wine in
+  /// the last part.
+  List<WriteBatch> _deleteBatches(
+    String cellarId,
+    String wineId,
+    List<String> recordIds,
+  ) {
+    final batches = <WriteBatch>[];
+    var current = _db.batch();
+    var count = 0;
+    for (final id in recordIds) {
+      if (count == _maxBatchWrites) {
+        batches.add(current);
+        current = _db.batch();
+        count = 0;
+      }
+      current.delete(_db.doc(drinkingRecordPath(cellarId, id)));
+      count++;
+    }
+    if (count == _maxBatchWrites) {
+      batches.add(current);
+      current = _db.batch();
+    }
+    current.delete(_db.doc(winePath(cellarId, wineId)));
+    batches.add(current);
+    return batches;
+  }
+
+  Future<({List<String> ids, bool fromServer})> _recordIdsOf(
+    String cellarId,
+    String wineId, {
+    required bool serverOnly,
+  }) async {
+    final query = _db
+        .collection(drinkingRecordsPath(cellarId))
+        .where(DrinkingRecordFields.wineId, isEqualTo: wineId);
+    if (serverOnly) {
+      final snapshot = await query.get(const GetOptions(source: Source.server));
+      return (ids: [for (final doc in snapshot.docs) doc.id], fromServer: true);
+    }
+    final read = await readServerOrCache(query, _readTimeout);
+    return (
+      ids: [for (final doc in read.snapshot.docs) doc.id],
+      fromServer: read.fromServer,
+    );
+  }
+
+  Future<void> _onDeleteError(
+    WriteTicket ticket,
+    Object error,
+    StackTrace stack,
+    List<String> sensitive,
+  ) async {
+    if (!await _isCurrentGenerationQuietly(ticket)) return;
+    await _report(error, stack, CellarErrorReasons.deleteFailed, sensitive);
+  }
+
+  Future<SaveOutcome> _updateWine(
+    String cellarId,
+    AppUser user,
+    Wine wine,
+    String reason,
+    Map<String, Object?> fields, {
+    List<String>? sensitive,
+  }) => _commit(
+    _WriteContext(
+      cellarId: cellarId,
+      user: user,
+      wineId: wine.id,
+      wineName: wine.name,
+      sensitive: [...sensitiveOfWine(wine), ...?sensitive],
+      reason: reason,
+    ),
+    (batch) => batch.update(_db.doc(winePath(cellarId, wine.id)), {
+      ...fields,
+      WineFields.updatedAt: FieldValue.serverTimestamp(),
+      WineFields.updatedBy: user.uid,
+    }),
+  );
+
+  /// The common path of the u4-cellar wine writes: the ledger first, then
+  /// one batch committed without waiting for the network; its outcome goes
+  /// to the ledger and to [SyncErrorBus] with a fixed reason.
+  Future<SaveOutcome> _commit(
+    _WriteContext context,
+    void Function(WriteBatch batch) build,
+  ) async {
+    final sensitive = [
+      context.user.uid,
+      context.user.email,
+      ...context.sensitive,
+    ];
+    final WriteTicket ticket;
+    try {
+      ticket = await _ledger.beginWrite(
+        uid: context.user.uid,
+        email: context.user.email,
+        entry: context.entry,
+      );
+    } catch (error, stack) {
+      await _report(error, stack, context.reason, sensitive);
+      return SaveFailure(error);
+    }
+    final Future<void> write;
+    try {
+      final batch = _db.batch();
+      build(batch);
+      write = batch.commit();
+    } catch (error, stack) {
+      await _report(error, stack, context.reason, sensitive);
+      final entry = context.entry;
+      if (entry != null) await _dismissQuietly(entry.wineId, sensitive);
+      return SaveFailure(error);
+    }
+    unawaited(
+      write.then(
+        (_) async {
+          if (context.entry != null) {
+            await _onCreateConfirmed(ticket, context.wineId);
+          }
+        },
+        onError: (Object error, StackTrace stack) => _onWriteError(
+          ticket: ticket,
+          cellarId: context.cellarId,
+          uid: context.user.uid,
+          wineId: context.wineId,
+          wineName: context.wineName,
+          error: error,
+          stack: stack,
+          sensitive: sensitive,
+          journaled: context.entry != null,
+          reason: context.reason,
+        ),
+      ),
+    );
+    _onWriteStarted?.call();
+    return const SaveAccepted();
+  }
+
+  Future<void> _report(
+    Object error,
+    StackTrace stack,
+    String reason,
+    List<String> sensitive,
+  ) => _reporter.report(error, stack, reason: reason, sensitive: sensitive);
+
+  Future<bool> _isCurrentGenerationQuietly(WriteTicket ticket) async {
+    try {
+      return await _isCurrentGeneration(ticket);
+    } catch (_) {
+      return true;
+    }
+  }
 
   Future<bool> _isCurrentGeneration(WriteTicket ticket) async =>
       await _ledger.generation() == ticket.generation;
@@ -244,14 +754,19 @@ class WineRepository {
     }
   }
 
+  /// [cellarId] is the cellar of the written path: a refusal on a shared
+  /// cellar also tells the app that the access was lost (u7-sharing BR1.14).
   Future<void> _onWriteError({
     required WriteTicket ticket,
+    required String cellarId,
+    required String uid,
     required String wineId,
     required String wineName,
     required Object error,
     required StackTrace stack,
     required List<String> sensitive,
     required bool journaled,
+    String? reason,
   }) async {
     try {
       // A reset happened after this write started: its outcome is obsolete.
@@ -259,11 +774,18 @@ class WineRepository {
       switch (classifyWriteError(error)) {
         case WriteErrorKind.rejected:
           if (journaled) await _ledger.markRejected(wineId);
-          _bus.publish(WriteRejected(wineId: wineId, wineName: wineName));
+          reportWriteRejected(
+            _bus,
+            cellarId: cellarId,
+            uid: uid,
+            error: error,
+            wineId: wineId,
+            wineName: wineName,
+          );
           await _reporter.report(
             error,
             stack,
-            reason: 'SyncRejected',
+            reason: reason ?? 'SyncRejected',
             sensitive: sensitive,
           );
         case WriteErrorKind.unauthenticated:
@@ -273,7 +795,7 @@ class WineRepository {
           await _reporter.report(
             error,
             stack,
-            reason: 'WriteFailed',
+            reason: reason ?? 'WriteFailed',
             sensitive: sensitive,
           );
       }

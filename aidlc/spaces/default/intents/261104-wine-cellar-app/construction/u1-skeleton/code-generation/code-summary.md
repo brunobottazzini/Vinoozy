@@ -191,3 +191,111 @@ Emulatore Android `Medium_Phone_API_36.1` avviato senza finestra per le prove e 
 - **Permesso di esecuzione di `tool/play_api.sh`** (Major): ripristinato con `chmod +x`. Al primo commit va aggiunto con il bit eseguibile (`git add --chmod=+x tool/play_api.sh` se serve).
 - **Variabili del job `crashlytics-symbols`** (Minor): `docs/firebase-setup.md` §4 ora indica `CRASHLYTICS_WIF_SERVICE_ACCOUNT` e `FIREBASE_ANDROID_APP_ID` come variabili del repository, perché la condizione `if` del job viene valutata prima che il job entri nel suo ambiente. `release.yml` non cambia.
 - **Nuova identità WIF per i simboli di Crashlytics** (Minor): resta un'estensione della specifica infrastrutturale, da accettare esplicitamente dal proprietario al gate. Finché le variabili non sono impostate, il job resta saltato.
+
+## Elementi del piano superati dal design approvato
+
+Code Generation è ripartito dopo che gli stage di design sono stati ripassati. Il codice dei 16 step esisteva già (commit `afb46ad` e `36a6b11` su `main`) ed è stato verificato step per step contro il piano: ogni casella spuntata corrisponde a codice e test presenti. Due voci dello Step 1 descrivono però l'approccio precedente, superato da modifiche di design approvate. Le caselle restano spuntate perché il requisito è soddisfatto **secondo il design che le sostituisce**:
+
+| Voce del piano (Step 1) | Testo del piano | Design che la sostituisce | Cosa c'è nel codice |
+|---|---|---|---|
+| Configurazione di produzione | `options_prod.dart` generato dalla CI; in sua assenza uno stub `options_prod_stub.dart` importato in modo condizionale; `.gitignore` con `lib/firebase/options_prod.dart` | `tech-stack-decisions.md` (riga "Configurazione di produzione") e `security-design.md` §7: valori passati con `--dart-define-from-file=config/firebase_prod.json`, file mai committato; l'import condizionale con una variabile propria non è supportato da Flutter (prova sul telefono, 2026-11-05) | `lib/firebase/options_prod.dart` (nel repository, senza valori) legge i `String.fromEnvironment`; con `FIREBASE_ENV=prod` e valori mancanti lancia `MissingProductionOptionsError` (schermata d'errore), senza ripiegare su demo. Nessuno stub. `.gitignore` esclude `config/firebase_prod.json` e `android/app/google-services.json`, entrambi non tracciati. `release.yml` scrive il file dai segreti e lo cancella alla fine. |
+| `minSdk` | `minSdk` 23 | `tech-stack-decisions.md` (riga "Versione minima di Android"): API 24, richiesta dalla Firebase BoM | `android/app/build.gradle.kts`: `minSdk = 24` |
+
+Anche la riga "Configurazione senza segreti" di "Decisioni di implementazione principali" più sopra (import condizionale con `vinoozy.prod_options`) e la riga `minSdk` 23 nella tabella delle deviazioni sono superate da quanto scritto qui.
+
+## Revisione 3 — Riprova
+
+Nuovo requisito di design, trovato nella prova sul telefono del 2026-11-05 (`functional-spec.md` W1 passo 7, violazione di BR1.3 in `rules.md`, `CellarScreen` in `frontend-components.md`, `security-design.md` §6 e §8, `CellarRepository` in `logical-components.md`): un errore dell'ascolto della cantina o dei vini (per esempio `permission-denied`) deve portare allo stato "Impossibile preparare la cantina" con "Riprova"; "Riprova" rifà prima `ensurePersonalCellar` e solo dopo riapre i due ascolti, senza riavviare l'app.
+
+### Il difetto
+
+- `CellarScreen` usava l'ascolto della cantina solo per abilitare "Aggiungi": un suo errore non mostrava nulla, e "Aggiungi" restava disattivato.
+- Un errore dell'ascolto dei vini mostrava l'errore, ma "Riprova" riapriva solo l'ascolto dei vini.
+- `AccountGate.retryCellar` agiva solo con `setupFailed: true` e non riapriva mai gli ascolti. Dopo un rifiuto delle regole lo stream di Firestore si chiude con l'errore; Riverpod 3 riprova da solo un provider fallito solo per circa 38 s (10 tentativi). Passato quel tempo l'ascolto restava in errore per sempre: è quanto visto sul telefono.
+
+### La correzione
+
+- `lib/account/account_gate.dart`: `retryCellar` funziona da qualsiasi stato `GateCellar` (configurazione fallita **o** errore d'ascolto). Passa a `GateEnsureCellar` (caricamento), riprova il profilo in background, attende `ensurePersonalCellar` e **solo dopo** chiama il nuovo callback obbligatorio `reopenCellarListeners`, poi passa a `GateCellar` e riavvia `SyncWatcher`. Se nel frattempo la sessione è stata revocata, non riapre nulla. Se la verifica fallisce di nuovo, resta l'errore (superato dalla Revisione 4: gli ascolti non vengono più ricreati quando la verifica fallisce).
+- `lib/app/providers.dart`: nuova `reopenCellarListeners(container)`, che invalida `cellarStreamProvider` e `winesStreamProvider`. L'invalidazione manuale azzera anche il contatore dei tentativi automatici di Riverpod.
+- `lib/app/bootstrap.dart`: collega il callback al `ProviderContainer` dell'app, come già fatto per il reset.
+- `lib/cellar/ui/cellar_screen.dart`: un errore dell'ascolto della cantina o dei vini mostra lo stesso stato d'errore della configurazione fallita, con "Aggiungi" disattivato; "Riprova" passa sempre da `onRetrySetup` (cioè `AccountGate.retryCellar`).
+
+### Test (test-after, strato per strato)
+
+- `test/u1/account/account_gate_test.dart`, gruppo `retryCellar`, 5 test nuovi: ordine "verifica, poi riapertura" con un `Completer` (stato `GateEnsureCellar` e nessuna riapertura finché la verifica non finisce); rifiuto iniziale `permission-denied` e poi accesso ripristinato; verifica che fallisce di nuovo; nessun effetto fuori dalla Cantina; sessione revocata durante la verifica.
+- `test/u1/ui/cellar_retry_test.dart` (nuovo), 5 test: tre su `CellarScreen` (ascolto della cantina rifiutato → errore e "Aggiungi" disattivato; errore dopo che la cantina era visibile; "Riprova" dopo un errore dei vini passa dalla verifica della cantina) e due con `AccountGate` reale e `AccountGateView`, con un finto Firestore che, come l'SDK, chiude lo stream dopo l'errore. Il primo è il "Caso con rifiuto iniziale": regole che negano, attesa oltre i tentativi automatici di Riverpod (l'errore resta, nessuna nuova iscrizione), accesso ripristinato, "Riprova" → nuove iscrizioni, cantina vuota visibile e "Aggiungi" attivo. Il secondo: cantina già aperta, ascolti rifiutati, "Riprova" → entrambi gli ascolti riaperti.
+- **Prova che i test falliscono con il comportamento vecchio:** con due mutazioni temporanee (riapertura degli ascolti tolta da `retryCellar`; errore dell'ascolto della cantina ignorato dalla schermata) falliscono 7 test nuovi su 10 (3 del gate, 4 della schermata); le mutazioni sono state poi tolte. Il test sull'errore dei vini non fallisce con la seconda mutazione perché quell'errore era già mostrato, ma fallisce sul codice vecchio, dove "Riprova" non chiamava `onRetrySetup`.
+
+### Scenario e2e "Caso con rifiuto iniziale"
+
+Aggiunto come scenario **10** in `integration_test/u1_skeleton_test.dart`, in una forma adattata. Con le regole del repository il proprietario può **sempre** leggere `cellars/{uid}` (scorciatoia `cellarId == uid()`), quindi sull'emulatore la lettura della cantina in sé non si può far rifiutare senza sostituire le regole. Sostituirle dal test non è praticabile: l'emulatore non permette di rileggere le regole caricate, e il test sul telefono non ha accesso a `firestore.rules` per ripristinarle; servirebbe cambiare il comando di verifica già proposto. Lo scenario quindi produce un **rifiuto reale delle regole sull'ascolto dei vini**: dopo il primo accesso, l'amministratore dell'emulatore cambia `ownerId` della cantina (helper nuovo `setCloudCellarOwner` in `integration_test/e2e_helpers.dart`, con il corpo JSON aggiunto a `emulatorRequest`), A rientra e vede "Impossibile preparare la cantina" con "Aggiungi" disattivato; si aspettano 45 s (oltre i tentativi automatici di Riverpod) e l'errore resta; si ripristina `ownerId`, si tocca "Riprova" → cantina vuota e "Aggiungi" attivo, senza riavvio. Il rifiuto della lettura della cantina stessa (regole non distribuite, il caso del telefono) è coperto dai test dei widget con `permission-denied` simulato. Nota: lo scenario e2e da solo passerebbe anche con il codice vecchio, perché lì "Riprova" riapriva già l'ascolto dei vini; la differenza è dimostrata dai test dei widget.
+
+### Risultati (eseguiti il 2026-11-05)
+
+| Comando | Esito |
+|---------|-------|
+| `flutter test test/u1/` (prima delle modifiche) | 321 passati, 0 falliti (riferimento) |
+| `dart format --output=none --set-exit-if-changed .` | 0 file da riformattare (94 file) |
+| `flutter analyze --fatal-infos` | nessun problema |
+| `flutter test test/u1/` | **331 test passati, 0 falliti** (+10) |
+| `dart run tool/gen_coverage_helper.dart`, `flutter test --coverage`, `tool/check_coverage.sh 80` | **82,75% (1449/1751 righe) su tutto `lib/`, senza esclusioni**; soglia 80% rispettata (non abbassata) |
+| `tool/verify_skeleton.sh`, prima esecuzione | regole 29 + 1 saltato, prova 1/1, e2e 10/10; **fallita** la prova `adb force-stop` al passo 4 per `INSTALL_FAILED_INSUFFICIENT_STORAGE` (memoria dell'emulatore piena all'88%, problema dell'ambiente, non del codice) |
+| `adb shell pm trim-caches 2G` | liberate solo le cache di sistema dell'emulatore (nessuna app disinstallata) |
+| `tool/verify_skeleton.sh`, seconda esecuzione | **riuscito**: regole 30 test (29 passati, 0 falliti, 1 saltato: nessun tag `v*`), prova di riavvio 1/1, **e2e 10/10** (scenario 10 nuovo compreso), force-stop riuscito ("Sangiovese" sopravvissuto al kill e arrivato al cloud) |
+
+Misure in debug sull'emulatore (requisiti ancora aperti, `Deferred`): NFR1.1 672–763 ms; NFR2.1 mediana 259–260 ms (riavvio nello stesso processo). Emulatore `Medium_Phone_API_36.1` avviato senza finestra con Node 22 e spento alla fine. `tool/check_release_build.sh` non è stato rieseguito in questa revisione (nessuna modifica a `lib/e2e/` o al tree shaking).
+
+### Osservazione per la revisione
+
+Al primo accesso l'ascolto dei vini si apre (tramite `syncStatusProvider` di `OfflineBanner`) mentre la cantina è ancora in preparazione, e il server lo rifiuta finché `cellars/{uid}` non esiste (nel log della prova force-stop compare un `PERMISSION_DENIED` sui vini). Riverpod lo riprova da solo dopo 200 ms e gli e2e passano, ma per un attimo può comparire l'errore. Il comportamento c'era già prima (l'errore dei vini era già mostrato); non l'ho cambiato perché il design chiede la riapertura solo su "Riprova". Una possibile correzione è chiamare `reopenCellarListeners` anche dopo la prima `ensurePersonalCellar` in `_openCellar`.
+
+**Correzione di questa descrizione (R-14 della quarta revisione):** non si trattava di un errore breve. Il notifier del banner tiene vivo il provider dei vini con l'errore in memoria: se la creazione della cantina dura più dei tentativi automatici di Riverpod (circa 38 s), oppure se la cantina diventa pronta prima del tentativo successivo, l'utente nuovo vede "Impossibile preparare la cantina" e l'errore resta finché non tocca "Riprova". Il difetto è chiuso nella Revisione 4.
+
+### File toccati nella Revisione 3
+
+- Codice: `lib/account/account_gate.dart`, `lib/app/providers.dart`, `lib/app/bootstrap.dart`, `lib/cellar/ui/cellar_screen.dart`.
+- Test: `test/u1/account/account_gate_test.dart`, nuovo `test/u1/ui/cellar_retry_test.dart`, `integration_test/u1_skeleton_test.dart` (scenario 10), `integration_test/e2e_helpers.dart`.
+- Registro: questo file, `traceability.json` (NFR4.7 ora punta a `lib/firebase/options_prod.dart`, misure di NFR1.1 aggiornate), `source-manifest.json` (tolto `test/widget_test.dart`, cancellato da tempo; nessuna cartella con file ignorati come `android/app/src/main/java` o `config/`). Il piano `code-generation-plan.md` non è cambiato: tutte le caselle erano già spuntate e la verifica le ha confermate.
+- Non toccati: `.mcp.json`, `config/firebase_prod.json` e `android/app/google-services.json` (ignorati, non tracciati). `.github/workflows/release.yml` e `docs/firebase-setup.md` erano già modificati nell'albero di lavoro prima di questo stage e non li ho toccati.
+
+## Revisione 4 — primo accesso
+
+Richiesta del proprietario dopo la quarta revisione ("Correggiamo il problema prima"): R-13 (Major), R-14 e R-15 (Minor).
+
+### Il difetto (R-13)
+
+Al primo accesso senza cantina in cache lo stato è `GateEnsureCellar`, ma `CellarScreen` è già costruita. `OfflineBanner` osservava `syncStatusProvider(uid)`, che apre `winesStreamProvider(uid)` prima che `ensurePersonalCellar` abbia creato `cellars/{uid}`. La regola di lettura dei vini fa `get()` sulla cantina che non esiste ancora e nega; lo stream va in errore e il provider lo tiene. Quando lo stato passa a `GateCellar` pronto, l'utente nuovo vede "Impossibile preparare la cantina" nel percorso principale.
+
+### La correzione
+
+Scelta: **nessun ascolto di Firestore mentre la cantina è in preparazione**, invece di riaprire gli ascolti dopo la prima `ensurePersonalCellar`. È la forma più pulita rispetto al design: W1 passo 6 prevede durante la preparazione solo l'indicatore di caricamento, e `security-design.md` §6 chiede di aprire gli ascolti solo dopo `ensurePersonalCellar`. In più non costa letture in più (con la riapertura si sarebbe aperto e poi chiuso un ascolto inutile).
+
+- `lib/cellar/ui/cellar_screen.dart`: con `setup == preparing` la schermata non osserva `cellarStreamProvider` e non monta `OfflineBanner` (che deriva da entrambi gli ascolti). Mostra solo il caricamento con "Aggiungi" disattivato. Negli stati `ready` e `failed` non cambia nulla. Poiché durante la preparazione nessuno osserva i provider `autoDispose`, anche gli ascolti rimasti da prima di un "Riprova" vengono chiusi, e lo stato successivo ne apre di nuovi.
+- `lib/account/account_gate.dart` (R-15): `retryCellar` chiama `reopenCellarListeners` **solo se `ensurePersonalCellar` riesce**. Se la verifica fallisce di nuovo resta l'errore con "Riprova" e non riapre nulla; il "Riprova" successivo ripete tutta la sequenza. In `_openCellar` non serve una riapertura: al primo accesso non esiste nessun ascolto da riaprire.
+
+### Test (test-after, strato per strato)
+
+- `test/u1/account/account_gate_test.dart`, gruppo `retryCellar`: il test "fallisce di nuovo" ora si aspetta **nessuna** riapertura (prima ne contava una); nuovo test con cantina non in cache che fallisce, poi fallisce di nuovo su "Riprova" (con un `Completer`, stato `GateEnsureCellar` durante la verifica, errore che resta, nessuna riapertura, due `CellarSetupFailed` registrati) e infine riesce (una sola riapertura); nuovo test sul primo accesso (stato `GateEnsureCellar` finché la creazione non finisce, `SyncWatcher` non avviato prima, nessuna riapertura).
+- `test/u1/ui/cellar_screen_test.dart`: nuovo test "durante la preparazione nessun ascolto di Firestore" (`watchCellar` e `watchWines` mai chiamati).
+- `test/u1/ui/cellar_retry_test.dart`: il finto Firestore (`RulesFake`) ora modella la cantina mancante come le regole vere (la cantina si legge anche se non esiste, i vini vengono negati finché non esiste). Due test nuovi con `AccountGate` reale e `AccountGateView`: **primo accesso** con creazione lenta (oltre i tentativi automatici di Riverpod) → nessun ascolto aperto durante la preparazione, poi a cantina pronta nessun errore, cantina vuota e "Aggiungi" attivo, un solo ascolto dei vini; **primo accesso con creazione che fallisce due volte** → errore anche dopo il primo "Riprova", al secondo "Riprova" riuscito cantina vuota e "Aggiungi" attivo.
+- **Prova che i test falliscono con il comportamento vecchio:** con il codice vecchio rimesso temporaneamente (ascolti aperti durante la preparazione, riapertura anche quando la verifica fallisce) falliscono 4 dei 6 test nuovi o cambiati: i due del gate su "fallisce di nuovo", il test della schermata sulla preparazione e il test del primo accesso, che fallisce proprio su "Impossibile preparare la cantina" visibile a cantina pronta (11 ascolti dei vini aperti e negati durante la preparazione). Passano anche col codice vecchio il test del gate sul primo accesso (il gate non è cambiato in quel ramo) e il test dei widget con creazione che fallisce due volte (l'errore era già visibile in quel caso); fissano il comportamento. Il codice vecchio è stato poi tolto di nuovo.
+
+### Risultati (eseguiti il 2026-11-05)
+
+| Comando | Esito |
+|---------|-------|
+| `dart format --output=none --set-exit-if-changed .` | 0 file da riformattare (94 file) |
+| `flutter analyze --fatal-infos` | nessun problema |
+| `flutter test test/u1/` | **336 test passati, 0 falliti** (+5 rispetto ai 331 della Revisione 3) |
+| `dart run tool/gen_coverage_helper.dart`, `flutter test --coverage`, `tool/check_coverage.sh 80` | **82,76% (1450/1752 righe) su tutto `lib/`, senza esclusioni**; soglia 80% rispettata (non abbassata) |
+| `adb shell pm trim-caches 4G` | spazio dell'emulatore da 84% a 82% (solo cache di sistema) |
+| `tool/verify_skeleton.sh` | **riuscito**: regole 30 test (29 passati, 0 falliti, 1 saltato: nessun tag `v*`), prova di riavvio 1/1, **e2e 10/10**, force-stop riuscito ("Sangiovese" sopravvissuto al kill e arrivato al cloud). Nel log dell'app non compare più il `PERMISSION_DENIED` sui vini visto nella Revisione 3. |
+
+Misure in debug sull'emulatore (requisiti ancora aperti, `Deferred`): NFR1.1 300 ms; NFR2.1 mediana 246 ms (riavvio nello stesso processo). Emulatore `Medium_Phone_API_36.1` avviato senza finestra con Node 22 e spento alla fine. Nessuno scenario e2e nuovo: sull'emulatore la corsa dipende dai tempi e il test e2e del primo accesso (scenario 1) passava già; la prova deterministica è il test dei widget con creazione lenta.
+
+### File toccati nella Revisione 4
+
+- Codice: `lib/cellar/ui/cellar_screen.dart`, `lib/account/account_gate.dart`.
+- Test: `test/u1/account/account_gate_test.dart`, `test/u1/ui/cellar_screen_test.dart`, `test/u1/ui/cellar_retry_test.dart`.
+- Registro: questo file (anche la correzione di "per un attimo" in "Osservazione per la revisione" della Revisione 3, R-14), `traceability.json` (misure di NFR1.1 e NFR2.1). `source-manifest.json` non cambia: nessun file nuovo. Piano: nessuna casella da spuntare, erano già tutte spuntate.
+- Non toccati: `.mcp.json`, `config/firebase_prod.json` e `android/app/google-services.json` (ignorati, non tracciati), `firestore.rules`.

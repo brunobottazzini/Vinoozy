@@ -293,9 +293,12 @@ describe('cellars/{cellarId}/wines/{wineId} (NFR4.4, NFR4.5)', () => {
     await assertFails(setDoc(doc(googleUser(env, A), `cellars/${A}/wines/w1`), validWine()));
   });
 
-  test('delete is denied in U1', async () => {
+  // U1 had no delete; u7-sharing opened it for the owner only (security
+  // design §1, second review of 2026-11-06), for u4-cellar's "Delete".
+  test('delete: the owner may delete, another user may not', async () => {
     await seedCellarOfA();
     await seedWineOfA();
-    await assertFails(deleteDoc(doc(googleUser(env, A), `cellars/${A}/wines/w1`)));
+    await assertFails(deleteDoc(doc(googleUser(env, B), `cellars/${A}/wines/w1`)));
+    await assertSucceeds(deleteDoc(doc(googleUser(env, A), `cellars/${A}/wines/w1`)));
   });
 });

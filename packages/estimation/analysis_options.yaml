@@ -1,0 +1,4 @@
+# Analyzer settings for the pure Dart estimation package (NFR7.4). The app's
+# root analysis_options.yaml excludes packages/**, so this package is analysed
+# only here, by the `estimation` CI job with `dart analyze --fatal-infos`.
+include: package:lints/recommended.yaml

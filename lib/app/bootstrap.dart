@@ -8,18 +8,37 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../account/account_gate.dart';
+import '../account/account_providers.dart';
 import '../account/auth_service.dart';
 import '../account/data/user_repository.dart';
+import '../account/deletion/account_deletion_runner.dart';
+import '../account/deletion/deletion_device.dart';
+import '../account/deletion/deletion_signal.dart';
+import '../account/deletion/firestore_deletion_backend.dart';
 import '../account/google_auth_service.dart';
+import '../account/onboarding_flag.dart';
+import '../account/network_status.dart';
 import '../account/reset_coordinator.dart';
+import '../cellar/cellar_providers.dart';
 import '../cellar/data/cellar_repository.dart';
+import '../cellar/data/drinking_record_repository.dart';
+import '../cellar/data/match_key_backfill.dart';
+import '../cellar/data/pending_writes_probe.dart';
+import '../cellar/data/record_reconciler.dart';
 import '../cellar/data/wine_repository.dart';
+import '../core/clock.dart';
+import '../core/id_generator.dart';
+import '../e2e/e2e_locale.dart';
 import '../e2e/emulator_google_auth_service.dart';
 import '../firebase/firebase_env.dart';
 import '../firebase/firestore_bootstrap.dart';
 import '../l10n/app_localizations.dart';
+import '../label/label_providers.dart';
+import '../sharing/data/sharing_repository.dart';
+import '../sharing/sharing_providers.dart';
 import '../sync/ledger/key_value_store.dart';
 import '../sync/ledger/local_ledger.dart';
 import '../sync/sync_error_bus.dart';
@@ -56,6 +75,7 @@ abstract final class AppBootstrap {
     _current?.dispose();
     _current = null;
     final env = config ?? FirebaseEnvConfig.fromEnvironment();
+    announceE2ELocale();
 
     if (Firebase.apps.isEmpty) {
       // Throws MissingProductionOptionsError for a prod build without the
@@ -103,6 +123,15 @@ abstract final class AppBootstrap {
     );
     _current = services;
     unawaited(services.gate.start());
+    // u6-label-recognition (NFR8.1): label copies left by a killed process
+    // and image_picker's lost data go after the first frame, before any
+    // reading (every reading waits for this cleanup).
+    scheduleLabelCleanup(services.container);
+    // u6 BR1.4: a share follows the account from start-up; the one that
+    // started the app is held as a reference until sign-in and cellar.
+    final shares = services.container.read(sharedImageProvider.notifier)
+      ..attachGate(services.gate.state);
+    unawaited(shares.checkColdStart());
     return services;
   }
 
@@ -168,24 +197,78 @@ abstract final class AppBootstrap {
             serverClientId: _serverClientId,
           );
     late final ProviderContainer container;
+    final users = UserRepository(db: db());
+    final resets = ResetCoordinator(
+      ledger: ledger,
+      bootstrap: firestore,
+      watcher: watcher,
+      reporter: reporter,
+      invalidateListeners: () => invalidateFirestoreListeners(container),
+    );
+    final network = ConnectivityNetworkStatus();
+    // u8-account (logical-components.md): the account deletion run by the
+    // app, without cloud functions (BR1.7).
+    final deletion = AccountDeletionRunner(
+      backend: FirestoreDeletionBackend(db: db(), users: users),
+      device: AppDeletionDevice(
+        watcher: watcher,
+        invalidateListeners: () => invalidateFirestoreListeners(container),
+        waitForPendingWrites: () => db().waitForPendingWrites(),
+        ledger: ledger,
+        resets: resets,
+        labels: () => container.read(tempLabelStoreProvider),
+      ),
+      signal: DeletionSignal(SharedPreferences.getInstance),
+      auth: auth,
+      reporter: reporter,
+    );
     final gate = AccountGate(
       auth: auth,
       ledger: ledger,
-      resetCoordinator: ResetCoordinator(
-        ledger: ledger,
-        bootstrap: firestore,
-        watcher: watcher,
-        reporter: reporter,
-        invalidateListeners: () => invalidateFirestoreListeners(container),
-      ),
+      resetCoordinator: resets,
       cellars: cellars,
-      users: UserRepository(db: db()),
+      users: users,
       watcher: watcher,
       bus: bus,
       reporter: reporter,
       defaultCellarName: () => lookupAppLocalizations(
-        resolveAppLocale(PlatformDispatcher.instance.locales),
+        appLocaleOverride ??
+            resolveAppLocale(PlatformDispatcher.instance.locales),
       ).defaultCellarName,
+      reopenCellarListeners: () => reopenCellarListeners(container),
+      clearSharingChoice: () =>
+          clearActiveCellarChoices(SharedPreferences.getInstance),
+      deletion: deletion,
+      network: network,
+      markOnboardingSeen: () =>
+          container.read(onboardingSeenProvider.notifier).markSeen(),
+    );
+    final sharing = SharingRepository(
+      db: db(),
+      network: network,
+      reporter: reporter,
+    );
+    // u4-cellar: the drinks keep the sync banner "pending" until the server
+    // confirms them (security-design.md §4, NFR6.6).
+    final probe = PendingWritesProbe(
+      waitForPendingWrites: () => db().waitForPendingWrites(),
+      onPendingChanged: (pending) =>
+          container.read(drinkingRecordsPendingProvider.notifier).set(pending),
+      reporter: reporter,
+    );
+    final records = DrinkingRecordRepository(
+      db: db(),
+      ledger: ledger,
+      bus: bus,
+      reporter: reporter,
+      probe: probe,
+      ids: RandomIdGenerator(),
+      onWriteStarted: watcher.trigger,
+    );
+    final reconciler = RecordReconciler(
+      preferences: SharedPreferences.getInstance,
+      clock: const SystemClock(),
+      reporter: reporter,
     );
     container = ProviderContainer(
       overrides: [
@@ -197,8 +280,19 @@ abstract final class AppBootstrap {
         syncErrorBusProvider.overrideWithValue(bus),
         syncWatcherProvider.overrideWithValue(watcher),
         accountGateProvider.overrideWithValue(gate),
+        sharingRepositoryProvider.overrideWithValue(sharing),
+        drinkingRecordRepositoryProvider.overrideWithValue(records),
+        matchKeyBackfillProvider.overrideWithValue(
+          MatchKeyBackfill(db: db(), reporter: reporter),
+        ),
+        recordReconcilerProvider.overrideWithValue(reconciler),
+        onboardingFlagProvider.overrideWithValue(
+          OnboardingFlag(SharedPreferences.getInstance),
+        ),
       ],
     );
+    // Drinks queued by an earlier session count too (NFR6.6).
+    unawaited(probe.checkAtStartup());
     return AppServices(container: container, gate: gate);
   }
 

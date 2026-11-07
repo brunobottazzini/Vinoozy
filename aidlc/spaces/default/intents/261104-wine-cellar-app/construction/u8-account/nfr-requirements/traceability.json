@@ -1,0 +1,56 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u8-account",
+  "upstream_ids": [
+    "NFR1",
+    "NFR2",
+    "NFR3",
+    "NFR4",
+    "NFR5",
+    "NFR6",
+    "NFR7",
+    "NFR8"
+  ],
+  "coverage": [
+    {
+      "id": "NFR1",
+      "status": "OK",
+      "target": "performance-requirements.md NFR1.1-NFR1.3 (aperture entro 300 ms, cancellazione sotto 60 s, attesa delle modifiche 30 s)"
+    },
+    {
+      "id": "NFR2",
+      "status": "N/A",
+      "target": "Prestazioni del Cruscotto e della Cantina: delivered by u5-dashboard e u4-cellar; U8 non cambia elenchi né grafici"
+    },
+    {
+      "id": "NFR3",
+      "status": "OK",
+      "target": "security-requirements.md > Accessibilità NFR3.1-NFR3.2"
+    },
+    {
+      "id": "NFR4",
+      "status": "OK",
+      "target": "security-requirements.md NFR4.1-NFR4.6 (regole di users e cellars, sequenza completa, compatibilità, riautenticazione)"
+    },
+    {
+      "id": "NFR5",
+      "status": "OK",
+      "target": "performance-requirements.md NFR5.1-NFR5.3 (scritture e letture entro la quota, nessun servizio a pagamento)"
+    },
+    {
+      "id": "NFR6",
+      "status": "OK",
+      "target": "security-requirements.md > Affidabilità NFR6.1-NFR6.4"
+    },
+    {
+      "id": "NFR7",
+      "status": "OK",
+      "target": "tech-stack-decisions.md NFR7.1-NFR7.5"
+    },
+    {
+      "id": "NFR8",
+      "status": "OK",
+      "target": "security-requirements.md > Privacy NFR8.1-NFR8.5 (cancellazione, report, telefono pulito, scheda Sicurezza dei dati, pagina web, NFR8.6 verifica dell'identità)"
+    }
+  ]
+}

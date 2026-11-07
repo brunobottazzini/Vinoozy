@@ -1,0 +1,15 @@
+{
+  "stage": "functional-design",
+  "unit": "u7-sharing",
+  "upstream_ids": ["AC8.1.1", "AC8.1.2", "AC8.1.3", "AC8.2.1", "AC8.3.1", "AC8.3.2", "AC8.4.1", "AC8.4.2"],
+  "coverage": [
+    { "id": "AC8.1.1", "status": "OK", "target": "FR8.1, FR8.2: rules.md BR1.2, BR1.3 (avviso con la condivisione di Android), BR1.11 (rete obbligatoria), BR1.12; functional-spec.md > Flussi 1; frontend-components.md InviteForm, MemberTile" },
+    { "id": "AC8.1.2", "status": "OK", "target": "FR8.1: rules.md BR1.2 (limitReached, memberSlots); functional-spec.md > Errori e casi limite; frontend-components.md InviteForm" },
+    { "id": "AC8.1.3", "status": "OK", "target": "FR8.1: rules.md BR1.2 (invalidEmail); functional-spec.md > Errori e casi limite" },
+    { "id": "AC8.2.1", "status": "OK", "target": "FR8.3: rules.md BR1.8 (revoca), BR1.10 (uscita, stesso effetto sull'accesso), BR1.12 (sparisce dall'elenco principale), BR1.13 (transizioni), BR1.14 (ricezione della revoca); functional-spec.md > Meccanismi senza funzioni nel cloud; frontend-components.md RevokeDialog, LeaveCellarDialog, SharedCellarNotice" },
+    { "id": "AC8.3.1", "status": "OK", "target": "FR8.4: rules.md BR1.4 (accesso della persona invitata), BR1.5 (scelta della cantina), BR1.6; frontend-components.md CellarSwitcher, Permessi nelle schermate esistenti" },
+    { "id": "AC8.3.2", "status": "OK", "target": "FR8.4, NFR4: rules.md BR1.7 (regole cloud)" },
+    { "id": "AC8.4.1", "status": "OK", "target": "FR8.2: rules.md BR1.6, BR1.7 (edit scrive wines e drinkingRecords), BR1.9 (cambio di permesso); functional-spec.md > Flussi 3" },
+    { "id": "AC8.4.2", "status": "OK", "target": "FR8.2: rules.md BR1.1, BR1.6; frontend-components.md SharingScreen (vista della persona invitata)" }
+  ]
+}

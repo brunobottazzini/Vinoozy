@@ -1,0 +1,48 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u6-label-recognition",
+  "upstream_ids": [
+    "NFR1",
+    "NFR2",
+    "NFR3",
+    "NFR4",
+    "NFR5",
+    "NFR6",
+    "NFR7",
+    "NFR8"
+  ],
+  "coverage": [
+    {
+      "id": "NFR1",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR2",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR3",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR4",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR5",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR6",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR7",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR8",
+      "status": "GAP"
+    }
+  ]
+}

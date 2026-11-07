@@ -149,7 +149,7 @@ Se `clearPersistence()` fallisce, l'app resta Bloccata con "Riprova".
 
 - **`ensurePersonalCellar(uid)`:**
   - **Operazione:** `runTransaction` che legge `cellars/{uid}` e, se il documento non esiste, lo crea con `serverTimestamp`. Ha al massimo 3 tentativi con attesa crescente.
-  - **In caso di errore:** `CellarScreen` mostra "Impossibile preparare la cantina" con "Riprova" e il pulsante Aggiungi disattivato.
+  - **In caso di errore** (anche un errore degli ascolti di cantina o vini): `CellarScreen` mostra "Impossibile preparare la cantina" con "Riprova" e il pulsante Aggiungi disattivato. "Riprova" rifà prima `ensurePersonalCellar` e solo dopo invalida i provider degli ascolti di cantina e vini, che si riaprono; non serve riavviare l'app.
   - **Senza rete all'avvio:** si usa la cantina della cache. Se la cache non la contiene, compare lo stesso errore.
 - **`ensureProfile()`:** con una transazione, crea il profilo se manca, altrimenti lo aggiorna con `update({displayName, email})`.
 
@@ -159,11 +159,11 @@ Se `clearPersistence()` fallisce, l'app resta Bloccata con "Riprova".
 |------|--------|-----------|
 | Ordine di avvio | `Firebase.initializeApp()`, poi `FirebaseAppCheck.activate(...)`. Solo dopo, in parallelo, configurazione di Crashlytics e lettura del registro. Nessuna chiamata ad Auth o Firestore prima di App Check (R-08 della revisione 1). | NFR4.6 |
 | App Check | `playIntegrity` nelle build release, `debug` nelle build debug su un telefono reale; non si attiva con l'emulatore. Diventa obbligatorio con il 99% di richieste verificate per 7 giorni. | NFR4.6 |
-| Configurazione | `lib/firebase/options_demo.dart` (`demo-vinoozy`) nel repository; `options_prod.dart` e `google-services.json` generati dal job di build a partire dai segreti; scelta con `--dart-define=FIREBASE_ENV=prod\|demo`. | NFR4.7 |
+| Configurazione | `lib/firebase/options_demo.dart` (`demo-vinoozy`) nel repository; `config/firebase_prod.json` (valori passati con `--dart-define-from-file`, mai committato) e `google-services.json` scritti dal job di build a partire dai segreti; scelta con `--dart-define=FIREBASE_ENV=prod\|demo`. L'import condizionale con una variabile propria è stato scartato: Flutter non lo supporta (prova sul telefono, 2026-11-05). Con `FIREBASE_ENV=prod` e valori mancanti l'avvio fallisce subito (`MissingProductionOptionsError`, schermata d'errore), senza mai ripiegare sulla configurazione demo. | NFR4.7 |
 | Manifest | `usesCleartextTraffic=false`; `10.0.2.2` consentito solo nella variante debug; `allowBackup=false`. | NFR4.8, NFR8.4 |
 | Crashlytics | Attivo solo in release; nessun `setUserIdentifier`; `ErrorReporter.sanitize()` toglie uid, email, percorsi `cellars/...` e nomi di vini prima di `recordError`. | NFR8.2 |
 | Data Safety | Checklist di rilascio con la tabella copiata da NFR8.1–NFR8.3. | NFR8.3 |
-| Budget | Avviso di fatturazione a 1 € sul progetto Blaze; rischio di spesa accettato. | NFR5.3, NFR5.4 |
+| Budget | Avviso di fatturazione a 1 € sul progetto Blaze, attivo prima della prima pubblicazione (fino ad allora il progetto è su Spark, senza spesa possibile); rischio di spesa accettato. | NFR5.3, NFR5.4 |
 
 ## 8. Errori ai confini
 
@@ -176,5 +176,6 @@ Se `clearPersistence()` fallisce, l'app resta Bloccata con "Riprova".
 | Verifica sul server | `unavailable` o timeout | Riprova al prossimo innesco (§4) |
 | `shared_preferences` | Eccezione in `beginWrite` | La scrittura su Firestore non parte; "Impossibile salvare, riprova" (NFR6.4) |
 | `clearPersistence()` | Errore | Stato Bloccato con "Riprova" |
+| Ascolto della cantina o dei vini | `permission-denied` o altro errore dello stream | Stato "Impossibile preparare la cantina" con "Riprova" (recuperabile; riapre gli ascolti) |
 
 Nessun errore viene ignorato: ogni ramo mostra un messaggio o lo registra con `ErrorReporter`.

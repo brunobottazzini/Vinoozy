@@ -21,7 +21,7 @@
     {
       "id": "AC1.1.1",
       "status": "OK",
-      "target": "BR1.1, BR1.3, BR1.4; la parte 'vedo il Cruscotto' delivered by u5-dashboard (in U1 si apre la Cantina)"
+      "target": "BR1.1, BR1.3 (con Riprova che riapre gli ascolti di cantina e vini, functional-spec.md W1 passo 7), BR1.4; la parte 'vedo il Cruscotto' delivered by u5-dashboard (in U1 si apre la Cantina)"
     },
     {
       "id": "AC1.1.2",

@@ -12,7 +12,7 @@ Fonti: `security-design.md`, `performance-design.md`, `tech-stack-decisions.md`,
 | `SyncWatcher` | `lib/sync/` | Verifica in background (security-design.md §4): una sola esecuzione alla volta, al massimo 3 ripetizioni immediate | Firestore, `LocalLedger` | Sincronizzazione: un errore di rete viene ritentato al prossimo innesco (avvio, scrittura, rete tornata) |
 | `SyncErrorBus` | `lib/sync/` | Flusso unico degli errori di scrittura e delle voci rifiutate | — | Nessuna |
 | `SyncStatus` | `lib/sync/` | Calcola sincronizzato, in corso e offline dai metadati | provider degli snapshot | Nessuna |
-| `CellarRepository` | `lib/cellar/data/` | `ensurePersonalCellar`, ascolto della cantina | Firestore | Cantina: errore con "Riprova" |
+| `CellarRepository` | `lib/cellar/data/` | `ensurePersonalCellar`, ascolto della cantina | Firestore | Cantina: errore con "Riprova", che riapre anche gli ascolti di cantina e vini |
 | `WineRepository` | `lib/cellar/data/` | `create`, `incrementQuantity` (solo dati in U1), ascolto dei vini | Firestore, `LocalLedger`, `SyncErrorBus` | Vini |
 | `UserRepository` | `lib/account/data/` | `ensureProfile` | Firestore | Profilo: un errore non blocca la Cantina, si ritenta |
 | `ErrorReporter` | `lib/app/` | Sanitizza i messaggi e li invia a Crashlytics | Crashlytics | Nessuna |

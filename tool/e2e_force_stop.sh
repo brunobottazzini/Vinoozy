@@ -12,8 +12,9 @@
 #   4. The real app (lib/main.dart, E2E build) is installed over it with
 #      `adb install -r`, which keeps the app data, and started with
 #      `adb shell am start`.
-#   5. The wine is on the screen again (uiautomator dump) and reaches the
-#      Firestore emulator.
+#   5. The wine is on the screen again (uiautomator dump, after a tap on the
+#      "Cantina" tab: the app opens on the Dashboard since u5-dashboard) and
+#      reaches the Firestore emulator.
 #
 # Prerequisites: the Firebase emulators (Auth + Firestore, demo-vinoozy)
 # running on this machine, one Android emulator running (`adb devices`).
@@ -63,6 +64,27 @@ screen_shows_wine() {
   adb shell cat "$ui_dump" 2>/dev/null | grep -q "$wine"
 }
 
+# Since u5-dashboard the app opens on the Dashboard: tap the "Cantina" tab
+# (Cellar / Adega in the other languages) of the navigation bar, found in a
+# uiautomator dump by its label, at the centre of its bounds.
+open_cellar_tab() {
+  local centre
+  adb shell uiautomator dump "$ui_dump" >/dev/null 2>&1 || return 1
+  centre="$(adb shell cat "$ui_dump" 2>/dev/null | python3 -c 'import html,re,sys
+xml = sys.stdin.read()
+for node in re.findall(r"<node [^>]*>", xml):
+    label = html.unescape(" ".join(re.findall(r"(?:text|content-desc)=\"([^\"]*)\"", node)))
+    if re.search(r"(^|\s)(Cantina|Cellar|Adega)(\s|$)", label):
+        b = re.search(r"bounds=\"\[(\d+),(\d+)\]\[(\d+),(\d+)\]\"", node)
+        if b:
+            x1, y1, x2, y2 = map(int, b.groups())
+            print((x1 + x2) // 2, (y1 + y2) // 2)
+            break')"
+  [[ -n "$centre" ]] || return 1
+  # shellcheck disable=SC2086 # "x y" are two arguments on purpose.
+  adb shell input tap $centre
+}
+
 echo '== force-stop 1/5: queue a wine offline (flutter drive) =='
 flutter drive \
   --driver=test_driver/integration_test.dart \
@@ -89,7 +111,8 @@ echo '== force-stop 5/5: the wine is back on screen and reaches the cloud =='
 on_screen=false
 in_cloud=false
 for _ in $(seq 1 45); do
-  [[ $on_screen == true ]] || { screen_shows_wine && on_screen=true; } || true
+  [[ $on_screen == true ]] || { screen_shows_wine && on_screen=true; } ||
+    open_cellar_tab || true
   [[ $in_cloud == true ]] || { cloud_has_wine && in_cloud=true; } || true
   [[ $on_screen == true && $in_cloud == true ]] && break
   sleep 2

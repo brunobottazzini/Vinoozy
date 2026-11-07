@@ -1,8 +1,17 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- Firebase SDKs talk to Google APIs over TLS only (NFR4.8). -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- connectivity_plus: first sign-in needs to know whether a network exists (NFR2.5). -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!-- Label photo (u6-label-recognition NFR4.2): the system camera and the
+         system photo picker need no permission, so none of these may reach the
+         merged manifest, even if a dependency declares one. Declaring CAMERA
+         would also make ACTION_IMAGE_CAPTURE fail until it is granted.
+         Checked on the merged release manifest by tool/check_release_build.sh. -->
+    <uses-permission android:name="android.permission.CAMERA" tools:node="remove"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:node="remove"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:node="remove"/>
 
     <!-- allowBackup=false and the data extraction rules keep the pending-writes
          ledger and the Firestore cache off backups and device transfers (NFR8.4).
@@ -37,6 +46,15 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <!-- "Share -> Vinoozy" with one or more images (u6 BR1.4, NFR4.4):
+                 only SEND and SEND_MULTIPLE of image/*, no other action.
+                 SharedImageReceiver keeps only the first content:// URI. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="image/*"/>
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

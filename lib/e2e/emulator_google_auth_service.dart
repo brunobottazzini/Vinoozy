@@ -41,22 +41,26 @@ class EmulatorGoogleAuthService implements AuthService {
   );
 
   @override
+  String? get photoUrl => _auth.currentUser?.photoURL;
+
+  static AuthCredential _credentialOf(E2EIdentity identity) =>
+      GoogleAuthProvider.credential(
+        idToken: jsonEncode({
+          'sub': identity.sub,
+          'email': identity.email,
+          'email_verified': true,
+          'name': identity.email.split('@').first,
+        }),
+      );
+
+  @override
   Future<AppUser> signIn() async {
     final identity = nextIdentity;
     if (identity == null) {
       throw const SignInException(SignInFailureKind.cancelled);
     }
     try {
-      final result = await _auth.signInWithCredential(
-        GoogleAuthProvider.credential(
-          idToken: jsonEncode({
-            'sub': identity.sub,
-            'email': identity.email,
-            'email_verified': true,
-            'name': identity.email.split('@').first,
-          }),
-        ),
-      );
+      final result = await _auth.signInWithCredential(_credentialOf(identity));
       final user = result.user;
       if (user == null) throw const SignInException(SignInFailureKind.failed);
       return appUserFromFirebase(user);
@@ -67,4 +71,44 @@ class EmulatorGoogleAuthService implements AuthService {
 
   @override
   Future<void> signOut() => _auth.signOut();
+
+  /// u8-account: the identity of [nextIdentity] signs in again; the emulator
+  /// answers `user-mismatch` for another account, like the real service.
+  @override
+  Future<ReauthResult> reauthenticate() async {
+    final identity = nextIdentity;
+    final current = _auth.currentUser;
+    if (identity == null) return ReauthResult.cancelled;
+    if (current == null) return ReauthResult.failed;
+    try {
+      final result = await current.reauthenticateWithCredential(
+        _credentialOf(identity),
+      );
+      return result.user?.uid == current.uid
+          ? ReauthResult.confirmed
+          : ReauthResult.differentAccount;
+    } on FirebaseAuthException catch (error) {
+      return error.code == 'user-mismatch'
+          ? ReauthResult.differentAccount
+          : ReauthResult.failed;
+    }
+  }
+
+  @override
+  Future<void> deleteUser() async {
+    final current = _auth.currentUser;
+    if (current == null) {
+      throw const DeleteUserException(DeleteUserFailure.failed);
+    }
+    try {
+      await current.delete();
+    } on FirebaseAuthException catch (error) {
+      throw DeleteUserException(
+        error.code == 'requires-recent-login'
+            ? DeleteUserFailure.requiresRecentLogin
+            : DeleteUserFailure.failed,
+        error,
+      );
+    }
+  }
 }

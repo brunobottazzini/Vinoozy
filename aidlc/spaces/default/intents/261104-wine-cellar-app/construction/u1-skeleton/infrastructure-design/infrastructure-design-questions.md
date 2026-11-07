@@ -34,8 +34,12 @@ X. Other (please specify)
   - le richieste di merge da fork esterni non ricevono i segreti e non pubblicano build;
   - `main` è protetto e accetta solo merge con tutti i controlli verdi;
   - è attiva la scansione dei segreti di GitHub.
+- **Aggiornato dopo la costruzione e la prova sul telefono (2026-11-05):**
+  - progetto Firebase reale creato: `vinoozy-d6f45`, per ora sul piano gratuito Spark; si passa a Blaze (con l'avviso di spesa a 1 €) prima della prima pubblicazione su Google Play;
+  - la configurazione di produzione è il file `config/firebase_prod.json` (segreto `FIREBASE_PROD_DEFINES_JSON_B64`), passato alla compilazione con `--dart-define-from-file`, al posto di `options_prod.dart`;
+  - i simboli di Crashlytics si caricano in un job a parte, `crashlytics-symbols`, con un'identità WIF dedicata (`roles/firebasecrashlytics.admin`) e senza chiavi, accettata da te all'approvazione del codice.
 - **Già deciso e applicato:**
-  - un progetto Firebase di produzione (piano Blaze, avviso di spesa a 1 €) e l'emulatore per test e CI;
+  - un progetto Firebase di produzione (Blaze con avviso di spesa a 1 € prima della prima pubblicazione) e l'emulatore per test e CI;
   - a ogni merge su `main`, una build firmata pubblicata sul canale di test interno di Google Play;
   - la produzione solo con la tua approvazione manuale e rilascio graduale;
   - regole di sicurezza distribuite in produzione solo con approvazione manuale.

@@ -1,11 +1,12 @@
 # Code Generation Plan Approval
 
-AI-DLC writes this file when it asks you to approve the plan. To answer here
-instead of in chat, write your answer after `[Answer]:` and tell me in chat when you are done.
+AI-DLC built this plan without asking because plan approval is off for this
+piece of work. This file is the record and asks nothing; to look at a plan
+before it is built, ask in chat.
 
 ## Plan Approval
 
-Approve the code plan for u1-skeleton?
+Built without asking: plan approval is off for this piece of work (set by you).
 
 - Builds: lo scheletro funzionante dell'app Flutter Android: accesso Google, cantina personale, aggiunta di un vino scritto, uso offline con sincronizzazione, regole di sicurezza Firestore e pipeline...
 - Touches: `pubspec.yaml`, `lib/`, `android/`, `test/`, `integration_test/`, `firestore.rules`, `firebase.json`, `.github/workflows/`, `tool/`, `docs/`; aggiunge righe Flutter/Firebase a `.gitignore`.
@@ -15,11 +16,8 @@ Approve the code plan for u1-skeleton?
 Full plan: aidlc/spaces/default/intents/261104-wine-cellar-app/construction/u1-skeleton/code-generation/code-generation-plan.md
 Test instructions: aidlc/spaces/default/intents/261104-wine-cellar-app/construction/u1-skeleton/code-generation/unit-test-instructions.md
 
-[Approval Fingerprint]: sha256:v3:8d566cc42b44e971f6651f010901e99c75b0759b939155efe113d43b134bce0c
-[Planned Source]: 65e2dbe5df82e158334aeb9a08f4a5c5f06256c2fb8d9bf323db4b5d93c4e8b5
+[Approval Fingerprint]: sha256:v3:63b29a1448997a566282b9efc0ce7a078fcc7c9e901771c1c0f70667f3279fb8
+[Planned Source]: f74a0a252bc222f2f77adc8eeefde00f5ef694566cb45f5acda52034ec68673b
 
-- A. Approve Plan
-- B. Request Changes
-- C. I'll edit the files
 
-[Answer]: A. Approve Plan
+[Answer]: Plan approval off

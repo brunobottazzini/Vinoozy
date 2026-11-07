@@ -104,31 +104,31 @@ U1 non ha API proprie: il confine verso il cloud sono le **regole di sicurezza F
 ## Piano
 
 ### Step 1 — Struttura del progetto e configurazione di base (US1.1, US10.1)
-- [x] `flutter create --org com.vinoozy --project-name vinoozy --platforms android .`. Il comando non sovrascrive `.gitignore` né `.mcp.json`, che restano come sono.
-- [x] `.gitignore`: aggiunte le righe Flutter, Android, Node e Firebase, più `android/app/google-services.json`, `lib/firebase/options_prod.dart`, `*.jks` e `*.keystore`, **dopo** il blocco AI-DLC esistente, senza toccarlo.
-- [x] `applicationId` `com.vinoozy.app`, `minSdk` 23, `allowBackup=false`, `usesCleartextTraffic=false` e `network_security_config` con `10.0.2.2` solo nella variante debug (NFR4.8, NFR8.4).
-- [x] `pubspec.yaml` con le dipendenze di `tech-stack-decisions.md`, cioè le ultime versioni stabili compatibili; `pubspec.lock` nel repository; `.flutter-version` e `.nvmrc`.
-- [x] `analysis_options.yaml` con `flutter_lints`.
-- [x] `lib/firebase/options_demo.dart` (progetto `demo-vinoozy`, nessuna credenziale reale) e `lib/firebase/firebase_env.dart`, che sceglie demo o prod da `--dart-define=FIREBASE_ENV`, con demo come predefinito. Il file `options_prod.dart` viene generato dalla CI di rilascio; in sua assenza, uno stub `options_prod_stub.dart` (importato in modo condizionale) fa fallire subito l'avvio con un errore chiaro.
-- [x] `firebase.json` con Auth `127.0.0.1:9099` e Firestore `127.0.0.1:8080`, `.firebaserc` (`demo-vinoozy`), `firestore.indexes.json` vuoto.
-- [x] Localizzazione: `l10n.yaml` e i file ARB `app_it.arb`, `app_en.arb` e `app_pt_BR.arb` con tutti i testi di U1, con inglese come lingua di riserva (BR5.1).
-- [x] `package.json` con `firebase-tools` e `@firebase/rules-unit-testing` a versioni fissate.
+- [ ] `flutter create --org com.vinoozy --project-name vinoozy --platforms android .`. Il comando non sovrascrive `.gitignore` né `.mcp.json`, che restano come sono.
+- [ ] `.gitignore`: aggiunte le righe Flutter, Android, Node e Firebase, più `android/app/google-services.json`, `lib/firebase/options_prod.dart`, `*.jks` e `*.keystore`, **dopo** il blocco AI-DLC esistente, senza toccarlo.
+- [ ] `applicationId` `com.vinoozy.app`, `minSdk` 23, `allowBackup=false`, `usesCleartextTraffic=false` e `network_security_config` con `10.0.2.2` solo nella variante debug (NFR4.8, NFR8.4).
+- [ ] `pubspec.yaml` con le dipendenze di `tech-stack-decisions.md`, cioè le ultime versioni stabili compatibili; `pubspec.lock` nel repository; `.flutter-version` e `.nvmrc`.
+- [ ] `analysis_options.yaml` con `flutter_lints`.
+- [ ] `lib/firebase/options_demo.dart` (progetto `demo-vinoozy`, nessuna credenziale reale) e `lib/firebase/firebase_env.dart`, che sceglie demo o prod da `--dart-define=FIREBASE_ENV`, con demo come predefinito. Il file `options_prod.dart` viene generato dalla CI di rilascio; in sua assenza, uno stub `options_prod_stub.dart` (importato in modo condizionale) fa fallire subito l'avvio con un errore chiaro.
+- [ ] `firebase.json` con Auth `127.0.0.1:9099` e Firestore `127.0.0.1:8080`, `.firebaserc` (`demo-vinoozy`), `firestore.indexes.json` vuoto.
+- [ ] Localizzazione: `l10n.yaml` e i file ARB `app_it.arb`, `app_en.arb` e `app_pt_BR.arb` con tutti i testi di U1, con inglese come lingua di riserva (BR5.1).
+- [ ] `package.json` con `firebase-tools` e `@firebase/rules-unit-testing` a versioni fissate.
 
 ### Step 2 — Runner dei test (Testing Contract)
-- [x] `flutter_test`, `mocktail`, `integration_test`; `test/helpers/` con fake di `KeyValueStore`, `Clock` e dei servizi.
-- [x] `tool/gen_coverage_helper.dart`, che genera `test/coverage_helper_test.dart` importando ogni file di `lib/` (NFR7.1); `tool/check_coverage.sh <soglia>`.
-- [x] Test di prova `test/u1/smoke_test.dart` ed esecuzione del comando di unità registrato in `unit-test-instructions.md`.
+- [ ] `flutter_test`, `mocktail`, `integration_test`; `test/helpers/` con fake di `KeyValueStore`, `Clock` e dei servizi.
+- [ ] `tool/gen_coverage_helper.dart`, che genera `test/coverage_helper_test.dart` importando ogni file di `lib/` (NFR7.1); `tool/check_coverage.sh <soglia>`.
+- [ ] Test di prova `test/u1/smoke_test.dart` ed esecuzione del comando di unità registrato in `unit-test-instructions.md`.
 
 ### Step 3 — Modello dei dati: implementazione (US2.1; BR2.1–BR2.5; C3)
-- [x] `lib/cellar/domain/`:
+- [ ] `lib/cellar/domain/`:
   - `Wine` e `Cellar` con le conversioni verso e da Firestore, con i campi di C3 e `schemaVersion` 1;
   - `UserProfile`;
   - `WineDraft`, con le validazioni BR2.1–BR2.3 e il nome ripulito dagli spazi;
   - `displayQuantity`, uguale a `max(0, q)` (ADR-004).
-- [x] Interfacce `Clock` e `IdGenerator` (ID del vino generato all'apertura del modulo).
+- [ ] Interfacce `Clock` e `IdGenerator` (ID del vino generato all'apertura del modulo).
 
 ### Step 4 — Modello dei dati: test
-- [x] `test/u1/domain/`, 6–8 test per tipo:
+- [ ] `test/u1/domain/`, 6–8 test per tipo:
   - validazione del nome: vuoto, solo spazi, 120 e 121 caratteri;
   - annata: limiti 1900 e anno corrente + 0/1, "senza annata";
   - quantità tra 1 e 99;
@@ -136,14 +136,14 @@ U1 non ha API proprie: il confine verso il cloud sono le **regole di sicurezza F
   - conversioni verso e da Firestore, campi sconosciuti ignorati.
 
 ### Step 5 — Registro locale: implementazione (NFR4.9, NFR6.3, NFR8.1)
-- [x] `lib/sync/ledger/local_ledger.dart`:
+- [ ] `lib/sync/ledger/local_ledger.dart`:
   - valore unico `ledger.v1`: `lastUid`, `generation`, `owner`, `journal` (voci con `ownerUid` e `state`), `resetPending`;
   - coda seriale `_mutate`;
   - operazioni `beginWrite`, `markConfirmed`, `markRejected`, `noticeShown`, `dismiss`, `tryReleaseOwner` e `reset`, che conserva `resetPending` finché il reset non è completato.
-- [x] `KeyValueStore` sopra `shared_preferences`.
+- [ ] `KeyValueStore` sopra `shared_preferences`.
 
 ### Step 6 — Registro locale: test
-- [x] `test/u1/sync/local_ledger_test.dart`, 8 test:
+- [ ] `test/u1/sync/local_ledger_test.dart`, 8 test:
   - mutazioni concorrenti senza perdite;
   - `beginWrite` crea il proprietario e incrementa `seq`;
   - `tryReleaseOwner` non rilascia con `seq` cambiato, uid diverso o voci aperte o rifiutate;
@@ -153,62 +153,62 @@ U1 non ha API proprie: il confine verso il cloud sono le **regole di sicurezza F
   - JSON corrotto rimesso a valori vuoti con un errore inviato a `ErrorReporter`.
 
 ### Step 7 — Repository e accesso ai dati: implementazione (US1.1, US2.1, US9.1, US9.2; BR1.3, BR2.4, BR3.1, BR3.4)
-- [x] `FirestoreBootstrap`:
+- [ ] `FirestoreBootstrap`:
   - `configure()`: persistenza, cache illimitata, emulatore se `FIREBASE_ENV=demo`;
   - esegue `clearPersistence` all'avvio se `resetPending`.
-- [x] `CellarRepository`: `ensurePersonalCellar` con transazione e 3 tentativi; `watchCellar`.
-- [x] `UserRepository.ensureProfile`.
-- [x] `WineRepository`:
+- [ ] `CellarRepository`: `ensurePersonalCellar` con transazione e 3 tentativi; `watchCellar`.
+- [ ] `UserRepository.ensureProfile`.
+- [ ] `WineRepository`:
   - `create(draft)`, che attende `beginWrite`, poi `set()` non atteso, con callback legato alla `generation`;
   - classificazione dei codici di errore;
   - errori sincroni restituiti come `SaveFailure`;
   - `incrementQuantity` con `FieldValue.increment` (BR3.4, solo livello dati);
   - `watchWines`.
-- [x] `SyncErrorBus`.
+- [ ] `SyncErrorBus`.
 
 ### Step 8 — Sincronizzazione e logica: implementazione (NFR2.4, NFR6.2, NFR6.3)
-- [x] `SyncStatus` (sincronizzato, in corso, offline): `hasPendingWrites` e `isFromCache`, con il primo snapshot della cache all'apertura ignorato.
-- [x] `SyncWatcher`:
+- [ ] `SyncStatus` (sincronizzato, in corso, offline): `hasPendingWrites` e `isFromCache`, con il primo snapshot della cache all'apertura ignorato.
+- [ ] `SyncWatcher`:
   - inneschi: avvio, scrittura, rete tornata;
   - una sola esecuzione alla volta;
   - `waitForPendingWrites` con timeout di 30 s;
   - verifica `Source.server` con timeout di 10 s;
   - al massimo 3 ripetizioni immediate.
-- [x] `AccountGate` con `AuthService` (interfaccia):
+- [ ] `AccountGate` con `AuthService` (interfaccia):
   - controllo del registro a ogni avvio;
   - stati Accesso, Bloccato, Reset, AssicuraCantina, Cantina;
   - `ResetCoordinator`.
-- [x] `ErrorReporter.sanitize`.
+- [ ] `ErrorReporter.sanitize`.
 
 ### Step 9 — Prova di riavvio di Firestore (NFR4.10, security-design §5)
-- [x] `integration_test/firestore_restart_probe_test.dart`: `terminate`, `clearPersistence`, `configure`, poi una lettura sull'emulatore. Si esegue subito.
-- [x] Se fallisce, si attiva il piano B (`resetPending` e la schermata "Riavvia l'app"). L'esito viene scritto in `code-summary.md`.
+- [ ] `integration_test/firestore_restart_probe_test.dart`: `terminate`, `clearPersistence`, `configure`, poi una lettura sull'emulatore. Si esegue subito.
+- [ ] Se fallisce, si attiva il piano B (`resetPending` e la schermata "Riavvia l'app"). L'esito viene scritto in `code-summary.md`.
 
 ### Step 10 — Repository, sincronizzazione e logica: test (test-after degli Step 7–8)
-- [x] `test/u1/data/` con mock di Firestore, 6–8 test per repository:
+- [ ] `test/u1/data/` con mock di Firestore, 6–8 test per repository:
   - creazione, rifiuto e classificazione dei codici;
   - callback di una `generation` vecchia ignorato;
   - `SaveFailure`;
   - transazione della cantina ritentata.
-- [x] `test/u1/sync/`:
+- [ ] `test/u1/sync/`:
   - `SyncStatus`: 6 test, tra cui il primo snapshot della cache ignorato;
   - `SyncWatcher`: 8 test (timeout, `unavailable`, ripetizioni, voce rifiutata, rilascio);
   - `AccountGate`: 8 test (stessi uid, uid diverso con registro, reset, revoca della sessione);
   - `ErrorReporter`: 5 test di pulizia.
 
 ### Step 11 — Regole di sicurezza: implementazione e test ("API / endpoint"; NFR4.1–NFR4.5, NFR4.11)
-- [x] `firestore.rules` come da `security-design.md` §2 (`users`, `cellars`, `wines`, funzioni comuni).
-- [x] `test/rules/u1.rules.test.mjs`, circa 25 casi:
+- [ ] `firestore.rules` come da `security-design.md` §2 (`users`, `cellars`, `wines`, funzioni comuni).
+- [ ] `test/rules/u1.rules.test.mjs`, circa 25 casi:
   - accesso anonimo, senza autenticazione e con provider diverso da Google;
   - `users`: create, update e campi vietati;
   - `cellars`: get su documento inesistente, create con altro uid, update di `ownerId` o `createdAt`, delete;
   - `wines`: create valido e campi fuori limite, annata con tolleranza di +1 anno, quantità negativa negli aggiornamenti accettata, accesso di un altro utente.
-- [x] `test/rules/compat/`: le scritture dell'app precedente devono passare con le regole nuove, e quelle dell'app nuova con le regole precedenti (tag `v*` più recente, se esiste).
-- [x] Esecuzione con `firebase emulators:exec`.
+- [ ] `test/rules/compat/`: le scritture dell'app precedente devono passare con le regole nuove, e quelle dell'app nuova con le regole precedenti (tag `v*` più recente, se esiste).
+- [ ] Esecuzione con `firebase emulators:exec`.
 
 ### Step 12 — Interfaccia: implementazione (US1.1, US2.1, US9.1, US10.1; BR5.1–BR5.3; M1, M3, M4b)
-- [x] `lib/app/`: `VinoozyApp` con temi chiaro e scuro dai token di `design-system-mapping.md`, localizzazione e ascoltatore di `SyncErrorBus` alla radice.
-- [x] Schermate:
+- [ ] `lib/app/`: `VinoozyApp` con temi chiaro e scuro dai token di `design-system-mapping.md`, localizzazione e ascoltatore di `SyncErrorBus` alla radice.
+- [ ] Schermate:
   - `SignInScreen`: messaggio senza rete con `connectivity_plus`;
   - `BlockedAccountScreen`;
   - `CellarScreen`: caricamento, errore, elenco vuoto, `ListView.builder`;
@@ -216,22 +216,24 @@ U1 non ha API proprie: il confine verso il cloud sono le **regole di sicurezza F
   - `WineListTile`;
   - `AddWineScreen`, con validazione all'uscita dal campo e al Salva, pulsante disattivato dopo il primo tocco, `QuantityStepper`;
   - `RejectedWineNotice`.
-- [x] Ogni controllo ha `Key` e `Semantics`, usati nei test come `data-testid`.
-- [x] `EmulatorGoogleAuthService` e `TestNetworkControl`, inclusi solo con `--dart-define=E2E=true`; `GoogleAuthService` reale negli altri casi.
+- [ ] Ogni controllo ha `Key` e `Semantics`, usati nei test come `data-testid`.
+- [ ] `EmulatorGoogleAuthService` e `TestNetworkControl`, inclusi solo con `--dart-define=E2E=true`; `GoogleAuthService` reale negli altri casi.
 
 ### Step 13 — Interfaccia: test
-- [x] `test/u1/ui/`, 5–8 test per schermata:
+- [ ] `test/u1/ui/`, 5–8 test per schermata:
   - stati;
   - validazioni;
   - doppio tocco;
   - banner offline e in corso;
   - avviso dei vini rifiutati;
   - schermata di blocco.
-- [x] Per ogni schermata, test nelle tre lingue con `textScaler` 1.0 e 2.0 e le guide di accessibilità (contrasto, aree toccabili, etichette) (NFR3.1–NFR3.4).
-- [x] Test di build: la build release non contiene `EmulatorGoogleAuthService`.
+- [ ] Per ogni schermata, test nelle tre lingue con `textScaler` 1.0 e 2.0 e le guide di accessibilità (contrasto, aree toccabili, etichette) (NFR3.1–NFR3.4).
+- [ ] Test di build: la build release non contiene `EmulatorGoogleAuthService`.
+- [ ] (Revisione 3, "Riprova") Un errore degli ascolti di cantina o vini porta allo stato "Impossibile preparare la cantina"; "Riprova" rifà `ensurePersonalCellar` e solo se riesce riapre gli ascolti (`reopenCellarListeners`). Test in `test/u1/account/account_gate_test.dart` e `test/u1/ui/cellar_retry_test.dart`.
+- [ ] (Revisione 4, primo accesso; richiesta del proprietario "Correggiamo il problema prima") Durante la preparazione della cantina (`setup == preparing`) `CellarScreen` non apre nessun ascolto di Firestore e non monta `OfflineBanner`, così al primo accesso non compare l'errore. Test che falliscono sul codice precedente in `test/u1/ui/cellar_screen_test.dart` e `test/u1/ui/cellar_retry_test.dart`; test di "Riprova" che fallisce di nuovo.
 
 ### Step 14 — Test end-to-end dello scheletro (NFR7.3; prova da capo a fondo di `functional-spec.md`)
-- [x] `integration_test/u1_skeleton_test.dart`, sull'emulatore Android con la Emulator Suite:
+- [ ] `integration_test/u1_skeleton_test.dart`, sull'emulatore Android con la Emulator Suite:
   1. accesso;
   2. aggiunta di "Barolo 2016 x2" offline (`TestNetworkControl`), con indicatore offline;
   3. ritorno della rete: il vino è nel cloud dell'emulatore;
@@ -242,22 +244,22 @@ U1 non ha API proprie: il confine verso il cloud sono le **regole di sicurezza F
   7. due client creano una sola cantina;
   8. riavvio nello stesso processo (`terminate()` e nuovo `main()`) con le modifiche ancora presenti;
   9. avvio misurato come riavvio nello stesso processo (l'avvio a freddo reale resta da misurare sul telefono: NFR2.1 aperto, `docs/release-checklist.md`).
-- [x] (Revisione 1, R-02) Riavvio reale con `adb shell am force-stop` e `adb shell am start`, come passo separato (`tool/e2e_force_stop.sh` con `integration_test/force_stop_queue.dart` e `test_driver/integration_test.dart`): vino aggiunto con la rete spenta, processo ucciso, app reale reinstallata sopra mantenendo i dati e avviata; il vino è ancora sullo schermo e arriva al cloud. Collegato al job `e2e` di `ci.yml` e a `tool/verify_skeleton.sh`; eseguito in locale su `Medium_Phone_API_36.1`.
-- [x] `tool/verify_skeleton.sh`: avvia gli emulatori, esegue i test delle regole, la prova di riavvio, `e2e` e la prova con `adb force-stop`, e si ferma al primo errore. È il comando proposto per la verifica dello scheletro.
+- [ ] (Revisione 1, R-02) Riavvio reale con `adb shell am force-stop` e `adb shell am start`, come passo separato (`tool/e2e_force_stop.sh` con `integration_test/force_stop_queue.dart` e `test_driver/integration_test.dart`): vino aggiunto con la rete spenta, processo ucciso, app reale reinstallata sopra mantenendo i dati e avviata; il vino è ancora sullo schermo e arriva al cloud. Collegato al job `e2e` di `ci.yml` e a `tool/verify_skeleton.sh`; eseguito in locale su `Medium_Phone_API_36.1`.
+- [ ] `tool/verify_skeleton.sh`: avvia gli emulatori, esegue i test delle regole, la prova di riavvio, `e2e` e la prova con `adb force-stop`, e si ferma al primo errore. È il comando proposto per la verifica dello scheletro.
 
 ### Step 15 — Pipeline e configurazione di ambiente (`cicd-pipeline.md`)
-- [x] `.github/workflows/`:
+- [ ] `.github/workflows/`:
   - `ci.yml`: format, analyze, unit con copertura, rules, e2e;
   - `release.yml`;
   - `promote.yml`, con tag `v<versionName>+<versionCode>`;
   - `firebase-deploy.yml`.
 
   Tutti con azioni fissate per SHA e permessi minimi.
-- [x] `.github/dependabot.yml`.
-- [x] `android/app/build.gradle`: firma letta da variabili d'ambiente, mai da file nel repository.
+- [ ] `.github/dependabot.yml`.
+- [ ] `android/app/build.gradle`: firma letta da variabili d'ambiente, mai da file nel repository.
 
 ### Step 16 — Documentazione e tracciabilità
-- [x] `docs/firebase-setup.md`:
+- [ ] `docs/firebase-setup.md`:
   - progetto, `europe-west8`, Google come unico provider;
   - App Check e Play Integrity;
   - budget di 1 €;
@@ -265,8 +267,8 @@ U1 non ha API proprie: il confine verso il cloud sono le **regole di sicurezza F
   - i due account di servizio Play;
   - ambienti e regole del repository: `main` protetto, tag `v*` e `build-*` protetti, scansione dei segreti;
   - alert di `monitoring-design.md`, con la soglia di Crashlytics e la verifica del nome della metrica delle regole.
-- [x] `docs/release-checklist.md`: smoke test e Data Safety, con i campi di `ledger.v1`.
-- [x] `code-summary.md`, `traceability.json`, `source-manifest.json` nella cartella del record.
+- [ ] `docs/release-checklist.md`: smoke test e Data Safety, con i campi di `ledger.v1`.
+- [ ] `code-summary.md`, `traceability.json`, `source-manifest.json` nella cartella del record.
 
 ## Tracciabilità storie → step
 

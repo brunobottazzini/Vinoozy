@@ -14,11 +14,12 @@ Il proprietario di una cantina personale (meno di 100 bottiglie) vuole **non per
   - Given l'accesso annullato o fallito, When torno all'app, Then vedo "Accesso non riuscito" con "Riprova" e nessun dato viene creato.
 - **FR1.2** La sessione resta attiva tra un avvio e l'altro, anche senza rete, finché l'utente non esce. *(constraint-register C3)*
 - **FR1.3** L'utente può uscire dall'account dal profilo.
-- **FR1.4** L'utente può cancellare il proprio account dall'app; la cancellazione elimina la sua cantina, lo storico, le foto e le condivisioni che ha concesso, dopo una conferma che nomina cosa verrà eliminato. *(obbligo Google Play per app con account; feasibility-assessment)*
+- **FR1.4** L'utente può cancellare il proprio account dall'app; la cancellazione elimina la sua cantina, lo storico e le condivisioni che ha concesso, dopo una conferma che nomina cosa verrà eliminato. *(obbligo Google Play per app con account; feasibility-assessment)* *(2026-11-06, u6: tolte le foto, che non si conservano più)*
 
 ### FR2 — Inserimento di un vino
 - **FR2.1** L'utente aggiunge un vino scrivendone il nome (es. "Barolo 2016"); il sistema propone vini corrispondenti mentre scrive. *(intent-statement)*
 - **FR2.2** L'utente aggiunge un vino fotografando l'etichetta; il sistema legge il testo sul telefono e propone il vino riconosciuto. *(intent-statement, scope-document)*
+  - *(2026-11-06, richiesta del proprietario in u6)* La foto può anche essere importata dalla galleria, o condivisa dalla galleria verso l'app, per aggiungere più tardi un vino fotografato in giro.
   - Given un'etichetta illeggibile, When scatto la foto, Then vedo "Non riesco a leggere l'etichetta" e il pulsante "Scrivi a mano" con il campo già aperto.
   - Given il permesso fotocamera negato, When tocco "Scatta foto", Then vedo una spiegazione e il collegamento alle impostazioni.
 - **FR2.3** Nessun vino viene salvato senza la conferma esplicita dell'utente, in entrambi i percorsi; "Correggi" apre l'inserimento scritto già compilato con la proposta. *(feasibility-assessment; revisione mockup R-01)*
@@ -64,7 +65,7 @@ Il proprietario di una cantina personale (meno di 100 bottiglie) vuole **non per
 - **FR7.2** Gli abbinamenti vengono dalla stessa fonte della stima; se non disponibili si mostrano abbinamenti per tipologia, indicandolo.
 
 ### FR8 — Condivisione
-- **FR8.1** Il proprietario invita fino a 5 persone tramite l'email del loro account Google. *(Q4)*
+- **FR8.1** Il proprietario invita fino a 2 persone tramite l'email del loro account Google. *(Q4; limite portato da 5 a 2 dal proprietario il 2026-11-06, durante il design di u7-sharing, per restare largamente nella quota gratuita)*
 - **FR8.2** Per ogni persona sceglie il permesso: "solo lettura" o "può modificare". *(intent-statement Q11)*
 - **FR8.3** Il proprietario revoca l'accesso dopo una conferma con il nome della persona; la revoca ha effetto alla successiva sincronizzazione della persona.
 - **FR8.4** Chi ha "solo lettura" non vede i comandi di modifica e il sistema rifiuta comunque le sue modifiche lato cloud.
@@ -88,7 +89,7 @@ Il proprietario di una cantina personale (meno di 100 bottiglie) vuole **non per
 - **NFR5 — Costo**: il servizio cloud resta a 0 €/mese per l'uso previsto, con avviso di spesa a 1 €. *(constraint-register C6)*
 - **NFR6 — Durabilità**: nessuna modifica confermata dall'utente va persa, anche se l'app si chiude prima della sincronizzazione.
 - **NFR7 — Qualità del codice**: copertura dei test almeno 80% delle righe senza esclusioni; formattazione, analisi, test e test da capo a fondo passano in CI prima di ogni merge. *(team-practices Testing Posture)*
-- **NFR8 — Privacy**: la cancellazione dell'account (FR1.4) rimuove i dati dal cloud entro 30 giorni; solo i dati necessari vengono raccolti (email e nome dell'account, cantina, foto delle etichette).
+- **NFR8 — Privacy**: la cancellazione dell'account (FR1.4) rimuove i dati dal cloud entro 30 giorni; solo i dati necessari vengono raccolti (email e nome dell'account, cantina). *(2026-11-06, u6 Q1: le foto delle etichette servono solo a leggere il testo sul telefono e non si conservano)*
 
 ## Constraints
 

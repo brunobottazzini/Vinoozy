@@ -76,10 +76,11 @@ class CellarRepository {
     }
   }
 
-  /// The single listener of the cellar document, with metadata changes so
-  /// pending writes are visible (NFR5.1, NFR2.4).
-  Stream<CellarSnapshot> watchCellar(String uid) {
-    final cellarId = Cellar.personalCellarId(uid);
+  /// The single listener of the document of [cellarId], with metadata
+  /// changes so pending writes are visible (NFR5.1, NFR2.4). Since
+  /// u7-sharing it is the active cellar: the personal one passes
+  /// `Cellar.personalCellarId(uid)`, which is the uid itself.
+  Stream<CellarSnapshot> watchCellar(String cellarId) {
     return _db
         .doc(cellarPath(cellarId))
         .snapshots(includeMetadataChanges: true)

@@ -13,6 +13,13 @@ analyzer:
   exclude:
     - build/**
     - android/**
+    # Local packages have their own analysis_options.yaml and dev
+    # dependencies; the `estimation` CI job analyses them (cicd-pipeline.md
+    # §2 of u2-estimation).
+    - packages/**
+    # Fixtures of tool/check_dashboard_readonly_test.sh (u5-dashboard): Dart
+    # files read by grep only, with imports that do not resolve on purpose.
+    - tool/fixtures/**
 
 linter:
   # The lint rules applied to this project can be customized in the

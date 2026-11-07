@@ -170,7 +170,8 @@ class LocalLedger {
   /// Local reset (NFR4.10): empties owner and journal, records [newUid] as the
   /// last user and increments `generation`, so callbacks of earlier writes are
   /// ignored. `resetPending` is kept until the reset is completed.
-  Future<void> reset(String newUid) => _mutate(
+  /// A null [newUid] (u8-account, deleted account) records no last user.
+  Future<void> reset(String? newUid) => _mutate(
     (state) => (
       LedgerState(
         lastUid: newUid,

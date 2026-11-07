@@ -1,0 +1,15 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u5-dashboard",
+  "upstream_ids": ["NFR1", "NFR2", "NFR3", "NFR4", "NFR5", "NFR6", "NFR7", "NFR8"],
+  "coverage": [
+    { "id": "NFR1", "status": "N/A", "target": "velocità di inserimento delivered by u4-cellar; U5 non inserisce vini" },
+    { "id": "NFR2", "status": "OK", "target": "performance-requirements.md NFR2.1-NFR2.4 (2 s con 500 bottiglie senza rete misurati sul telefono, calcolo sotto 50 ms con benchmark in CI, ricalcolo mirato, scorrimento fluido)" },
+    { "id": "NFR3", "status": "OK", "target": "security-requirements.md > Accessibilità NFR3.1-NFR3.5" },
+    { "id": "NFR4", "status": "OK", "target": "security-requirements.md NFR4.1 (sola lettura, controllo automatico in CI); accesso al cloud delivered by u1-skeleton e u7-sharing" },
+    { "id": "NFR5", "status": "N/A", "target": "U5 non usa servizi a pagamento: costo zero" },
+    { "id": "NFR6", "status": "OK", "target": "security-requirements.md > Affidabilità NFR6.1-NFR6.4 (per U5, che non salva dati, NFR6 copre la tenuta della schermata; la durabilità dei dati è delivered by u1-skeleton e u4-cellar)" },
+    { "id": "NFR7", "status": "OK", "target": "tech-stack-decisions.md NFR7.1-NFR7.5" },
+    { "id": "NFR8", "status": "OK", "target": "security-requirements.md NFR8.1 (nessun dato della cantina inviato; evento con messaggio fisso); cancellazione dei dati delivered by u8-account" }
+  ]
+}

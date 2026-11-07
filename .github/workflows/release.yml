@@ -93,7 +93,7 @@ jobs:
           path: |
             build/app/outputs/bundle/release/app-release.aab
             build/symbols
-          retention-days: 30
+          retention-days: 7
 
       - name: Upload to the internal testing track
         uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5 # v1.1.5

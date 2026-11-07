@@ -1,0 +1,194 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u8-account",
+  "upstream_ids": [
+    "NFR1.1",
+    "NFR1.3",
+    "NFR5.1",
+    "NFR5.3",
+    "NFR7.1",
+    "NFR7.6",
+    "NFR1.2",
+    "NFR7.2",
+    "NFR7.3",
+    "NFR7.4",
+    "NFR7.5",
+    "NFR4.1",
+    "NFR4.7",
+    "NFR8.1",
+    "NFR8.6",
+    "NFR3.1",
+    "NFR3.2",
+    "NFR6.1",
+    "NFR6.4",
+    "NFR4.5",
+    "NFR4.3",
+    "NFR4.4",
+    "NFR4.6",
+    "NFR8.5",
+    "NFR8.4",
+    "NFR6.3",
+    "NFR8.3",
+    "NFR6.2",
+    "NFR4.2",
+    "NFR8.2",
+    "NFR5.2"
+  ],
+  "coverage": [
+    {
+      "id": "NFR1.1",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit (test dei widget)"
+    },
+    {
+      "id": "NFR1.3",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit (test con orologio finto)"
+    },
+    {
+      "id": "NFR5.1",
+      "status": "OK",
+      "target": "infrastructure-specification.md §3"
+    },
+    {
+      "id": "NFR5.3",
+      "status": "OK",
+      "target": "infrastructure-specification.md §3 (GitHub Pages, reCAPTCHA gratuiti)"
+    },
+    {
+      "id": "NFR7.1",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit"
+    },
+    {
+      "id": "NFR7.6",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job rules npm run test:web"
+    },
+    {
+      "id": "NFR1.2",
+      "status": "OK",
+      "target": "monitoring-design.md §1; cicd-pipeline.md §1 job e2e"
+    },
+    {
+      "id": "NFR7.2",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job analyze"
+    },
+    {
+      "id": "NFR7.3",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit (tre lingue)"
+    },
+    {
+      "id": "NFR7.4",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job e2e account_test.dart"
+    },
+    {
+      "id": "NFR7.5",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 suite completa"
+    },
+    {
+      "id": "NFR4.1",
+      "status": "OK",
+      "target": "infrastructure-specification.md §2 firestore.rules; cicd-pipeline.md §1 job rules"
+    },
+    {
+      "id": "NFR4.7",
+      "status": "OK",
+      "target": "infrastructure-specification.md §2 e \"Seconda correzione\" (bundle app.bundle.js, origini ammesse, CSP); cicd-pipeline.md §1 e §6 check_web_pins.sh"
+    },
+    {
+      "id": "NFR8.1",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job e2e (cloud vuoto)"
+    },
+    {
+      "id": "NFR8.6",
+      "status": "OK",
+      "target": "monitoring-design.md §1 e §5 procedura via email"
+    },
+    {
+      "id": "NFR3.1",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit (guideline)"
+    },
+    {
+      "id": "NFR3.2",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit (semantica)"
+    },
+    {
+      "id": "NFR6.1",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit e rules (ripetibilità)"
+    },
+    {
+      "id": "NFR6.4",
+      "status": "OK",
+      "target": "monitoring-design.md §1 errori account"
+    },
+    {
+      "id": "NFR4.5",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 e §3 (app-writes.json, RULES_FEATURES)"
+    },
+    {
+      "id": "NFR4.3",
+      "status": "OK",
+      "target": "infrastructure-specification.md §2; cicd-pipeline.md §1 job rules"
+    },
+    {
+      "id": "NFR4.4",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job rules (sequenza completa)"
+    },
+    {
+      "id": "NFR4.6",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job rules test:web (altro account rifiutato)"
+    },
+    {
+      "id": "NFR8.5",
+      "status": "OK",
+      "target": "infrastructure-specification.md §2 GitHub Pages; cicd-pipeline.md §2 pages.yml"
+    },
+    {
+      "id": "NFR8.4",
+      "status": "OK",
+      "target": "monitoring-design.md §5 Data Safety"
+    },
+    {
+      "id": "NFR6.3",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job e2e (uscita con modifiche in coda)"
+    },
+    {
+      "id": "NFR8.3",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit (test del runner)"
+    },
+    {
+      "id": "NFR6.2",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit (test del gate)"
+    },
+    {
+      "id": "NFR4.2",
+      "status": "OK",
+      "target": "infrastructure-specification.md §2; cicd-pipeline.md §1 job rules"
+    },
+    {
+      "id": "NFR8.2",
+      "status": "OK",
+      "target": "monitoring-design.md §1 motivi fissi"
+    },
+    {
+      "id": "NFR5.2",
+      "status": "OK",
+      "target": "infrastructure-specification.md §3 (letture della cancellazione)"
+    }
+  ]
+}

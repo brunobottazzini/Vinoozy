@@ -1,0 +1,242 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u4-cellar",
+  "upstream_ids": [
+    "NFR1.1",
+    "NFR1.3",
+    "NFR2.1",
+    "NFR2.4",
+    "NFR5.1",
+    "NFR5.5",
+    "NFR2.3",
+    "NFR2.2",
+    "NFR7.1",
+    "NFR7.5",
+    "NFR7.2",
+    "NFR7.3",
+    "NFR7.4",
+    "NFR4.1",
+    "NFR4.9",
+    "NFR8.1",
+    "NFR8.3",
+    "NFR3.1",
+    "NFR3.4",
+    "NFR6.1",
+    "NFR6.6",
+    "NFR4.2",
+    "NFR4.3",
+    "NFR4.4",
+    "NFR4.8",
+    "NFR6.2",
+    "NFR5.3",
+    "NFR5.4",
+    "NFR1.2",
+    "NFR3.2",
+    "NFR3.3",
+    "NFR4.5",
+    "NFR4.6",
+    "NFR4.7",
+    "NFR5.2",
+    "NFR6.3",
+    "NFR6.4",
+    "NFR6.5",
+    "NFR8.2"
+  ],
+  "coverage": [
+    {
+      "id": "NFR1.1",
+      "status": "OK",
+      "target": "monitoring-design.md §1 e §5 (misura in checklist §1-quinquies)"
+    },
+    {
+      "id": "NFR1.2",
+      "status": "N/A",
+      "target": "Attesa di 250 ms nell'app: nessuna infrastruttura"
+    },
+    {
+      "id": "NFR1.3",
+      "status": "OK",
+      "target": "monitoring-design.md §1 e §5 (salvataggio ≤ 300 ms in checklist)"
+    },
+    {
+      "id": "NFR2.1",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit, cellar_benchmark.dart"
+    },
+    {
+      "id": "NFR2.2",
+      "status": "OK",
+      "target": "monitoring-design.md §1 e §5 (dettaglio ≤ 500 ms)"
+    },
+    {
+      "id": "NFR2.3",
+      "status": "OK",
+      "target": "infrastructure-specification.md §2 indice composito di drinkingRecords; monitoring-design.md §5 scorrimento"
+    },
+    {
+      "id": "NFR2.4",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit, benchmark finestra effettiva"
+    },
+    {
+      "id": "NFR3.1",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit (schermate nelle tre lingue)"
+    },
+    {
+      "id": "NFR3.4",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit (guideline di accessibilità)"
+    },
+    {
+      "id": "NFR4.1",
+      "status": "OK",
+      "target": "infrastructure-specification.md §2 firestore.rules; cicd-pipeline.md §1 job rules"
+    },
+    {
+      "id": "NFR4.2",
+      "status": "OK",
+      "target": "infrastructure-specification.md §2 caso del backfill; cicd-pipeline.md §1 job rules"
+    },
+    {
+      "id": "NFR4.3",
+      "status": "OK",
+      "target": "infrastructure-specification.md §2 aggiornamento delle bevute; cicd-pipeline.md §1 job rules"
+    },
+    {
+      "id": "NFR4.4",
+      "status": "OK",
+      "target": "infrastructure-specification.md §2 eliminazione delle bevute; cicd-pipeline.md §1 job rules"
+    },
+    {
+      "id": "NFR4.8",
+      "status": "OK",
+      "target": "infrastructure-specification.md §2 firestore.indexes.json; cicd-pipeline.md §1 check_firestore_indexes.sh"
+    },
+    {
+      "id": "NFR4.9",
+      "status": "OK",
+      "target": "infrastructure-specification.md §2 matchKeyBackfill; cicd-pipeline.md §2 RULES_FEATURES e requiresRules"
+    },
+    {
+      "id": "NFR5.1",
+      "status": "OK",
+      "target": "infrastructure-specification.md §3 letture dell'elenco"
+    },
+    {
+      "id": "NFR5.3",
+      "status": "OK",
+      "target": "infrastructure-specification.md §3 backfill e §4 nessuna migrazione sul server"
+    },
+    {
+      "id": "NFR5.4",
+      "status": "OK",
+      "target": "infrastructure-specification.md §3 miglioramento delle stime"
+    },
+    {
+      "id": "NFR5.5",
+      "status": "OK",
+      "target": "infrastructure-specification.md §3; security-design.md §4 eliminazione a parti di 400"
+    },
+    {
+      "id": "NFR6.1",
+      "status": "OK",
+      "target": "infrastructure-specification.md §1 cache offline dell'SDK"
+    },
+    {
+      "id": "NFR6.2",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit (QuantityDelta)"
+    },
+    {
+      "id": "NFR6.6",
+      "status": "OK",
+      "target": "infrastructure-specification.md §1 cellar.pending.<uid>; cicd-pipeline.md §1 job e2e"
+    },
+    {
+      "id": "NFR7.1",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit, check_coverage.sh su lib/cellar/"
+    },
+    {
+      "id": "NFR7.2",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job analyze, check_rule_ids.sh"
+    },
+    {
+      "id": "NFR7.3",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit"
+    },
+    {
+      "id": "NFR7.4",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job e2e"
+    },
+    {
+      "id": "NFR7.5",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 suite completa"
+    },
+    {
+      "id": "NFR8.1",
+      "status": "OK",
+      "target": "infrastructure-specification.md §5; cicd-pipeline.md §1 job rules"
+    },
+    {
+      "id": "NFR8.3",
+      "status": "OK",
+      "target": "monitoring-design.md §5 Data Safety"
+    },
+    {
+      "id": "NFR3.2",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit (stelle con Semantics)"
+    },
+    {
+      "id": "NFR3.3",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit (DrinkSnackBar 6/10 s)"
+    },
+    {
+      "id": "NFR4.5",
+      "status": "OK",
+      "target": "infrastructure-specification.md §2 create delle bevute; cicd-pipeline.md §1 job rules"
+    },
+    {
+      "id": "NFR4.6",
+      "status": "OK",
+      "target": "infrastructure-specification.md §2 eliminazione dei vini isOwner; cicd-pipeline.md §1 job rules"
+    },
+    {
+      "id": "NFR4.7",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job rules e §2 requiresRules, versione u4-cellar di app-writes.json"
+    },
+    {
+      "id": "NFR5.2",
+      "status": "OK",
+      "target": "infrastructure-specification.md §3 letture dello Storico"
+    },
+    {
+      "id": "NFR6.3",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job e2e concurrent_drink_test.dart"
+    },
+    {
+      "id": "NFR6.4",
+      "status": "OK",
+      "target": "monitoring-design.md §1 estimate_refresh_failed"
+    },
+    {
+      "id": "NFR6.5",
+      "status": "OK",
+      "target": "cicd-pipeline.md §1 job unit e e2e (Annulla)"
+    },
+    {
+      "id": "NFR8.2",
+      "status": "OK",
+      "target": "monitoring-design.md §1 motivi fissi senza dati personali"
+    }
+  ]
+}

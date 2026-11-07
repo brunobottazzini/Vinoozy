@@ -1,0 +1,14 @@
+# Maximum download size in bytes of the release bundle of main before
+# u6-label-recognition (NFR2.3), from `tool/check_app_size.sh --measure` on
+# the plain release AAB (arm64 only, FIREBASE_ENV=demo), as
+# tool/check_release_build.sh builds it. tool/check_app_size.sh fails while
+# this value is not a number.
+#
+# Not measured yet: at Code Generation running bundletool locally was not
+# permitted. The pre-U6 bundle was built from the tree before U6 and kept,
+# outside git, at android/captures/pre-u6-app-release.aab (24,634,405 bytes,
+# SHA-256 eab0ee48b74e05d85dcae8469b19178273baf3fe6b9e7473e731e1af410332cd);
+# measure it with
+#   tool/check_app_size.sh --measure android/captures/pre-u6-app-release.aab
+# and replace UNSET with the number printed.
+UNSET

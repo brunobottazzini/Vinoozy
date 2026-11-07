@@ -2,7 +2,7 @@
 
 Fonti: `team.md` (Testing Posture, Deployment, Code Style), `feasibility-assessment.md` e `constraint-register.md` (Ideation), `decisions.md` (ADR-001…ADR-004), `contract-summary.md`, risposte in `nfr-requirements-questions.md`.
 
-Le versioni non sono fissate qui: alla generazione del codice si usa l'ultima versione stabile di ogni pacchetto, compatibile con le altre, e `pubspec.lock` va nel repository.
+Le versioni non sono fissate qui: alla generazione del codice si usa l'ultima versione stabile di ogni pacchetto, compatibile con le altre, e `pubspec.lock` va nel repository. Eccezione: `firebase-tools` è fissato a 14.27.0 (vedi la riga "Strumenti Firebase").
 
 ## Scelte
 
@@ -20,6 +20,9 @@ Le versioni non sono fissate qui: alla generazione del codice si usa l'ultima ve
 | Test | `flutter_test`, `mocktail`, `integration_test`; `@firebase/rules-unit-testing` per le regole | team.md: test-after, 80% senza esclusioni, end-to-end su emulatore Android | — |
 | Emulatori | Firebase Emulator Suite (Auth, Firestore) in locale e in CI, con il progetto dimostrativo `demo-vinoozy` (configurazione nel repository, nessuna credenziale reale) | team.md (Q9); NFR4.7 | Progetto di test separato (costi e segreti in più) |
 | Qualità | `dart format`, `flutter analyze` con `flutter_lints` | team.md (Code Style) | — |
+| Versione minima di Android | API 24 (Android 7.0) | Richiesta dalla Firebase BoM usata; decisa in Code Generation (2026-11-05). Resta più bassa dell'Android 8.0 dell'assunzione A2 di `requirements.md`, quindi i telefoni previsti sono tutti coperti | API 23 (non supportata dalle librerie Firebase attuali) |
+| Strumenti Firebase | `firebase-tools` 14.27.0 fissato in `package.json` | La 15 richiede Java 21, non disponibile sui runner e in locale | Ultima versione non fissata (build non ripetibili) |
+| Configurazione di produzione | Valori Firebase passati alla compilazione con `--dart-define-from-file=config/firebase_prod.json`; file mai committato, scritto da `release.yml` dai segreti di GitHub (NFR4.7) | L'import condizionale con una variabile di compilazione propria non è supportato da Flutter: la build prendeva sempre la configurazione vuota (trovato nella prova sul telefono, 2026-11-05) | File Dart generato e import condizionale (non funziona); valori nel repository (vietato da NFR4.7) |
 | CI | GitHub Actions: formattazione, analisi, test con copertura, test delle regole, end-to-end su emulatore Android, build AAB firmato e invio al test interno | team.md (Way of Working, Deployment), NFR7 | — |
 
 ## Struttura del codice

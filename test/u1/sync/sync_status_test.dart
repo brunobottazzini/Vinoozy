@@ -81,6 +81,52 @@ void main() {
     expect(update.backOnline, isFalse);
   });
 
+  group('u4-cellar setPending (NFR6.6)', () {
+    test('pending drinks make the state syncing, then synced again', () {
+      tracker.onSnapshot(SyncSource.wines, serverClean);
+
+      expect(
+        tracker.setPending(SyncSource.drinkingRecords, true),
+        SyncState.syncing,
+      );
+      expect(
+        tracker.setPending(SyncSource.drinkingRecords, false),
+        SyncState.synced,
+      );
+    });
+
+    test(
+      'offline still comes from the snapshots (last bottle drunk offline)',
+      () {
+        tracker.onSnapshot(SyncSource.wines, serverClean);
+        tracker.onSnapshot(SyncSource.wines, cacheClean);
+
+        expect(
+          tracker.setPending(SyncSource.drinkingRecords, true),
+          SyncState.offline,
+        );
+      },
+    );
+
+    test('setPending is never a move from cache to server', () {
+      tracker.onSnapshot(SyncSource.wines, serverClean);
+      tracker.onSnapshot(SyncSource.wines, cacheClean);
+      tracker.setPending(SyncSource.drinkingRecords, true);
+      tracker.setPending(SyncSource.drinkingRecords, false);
+
+      final update = tracker.onSnapshot(SyncSource.wines, cacheClean);
+      expect(update.backOnline, isFalse);
+      expect(update.state, SyncState.synced);
+    });
+
+    test('forget clears a pending source', () {
+      tracker.setPending(SyncSource.drinkingRecords, true);
+      tracker.forget(SyncSource.drinkingRecords);
+
+      expect(tracker.state, SyncState.synced);
+    });
+  });
+
   test('SnapshotMeta has value equality', () {
     expect(
       const SnapshotMeta(hasPendingWrites: true, isFromCache: false),

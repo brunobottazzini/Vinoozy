@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:vinoozy/account/account_gate.dart';
@@ -35,10 +36,12 @@ void main() {
   late RecordingErrorSink sink;
   late StreamController<AppUser?> userChanges;
   late AccountGate gate;
+  late int reopened;
 
   setUpAll(() => registerFallbackValue(userA));
 
   setUp(() {
+    reopened = 0;
     auth = MockAuthService();
     sink = RecordingErrorSink();
     ledger = LocalLedger(
@@ -72,10 +75,160 @@ void main() {
       bus: bus,
       reporter: recordingReporter(sink),
       defaultCellarName: () => 'La mia cantina',
+      reopenCellarListeners: () => reopened++,
     );
   });
 
   tearDown(() => userChanges.close());
+
+  /// Stubs `ensurePersonalCellar` for userA with [answer].
+  void stubEnsure(Future<void> Function() answer) => when(
+    () => cellars.ensurePersonalCellar(
+      uid: 'user-a',
+      defaultName: 'La mia cantina',
+    ),
+  ).thenAnswer((_) => answer());
+
+  group('retryCellar (BR1.3 violation, security-design.md §6, §8)', () {
+    test('after a listener error with the cellar ready, "Riprova" checks the '
+        'cellar first and only then reopens the listeners', () async {
+      when(() => auth.currentUser).thenReturn(userA);
+      await gate.start();
+      expect((gate.current as GateCellar).setupFailed, isFalse);
+      expect(reopened, 0);
+
+      final ensure = Completer<void>();
+      stubEnsure(() => ensure.future);
+      final retry = gate.retryCellar();
+      await pumpEventQueue();
+
+      expect(gate.current, isA<GateEnsureCellar>());
+      expect(reopened, 0, reason: 'listeners reopen only after the check');
+
+      ensure.complete();
+      await retry;
+      expect(reopened, 1);
+      expect((gate.current as GateCellar).setupFailed, isFalse);
+      verify(() => watcher.start('user-a')).called(2);
+    });
+
+    test('a rules rejection at first, then access restored: "Riprova" opens '
+        'the cellar and reopens the listeners', () async {
+      when(() => auth.currentUser).thenReturn(userA);
+      when(() => cellars.isCached('user-a')).thenAnswer((_) async => false);
+      stubEnsure(
+        () async => throw CellarSetupException(
+          FirebaseException(
+            plugin: 'cloud_firestore',
+            code: 'permission-denied',
+          ),
+        ),
+      );
+      await gate.start();
+      expect((gate.current as GateCellar).setupFailed, isTrue);
+
+      stubEnsure(() async {});
+      await gate.retryCellar();
+
+      expect((gate.current as GateCellar).setupFailed, isFalse);
+      expect(reopened, 1);
+    });
+
+    test('a failed retry keeps the error and reopens nothing', () async {
+      when(() => auth.currentUser).thenReturn(userA);
+      await gate.start();
+
+      stubEnsure(() async => throw CellarSetupException(StateError('denied')));
+      await gate.retryCellar();
+
+      expect((gate.current as GateCellar).setupFailed, isTrue);
+      expect(reopened, 0);
+      expect(sink.reasons, contains('CellarSetupFailed'));
+    });
+
+    test('an uncached cellar that fails, then fails again on "Riprova": the '
+        'error stays, no listener is reopened, a later success reopens '
+        'them once', () async {
+      when(() => auth.currentUser).thenReturn(userA);
+      when(() => cellars.isCached('user-a')).thenAnswer((_) async => false);
+      stubEnsure(() async => throw CellarSetupException(StateError('offline')));
+      await gate.start();
+      expect((gate.current as GateCellar).setupFailed, isTrue);
+
+      final ensure = Completer<void>();
+      stubEnsure(() => ensure.future);
+      final retry = gate.retryCellar();
+      await pumpEventQueue();
+      expect(gate.current, isA<GateEnsureCellar>());
+      ensure.completeError(CellarSetupException(StateError('offline')));
+      await retry;
+
+      expect((gate.current as GateCellar).setupFailed, isTrue);
+      expect(reopened, 0);
+      expect(
+        sink.reasons.where((reason) => reason == 'CellarSetupFailed'),
+        hasLength(2),
+      );
+
+      stubEnsure(() async {});
+      await gate.retryCellar();
+      expect((gate.current as GateCellar).setupFailed, isFalse);
+      expect(reopened, 1);
+    });
+
+    test('the first sign-in without a cached cellar opens the cellar after '
+        'the check and reopens nothing (no listener existed)', () async {
+      when(() => auth.currentUser).thenReturn(userA);
+      when(() => cellars.isCached('user-a')).thenAnswer((_) async => false);
+      final ensure = Completer<void>();
+      stubEnsure(() => ensure.future);
+
+      final start = gate.start();
+      await pumpEventQueue();
+      expect(gate.current, isA<GateEnsureCellar>());
+      verifyNever(() => watcher.start(any()));
+
+      ensure.complete();
+      await start;
+      expect((gate.current as GateCellar).setupFailed, isFalse);
+      expect(reopened, 0);
+      verify(() => watcher.start('user-a')).called(1);
+    });
+
+    test('outside the cellar it does nothing', () async {
+      when(() => auth.currentUser).thenReturn(null);
+      await gate.start();
+
+      await gate.retryCellar();
+
+      expect(gate.current, isA<GateSignIn>());
+      expect(reopened, 0);
+      verifyNever(
+        () => cellars.ensurePersonalCellar(
+          uid: any(named: 'uid'),
+          defaultName: any(named: 'defaultName'),
+        ),
+      );
+    });
+
+    test('a session revoked during the check leaves the sign-in screen and '
+        'reopens nothing', () async {
+      when(() => auth.currentUser).thenReturn(userA);
+      await gate.start();
+
+      final ensure = Completer<void>();
+      stubEnsure(() => ensure.future);
+      final retry = gate.retryCellar();
+      await pumpEventQueue();
+      userChanges.add(null);
+      await pumpEventQueue();
+      ensure.complete();
+      await retry;
+
+      expect(gate.current, isA<GateSignIn>());
+      expect(reopened, 0);
+    });
+  });
 
   Future<void> leavePendingWritesOf(AppUser owner, {int wines = 1}) async {
     for (var i = 0; i < wines; i++) {
@@ -173,6 +326,66 @@ void main() {
       expect(gate.current, isA<GateRestartRequired>());
     },
   );
+
+  group('u7-sharing NFR6.4: the chosen cellar is forgotten', () {
+    late List<String> calls;
+    late AccountGate sharingGate;
+
+    setUp(() {
+      calls = [];
+      sharingGate = AccountGate(
+        auth: auth,
+        ledger: ledger,
+        resetCoordinator: resets,
+        cellars: cellars,
+        users: users,
+        watcher: watcher,
+        bus: bus,
+        reporter: recordingReporter(sink),
+        defaultCellarName: () => 'La mia cantina',
+        reopenCellarListeners: () => reopened++,
+        clearSharingChoice: () async => calls.add('clear'),
+      );
+    });
+
+    tearDown(() => sharingGate.dispose());
+
+    test('before the reset invalidates the listeners', () async {
+      await ledger.setLastUid('user-a');
+      when(() => auth.currentUser).thenReturn(userB);
+      when(() => resets.reset('user-b')).thenAnswer((_) async {
+        calls.add('reset');
+        return ResetOutcome.completed;
+      });
+
+      await sharingGate.start();
+
+      expect(calls, ['clear', 'reset']);
+      expect(sharingGate.current, isA<GateCellar>());
+    });
+
+    test('at sign-out', () async {
+      await leavePendingWritesOf(userA);
+      when(() => auth.currentUser).thenReturn(userB);
+      await sharingGate.start();
+
+      await sharingGate.signInWithOwner();
+
+      expect(calls, ['clear']);
+      expect(sharingGate.current, isA<GateSignIn>());
+    });
+
+    test('"Riprova" on the cellar reopens the listeners, the sharing ones '
+        'included (reopenCellarListeners)', () async {
+      when(() => auth.currentUser).thenReturn(userA);
+      await sharingGate.start();
+
+      await sharingGate.retryCellar();
+
+      expect(reopened, 1);
+      expect(calls, isEmpty, reason: 'a retry keeps the choice');
+    });
+  });
 
   test('"Sign in with <email>" signs out and returns to sign-in', () async {
     await leavePendingWritesOf(userA);
@@ -286,6 +499,7 @@ void main() {
       bus: bus,
       reporter: recordingReporter(sink),
       defaultCellarName: () => 'La mia cantina',
+      reopenCellarListeners: () => reopened++,
     );
     when(() => auth.currentUser).thenReturn(userA);
 

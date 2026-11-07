@@ -30,14 +30,52 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: play-production
+    permissions:
+      contents: read
+      actions: read # the firebase-deploy.yml runs, for the rules check
     env:
       PLAY_SA_JSON_FILE: ${{ runner.temp }}/play-production.json
       VERSION_CODE: ${{ inputs.versionCode }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # build-<versionCode> and v* tags for the rules check
       - name: Validate the input
         run: |
           [[ "$VERSION_CODE" =~ ^[0-9]+$ ]] || { echo "versionCode must be a number" >&2; exit 1; }
+      # u7-sharing (cicd-pipeline.md §2): an app version never reaches
+      # production with rules or indexes other than the deployed ones. The
+      # last successful firebase-deploy.yml run names its ref in its run name;
+      # the blobs of firestore.rules and firestore.indexes.json there must
+      # equal those of the build-<versionCode> commit. Not run for "halt".
+      - name: The rules of the build are the deployed ones
+        if: inputs.action != 'halt'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Features whose new writes test/rules/compat/ may skip against the
+          # production rules until they are deployed: this check covers them.
+          # `cellar` (u4-cellar cicd-pipeline.md §2): every wine creation
+          # carries matchKey, which the earlier rules refuse. `account`
+          # (u8-account NFR4.5): deletionStartedAt and the deletion of
+          # users and cellars, which the earlier rules refuse.
+          RULES_FEATURES: sharing cellar account
+        run: |
+          title="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/firebase-deploy.yml/runs?status=success&per_page=1" \
+            --jq '.workflow_runs[0].display_title // empty')"
+          deployed_ref="${title#firebase-deploy }"
+          if [[ -z "$title" || ! "$deployed_ref" =~ ^[A-Za-z0-9._+/-]+$ ]]; then
+            echo "No successful firebase-deploy.yml run found: deploy the rules first with firebase-deploy.yml" >&2
+            exit 1
+          fi
+          deployed_sha="$(git rev-parse --verify "$deployed_ref^{commit}")"
+          build_sha="$(git rev-list -n 1 "build-$VERSION_CODE")"
+          for file in firestore.rules firestore.indexes.json; do
+            if [[ "$(git rev-parse "$build_sha:$file")" != "$(git rev-parse "$deployed_sha:$file")" ]]; then
+              echo "$file of build-$VERSION_CODE differs from the deployed one ($deployed_ref): deploy the rules first with firebase-deploy.yml" >&2
+              exit 1
+            fi
+          done
+          echo "Rules and indexes of build-$VERSION_CODE match the deployment of $deployed_ref"
       - name: Write the Play credentials
         env:
           PLAY_SA_JSON: ${{ secrets.PLAY_PRODUCTION_SA_JSON }}

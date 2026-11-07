@@ -19,7 +19,7 @@ Come **Proprietario**, voglio uscire dall'account dal profilo, così da poter la
 
 ### US1.3 — Cancellare l'account *(Must; FR1.4, NFR8)*
 Come **Proprietario**, voglio cancellare il mio account dall'app, così da eliminare tutti i miei dati quando non uso più il servizio.
-- **AC1.3.1** Given ho effettuato l'accesso, When scelgo "Cancella account", Then vedo una conferma che elenca cantina, storico, foto e condivisioni che verranno eliminati.
+- **AC1.3.1** Given ho effettuato l'accesso, When scelgo "Cancella account", Then vedo una conferma che elenca cantina, storico e condivisioni che verranno eliminati. *(2026-11-06: tolte le foto, che non si conservano più — u6 Q1)*
 - **AC1.3.2** Given confermo la cancellazione, When l'operazione termina, Then torno alla schermata di accesso e i miei dati non sono più visibili a nessuno.
 
 ## US2 — Aggiungere un vino
@@ -37,6 +37,7 @@ Come **Proprietario**, voglio fotografare l'etichetta, così da non dover scrive
 - **AC2.2.2** Given la proposta, When tocco "Correggi", Then si apre l'inserimento scritto già compilato.
 - **AC2.2.3** Given un'etichetta illeggibile, When scatto la foto, Then vedo "Non riesco a leggere l'etichetta" e il pulsante "Scrivi a mano".
 - **AC2.2.4** Given il permesso fotocamera negato, When tocco "Scatta foto", Then vedo una spiegazione e il collegamento alle impostazioni.
+- **AC2.2.5** *(2026-11-06, richiesta del proprietario)* Given una foto dell'etichetta già nella galleria, When tocco "Importa una foto" e la scelgo, oppure la condivido dalla galleria verso Vinoozy, Then vedo la stessa proposta di AC2.2.1, e la foto resta nella galleria.
 
 ### US2.3 — Non creare doppioni *(Should; FR2.5)*
 Come **Proprietario**, voglio che aggiungere un vino già presente ne aumenti la quantità, così da non avere doppioni in cantina.
@@ -112,9 +113,9 @@ Come **Proprietario**, voglio vedere i cibi da abbinare a un vino, così da sceg
 ## US8 — Condividere la cantina
 
 ### US8.1 — Invitare una persona *(Should; FR8.1, FR8.2)*
-Come **Proprietario**, voglio invitare fino a 5 persone scegliendo per ognuna "solo lettura" o "può modificare", così da gestire la cantina insieme.
-- **AC8.1.1** Given meno di 5 persone invitate, When inserisco un'email valida e scelgo il permesso, Then la persona compare nell'elenco con quel permesso.
-- **AC8.1.2** Given 5 persone già invitate, When provo a invitarne un'altra, Then vedo che il limite è raggiunto.
+Come **Proprietario**, voglio invitare fino a 2 persone scegliendo per ognuna "solo lettura" o "può modificare", così da gestire la cantina insieme. *(Limite portato da 5 a 2 il 2026-11-06, FR8.1.)*
+- **AC8.1.1** Given meno di 2 persone invitate, When inserisco un'email valida e scelgo il permesso, Then la persona compare nell'elenco con quel permesso.
+- **AC8.1.2** Given 2 persone già invitate, When provo a invitarne un'altra, Then vedo che il limite è raggiunto.
 - **AC8.1.3** Given un'email non valida, When tocco "Invita", Then vedo l'errore sotto il campo.
 
 ### US8.2 — Revocare l'accesso *(Should; FR8.3)*

@@ -1,0 +1,42 @@
+{
+  "count": 6,
+  "products": [
+    {
+      "code": 8001234567890,
+      "product_name": 42,
+      "brands": "Ignored",
+      "categories_tags": ["en:wines"]
+    },
+    {
+      "code": "8001234567890",
+      "product_name": "   ",
+      "categories_tags": ["en:wines"]
+    },
+    {
+      "code": "123",
+      "product_name": "Vino\u0000 con\u0007 controlli\u009f",
+      "brands": ["not", "a", "string"],
+      "categories_tags": ["en:wines", "en:white-wines"],
+      "origins": 7
+    },
+    {
+      "code": "8000000000017",
+      "product_name": "Tags not in a list",
+      "categories_tags": "en:wines"
+    },
+    {
+      "code": "80012345678901234",
+      "product_name": "Rosato del Salento",
+      "brands": "  , Produttore Secondo",
+      "categories_tags": ["en:wines", "en:rose-wines", 5],
+      "origins": "Puglia"
+    },
+    "not an object",
+    {
+      "code": "012345678905",
+      "product_name": "Passito di Pantelleria",
+      "brands": "Cantina Isola",
+      "categories_tags": ["en:wines", "en:dessert-wines"]
+    }
+  ]
+}

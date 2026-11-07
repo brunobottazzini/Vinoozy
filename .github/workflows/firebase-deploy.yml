@@ -4,12 +4,16 @@
 # Federation, accepted only from this repository and the firebase-prod
 # environment.
 name: firebase-deploy
+# The deployed ref in the run name: promote.yml reads it from the last
+# successful run to check that a build has the deployed rules (u7-sharing
+# cicd-pipeline.md §2).
+run-name: firebase-deploy ${{ inputs.ref }}
 
 on:
   workflow_dispatch:
     inputs:
       ref:
-        description: A v* tag or a commit contained in main
+        description: A v* tag or a full 40-character commit hash contained in main
         required: true
         type: string
 
@@ -32,8 +36,14 @@ jobs:
           REF: ${{ inputs.ref }}
         run: |
           sha="$(git rev-parse --verify "$REF^{commit}")"
+          # Only immutable refs: a v* tag or a full 40-character commit hash.
+          # A branch name could move later, and promote.yml re-resolves the
+          # ref recorded in the run name (u7-sharing cicd-pipeline.md §2).
           if git show-ref --verify --quiet "refs/tags/$REF" && [[ "$REF" == v* ]]; then
             echo "tag $REF -> $sha"
+          elif ! [[ "$REF" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "$REF must be a v* tag or a full commit hash, not a branch name" >&2
+            exit 1
           elif git merge-base --is-ancestor "$sha" origin/main; then
             echo "commit $sha is contained in main"
           else
@@ -60,9 +70,13 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: >
-          npx firebase emulators:exec --only firestore --project demo-vinoozy
-          "npm --prefix test/rules test -- u1.rules.test.mjs compat/"
+      # The same list of rules tests as ci.yml (u7-sharing cicd-pipeline.md
+      # §2): package.json is the only list of files.
+      - run: npm run test:rules
+      # The collection-group index of the invitations (u7 NFR4.7), and the
+      # check of the check (ok.json passes, missing.json fails).
+      - run: tool/check_firestore_indexes.sh
+      - run: tool/check_firestore_indexes_test.sh
 
   deploy:
     needs: [verify-ref, rules]

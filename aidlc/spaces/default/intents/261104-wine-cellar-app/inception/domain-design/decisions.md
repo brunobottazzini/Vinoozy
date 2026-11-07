@@ -36,7 +36,7 @@ Fonti: `requirements.md`, `stories.md`, `team-practices.md`, `components.md`, ri
 
 ## Status: Accepted
 
-- **Context** — Fino a 6 persone possono modificare la stessa cantina offline (FR8.1, FR9.4); due bevute contemporanee non devono perdersi né portare la quantità sotto 0 (revisione di User Stories, R-02).
+- **Context** — Fino a 6 persone possono modificare la stessa cantina offline (FR8.1, FR9.4; dal 2026-11-06 il limite è di 3 persone, il proprietario più 2 invitate, e la decisione resta valida); due bevute contemporanee non devono perdersi né portare la quantità sotto 0 (revisione di User Stories, R-02).
 - **Decision** — Sync invia le variazioni di quantità come incrementi (es. -1) che si sommano nel cloud; Cellar limita il risultato a 0 e registra comunque ogni bevuta nello storico. Per gli altri campi vale l'ultima modifica.
 - **Consequences** — Positive: nessuna bevuta persa; regola semplice da spiegare. Negative: se due persone bevono "l'ultima" bottiglia, lo storico avrà due voci e la quantità 0, da mostrare come possibile errore.
 - **Alternatives Rejected** — Ultima modifica vince anche sulla quantità: perde aggiornamenti. Blocco della modifica senza rete: contrario a FR9.1.

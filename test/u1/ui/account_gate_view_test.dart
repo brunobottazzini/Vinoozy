@@ -85,11 +85,15 @@ void main() {
     verify(() => gate.retryCheck()).called(1);
   });
 
-  testWidgets('ensure-cellar and cellar states show the cellar screen', (
-    tester,
-  ) async {
+  // Since u5-dashboard the shell opens on the Dashboard: the cellar screen
+  // is the "Cantina" tab.
+  testWidgets('ensure-cellar and cellar states show the cellar screen in the '
+      '"Cantina" tab', (tester) async {
     await pump(tester);
     state.value = const GateEnsureCellar(userA);
+    await tester.pump();
+    expect(find.byKey(const Key('dashboard-loading')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('home-nav-cellar')));
     await tester.pump();
     expect(find.byKey(const Key('cellar-loading')), findsOneWidget);
 

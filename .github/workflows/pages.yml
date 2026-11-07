@@ -1,0 +1,183 @@
+# Manual publication of the account deletion page on GitHub Pages
+# (u8-account cicd-pipeline.md §2 and §6; infrastructure-specification.md,
+# both correction sections). The page is never published from main: only
+# this workflow updates the gh-pages branch, after the owner's approval in
+# the github-pages-publish environment. Order: merge, rules
+# (firebase-deploy.yml), then the page and the app.
+#
+# mode=publish  checks that the rules of the ref are the deployed ones (as
+#               promote.yml does), checks the page (tool/check_web_pins.sh)
+#               and copies it to gh-pages/account-deletion/; the first
+#               publication creates gh-pages.
+# mode=rollback reverts the last publication commit of gh-pages, without the
+#               rules check: it goes back to a page already compatible with
+#               rules deployed in the past.
+name: pages
+run-name: pages ${{ inputs.mode }} ${{ inputs.ref }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: publish the page of a ref, or rollback to the previous publication
+        required: true
+        type: choice
+        options: [publish, rollback]
+        default: publish
+      ref:
+        description: For publish, a v* tag or a full 40-character commit hash contained in main
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  pages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: github-pages-publish
+    permissions:
+      contents: write # the gh-pages branch, with GITHUB_TOKEN; no new secret
+      actions: read # the firebase-deploy.yml runs, for the rules check
+    env:
+      MODE: ${{ inputs.mode }}
+      REF: ${{ inputs.ref }}
+      PAGES_BRANCH: gh-pages
+      PUBLISH_PREFIX: 'pages: publish'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # tags, main and gh-pages
+      - name: Bot identity for the gh-pages commits
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      # ---- publish ----------------------------------------------------------
+      - name: The ref must be a v* tag or a commit of main
+        if: inputs.mode == 'publish'
+        id: ref
+        run: |
+          if [[ -z "$REF" ]]; then
+            echo "publish needs a ref: a v* tag or a full commit hash" >&2
+            exit 1
+          fi
+          sha="$(git rev-parse --verify "$REF^{commit}")"
+          if git show-ref --verify --quiet "refs/tags/$REF" && [[ "$REF" == v* ]]; then
+            echo "tag $REF -> $sha"
+          elif ! [[ "$REF" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "$REF must be a v* tag or a full commit hash, not a branch name" >&2
+            exit 1
+          elif git merge-base --is-ancestor "$sha" origin/main; then
+            echo "commit $sha is contained in main"
+          else
+            echo "$REF is neither a v* tag nor a commit of main" >&2
+            exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      # Same check as promote.yml: the last successful firebase-deploy.yml run
+      # names its ref in its run name; firestore.rules and
+      # firestore.indexes.json there must equal those of this ref.
+      - name: The rules of the ref are the deployed ones
+        if: inputs.mode == 'publish'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.ref.outputs.sha }}
+        run: |
+          title="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/firebase-deploy.yml/runs?status=success&per_page=1" \
+            --jq '.workflow_runs[0].display_title // empty')"
+          deployed_ref="${title#firebase-deploy }"
+          if [[ -z "$title" || ! "$deployed_ref" =~ ^[A-Za-z0-9._+/-]+$ ]]; then
+            echo "Pubblica prima le regole con firebase-deploy.yml (nessuna esecuzione riuscita)" >&2
+            exit 1
+          fi
+          deployed_sha="$(git rev-parse --verify "$deployed_ref^{commit}")"
+          for file in firestore.rules firestore.indexes.json; do
+            if [[ "$(git rev-parse "$SHA:$file")" != "$(git rev-parse "$deployed_sha:$file")" ]]; then
+              echo "Pubblica prima le regole con firebase-deploy.yml ($file di $REF diverso da $deployed_ref)" >&2
+              exit 1
+            fi
+          done
+          echo "Rules and indexes of $REF match the deployment of $deployed_ref"
+      - name: Check out the ref
+        if: inputs.mode == 'publish'
+        run: git checkout --detach "${{ steps.ref.outputs.sha }}"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: inputs.mode == 'publish'
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - if: inputs.mode == 'publish'
+        run: npm ci
+      - name: The page is reproducible, local-only and in three languages
+        if: inputs.mode == 'publish'
+        run: tool/check_web_pins.sh
+      # Review R-04: no TODO value in any quotes, a reCAPTCHA site key, and
+      # no emulator addresses in the published page.
+      - name: The owner filled the public web configuration
+        if: inputs.mode == 'publish'
+        run: |
+          if ! node tool/check_web_config.mjs docs/account-deletion/firebase-config.js; then
+            echo "Fill docs/account-deletion/firebase-config.js from the Firebase console first (docs/firebase-setup.md §10)" >&2
+            exit 1
+          fi
+      - name: Publish docs/account-deletion to gh-pages
+        if: inputs.mode == 'publish'
+        env:
+          SHA: ${{ steps.ref.outputs.sha }}
+        run: |
+          site="$RUNNER_TEMP/site"
+          if git ls-remote --exit-code --heads origin "$PAGES_BRANCH" >/dev/null; then
+            git worktree add "$site" "origin/$PAGES_BRANCH"
+            git -C "$site" checkout -B "$PAGES_BRANCH"
+          else
+            # First publication: a new branch with no history of main.
+            git worktree add --detach "$site"
+            git -C "$site" checkout --orphan "$PAGES_BRANCH"
+            git -C "$site" rm -rf --quiet .
+          fi
+          rm -rf "$site/account-deletion"
+          mkdir -p "$site/account-deletion/en" "$site/account-deletion/pt-BR"
+          src=docs/account-deletion
+          cp "$src/index.html" "$src/app.bundle.js" "$src/firebase-config.js" "$src/style.css" "$site/account-deletion/"
+          cp "$src/en/index.html" "$site/account-deletion/en/"
+          cp "$src/pt-BR/index.html" "$site/account-deletion/pt-BR/"
+          touch "$site/.nojekyll"
+          git -C "$site" add -A
+          if git -C "$site" diff --cached --quiet; then
+            echo "gh-pages already has the page of $REF: nothing to publish"
+            exit 0
+          fi
+          git -C "$site" commit --quiet -m "$PUBLISH_PREFIX $REF ($SHA)"
+          git -C "$site" push origin "HEAD:refs/heads/$PAGES_BRANCH"
+          echo "Published https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/account-deletion/"
+
+      # ---- rollback ---------------------------------------------------------
+      - name: Roll back to the previous publication
+        if: inputs.mode == 'rollback'
+        run: |
+          if ! git ls-remote --exit-code --heads origin "$PAGES_BRANCH" >/dev/null; then
+            echo "Non c'è una versione precedente da ripristinare (gh-pages non esiste)" >&2
+            exit 1
+          fi
+          git checkout -B "$PAGES_BRANCH" "origin/$PAGES_BRANCH"
+          publications="$(git log --format=%s | grep -c "^$PUBLISH_PREFIX" || true)"
+          if [[ "$publications" -lt 2 ]]; then
+            echo "Non c'è una versione precedente da ripristinare" >&2
+            exit 1
+          fi
+          # One rollback at a time: a second one would revert the same
+          # publication again, i.e. publish it back.
+          if [[ "$(git log -1 --format=%s)" == "Revert \"$PUBLISH_PREFIX"* ]]; then
+            echo "Il rollback è già stato fatto: pubblica una versione con mode=publish" >&2
+            exit 1
+          fi
+          last="$(git log --format='%H %s' | grep -m1 " $PUBLISH_PREFIX" | cut -d' ' -f1)"
+          git revert --no-edit "$last"
+          git push origin "HEAD:refs/heads/$PAGES_BRANCH"
+          echo "Reverted $(git log -1 --format=%s "$last")"

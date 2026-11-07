@@ -59,6 +59,10 @@ class WineDraft {
     required this.name,
     required this.vintage,
     required this.quantity,
+    this.producer,
+    this.wineType,
+    this.region,
+    this.denomination,
   });
 
   /// Validates raw form input. [currentYear] comes from the injected clock.
@@ -109,6 +113,36 @@ class WineDraft {
   /// Null for "no vintage".
   final int? vintage;
   final int quantity;
+
+  /// Optional details added by u4-cellar (BR1.1-BR1.3): blank texts are
+  /// `null`; `wineType` is a C2 `WineType` name.
+  final String? producer;
+  final String? wineType;
+  final String? region;
+  final String? denomination;
+
+  /// This draft with the u4-cellar details; blank texts become `null` and
+  /// the others are trimmed.
+  WineDraft withDetails({
+    String? producer,
+    String? wineType,
+    String? region,
+    String? denomination,
+  }) => WineDraft._(
+    id: id,
+    name: name,
+    vintage: vintage,
+    quantity: quantity,
+    producer: _blankToNull(producer),
+    wineType: _blankToNull(wineType),
+    region: _blankToNull(region),
+    denomination: _blankToNull(denomination),
+  );
+
+  static String? _blankToNull(String? value) {
+    final trimmed = value?.trim();
+    return trimmed == null || trimmed.isEmpty ? null : trimmed;
+  }
 
   /// Fields written on creation, without `createdAt`/`updatedAt`: the
   /// repository sets both to the server timestamp, as the rules require

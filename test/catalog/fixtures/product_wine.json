@@ -1,0 +1,12 @@
+{
+  "code": "8001234567890",
+  "status": 1,
+  "status_verbose": "product found",
+  "product": {
+    "code": "8001234567890",
+    "product_name": "Barbera d'Asti Superiore",
+    "brands": "Cantina Esempio",
+    "categories_tags": ["en:alcoholic-beverages", "en:wines", "en:red-wines"],
+    "origins": "Italia"
+  }
+}

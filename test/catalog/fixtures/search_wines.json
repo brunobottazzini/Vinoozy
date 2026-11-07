@@ -1,0 +1,34 @@
+{
+  "count": 4,
+  "page": 1,
+  "page_count": 4,
+  "page_size": 10,
+  "products": [
+    {
+      "code": "8001234567890",
+      "product_name": "Barolo Cannubi 2016",
+      "brands": "Cantina Esempio, Gruppo Vini",
+      "categories_tags": ["en:beverages", "en:alcoholic-beverages", "en:wines", "en:red-wines"],
+      "origins": "Piemonte"
+    },
+    {
+      "code": "8009876543210",
+      "product_name": "Langhe Nebbiolo",
+      "brands": "Azienda Agricola Prova",
+      "categories_tags": ["en:wines", "en:red-wines"]
+    },
+    {
+      "code": "3012345678901",
+      "product_name": "Champagne Brut",
+      "brands": "Maison Test",
+      "categories_tags": ["en:wines", "en:sparkling-wines", "en:champagnes"],
+      "origins": "France"
+    },
+    {
+      "code": "4000000000001",
+      "product_name": "Grape juice",
+      "brands": "Juice Co",
+      "categories_tags": ["en:beverages", "en:fruit-juices"]
+    }
+  ]
+}

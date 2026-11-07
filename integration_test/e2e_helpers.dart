@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vinoozy/cellar/domain/wine.dart';
 import 'package:vinoozy/cellar/ui/wine_list_tile.dart';
 import 'package:vinoozy/e2e/emulator_google_auth_service.dart';
 import 'package:vinoozy/firebase/firebase_env.dart';
@@ -26,26 +27,40 @@ final FirebaseEnvConfig e2eConfig = FirebaseEnvConfig.fromEnvironment();
 const userA = E2EIdentity(sub: 'user-a', email: 'user-a@example.com');
 const userB = E2EIdentity(sub: 'user-b', email: 'user-b@example.com');
 
+/// Own identity of the 500-wine Dashboard test (u5-dashboard
+/// cicd-pipeline.md §1): a cellar no other test reads or counts.
+const userDashboard = E2EIdentity(
+  sub: 'user-dashboard',
+  email: 'dashboard@example.com',
+);
+
 String get _host => e2eConfig.emulatorHost;
 const _project = 'demo-vinoozy';
 
 /// Calls an emulator REST endpoint as the emulator admin ("Bearer owner"
 /// bypasses the rules), so checks read the cloud, never the app's cache.
+/// With [bearer] it calls as that user's id token instead, through the rules.
 Future<(int, Object?)> emulatorRequest(
   String method,
   int port,
-  String path,
-) async {
+  String path, {
+  Map<String, Object?>? body,
+  String bearer = 'owner',
+}) async {
   final client = HttpClient();
   try {
     final request = await client.openUrl(
       method,
       Uri.parse('http://$_host:$port$path'),
     );
-    request.headers.set(HttpHeaders.authorizationHeader, 'Bearer owner');
+    request.headers.set(HttpHeaders.authorizationHeader, 'Bearer $bearer');
+    if (body != null) {
+      request.headers.contentType = ContentType.json;
+      request.write(jsonEncode(body));
+    }
     final response = await request.close();
-    final body = await response.transform(utf8.decoder).join();
-    return (response.statusCode, body.isEmpty ? null : jsonDecode(body));
+    final text = await response.transform(utf8.decoder).join();
+    return (response.statusCode, text.isEmpty ? null : jsonDecode(text));
   } finally {
     client.close();
   }
@@ -86,6 +101,91 @@ Future<Map<String, Object?>?> cloudDocument(String path) async {
   return ((body! as Map)['fields'] as Map).cast<String, Object?>();
 }
 
+/// Changes `ownerId` of a cellar in the cloud as the emulator admin. With
+/// another owner the real rules reject the wines listener of the signed-in
+/// user (permission-denied); setting it back restores the access.
+Future<void> setCloudCellarOwner(String cellarId, String ownerId) async {
+  final (status, _) = await emulatorRequest(
+    'PATCH',
+    FirebaseEnvConfig.firestoreEmulatorPort,
+    '/v1/projects/$_project/databases/(default)/documents/cellars/$cellarId'
+        '?updateMask.fieldPaths=ownerId',
+    body: {
+      'fields': {
+        'ownerId': {'stringValue': ownerId},
+      },
+    },
+  );
+  if (status != 200) throw StateError('PATCH cellars/$cellarId -> $status');
+}
+
+String _documentName(String path) =>
+    'projects/$_project/databases/(default)/documents/$path';
+
+/// Applies [writes] in one `:commit` of the Firestore emulator as its admin
+/// (at most 500 writes, the Firestore limit).
+Future<void> commitWrites(List<Map<String, Object?>> writes) async {
+  final (status, body) = await emulatorRequest(
+    'POST',
+    FirebaseEnvConfig.firestoreEmulatorPort,
+    '/v1/projects/$_project/databases/(default)/documents:commit',
+    body: {'writes': writes},
+  );
+  if (status != 200) throw StateError(':commit -> $status $body');
+}
+
+/// REST fields of [wine] as U4 will store it (C3), window included.
+Map<String, Object?> restWineFields(Wine wine) {
+  Map<String, Object?> integer(int value) => {'integerValue': '$value'};
+  Map<String, Object?> text(String value) => {'stringValue': value};
+  final window = wine.window;
+  return {
+    WineFields.name: text(wine.name),
+    WineFields.vintage: wine.vintage == null
+        ? {'nullValue': 'NULL_VALUE'}
+        : integer(wine.vintage!),
+    WineFields.quantity: integer(wine.storedQuantity),
+    if (wine.wineType != null) WineFields.wineType: text(wine.wineType!),
+    if (wine.region != null) WineFields.region: text(wine.region!),
+    if (window != null)
+      WineFields.window: {
+        'mapValue': {
+          'fields': {
+            WindowFields.startYear: integer(window.startYear),
+            WindowFields.peakYear: integer(window.peakYear),
+            WindowFields.endYear: integer(window.endYear),
+            WindowFields.confidence: text(window.confidence.name),
+            WindowFields.source: text(window.source.name),
+            WindowFields.basis: text(window.basis.name),
+          },
+        },
+      },
+    WineFields.createdAt: {'timestampValue': '2026-11-06T10:00:00Z'},
+    WineFields.updatedAt: {'timestampValue': '2026-11-06T10:00:00Z'},
+    WineFields.updatedBy: text('seed'),
+  };
+}
+
+/// Creates [wines] in `cellars/{cellarId}/wines` with a single `:commit`.
+Future<void> seedCloudWines(String cellarId, List<Wine> wines) => commitWrites([
+  for (final wine in wines)
+    {
+      'update': {
+        'name': _documentName('cellars/$cellarId/wines/${wine.id}'),
+        'fields': restWineFields(wine),
+      },
+    },
+]);
+
+/// Deletes [wineIds] of the cellar and the cellar itself, as the emulator
+/// admin (the clean-up of the 500-wine test).
+Future<void> deleteCloudCellar(String cellarId, List<String> wineIds) =>
+    commitWrites([
+      for (final id in wineIds)
+        {'delete': _documentName('cellars/$cellarId/wines/$id')},
+      {'delete': _documentName('cellars/$cellarId')},
+    ]);
+
 /// Names of the wines of a cellar, as stored in the cloud.
 Future<List<String>> cloudWineNames(String cellarId) async {
   final (status, body) = await emulatorRequest(
@@ -99,6 +199,234 @@ Future<List<String>> cloudWineNames(String cellarId) async {
     for (final doc in documents)
       ((doc as Map)['fields'] as Map)['name']['stringValue'] as String,
   ];
+}
+
+/// The owner of a cellar acting from the test through the emulators' REST
+/// API with their own id token (u7-sharing security-design.md §5): every
+/// write passes the real rules, unlike the admin "Bearer owner". Each
+/// operation is one `:commit` with the cellar counter and the invitation, as
+/// the app's SharingRepository writes them.
+class OwnerRestClient {
+  OwnerRestClient._(this.idToken, this.uid);
+
+  final String idToken;
+
+  /// The uid the Auth Emulator assigned: owner id and personal cellar id.
+  final String uid;
+
+  static Map<String, Object?> _text(String value) => {'stringValue': value};
+
+  static Map<String, Object?> _now(String field) => {
+    'fieldPath': field,
+    'setToServerValue': 'REQUEST_TIME',
+  };
+
+  Map<String, Object?> _counter(String memberKey, int delta) => {
+    'update': {
+      'name': _documentName('cellars/$uid'),
+      'fields': {'memberOpKey': _text(memberKey)},
+    },
+    'updateMask': {
+      'fieldPaths': ['memberOpKey'],
+    },
+    'updateTransforms': [
+      {
+        'fieldPath': 'memberSlots',
+        'increment': {'integerValue': '$delta'},
+      },
+    ],
+  };
+
+  Map<String, Object?> _memberUpdate(
+    String memberKey,
+    Map<String, Object?> fields,
+  ) => {
+    'update': {
+      'name': _documentName('cellars/$uid/members/$memberKey'),
+      'fields': fields,
+    },
+    'updateMask': {'fieldPaths': fields.keys.toList()},
+    'updateTransforms': [_now('updatedAt')],
+  };
+
+  Future<void> _commit(List<Map<String, Object?>> writes) async {
+    final (status, body) = await emulatorRequest(
+      'POST',
+      FirebaseEnvConfig.firestoreEmulatorPort,
+      '/v1/projects/$_project/databases/(default)/documents:commit',
+      body: {'writes': writes},
+      bearer: idToken,
+    );
+    if (status != 200) throw StateError('owner :commit -> $status $body');
+  }
+
+  /// The personal cellar `cellars/{uid}`, as `ensurePersonalCellar` writes it.
+  Future<void> createCellar(String name) => _commit([
+    {
+      'update': {
+        'name': _documentName('cellars/$uid'),
+        'fields': {
+          'ownerId': _text(uid),
+          'name': _text(name),
+          'schemaVersion': {'integerValue': '1'},
+        },
+      },
+      'updateTransforms': [_now('createdAt')],
+      'currentDocument': {'exists': false},
+    },
+  ]);
+
+  /// A new invitation of [email] with [permission], counter +1.
+  Future<void> invite(String email, String permission, String ownerName) =>
+      _commit([
+        {
+          'update': {
+            'name': _documentName('cellars/$uid/members/$email'),
+            'fields': {
+              'inviteeEmail': _text(email),
+              'permission': _text(permission),
+              'status': _text('invited'),
+              'ownerId': _text(uid),
+              'ownerName': _text(ownerName),
+            },
+          },
+          'updateTransforms': [_now('invitedAt'), _now('updatedAt')],
+          'currentDocument': {'exists': false},
+        },
+        _counter(email, 1),
+      ]);
+
+  Future<void> changePermission(String email, String permission) => _commit([
+    _memberUpdate(email, {'permission': _text(permission)}),
+  ]);
+
+  /// `revoked`, closed by the owner, counter -1.
+  Future<void> revoke(String email) => _commit([
+    _memberUpdate(email, {
+      'status': _text('revoked'),
+      'closedBy': _text('owner'),
+    }),
+    _counter(email, -1),
+  ]);
+
+  /// A wine of the owner's cellar as u4-cellar writes it, `matchKey`
+  /// included (u4-cellar NFR6.3).
+  Future<void> createWine(
+    String wineId, {
+    required String name,
+    required int quantity,
+  }) => _commit([
+    {
+      'update': {
+        'name': _documentName('cellars/$uid/wines/$wineId'),
+        'fields': {
+          'name': _text(name),
+          'vintage': {'nullValue': 'NULL_VALUE'},
+          'quantity': {'integerValue': '$quantity'},
+          'matchKey': _text('${name.toLowerCase()}||'),
+          'updatedBy': _text(uid),
+        },
+      },
+      'updateTransforms': [_now('createdAt'), _now('updatedAt')],
+      'currentDocument': {'exists': false},
+    },
+  ]);
+
+  /// "Drunk" by the owner (u4-cellar BR1.10): the quantity as an increment
+  /// of −1 and the drink, in one commit, as DrinkingRecordRepository writes
+  /// them.
+  Future<void> recordDrink(
+    String wineId,
+    String recordId, {
+    required String wineName,
+    required String drankOn,
+  }) => _commit([
+    {
+      'update': {
+        'name': _documentName('cellars/$uid/wines/$wineId'),
+        'fields': {'updatedBy': _text(uid)},
+      },
+      'updateMask': {
+        'fieldPaths': ['updatedBy'],
+      },
+      'updateTransforms': [
+        {
+          'fieldPath': 'quantity',
+          'increment': {'integerValue': '-1'},
+        },
+        _now('updatedAt'),
+      ],
+    },
+    {
+      'update': {
+        'name': _documentName('cellars/$uid/drinkingRecords/$recordId'),
+        'fields': {
+          'wineId': _text(wineId),
+          'wineName': _text(wineName),
+          'drankOn': _text(drankOn),
+          'recordedBy': _text(uid),
+        },
+      },
+      'updateTransforms': [_now('createdAt')],
+      'currentDocument': {'exists': false},
+    },
+  ]);
+}
+
+/// The `quantity` stored in the cloud for a wine, or null without it.
+Future<int?> cloudQuantity(String cellarId, String wineId) async {
+  final fields = await cloudDocument('cellars/$cellarId/wines/$wineId');
+  final quantity = (fields?['quantity'] as Map?)?['integerValue'];
+  return quantity == null ? null : int.parse(quantity as String);
+}
+
+/// How many drinks of [cellarId] the cloud has.
+Future<int> cloudDrinkCount(String cellarId) async {
+  final (status, body) = await emulatorRequest(
+    'GET',
+    FirebaseEnvConfig.firestoreEmulatorPort,
+    '/v1/projects/$_project/databases/(default)/documents/cellars/$cellarId/drinkingRecords',
+  );
+  if (status != 200) throw StateError('list drinks -> $status');
+  return ((body as Map?)?['documents'] as List?)?.length ?? 0;
+}
+
+String _base64UrlJson(Map<String, Object?> value) =>
+    base64Url.encode(utf8.encode(jsonEncode(value))).replaceAll('=', '');
+
+/// Signs [identity] in to the Auth Emulator with an unsigned Google id token
+/// (`signInWithIdp`), which only the emulator accepts, and returns the
+/// client acting as that owner through the rules (u7 NFR2.3, NFR7.4).
+Future<OwnerRestClient> ownerRestClient(E2EIdentity identity) async {
+  final jwt = [
+    _base64UrlJson({'alg': 'none', 'typ': 'JWT'}),
+    _base64UrlJson({
+      'sub': identity.sub,
+      'email': identity.email,
+      'email_verified': true,
+      'name': identity.email.split('@').first,
+    }),
+    '',
+  ].join('.');
+  final (status, body) = await emulatorRequest(
+    'POST',
+    FirebaseEnvConfig.authEmulatorPort,
+    '/identitytoolkit.googleapis.com/v1/accounts:signInWithIdp'
+        '?key=fake-api-key',
+    body: {
+      'postBody':
+          'id_token=${Uri.encodeQueryComponent(jwt)}'
+          '&providerId=google.com',
+      'requestUri': 'http://localhost',
+      'returnSecureToken': true,
+    },
+  );
+  if (status != 200) throw StateError('signInWithIdp -> $status $body');
+  final response = body! as Map;
+  return OwnerRestClient._(
+    response['idToken'] as String,
+    response['localId'] as String,
+  );
 }
 
 /// Clears the local state of the phone: session, ledger, Firestore cache.
@@ -119,7 +447,14 @@ Future<void> clearPhone() async {
   await FirebaseFirestore.instance.clearPersistence();
   final prefs = await SharedPreferences.getInstance();
   await prefs.clear();
+  // u8-account BR1.1: the first-start presentation is a test of its own
+  // (account_test.dart); every other test starts on the sign-in screen.
+  if (!showOnboarding) await prefs.setBool('onboarding.seen', true);
 }
+
+/// Set by account_test.dart to see the first-start presentation after
+/// [clearPhone].
+bool showOnboarding = false;
 
 /// Starts the real app (`main()`), keeping the test framework's error hooks.
 Future<void> launchApp(WidgetTester tester) async {
@@ -132,18 +467,79 @@ Future<void> launchApp(WidgetTester tester) async {
 }
 
 /// Pumps until [finder] matches, or fails after [timeout].
+///
+/// Since u5-dashboard the app opens on the Dashboard and the cellar list is
+/// the "Cantina" tab. With [viaCellarTab] (the default, for the U1 checks)
+/// the Cantina tab is opened whenever the Dashboard is on screen; the
+/// Dashboard tests pass `false`.
 Future<void> waitFor(
   WidgetTester tester,
   Finder finder, {
   Duration timeout = const Duration(seconds: 20),
+  bool viaCellarTab = true,
 }) async {
+  final cellarTab = find.byKey(const Key('home-nav-cellar'));
+  final dashboardOnScreen = find.byKey(const Key('dashboard-screen'));
   final end = DateTime.now().add(timeout);
   while (DateTime.now().isBefore(end)) {
     await tester.pump(const Duration(milliseconds: 100));
     if (finder.evaluate().isNotEmpty) return;
+    if (viaCellarTab &&
+        dashboardOnScreen.evaluate().isNotEmpty &&
+        cellarTab.evaluate().isNotEmpty) {
+      await tester.tap(cellarTab);
+    }
   }
   throw TestFailure('Timed out after $timeout waiting for $finder');
 }
+
+/// Taps [finder] once it can really receive the tap.
+///
+/// A SnackBar sliding in, or one shown by the shell over the Cellar's "Add"
+/// bar, covers the target for a few seconds: like a person, the test waits
+/// until the target is hittable instead of tapping whatever is on top.
+Future<void> tapWhenHittable(
+  WidgetTester tester,
+  Finder finder, {
+  Duration timeout = const Duration(seconds: 20),
+}) async {
+  await waitFor(
+    tester,
+    finder.hitTestable(),
+    timeout: timeout,
+    viaCellarTab: false,
+  );
+  await tester.tap(finder);
+  await tester.pump();
+}
+
+/// Waits for "… shared their cellar with you" (u7 BR1.4) and closes it with
+/// "OK": the dialog covers the screen until the person answers it.
+Future<void> acknowledgeSharedNotice(
+  WidgetTester tester, {
+  Duration timeout = const Duration(seconds: 20),
+}) async {
+  await waitFor(
+    tester,
+    find.byKey(const Key('shared-cellar-notice')),
+    timeout: timeout,
+    viaCellarTab: false,
+  );
+  await tapWhenHittable(
+    tester,
+    find.byKey(const Key('shared-cellar-notice-ok')),
+  );
+  await tester.pumpAndSettle();
+}
+
+/// Waits until the cellar of [uid] exists in the Firestore emulator: the app
+/// creates it after sign-in, and the rules refuse invitations and wines of a
+/// cellar that is not there yet.
+Future<void> waitForCloudCellar(WidgetTester tester, String uid) => eventually(
+  tester,
+  () async => await cloudDocument('cellars/$uid') != null,
+  reason: 'the cellar of $uid reached the server',
+);
 
 /// Waits until [condition] holds (polling real async work such as REST).
 Future<void> eventually(
@@ -165,11 +561,13 @@ Future<void> signIn(
   WidgetTester tester,
   E2EIdentity identity, {
   required Finder then,
+  bool viaCellarTab = true,
+  Duration timeout = const Duration(seconds: 20),
 }) async {
   EmulatorGoogleAuthService.nextIdentity = identity;
   await waitFor(tester, find.byKey(const Key('sign-in-google-button')));
   await tester.tap(find.byKey(const Key('sign-in-google-button')));
-  await waitFor(tester, then);
+  await waitFor(tester, then, viaCellarTab: viaCellarTab, timeout: timeout);
 }
 
 /// Adds a wine through the form; returns the time from the Save tap to the
@@ -193,6 +591,10 @@ Future<Duration> addWine(
     reason: 'Add enabled',
   );
   await tester.tap(find.byKey(const Key('cellar-add-button')));
+  // Since u6-label-recognition "Aggiungi" offers three ways (BR1.1):
+  // "Scrivi" opens the form.
+  await waitFor(tester, find.byKey(const Key('add-choice-write')));
+  await tester.tap(find.byKey(const Key('add-choice-write')));
   await waitFor(tester, find.byKey(const Key('add-wine-name-field')));
   await tester.enterText(find.byKey(const Key('add-wine-name-field')), name);
   if (vintage == null) {
@@ -207,8 +609,12 @@ Future<Duration> addWine(
     await tester.tap(find.byKey(const Key('quantity-increase-button')));
     await tester.pump();
   }
+  // Since u4-cellar the suggestions may push "Save" below the fold.
+  final save = find.byKey(const Key('add-wine-save-button'));
+  await tester.ensureVisible(save);
+  await tester.pump();
   final stopwatch = Stopwatch()..start();
-  await tester.tap(find.byKey(const Key('add-wine-save-button')));
+  await tester.tap(save);
   // The row in the list, not the text still visible in the closing form.
   await waitFor(tester, wineRow(name));
   stopwatch.stop();

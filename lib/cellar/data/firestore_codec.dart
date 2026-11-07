@@ -22,6 +22,14 @@ String winesPath(String cellarId) => 'cellars/$cellarId/wines';
 String winePath(String cellarId, String wineId) =>
     '${winesPath(cellarId)}/$wineId';
 
+/// Path of the drinking records collection of a cellar (C3).
+String drinkingRecordsPath(String cellarId) =>
+    'cellars/$cellarId/drinkingRecords';
+
+/// Path of one drinking record document (C3).
+String drinkingRecordPath(String cellarId, String recordId) =>
+    '${drinkingRecordsPath(cellarId)}/$recordId';
+
 /// Path of a cellar document (C3).
 String cellarPath(String cellarId) => 'cellars/$cellarId';
 

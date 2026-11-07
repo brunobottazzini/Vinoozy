@@ -19,14 +19,40 @@ dependencies:
     sdk: flutter
   cloud_firestore: ^7.1.0
   connectivity_plus: ^7.3.2
+  # Wine catalog (u3-wine-catalog, infrastructure-specification.md): owner
+  # hash of the cache file.
+  crypto: ^3.0.8
+  # Pure Dart estimation library of this repository (u2-estimation, C2).
+  estimation:
+    path: packages/estimation
   firebase_app_check: ^0.5.1
   firebase_auth: ^7.0.1
   firebase_core: ^5.1.0
   firebase_crashlytics: ^6.0.1
   flutter_riverpod: ^3.4.3
+  # Label photo (u6-label-recognition tech-stack-decisions.md): on-phone
+  # EAN-13/EAN-8/UPC-A reading with the model bundled in the app
+  # (com.google.mlkit:barcode-scanning), so it works offline at first use.
+  google_mlkit_barcode_scanning: ^1.0.0
+  # Label photo: on-phone Latin text reading, bundled model
+  # (com.google.mlkit:text-recognition), never Cloud Vision (Q1, NFR8).
+  google_mlkit_text_recognition: ^1.0.0
   google_sign_in: ^7.2.0
+  # Wine catalog: Open Food Facts requests (injected client, MockClient in
+  # tests).
+  http: ^1.6.0
+  # Label photo: system camera and Android photo picker, no permission
+  # (BR1.2, BR1.3, NFR4.2).
+  image_picker: ^1.2.4
   intl: ^0.20.3
+  # Wine catalog: app version for the Open Food Facts User-Agent.
+  package_info_plus: ^10.2.2
+  # Wine catalog: catalog_cache.json in the app support directory.
+  path_provider: ^2.1.6
   shared_preferences: ^2.5.6
+  # Sharing (u7-sharing BR1.3, tech-stack-decisions.md): the Android share
+  # sheet with the ready-made invitation message, no permission needed.
+  share_plus: ^13.3.1
 
 dev_dependencies:
   flutter_test:

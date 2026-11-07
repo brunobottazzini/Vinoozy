@@ -39,12 +39,18 @@ class ResetCoordinator {
   final void Function() _invalidateListeners;
   final bool _inProcessReset;
 
-  Future<ResetOutcome> reset(String newUid) async {
+  /// Clears the local data before [newUid] opens its cellar.
+  ///
+  /// u8-account BR1.7 step 7: with [openCellar] false, [newUid] is the account
+  /// just deleted; no cellar opens after the reset and no account is recorded
+  /// as the phone's last user, so the next sign-in, of any account, opens its
+  /// cellar without clearing the (already empty) data again.
+  Future<ResetOutcome> reset(String newUid, {bool openCellar = true}) async {
     _watcher.stop();
     _invalidateListeners();
     try {
       await _ledger.setResetPending(true);
-      await _ledger.reset(newUid);
+      await _ledger.reset(openCellar ? newUid : null);
     } catch (error, stack) {
       await _reporter.report(error, stack, reason: 'ResetLedgerFailed');
       return ResetOutcome.failed;

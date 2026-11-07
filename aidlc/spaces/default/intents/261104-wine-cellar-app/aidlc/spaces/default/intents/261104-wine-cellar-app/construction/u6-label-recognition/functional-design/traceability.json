@@ -1,0 +1,33 @@
+{
+  "stage": "functional-design",
+  "unit": "u6-label-recognition",
+  "upstream_ids": [
+    "AC2.2.1",
+    "AC2.2.2",
+    "AC2.2.3",
+    "AC2.2.4",
+    "AC2.2.5"
+  ],
+  "coverage": [
+    {
+      "id": "AC2.2.1",
+      "status": "GAP"
+    },
+    {
+      "id": "AC2.2.2",
+      "status": "GAP"
+    },
+    {
+      "id": "AC2.2.3",
+      "status": "GAP"
+    },
+    {
+      "id": "AC2.2.4",
+      "status": "GAP"
+    },
+    {
+      "id": "AC2.2.5",
+      "status": "GAP"
+    }
+  ]
+}

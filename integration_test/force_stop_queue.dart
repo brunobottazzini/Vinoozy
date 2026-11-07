@@ -32,6 +32,8 @@ void main() {
     await clearPhone();
     await clearEmulators();
     await launchApp(tester);
+    // The app opens on the Dashboard: signIn opens the "Cantina" tab to
+    // find the empty cellar (u5-dashboard), and the app is left on it.
     await signIn(tester, userA, then: find.byKey(const Key('cellar-empty')));
     final uid = currentUid;
 

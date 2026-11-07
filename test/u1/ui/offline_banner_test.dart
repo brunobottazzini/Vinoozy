@@ -26,7 +26,7 @@ void main() {
 
   Future<void> pump(WidgetTester tester) => pumpScreen(
     tester,
-    const Scaffold(body: OfflineBanner(uid: 'user-a')),
+    const Scaffold(body: OfflineBanner(cellarId: 'user-a')),
     overrides: fixture.overrides,
   );
 

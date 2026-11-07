@@ -232,8 +232,10 @@ void main() {
     });
   });
 
-  test('watchWines sorts by name and exposes the metadata', () async {
+  test('watchCellarWines (u4 BR1.7: quantity > 0) sorts by name and '
+      'exposes the metadata', () async {
     final collection = MockCollectionRef();
+    final present = _MockQuery();
     final query = MockQuerySnapshot();
     MockQueryDocSnapshot doc(String id, String name) {
       final snapshot = MockQueryDocSnapshot();
@@ -247,19 +249,99 @@ void main() {
     }
 
     when(() => db.collection('cellars/user-a/wines')).thenReturn(collection);
-    when(() => collection.snapshots(includeMetadataChanges: true))
+    when(() => collection.where('quantity', isGreaterThan: 0))
+        .thenReturn(present);
+    when(() => present.snapshots(includeMetadataChanges: true))
         .thenAnswer((_) => Stream.value(query));
     final docs = [doc('2', 'Barolo'), doc('1', 'Arneis')];
     when(() => query.docs).thenReturn(docs);
     final meta = metadata(pending: true, fromCache: true);
     when(() => query.metadata).thenReturn(meta);
 
-    final snapshot = await repository.watchWines('user-a').first;
+    final snapshot = await repository.watchCellarWines('user-a').first;
 
     expect(snapshot.wines.map((w) => w.name), ['Arneis', 'Barolo']);
     expect(snapshot.wines.first.createdAt, DateTime.utc(1970));
     expect(snapshot.meta.hasPendingWrites, isTrue);
     expect(snapshot.meta.isFromCache, isTrue);
+  });
+
+  group('refusals in a shared cellar (u7-sharing BR1.7, BR1.14)', () {
+    late MockDocRef sharedRef;
+    late Completer<void> sharedWrite;
+
+    setUp(() {
+      sharedRef = MockDocRef();
+      sharedWrite = Completer<void>();
+      when(() => db.doc('cellars/user-z/wines/wine-1')).thenReturn(sharedRef);
+      when(() => sharedRef.set(any())).thenAnswer((_) => sharedWrite.future);
+      when(() => sharedRef.update(any())).thenAnswer((_) => sharedWrite.future);
+    });
+
+    test('BR1.14 a refused wine creation publishes WriteRejected and '
+        'CellarAccessLost with the cellar of the path', () async {
+      await repository.create(cellarId: 'user-z', user: user, draft: draft());
+
+      sharedWrite.completeError(firestoreError('permission-denied'));
+      await pumpEventQueue();
+
+      expect(events, hasLength(2));
+      expect((events[0] as WriteRejected).wineName, 'Barolo');
+      final lost = events[1] as CellarAccessLost;
+      expect(lost.cellarId, 'user-z');
+      expect(lost.fromQueuedWrite, isTrue);
+    });
+
+    test('BR1.14 a refused increment publishes CellarAccessLost too', () async {
+      await repository.incrementQuantity(
+        cellarId: 'user-z',
+        wineId: 'wine-1',
+        wineName: 'Barolo',
+        user: user,
+        delta: -1,
+      );
+      sharedWrite.completeError(firestoreError('permission-denied'));
+      await pumpEventQueue();
+
+      expect(events.whereType<CellarAccessLost>().single.cellarId, 'user-z');
+    });
+
+    test('an invalid-argument refusal is not an access loss', () async {
+      await repository.create(cellarId: 'user-z', user: user, draft: draft());
+
+      sharedWrite.completeError(firestoreError('invalid-argument'));
+      await pumpEventQueue();
+
+      expect(events.single, isA<WriteRejected>());
+    });
+  });
+
+  group('reportWriteRejected (u7-sharing security-design.md §4)', () {
+    test('the personal cellar never gives CellarAccessLost', () {
+      reportWriteRejected(
+        bus,
+        cellarId: 'user-a',
+        uid: 'user-a',
+        error: firestoreError('permission-denied'),
+        wineId: 'w1',
+        wineName: 'Barolo',
+      );
+      return pumpEventQueue().then((_) {
+        expect(events.single, isA<WriteRejected>());
+      });
+    });
+
+    test('without a wine only the access loss is published', () async {
+      reportWriteRejected(
+        bus,
+        cellarId: 'user-z',
+        uid: 'user-a',
+        error: firestoreError('permission-denied'),
+      );
+      await pumpEventQueue();
+
+      expect(events.single, isA<CellarAccessLost>());
+    });
   });
 
   test('classifyWriteError maps the Firestore codes', () {
@@ -281,3 +363,7 @@ void main() {
     expect(classifyWriteError(StateError('x')), WriteErrorKind.transient);
   });
 }
+
+// A test double of the SDK query (sealed in the SDK; tests only).
+// ignore: subtype_of_sealed_class
+class _MockQuery extends Mock implements Query<Map<String, dynamic>> {}

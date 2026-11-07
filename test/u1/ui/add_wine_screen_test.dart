@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:vinoozy/account/app_user.dart';
@@ -9,6 +10,7 @@ import 'package:vinoozy/cellar/data/wine_repository.dart';
 import 'package:vinoozy/cellar/domain/wine_draft.dart';
 import 'package:vinoozy/cellar/ui/add_wine_screen.dart';
 
+import '../../cellar/cellar_harness.dart';
 import '../../helpers/fakes.dart';
 import '../../helpers/service_mocks.dart';
 import '../../helpers/ui_harness.dart';
@@ -39,20 +41,37 @@ void main() {
   });
 
   setUp(() {
+    registerCellarFallbacks();
     wines = MockWineRepository();
     created = [];
     outcome = Completer<SaveOutcome>();
+    // u4-cellar replaced the U1 form: Save looks for a duplicate first, then
+    // writes with addWine (the estimate included).
+    when(() => wines.findByMatchKey(any(), any())).thenAnswer((_) async => []);
     when(
-      () => wines.create(
+      () => wines.addWine(
         cellarId: any(named: 'cellarId'),
         user: any(named: 'user'),
         draft: any(named: 'draft'),
+        estimate: any(named: 'estimate'),
       ),
     ).thenAnswer((invocation) {
       created.add(invocation.namedArguments[#draft] as WineDraft);
       return outcome.future;
     });
   });
+
+  /// The services of the u4-cellar form, offline (no catalog refinement).
+  List<Override> formOverrides(MockWineRepository repository) => [
+    wineRepositoryProvider.overrideWithValue(repository),
+    idGeneratorProvider.overrideWithValue(SequenceIdGenerator()),
+    clockProvider.overrideWithValue(FakeClock(DateTime(2026, 11, 5))),
+    errorReporterProvider.overrideWithValue(
+      recordingReporter(RecordingErrorSink()),
+    ),
+    networkStatusProvider.overrideWithValue(FakeCellarNetwork(online: false)),
+    ...cellarServiceOverrides(),
+  ];
 
   /// Opens the form from a host page, so a successful save can pop it.
   Future<void> open(WidgetTester tester, {String? initialName}) async {
@@ -80,11 +99,7 @@ void main() {
           ),
         ),
       ),
-      overrides: [
-        wineRepositoryProvider.overrideWithValue(wines),
-        idGeneratorProvider.overrideWithValue(SequenceIdGenerator()),
-        clockProvider.overrideWithValue(FakeClock(DateTime(2026, 11, 5))),
-      ],
+      overrides: formOverrides(wines),
     );
     await tester.tap(find.byKey(const Key('open-form')));
     await tester.pumpAndSettle();
@@ -234,11 +249,7 @@ void main() {
   accessibilityMatrix(
     'AddWineScreen',
     () => const AddWineScreen(user: userA, cellarId: 'user-a'),
-    overrides: () => [
-      wineRepositoryProvider.overrideWithValue(MockWineRepository()),
-      idGeneratorProvider.overrideWithValue(SequenceIdGenerator()),
-      clockProvider.overrideWithValue(FakeClock(DateTime(2026, 11, 5))),
-    ],
+    overrides: () => formOverrides(MockWineRepository()),
     afterPump: (tester) async {
       // Errors visible too: they must also fit at 200%.
       await tester.tap(find.byKey(const Key('add-wine-save-button')));

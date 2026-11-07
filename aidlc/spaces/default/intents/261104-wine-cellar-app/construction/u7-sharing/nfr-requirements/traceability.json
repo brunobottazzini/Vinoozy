@@ -1,0 +1,15 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u7-sharing",
+  "upstream_ids": ["NFR1", "NFR2", "NFR3", "NFR4", "NFR5", "NFR6", "NFR7", "NFR8"],
+  "coverage": [
+    { "id": "NFR1", "status": "N/A", "target": "velocità di inserimento delivered by u4-cellar; U7 non inserisce vini" },
+    { "id": "NFR2", "status": "OK", "target": "performance-requirements.md NFR2.1-NFR2.4 (esito delle operazioni entro 3 s, massimo 10 s; cantina condivisa entro 5 s; revoca visibile entro 5 s; cambio di cantina entro 1 s)" },
+    { "id": "NFR3", "status": "OK", "target": "security-requirements.md > Accessibilità NFR3.1-NFR3.3" },
+    { "id": "NFR4", "status": "OK", "target": "security-requirements.md NFR4.1-NFR4.9 (matrice di accesso 6 ruoli x 9 operazioni, drinkingRecords aperto da U7, limiti dei campi, transizioni di members, limite di 2, email verificata, nessuna fuga di email, regole di U1 invariate, pubblicazione manuale)" },
+    { "id": "NFR5", "status": "OK", "target": "performance-requirements.md NFR5.1-NFR5.3; tech-stack-decisions.md > Stima delle letture (nessuna funzione nel cloud, costo 0 €)" },
+    { "id": "NFR6", "status": "OK", "target": "security-requirements.md > Affidabilità e offline NFR6.1-NFR6.4" },
+    { "id": "NFR7", "status": "OK", "target": "tech-stack-decisions.md NFR7.1-NFR7.5" },
+    { "id": "NFR8", "status": "OK", "target": "security-requirements.md NFR8.1-NFR8.4 (dati minimi, nessuna email nei report, cancellazione, Data Safety); cancellazione dell'account delivered by u8-account" }
+  ]
+}

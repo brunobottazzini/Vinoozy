@@ -54,6 +54,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         : switch (widget.notice) {
             SignInNotice.failed => l10n.signInFailed,
             SignInNotice.sessionExpired => l10n.signInSessionExpired,
+            SignInNotice.accountDeleted => l10n.signInAccountDeleted,
             null => null,
           };
     final showRetry =

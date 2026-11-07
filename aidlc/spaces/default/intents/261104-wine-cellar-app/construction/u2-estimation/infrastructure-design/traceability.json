@@ -1,0 +1,19 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u2-estimation",
+  "upstream_ids": ["NFR4.1", "NFR4.4", "NFR8.1", "NFR4.2", "NFR4.3", "NFR2.2", "NFR7.1", "NFR7.4", "NFR7.5", "NFR7.2", "NFR2.1", "NFR2.3"],
+  "coverage": [
+    { "id": "NFR4.1", "status": "OK", "target": "cicd-pipeline.md §1 passo 4 (script di purezza)" },
+    { "id": "NFR4.4", "status": "OK", "target": "cicd-pipeline.md §1 passi 4 e 5 (purezza e test di determinismo)" },
+    { "id": "NFR8.1", "status": "OK", "target": "cicd-pipeline.md §1 passo 5 (test sui campi di WineFacts)" },
+    { "id": "NFR4.2", "status": "OK", "target": "cicd-pipeline.md §1 passo 5 (test con ingressi non validi e casuali)" },
+    { "id": "NFR4.3", "status": "OK", "target": "cicd-pipeline.md §1 passo 5 (test sugli abbinamenti della fonte)" },
+    { "id": "NFR2.2", "status": "OK", "target": "cicd-pipeline.md §1 passi 4 e 7 (costruzione dell'indice e benchmark)" },
+    { "id": "NFR7.1", "status": "OK", "target": "cicd-pipeline.md §1 passo 6 (90% del pacchetto) e §2 (80% di progetto con lcov unito)" },
+    { "id": "NFR7.4", "status": "OK", "target": "cicd-pipeline.md §1 passi 2 e 3" },
+    { "id": "NFR7.5", "status": "OK", "target": "cicd-pipeline.md §1 passi 4 e 7 a ogni push" },
+    { "id": "NFR7.2", "status": "OK", "target": "cicd-pipeline.md §1 passo 5 (test generati dalle tabelle)" },
+    { "id": "NFR2.1", "status": "OK", "target": "cicd-pipeline.md §1 passo 7 (10 ms in CI) e §4 (25 ms sul telefono prima della produzione)" },
+    { "id": "NFR2.3", "status": "OK", "target": "cicd-pipeline.md §1 passo 7 (riconoscimento ≤ 4 ms)" }
+  ]
+}

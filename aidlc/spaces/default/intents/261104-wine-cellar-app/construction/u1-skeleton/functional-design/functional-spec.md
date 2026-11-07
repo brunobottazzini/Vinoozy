@@ -24,7 +24,7 @@ U1 è il walking skeleton: la versione minima che funziona da capo a fondo. Copr
 4. Annullato o fallito → "Accesso non riuscito" con "Riprova"; nessun dato creato.
 5. Riuscito → controllo dell'utente precedente (BR1.4): se sul telefono restano modifiche in coda di un altro account, l'accesso è bloccato con il messaggio di BR1.4 e si esce; se l'account è diverso e non ci sono modifiche in coda, si cancella la memoria offline.
 6. Si crea o si aggiorna il profilo `users/{uid}`; si legge `cellars/{uid}` e, se non esiste, la si crea ("La mia cantina") (BR1.3). Durante questo passo la Cantina mostra un indicatore di caricamento.
-7. Creazione o lettura fallita → la Cantina mostra "Impossibile preparare la cantina" con "Riprova"; il pulsante "Aggiungi" è disattivato.
+7. Creazione o lettura fallita → la Cantina mostra "Impossibile preparare la cantina" con "Riprova"; il pulsante "Aggiungi" è disattivato. Anche un **errore dell'ascolto** della cantina o dei suoi vini (per esempio un rifiuto delle regole), a cantina già esistente, porta allo stesso stato di errore con "Riprova". "Riprova" rifà la verifica della cantina **e riapre entrambi gli ascolti** (cantina e vini): un ascolto chiuso da un errore precedente non deve lasciare "Aggiungi" disattivato quando la cantina ormai esiste. Trovato nella prova sul telefono del 2026-11-05.
 8. Riuscito → si apre la Cantina. Il Cruscotto arriva con u5-dashboard; fino ad allora la Cantina è la prima schermata.
 
 ### W2 — Avvio con sessione (BR1.2)
@@ -91,3 +91,5 @@ Accesso Google al primo avvio (BR1.1), sessione offline (BR1.2), cantina persona
 Con l'emulatore Firebase: accesso con un utente di prova, modalità senza rete, aggiunta di "Barolo 2016 x2", indicatore visibile, ritorno della rete, il vino è presente nel cloud dell'emulatore e un secondo utente non lo vede.
 
 Caso con la coda già piena: utente A offline aggiunge un vino ed esce; accede l'utente B → accesso bloccato (BR1.4); accede di nuovo A con la rete → il vino arriva nel cloud. Un secondo accesso di A da un altro telefono apre la stessa `cellars/{uid}` senza crearne un'altra (BR1.3).
+
+Caso con rifiuto iniziale: la lettura della cantina viene rifiutata (regole che negano l'accesso) → stato "Impossibile preparare la cantina"; si ripristina l'accesso e si tocca "Riprova" → la cantina si apre e "Aggiungi" è attivo, senza riavviare l'app (BR1.3).

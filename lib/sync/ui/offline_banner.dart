@@ -8,14 +8,17 @@ import '../sync_status.dart';
 /// Banner under the app bar while changes are not yet in the cloud (BR3.2):
 /// "Syncing" with network, "Offline - sync pending" without. Announced by
 /// TalkBack when it appears (live region).
+///
+/// Since u7-sharing it follows the active cellar [cellarId]; for the
+/// personal cellar that is the uid, as before.
 class OfflineBanner extends ConsumerWidget {
-  const OfflineBanner({super.key, required this.uid});
+  const OfflineBanner({super.key, required this.cellarId});
 
-  final String uid;
+  final String cellarId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(syncStatusProvider(uid));
+    final state = ref.watch(syncStatusProvider(cellarId));
     return SyncStateBanner(state: state);
   }
 }

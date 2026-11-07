@@ -54,14 +54,14 @@ Il comando di verifica dello scheletro, da scegliere in Code Generation, eseguir
 Passi:
 
 1. Checkout del commit esatto che ha passato la CI (`head_sha` dell'evento).
-2. Ricostruzione dei file segreti dai segreti Base64 nei loro percorsi dentro i sorgenti (`android/app/google-services.json`, `lib/firebase/options_prod.dart`, entrambi in `.gitignore`). Il keystore di caricamento va in `$RUNNER_TEMP`. Tutti vengono cancellati alla fine, anche se il job fallisce (`if: always()`).
+2. Ricostruzione dei file segreti dai segreti Base64 nei loro percorsi dentro i sorgenti (`android/app/google-services.json`, `config/firebase_prod.json`, entrambi in `.gitignore`; il secondo è passato alla build con `--dart-define-from-file`). La build Android non applica il plugin Gradle `google-services`: Firebase si inizializza dal codice Dart con i valori di `config/firebase_prod.json`. Per questo le build di CI senza segreti (`unit`, `e2e`, usate con `demo-vinoozy`) compilano senza `google-services.json`, che resta solo un riferimento per la Console. Il keystore di caricamento va in `$RUNNER_TEMP`. Tutti vengono cancellati alla fine, anche se il job fallisce (`if: always()`).
 3. Calcolo delle versioni:
    - `versionName` è letto da `pubspec.yaml` (semver);
    - `versionCode` è il più alto tra tutti i canali di Google Play (letto con l'API di Play) **+ 1**. Resta crescente anche se il workflow viene ricreato o rieseguito.
-4. `flutter build appbundle --release --dart-define=FIREBASE_ENV=prod --build-name=<versionName> --build-number=<versionCode>`.
-5. Firma con la chiave di caricamento. Il bundle (AAB) e i simboli di debug per Crashlytics vengono salvati come artifact del workflow, conservati 30 giorni.
+4. `flutter build appbundle --release --dart-define=FIREBASE_ENV=prod --dart-define-from-file=config/firebase_prod.json --build-name=<versionName> --build-number=<versionCode>`.
+5. Firma con la chiave di caricamento. Il bundle (AAB) e i simboli di debug per Crashlytics vengono salvati come artifact del workflow, conservati 7 giorni (repository pubblico).
 6. Caricamento sul canale **Test interno** di Google Play con l'account di servizio (stato `completed`).
-7. Caricamento dei simboli su Crashlytics.
+7. Caricamento dei simboli su Crashlytics in un job separato, `crashlytics-symbols` (ambiente GitHub `crashlytics-symbols`, limitato a `main`), che riceve i simboli come artifact e accede con WIF senza chiavi. I suoi unici permessi sono `contents: read` e `id-token: write`; non ha segreti di firma, Play o configurazione.
 8. Tag leggero `build-<versionCode>` sul commit esatto, per sapere sempre da quale commit nasce ogni build.
 
 **Prerequisiti, una volta sola:**
@@ -104,6 +104,7 @@ Le regole non si distribuiscono mai da sole con un merge. La sequenza per una mo
 
 Checklist in `docs/release-checklist.md`, eseguita sul telefono reale con la build del Test interno:
 
+0. Solo la prima volta: il progetto Firebase è passato a Blaze con il budget di 1 € e gli avvisi (NFR5.3, NFR5.4; `docs/firebase-setup.md` §1).
 1. Installare la build dal Test interno.
 2. Avvio a freddo: la Cantina compare in circa 2 s.
 3. Accesso con Google.

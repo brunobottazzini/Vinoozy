@@ -26,7 +26,7 @@ rules:
     applies_to: Cellar
     trigger: primo accesso riuscito senza cantine esistenti
     logic: la cantina personale ha ID fisso cellars/{uid} (ricavato dall'utente, non generato a caso); al primo accesso si legge cellars/{uid} dal cloud; IF non esiste THEN la si crea con ownerId = uid e nome "La mia cantina" (tradotto); su piu' telefoni o dopo una reinstallazione si ottiene sempre la stessa cantina, quindi non nascono doppioni. In U1 la Cantina mostra sempre cellars/{uid}
-    violation: lettura o creazione fallita -> la Cantina mostra "Impossibile preparare la cantina" con "Riprova"; nessun vino si puo' aggiungere finche' la cantina non esiste
+    violation: lettura o creazione fallita, oppure errore dell'ascolto della cantina o dei vini -> la Cantina mostra "Impossibile preparare la cantina" con "Riprova"; "Riprova" rifa' la verifica e riapre entrambi gli ascolti; nessun vino si puo' aggiungere finche' la cantina non esiste
     source: FR2.1
   - id: BR1.4
     statement: Le modifiche non ancora inviate appartengono all'utente che le ha fatte; un altro account non puo' accedere sullo stesso telefono finche' restano in coda

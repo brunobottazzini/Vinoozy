@@ -23,10 +23,28 @@ export async function startEnv(rules = currentRules()) {
   });
 }
 
-/** Firestore of a user signed in with Google (the only allowed provider). */
+/**
+ * Firestore of a user signed in with Google (the only allowed provider).
+ * Google accounts always carry a verified email (u7-sharing NFR4.4).
+ */
 export function googleUser(env, uid, email = `${uid}@example.com`) {
   return env
-    .authenticatedContext(uid, { email, firebase: { sign_in_provider: 'google.com' } })
+    .authenticatedContext(uid, {
+      email,
+      email_verified: true,
+      firebase: { sign_in_provider: 'google.com' },
+    })
+    .firestore();
+}
+
+/** Firestore of a Google user whose email is not verified (NFR4.4). */
+export function unverifiedGoogleUser(env, uid, email = `${uid}@example.com`) {
+  return env
+    .authenticatedContext(uid, {
+      email,
+      email_verified: false,
+      firebase: { sign_in_provider: 'google.com' },
+    })
     .firestore();
 }
 

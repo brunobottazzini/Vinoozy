@@ -14,8 +14,11 @@ enum SyncState {
   offline,
 }
 
-/// The two listeners that feed the sync state (performance-design.md).
-enum SyncSource { cellar, wines }
+/// The sources of the sync state (performance-design.md): the cellar and
+/// wines listeners, and since u4-cellar the drinks, whose pending state comes
+/// from `PendingWritesProbe` rather than from a snapshot (security-design.md
+/// §4 of u4-cellar).
+enum SyncSource { cellar, wines, drinkingRecords }
 
 /// Result of feeding one snapshot to [SyncStatusTracker].
 class SyncUpdate {
@@ -42,9 +45,12 @@ class SyncUpdate {
 class SyncStatusTracker {
   final Map<SyncSource, SnapshotMeta> _latest = {};
   final Map<SyncSource, bool> _effectiveFromCache = {};
+  final Set<SyncSource> _pendingOnly = {};
 
   SyncState get state {
-    final pending = _latest.values.any((meta) => meta.hasPendingWrites);
+    final pending =
+        _pendingOnly.isNotEmpty ||
+        _latest.values.any((meta) => meta.hasPendingWrites);
     if (!pending) return SyncState.synced;
     final offline = _effectiveFromCache.values.any((fromCache) => fromCache);
     return offline ? SyncState.offline : SyncState.syncing;
@@ -59,10 +65,24 @@ class SyncStatusTracker {
     return SyncUpdate(state: state, backOnline: backOnline);
   }
 
+  /// Marks [source] as having writes waiting for the server, or not
+  /// (u4-cellar NFR6.6). Only the "pending" part changes: whether the app
+  /// is offline still comes from the snapshots, and this never counts as a
+  /// move from cache to server, so it never starts SyncWatcher.
+  SyncState setPending(SyncSource source, bool pending) {
+    if (pending) {
+      _pendingOnly.add(source);
+    } else {
+      _pendingOnly.remove(source);
+    }
+    return state;
+  }
+
   /// Forget a source whose listener was closed; its next snapshot counts as
   /// the first one again.
   void forget(SyncSource source) {
     _latest.remove(source);
     _effectiveFromCache.remove(source);
+    _pendingOnly.remove(source);
   }
 }

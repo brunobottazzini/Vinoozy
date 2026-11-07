@@ -11,7 +11,8 @@ Fonti: `security-design.md` (§7 Crashlytics, App Check, budget), `performance-d
 | Scritture rifiutate (`SyncRejected`) | Crashlytics, evento non fatale da `ErrorReporter`, uno per ogni voce che diventa `rejected` | Atteso 0; ogni nuovo evento genera un alert | Segnala regole troppo strette o un'app non aggiornata |
 | Richieste verificate da App Check | Console App Check | ≥ 99% per 7 giorni prima di renderlo obbligatorio | Condizione di NFR4.6 |
 | Letture e scritture Firestore al giorno | Console Firebase, pannello Utilizzo | < 10.000 letture e < 2.000 scritture | Margine ampio sotto la quota gratuita (NFR5.2) |
-| Spesa mensile | Budget di fatturazione Cloud | 1 € | Budget di 0 €/mese (NFR5.3) |
+| Spesa mensile | Budget di fatturazione Cloud (attivo dal passaggio a Blaze, prima della prima pubblicazione) | 1 € | Budget di 0 €/mese (NFR5.3) |
+| Quote gratuite (finché il progetto è su Spark) | Utilizzo di Firestore nella Console Firebase | 80% della quota giornaliera | Su Spark non c'è spesa: il rischio è il blocco del servizio a quota esaurita, controllato a mano durante le prove |
 | Tempo di avvio a freddo | `startup_test.dart` in CI; smoke test sul telefono; Android vitals ("avvii a freddo lenti", ≥ 5 s) in produzione | ≤ 4 s in CI, ≤ 2 s sul telefono di riferimento, avvii lenti < 5% | NFR2.1 |
 
 ## Alerts
@@ -25,7 +26,7 @@ Fonti: `security-design.md` (§7 Crashlytics, App Check, budget), `performance-d
 | Rifiuti delle regole | Cloud Monitoring, metrica delle valutazioni delle regole Firestore con esito negato > 50 in 1 ora. Nome ed etichette esatti della metrica vanno verificati nel Metrics Explorer durante la configurazione | Media | Email al proprietario |
 | CI o rilascio falliti | Esecuzione GitHub Actions fallita su `main` | Media | Email di GitHub al proprietario |
 
-Gli alert sotto la soglia di 1 € sono avvisi e non bloccano la spesa; il rischio è accettato in NFR5.4. Il servizio non ha reperibilità continua: la persona di riferimento è il proprietario, l'unico responsabile.
+Gli alert sotto la soglia di 1 € sono avvisi e non bloccano la spesa; il rischio è accettato in NFR5.4 e vale dal passaggio a Blaze. Finché il progetto è su Spark (solo prove via cavo del proprietario) non c'è spesa possibile, e al superamento delle quote il servizio si ferma fino al giorno dopo. Le metriche di Cloud Monitoring che richiedono un account di fatturazione si attivano anch'esse con Blaze. Il servizio non ha reperibilità continua: la persona di riferimento è il proprietario, l'unico responsabile.
 
 ## SLIs / SLOs
 

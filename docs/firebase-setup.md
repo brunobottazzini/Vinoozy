@@ -6,7 +6,8 @@ Spunta ogni voce quando è fatta e annota la data.
 
 ## 1. Progetto Firebase di produzione
 
-- [ ] Crea il progetto Firebase (un solo progetto reale, `team.md` Q9) e passa al piano **Blaze**.
+- [x] Crea il progetto Firebase (un solo progetto reale, `team.md` Q9): `vinoozy-d6f45`, creato il 2026-11-05 sul piano gratuito Spark per le prove via cavo.
+- [ ] **Prima della prima pubblicazione su Google Play** (anche test interno): passa al piano **Blaze** e crea il budget mensile di 1 € con avvisi al 50%, 90% e 100% (NFR5.3, NFR5.4).
 - [ ] Firestore in modalità nativa, database `(default)`, località **`europe-west8` (Milano)**. La località è definitiva.
 - [ ] Authentication: attiva **solo il provider Google**. Accesso anonimo ed email/password restano disattivati (NFR4.1).
 - [ ] Registra l'app Android `com.vinoozy.app`. Dalla console scarica `google-services.json` e scrivi `config/firebase_prod.json` con i valori `FIREBASE_API_KEY`, `FIREBASE_APP_ID`, `FIREBASE_MESSAGING_SENDER_ID`, `FIREBASE_PROJECT_ID`, `FIREBASE_STORAGE_BUCKET` (presi da `google-services.json`), **senza** committarli: vanno solo nei segreti (§5). L'app li riceve con `--dart-define-from-file=config/firebase_prod.json`.
@@ -48,7 +49,7 @@ Nessuna chiave JSON: GitHub Actions ottiene token a breve scadenza. Un solo pool
 
 ## 6. Repository GitHub (pubblico) e ambienti
 
-- [ ] Ruleset sul ramo **`main`**: solo squash merge, storia lineare, nessun push diretto (anche per l'amministratore), controlli richiesti `format`, `analyze`, `unit`, `rules`, `e2e`.
+- [ ] Ruleset sul ramo **`main`**: solo squash merge, storia lineare, nessun push diretto (anche per l'amministratore), controlli richiesti (tutti i 7 job di `ci.yml`): `format`, `secrets`, `analyze`, `unit`, `estimation`, `rules`, `e2e`.
 - [ ] Ruleset sui tag **`v*`** e **`build-*`**: creazione solo dai workflow (GitHub Actions come unico bypass), nessuna modifica né cancellazione. Così i tag di promozione `v<versionName>+<versionCode>` e di build non si possono spostare.
 - [ ] **Secret scanning** e **push protection** attivi.
 - [ ] Actions → "Require approval for first-time contributors". I workflow usano solo `pull_request`, mai `pull_request_target`.
@@ -56,7 +57,8 @@ Nessuna chiave JSON: GitHub Actions ottiene token a breve scadenza. Un solo pool
   - `play-internal`: limitato a `main`;
   - `play-production`: limitato a `main`, approvazione obbligatoria del proprietario;
   - `firebase-prod`: limitato a `main` e ai tag `v*`, approvazione obbligatoria del proprietario;
-  - `crashlytics-symbols`: limitato a `main`, senza approvazione (carica solo i simboli di debug, nessun segreto).
+  - `crashlytics-symbols`: limitato a `main`, senza approvazione (carica solo i simboli di debug, nessun segreto);
+  - `github-pages-publish` (u8-account): approvazione obbligatoria del proprietario, per `pages.yml` (§10).
 
 ## 7. Alert (`monitoring-design.md`)
 
@@ -64,7 +66,51 @@ Nessuna chiave JSON: GitHub Actions ottiene token a breve scadenza. Un solo pool
 - [ ] Crashlytics → Impostazioni → **velocity alert** con soglia all'**1% degli utenti in 1 ora**.
 - [ ] Cloud Monitoring: alert sui rifiuti delle regole Firestore con esito negato **> 50 in 1 ora**, email al proprietario. Prima di crearlo **verifica nel Metrics Explorer il nome esatto della metrica e delle etichette** (cerca le valutazioni delle regole di Firestore), perché il nome non è stato confermato in progettazione. Annota qui il nome usato: `______________________`.
 - [ ] GitHub: notifiche email per i workflow falliti su `main`.
+- [ ] Cloud Monitoring → Avvisi → Crea criterio: **avviso sulle letture giornaliere di Firestore** (u7-sharing, NFR5.3, `monitoring-design.md` di U7 §3), email al proprietario.
+  - Metrica: probabilmente `firestore.googleapis.com/document/read_count`, risorsa `firestore_instance`, database `(default)`. Prima di crearlo **verifica il nome esatto nel Metrics Explorer** e annotalo qui: `______________________`.
+  - **Condizione principale:** somma mobile su **24 ore** (finestra della condizione di 1 giorno, il massimo per gli avvisi a soglia) sopra **35.000** letture, il 70% della quota gratuita di 50.000 al giorno.
+  - **Condizione di riserva**, se la finestra di 24 ore non è accettata: somma su **1 ora** sopra **3.000**, mantenuta per **3 ore**. È un ritmo che porterebbe oltre la quota in meno di un giorno.
+  - Condizione usata: ______.
+  - **Limite noto:** la somma mobile non coincide con il giorno della quota di Firestore, che si azzera a mezzanotte, ora del Pacifico. È un avviso precoce, non il conteggio esatto: il valore esatto si legge nella pagina "Utilizzo" della console Firebase durante il controllo mensile (`docs/release-checklist.md` §5).
+- [ ] **Indice degli inviti (u7-sharing, NFR4.7):** `firebase deploy --only firestore:indexes`, eseguito dal workflow senza `--force`, in modo non interattivo non cancella gli indici del progetto assenti dal file. Al primo rollback di prova in un progetto di test verifica questo comportamento e annota qui il risultato: ______.
 
 ## 8. Prima distribuzione delle regole
 
-- [ ] Dopo il primo merge, esegui `firebase-deploy.yml` con `ref` uguale a `main` (o al primo tag `v*`) e approva l'ambiente `firebase-prod`.
+- [ ] Dopo il primo merge, esegui `firebase-deploy.yml` con `ref` uguale all'hash completo (40 caratteri) del commit di `main` (o al primo tag `v*`; un nome di ramo come `main` viene rifiutato) e approva l'ambiente `firebase-prod`.
+
+## 9. Contatto per Open Food Facts (`OFF_CONTACT`, catalogo dei vini U3)
+
+Open Food Facts chiede a ogni app un identificativo `Vinoozy/<versione> (<contatto>)`. Il catalogo lo usa solo se la build ha il contatto; senza, Open Food Facts resta spento e restano i suggerimenti interni (BR5.1). Sviluppo, test, end-to-end e CI non lo hanno mai, quindi non chiamano mai il vero Open Food Facts.
+
+- [ ] Scegli un indirizzo di contatto dedicato all'app (un'email o la pagina del progetto). Non è un segreto, ma **non va mai nel repository**: `tool/check_off_config.sh` nel job `analyze` blocca il merge se un file lo contiene, e nei workflow il nome della chiave non deve comparire.
+- [ ] Aggiungi la chiave `OFF_CONTACT` al file `config/firebase_prod.json` del §1, accanto alle chiavi `FIREBASE_*`, con il contatto come valore.
+- [ ] Codifica di nuovo il file in Base64 e sostituisci il segreto `FIREBASE_PROD_DEFINES_JSON_B64` dell'**ambiente `play-internal`** (Settings → Environments → `play-internal`). Un segreto con lo stesso nome a livello di repository non conta: quello dell'ambiente lo sovrascrive.
+- [ ] L'effetto arriva con la **versione successiva** dell'app (`release.yml` ricostruisce la configurazione a ogni build).
+- [ ] **Spegnere Open Food Facts** (servizio cambiato, risposte sbagliate, blocchi): togli la chiave dal JSON, aggiorna il segreto nello stesso modo e pubblica una nuova versione (basta un push su `main`, anche solo della checklist di rilascio). Non è un interruttore remoto: i telefoni già aggiornati usano Open Food Facts finché non installano la nuova versione; nel frattempo il circuit breaker ne limita l'effetto.
+- [ ] Prima di pubblicare una versione con Open Food Facts acceso, completa le voci "Catalogo dei vini" della checklist di rilascio (informativa privacy, scheda "Sicurezza dei dati", attribuzione).
+
+## 10. Pagina web di cancellazione dell'account (u8-account, BR1.11, NFR4.7, NFR8.5)
+
+La pagina `docs/account-deletion/` (it, en, pt-BR) cancella l'account dal browser con l'accesso Google, senza server né funzioni nel cloud. Si pubblica sul ramo `gh-pages` solo con `pages.yml`, dopo le regole. Indirizzo: `https://brunobottazzini.github.io/Vinoozy/account-deletion/`.
+
+**Repository pubblico** (GitHub Pages gratuito lo richiede), prima della prima pubblicazione:
+
+- [ ] Controlla che nel repository non ci siano segreti: `config/firebase_prod.json` e `google-services.json` sono in `.gitignore` e mai committati (`git log --all -- config/firebase_prod.json '**/google-services.json'` non mostra nulla).
+- [ ] Controlla tutta la cronologia con uno strumento di ricerca dei segreti, per esempio `gitleaks detect --source . --log-opts="--all"`. Ogni segreto trovato si revoca e si sostituisce **prima** di rendere pubblico il repository (riscrivere la cronologia non basta: chi l'ha già vista lo conosce).
+- [ ] Solo dopo, Settings → General → Danger Zone → "Change visibility" → **Public**. Data: ______.
+
+**Console Firebase, una volta:**
+
+- [ ] Registra un'**app web** nel progetto (Impostazioni progetto → Le tue app → Aggiungi app → Web). Copia `apiKey`, `authDomain` (`vinoozy-d6f45.firebaseapp.com`), `projectId` e `appId` in `docs/account-deletion/firebase-config.js`, al posto dei valori `TODO_…`. Sono valori pubblici per natura, non segreti; il file non deve contenere altro. Il bundle non va ricostruito: il file si carica a parte.
+- [ ] Authentication → Impostazioni → **Domini autorizzati**: aggiungi `brunobottazzini.github.io`.
+- [ ] **reCAPTCHA v3**: crea una chiave del sito (console di reCAPTCHA) con il dominio `brunobottazzini.github.io`, e scrivi la chiave del sito (pubblica) in `recaptchaSiteKey` di `firebase-config.js`. La chiave segreta resta solo nella console di App Check.
+- [ ] App Check → Applicazioni → app web → provider **reCAPTCHA v3** con la stessa chiave.
+- [ ] **Obbligo di App Check su Firestore** (vale per l'app Android e per la pagina): resta in modalità di controllo. Attivalo solo quando, nelle metriche di App Check, le richieste verificate sono almeno il **99% per 7 giorni consecutivi**, contando insieme Android e web (stesso criterio del §2). Prima verifica che le versioni dell'app in produzione abbiano App Check (attivo dall'inizio in `lib/app/bootstrap.dart`). Data di attivazione: ______.
+
+**GitHub, una volta:**
+
+- [ ] Ambiente **`github-pages-publish`**: approvazione obbligatoria del proprietario, limitato a `main` (il workflow si avvia da `main`). Nessun segreto: `pages.yml` usa il `GITHUB_TOKEN` con `contents: write` e `actions: read`.
+- [ ] Dopo la prima esecuzione di `pages.yml` (che crea il ramo `gh-pages`): Settings → Pages → "Deploy from a branch" → ramo **`gh-pages`**, cartella `/ (root)`.
+- [ ] Ruleset sul ramo `gh-pages`: aggiornamento solo da GitHub Actions.
+
+**Ogni pubblicazione:** merge, `firebase-deploy.yml`, poi `pages.yml` con `mode: publish` e lo stesso `ref` (si ferma con "Pubblica prima le regole con firebase-deploy.yml" se le regole pubblicate sono diverse, e se `firebase-config.js` ha ancora valori `TODO`), poi `promote.yml`. Rollback della pagina: `pages.yml` con `mode: rollback`.

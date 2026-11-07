@@ -1,0 +1,15 @@
+{
+  "stage": "nfr-requirements",
+  "unit": "u6-label-recognition",
+  "upstream_ids": ["NFR1", "NFR2", "NFR3", "NFR4", "NFR5", "NFR6", "NFR7", "NFR8"],
+  "coverage": [
+    { "id": "NFR1", "status": "OK", "target": "performance-requirements.md NFR1.1-NFR1.4 (foto-proposta 3 s / 2 s, lettura 1,5 s, aggiunta sotto 30 s, annulla 300 ms)" },
+    { "id": "NFR2", "status": "OK", "target": "performance-requirements.md NFR2.1-NFR2.3 (qualità del riconoscimento 14 su 20, conferma obbligatoria, peso dell'app +15 MB)" },
+    { "id": "NFR3", "status": "OK", "target": "security-requirements.md > Accessibilità NFR3.1-NFR3.3" },
+    { "id": "NFR4", "status": "OK", "target": "security-requirements.md NFR4.1-NFR4.5 (nessun accesso diretto al cloud, permessi Android e iPhone, immagini condivise)" },
+    { "id": "NFR5", "status": "OK", "target": "performance-requirements.md NFR5.1-NFR5.2 (al più 2 richieste per foto, nessuna lettura o scrittura nuova); tech-stack-decisions.md dipendenze gratuite" },
+    { "id": "NFR6", "status": "OK", "target": "security-requirements.md > Affidabilità e offline NFR6.1-NFR6.3" },
+    { "id": "NFR7", "status": "OK", "target": "tech-stack-decisions.md NFR7.1-NFR7.5" },
+    { "id": "NFR8", "status": "OK", "target": "security-requirements.md > Privacy NFR8.1-NFR8.3 (nessuna immagine fuori dal telefono, copia cancellata, report senza dati letti, scheda Sicurezza dei dati)" }
+  ]
+}

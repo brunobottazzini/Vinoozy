@@ -61,6 +61,9 @@ components:
       - component: Sync
         interaction: salvare le modifiche in locale e metterle in coda per il cloud
         style: async
+      - component: WineCatalog
+        interaction: suggerimenti durante la scrittura e dati esterni da passare a Estimation (aggiunto 2026-11-05)
+        style: sync
     dependents:
       - component: Account
         interaction: eliminare i dati alla cancellazione dell'account
@@ -96,7 +99,8 @@ components:
   - name: Estimation
     summary: Finestra ideale, stato del vino, fiducia e abbinamenti
     behaviour: >
-      Per un vino chiede a WineCatalog i dati della base esterna; se non li trova o non c'e' rete
+      Per un vino usa i dati esterni che Cellar ottiene da WineCatalog (aggiornato 2026-11-05: Estimation
+      resta una libreria pura e non chiama WineCatalog); se non ci sono o non c'e' rete
       applica regole interne per tipologia, denominazione e annata, con fiducia piu' bassa;
       la fiducia ha tre livelli (alta, media, bassa); lo stato (da aspettare, pronto,
       da bere presto, oltre la finestra) si calcola sempre dalla data di oggi e non viene salvato;
@@ -107,13 +111,12 @@ components:
       - Stima della finestra e fonte (FR4.1-FR4.4, FR4.7)
       - Stato derivato e regola "da bere presto" (FR4.5, FR4.6)
       - Abbinamenti cibo-vino (FR7.1, FR7.2)
-    depends_on:
-      - component: WineCatalog
-        interaction: cercare finestra e abbinamenti nella base dati vini esterna
-        style: sync
+    depends_on: []
     dependents:
       - component: Cellar
-        interaction: stimare un vino nuovo o modificato
+        interaction: stimare un vino nuovo o modificato, passando i dati esterni ottenuti da WineCatalog
+      - component: WineCatalog
+        interaction: usare normalizzazione e riconoscimento delle denominazioni
       - component: Dashboard
         interaction: calcolare lo stato di ogni vino per i grafici
     external_dependencies: []
@@ -127,29 +130,31 @@ components:
             relationship: ogni stima si riferisce a un solo vino
 
   - name: WineCatalog
-    summary: Intermediario nel cloud verso la base dati vini esterna (codice nostro)
+    summary: Catalogo dei vini dentro l'app (catalogo interno + Open Food Facts) (aggiornato 2026-11-05)
     behaviour: >
-      Funzione nel cloud che custodisce la chiave della base dati esterna, che non arriva mai sul telefono;
-      accetta richieste solo da utenti autenticati; fornisce suggerimenti di nomi mentre l'utente scrive,
-      il riconoscimento di un vino da un testo letto sull'etichetta e i dati di finestra e abbinamenti;
-      limita le richieste per utente per restare nella quota gratuita; ogni chiamata ha un timeout.
+      Modulo dentro l'app; fornisce suggerimenti di nomi mentre l'utente scrive, il riconoscimento di un vino
+      da un testo letto sull'etichetta o da un codice a barre e i dati esterni disponibili per la stima;
+      usa un catalogo interno sempre disponibile e Open Food Facts quando c'e' rete; limita le richieste
+      verso Open Food Facts, conserva le risposte per 30 giorni e ogni chiamata ha un timeout.
+      In origine era una funzione cloud con la chiave di un fornitore: cambiato su scelta del proprietario
+      in Functional Design di U3.
     responsibilities:
       - Suggerimenti di vini durante la scrittura (FR2.1)
       - Corrispondenza testo dell'etichetta -> vino (FR2.2)
       - Dati della base esterna per stima e abbinamenti (FR4.2, FR7.2)
-    depends_on: []
-    dependents:
+    depends_on:
       - component: Estimation
-        interaction: dati di finestra e abbinamenti
+        interaction: normalizzazione e riconoscimento delle denominazioni (funzioni di catalogo di C2)
+        style: sync
+    dependents:
+      - component: Cellar
+        interaction: suggerimenti durante la scrittura e dati esterni da passare a Estimation
       - component: LabelRecognition
         interaction: trovare il vino corrispondente al testo letto
     external_dependencies:
-      - name: Base dati vini esterna (da scegliere)
+      - name: Open Food Facts
         kind: third-party-api
-        purpose: dati su vini, finestre di consumo e abbinamenti
-      - name: Cloud Functions for Firebase
-        kind: other
-        purpose: esecuzione della funzione intermediaria
+        purpose: nome, produttore e categoria dei vini in commercio, anche per codice a barre (dati ODbL)
     entities: []
 
   - name: LabelRecognition
@@ -174,7 +179,7 @@ components:
   - name: Sharing
     summary: Inviti, permessi e accesso alle cantine condivise
     behaviour: >
-      Il proprietario invita fino a 5 persone per email con permesso "solo lettura" o "puo' modificare";
+      Il proprietario invita fino a 2 persone per email (limite portato da 5 a 2 il 2026-11-06) con permesso "solo lettura" o "puo' modificare";
       rifiuta inviti a se stessi, a email gia' invitate e oltre il limite; la revoca ha effetto
       alla successiva sincronizzazione della persona; risponde alle verifiche di permesso;
       le stesse regole valgono anche lato cloud, cosi' una modifica non permessa viene rifiutata.
@@ -232,7 +237,7 @@ components:
     summary: Statistiche per il cruscotto e la lista "da bere presto"
     behaviour: >
       Calcola dai vini e dagli stati: lista "da bere presto" ordinata per fine finestra;
-      conteggi per stato (le "da bere presto" contano tra le pronte); bottiglie per anno di picco;
+      conteggi per stato (aggiornato 2026-11-06, scelta del proprietario in Functional Design di U5: quattro barre, "da bere presto" separata dalle pronte); bottiglie per anno di picco;
       bottiglie per tipologia; restituisce anche una descrizione testuale per il lettore schermo.
     responsibilities:
       - Lista "da bere presto" (FR5.1, FR5.2)
@@ -260,22 +265,23 @@ graph LR
   Cellar -->|stima| Estimation
   Cellar -->|permessi| Sharing
   Cellar -->|salva e invia| Sync
-  Estimation -->|dati vini| WineCatalog
+  Cellar -->|suggerimenti e dati vini| WineCatalog
+  WineCatalog -->|riconoscimento nomi| Estimation
   LabelRecognition -->|riconosce vino| WineCatalog
   Dashboard -->|legge vini| Cellar
   Dashboard -->|stato| Estimation
 ```
 
-<!-- Text fallback: Account usa Cellar e Sharing; Cellar usa Estimation, Sharing e Sync; Estimation e LabelRecognition usano WineCatalog; Dashboard usa Cellar ed Estimation. Nessun ciclo. -->
+<!-- Text fallback: Account usa Cellar e Sharing; Cellar usa Estimation, Sharing e Sync; Cellar e LabelRecognition usano WineCatalog; WineCatalog usa Estimation per riconoscere i nomi (aggiornato 2026-11-05); Dashboard usa Cellar ed Estimation. Nessun ciclo. -->
 
 ## Component Summary
 
 | Component | Purpose | Depends On | Dependents | Entities Owned |
 |-----------|---------|------------|------------|----------------|
 | Account | Accesso, uscita, cancellazione | Cellar, Sharing | — | UserProfile |
-| Cellar | Vini, quantità, bevute | Estimation, Sharing, Sync | Account, Dashboard | Cellar, Wine, DrinkingRecord |
-| Estimation | Finestra, stato, fiducia, abbinamenti | WineCatalog | Cellar, Dashboard | DrinkingWindowEstimate |
-| WineCatalog | Intermediario cloud verso la base dati vini | — | Estimation, LabelRecognition | — |
+| Cellar | Vini, quantità, bevute | Estimation, Sharing, Sync, WineCatalog | Account, Dashboard | Cellar, Wine, DrinkingRecord |
+| Estimation | Finestra, stato, fiducia, abbinamenti | — | Cellar, Dashboard, WineCatalog | DrinkingWindowEstimate |
+| WineCatalog | Catalogo dei vini dentro l'app (interno + Open Food Facts), aggiornato 2026-11-05 | Estimation | Cellar, LabelRecognition | — |
 | LabelRecognition | Lettura etichetta e proposta | WineCatalog | — | — |
 | Sharing | Inviti e permessi | — | Account, Cellar | CellarMembership |
 | Sync | Offline e sincronizzazione | — | Cellar | SyncStatus |
@@ -299,8 +305,7 @@ graph LR
 |-----------|------------|------|---------|
 | Account | Firebase Authentication | third-party-api | Accesso con Google |
 | Cellar | Cloud Firestore | database | Archivio cloud |
-| WineCatalog | Base dati vini esterna (da scegliere) | third-party-api | Finestre e abbinamenti |
-| WineCatalog | Cloud Functions for Firebase | other | Esecuzione dell'intermediario |
+| WineCatalog | Open Food Facts (aggiornato 2026-11-05) | third-party-api | Nome, produttore e categoria dei vini, codice a barre (ODbL) |
 | LabelRecognition | ML Kit (testo sul telefono) | other | Lettura etichetta gratuita |
 | Sharing | Firestore Security Rules | other | Permessi lato cloud |
 | Sync | Cloud Firestore (cache offline) | database | Archivio locale e sincronizzazione |
@@ -312,7 +317,7 @@ graph LR
 | Account | Ciclo di vita dell'utente distinto dai dati della cantina; la cancellazione coordina più componenti |
 | Cellar | Possiede i dati principali e le loro regole (doppioni, quantità, bevute) |
 | Estimation | Logica di dominio enologica che cambierà spesso (regole, fonti) senza toccare l'inventario; pura e facile da testare |
-| WineCatalog | Gira nel cloud, custodisce un segreto e ha un ritmo di cambiamento legato al fornitore esterno |
+| WineCatalog | Isola la fonte esterna (Open Food Facts) dietro un adattatore, con cache e limiti propri, e ha un ritmo di cambiamento legato alla fonte; in origine girava nel cloud per custodire una chiave, non più necessaria (aggiornato 2026-11-05) |
 | LabelRecognition | Dipende dalla fotocamera e dal riconoscimento sul telefono; si può sostituire senza toccare il resto |
 | Sharing | Le regole di permesso vanno applicate sia nell'app sia nel cloud; isolarle evita errori di sicurezza |
 | Sync | Problema tecnico trasversale (offline, conflitti) separato dalle regole della cantina |

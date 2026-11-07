@@ -34,6 +34,7 @@ aidlc/diagnostics/
 .pub/
 /build/
 /coverage/
+packages/estimation/coverage/
 *.iml
 .idea/
 .vscode/

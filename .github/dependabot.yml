@@ -10,6 +10,11 @@ updates:
     directory: /
     schedule:
       interval: weekly
+  # The pure Dart estimation package (u2-estimation) has its own pubspec.
+  - package-ecosystem: pub
+    directory: /packages/estimation
+    schedule:
+      interval: weekly
   - package-ecosystem: npm
     directory: /
     schedule:

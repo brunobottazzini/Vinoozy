@@ -1,0 +1,32 @@
+{
+  "stage": "functional-design",
+  "unit": "u8-account",
+  "upstream_ids": [
+    "AC1.2.1",
+    "AC1.2.2",
+    "AC1.3.1",
+    "AC1.3.2"
+  ],
+  "coverage": [
+    {
+      "id": "AC1.2.1",
+      "status": "OK",
+      "target": "FR1.3: functional-spec.md BR1.2, BR1.3; frontend-components.md ProfileScreen, SignOutConfirmDialog"
+    },
+    {
+      "id": "AC1.2.2",
+      "status": "OK",
+      "target": "FR1.3: functional-spec.md BR1.4; frontend-components.md SignOutWarningDialog"
+    },
+    {
+      "id": "AC1.3.1",
+      "status": "OK",
+      "target": "FR1.4: functional-spec.md BR1.5, BR1.6, BR1.11, BR1.12; frontend-components.md DeleteAccountScreen"
+    },
+    {
+      "id": "AC1.3.2",
+      "status": "OK",
+      "target": "FR1.4, NFR8: functional-spec.md BR1.7, BR1.8, BR1.9, BR1.10; frontend-components.md DeletionProgressView, AccountDeletionResumeGate; BR1.1 presentazione (unit-of-work U8); BR1.13 contratto con il gate"
+    }
+  ]
+}

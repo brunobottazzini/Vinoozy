@@ -1,0 +1,12 @@
+{
+  "stage": "functional-design",
+  "unit": "u5-dashboard",
+  "upstream_ids": ["AC5.1.1", "AC5.1.2", "AC5.2.1", "AC5.2.2", "AC5.2.3"],
+  "coverage": [
+    { "id": "AC5.1.1", "status": "OK", "target": "FR5.1, FR5.2: rules.md BR1.2, BR1.3 (ordine per fine finestra); functional-spec.md > Flussi punto 1 (Cruscotto come prima schermata); frontend-components.md DrinkSoonSection" },
+    { "id": "AC5.1.2", "status": "OK", "target": "FR5.2: rules.md BR1.3 (\"Nessuna bottiglia in scadenza\"); frontend-components.md DrinkSoonSection" },
+    { "id": "AC5.2.1", "status": "OK", "target": "FR5.3, FR5.4, FR5.5: rules.md BR1.1, BR1.4, BR1.5, BR1.6, BR1.7 (numeri su ogni barra), BR1.8 (cantina vuota, FR5.6); frontend-components.md StatusChartCard, PeakYearChartCard, BreakdownChartCard" },
+    { "id": "AC5.2.2", "status": "OK", "target": "FR5.6: rules.md BR1.7 (descrizione testuale, icone, contrasto); frontend-components.md > Accessibilità (contenitore Semantics e barre figlie)" },
+    { "id": "AC5.2.3", "status": "OK", "target": "NFR2: rules.md BR1.9 (dati locali, un solo passaggio sui vini, funziona senza rete); la soglia misurabile dei 2 secondi sarà verificata in NFR Requirements di U5" }
+  ]
+}

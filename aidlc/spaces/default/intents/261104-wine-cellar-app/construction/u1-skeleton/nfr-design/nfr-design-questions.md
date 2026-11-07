@@ -10,6 +10,7 @@ Nessuna domanda aperta: le scelte di questo passo sono tecniche e derivano dai r
 - Avvisi dei vini rifiutati: ogni voce del giornale si chiude quando il vino risulta nel cloud, quando l'utente sceglie "Aggiungi di nuovo" o "Ignora", oppure dopo 3 avvisi. Il reset per cambio di account verifica il giornale prima di cancellarlo.
 - Regole di sicurezza: in creazione si controllano anche `createdAt` (ora del server) e `name` (1–60 caratteri). Negli aggiornamenti dei vini sono ammessi solo i campi di C3, con `updatedBy` e `updatedAt` obbligatori.
 - Riavvio di Firebase dopo la pulizia dei dati: come primo passo del codice si fa una piccola prova; se il riuso dell'istanza non funziona, l'app si riavvia da sola.
+- Aggiornato dopo la prova sul telefono (2026-11-05): la configurazione di produzione arriva con `--dart-define-from-file=config/firebase_prod.json` (file mai committato) invece di un file Dart generato; "Riprova" sulla cantina riapre gli ascolti di cantina e vini, anche dopo un errore d'ascolto.
 - Organizzazione del codice: componenti separati per accesso, cantina, sincronizzazione e registro locale, con un unico punto per gli errori e un unico ascoltatore per lo stato della rete.
 
 Does this all look correct before I generate the artifact?

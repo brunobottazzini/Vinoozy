@@ -36,6 +36,7 @@ X. Other (please specify)
   - accessibilità WCAG AA; durabilità offline;
   - costo 0 € con avviso a 1 €; copertura 80% senza esclusioni;
   - stack: Flutter, Firebase Auth (Google), Firestore offline.
+- Aggiornato dopo la costruzione e la prova sul telefono (2026-11-05): Android minimo 7.0 (API 24, richiesto da Firebase); `firebase-tools` fissato a 14.27.0 (la 15 richiede Java 21); la configurazione Firebase di produzione entra nell'app al momento della compilazione da un file locale mai committato (`config/firebase_prod.json`).
 - Da risolvere qui, perché aperti dal design approvato: cantina creata con una regola basata sull'ID uguale all'account; modifiche in coda di un altro account controllate prima del cambio di utente; errori di sincronizzazione gestiti in un unico punto.
 
 Does this all look correct before I generate the artifact?

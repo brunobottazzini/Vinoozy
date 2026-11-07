@@ -1,0 +1,11 @@
+{
+  "code": "4000000000001",
+  "status": 1,
+  "status_verbose": "product found",
+  "product": {
+    "code": "4000000000001",
+    "product_name": "Grape juice",
+    "brands": "Juice Co",
+    "categories_tags": ["en:beverages", "en:fruit-juices"]
+  }
+}

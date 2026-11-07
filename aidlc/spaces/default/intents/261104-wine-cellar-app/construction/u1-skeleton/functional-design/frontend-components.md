@@ -31,7 +31,7 @@ La barra in basso a quattro sezioni arriva con u4-cellar e u5-dashboard; in U1 c
 |------------|--------------|-------------|--------|
 | AuthGate | stato della sessione, lastUid | apre SignIn o Cantina; blocca un account diverso con modifiche in coda | BR1.1, BR1.2, BR1.4 |
 | SignInScreen | caricamento, errore, senza rete | "Continua con Google", "Riprova" | BR1.1 |
-| CellarScreen | caricamento, errore della cantina, elenco vini, stato di sincronizzazione | "Aggiungi" (disattivato finché la cantina non esiste), "Riprova" | BR1.3, BR2.4, BR3.2 |
+| CellarScreen | caricamento, errore della cantina, elenco vini, stato di sincronizzazione | "Aggiungi" (disattivato finché la cantina non esiste), "Riprova" (anche dopo un errore d'ascolto; riapre gli ascolti di cantina e vini) | BR1.3, BR2.4, BR3.2 |
 | OfflineBanner | in attesa (sì/no) e rete (sì/no) | nessuna | BR3.2 |
 | WineListTile | nome, annata, quantità | nessuna in U1 | BR2.4 |
 | AddWineScreen | ID del vino, campi, errori, salvataggio in corso | Salva (disattivato dopo il primo tocco), Indietro | BR2.1–BR2.4 |

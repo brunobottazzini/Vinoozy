@@ -1,0 +1,100 @@
+{
+  "stage": "code-generation",
+  "unit": "u2-estimation",
+  "version": 1,
+  "writes": [
+    {
+      "path": "packages/estimation/pubspec.yaml"
+    },
+    {
+      "path": "packages/estimation/pubspec.lock"
+    },
+    {
+      "path": "packages/estimation/analysis_options.yaml"
+    },
+    {
+      "path": "packages/estimation/README.md"
+    },
+    {
+      "path": "packages/estimation/lib/estimation.dart"
+    },
+    {
+      "path": "packages/estimation/lib/src/errors.dart"
+    },
+    {
+      "path": "packages/estimation/lib/src/models.dart"
+    },
+    {
+      "path": "packages/estimation/lib/src/pairings.dart"
+    },
+    {
+      "path": "packages/estimation/lib/src/recognizer.dart"
+    },
+    {
+      "path": "packages/estimation/lib/src/status.dart"
+    },
+    {
+      "path": "packages/estimation/lib/src/tables.dart"
+    },
+    {
+      "path": "packages/estimation/lib/src/validation.dart"
+    },
+    {
+      "path": "packages/estimation/lib/src/window.dart"
+    },
+    {
+      "path": "packages/estimation/test/api_test.dart"
+    },
+    {
+      "path": "packages/estimation/test/coverage_helper_test.dart"
+    },
+    {
+      "path": "packages/estimation/test/models_test.dart"
+    },
+    {
+      "path": "packages/estimation/test/pairings_test.dart"
+    },
+    {
+      "path": "packages/estimation/test/recognizer_test.dart"
+    },
+    {
+      "path": "packages/estimation/test/status_test.dart"
+    },
+    {
+      "path": "packages/estimation/test/tables_test.dart"
+    },
+    {
+      "path": "packages/estimation/test/window_test.dart"
+    },
+    {
+      "path": "packages/estimation/benchmark/estimation_benchmark.dart"
+    },
+    {
+      "path": "tool/check_estimation_purity.sh"
+    },
+    {
+      "path": "integration_test_perf/estimation_perf_test.dart"
+    },
+    {
+      "path": "test_driver/perf_driver.dart"
+    },
+    {
+      "path": "pubspec.yaml"
+    },
+    {
+      "path": "pubspec.lock"
+    },
+    {
+      "path": "analysis_options.yaml"
+    },
+    {
+      "path": ".gitignore"
+    },
+    {
+      "path": ".github/workflows/ci.yml"
+    },
+    {
+      "path": "docs/release-checklist.md"
+    }
+  ]
+}

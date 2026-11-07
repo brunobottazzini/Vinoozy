@@ -1,0 +1,27 @@
+{
+  "stage": "infrastructure-design",
+  "unit": "u7-sharing",
+  "upstream_ids": ["NFR2.1", "NFR2.4", "NFR5.1", "NFR5.3", "NFR2.2", "NFR2.3", "NFR5.2", "NFR4.1", "NFR4.9", "NFR8.1", "NFR8.4", "NFR3.1", "NFR3.3", "NFR6.1", "NFR6.4", "NFR4.8", "NFR6.2", "NFR7.5", "NFR4.7", "NFR6.3"],
+  "coverage": [
+    { "id": "NFR2.1", "status": "OK", "target": "monitoring-design.md §1, §2 e §4 (mediana dei tempi nella checklist)" },
+    { "id": "NFR2.2", "status": "OK", "target": "cicd-pipeline.md §1 job e2e (sharing_test.dart, 15 s); monitoring-design.md §4" },
+    { "id": "NFR2.3", "status": "OK", "target": "cicd-pipeline.md §1 job e2e; monitoring-design.md §4 (revoca con due telefoni)" },
+    { "id": "NFR2.4", "status": "OK", "target": "cicd-pipeline.md §1 job unit (test dei widget)" },
+    { "id": "NFR5.1", "status": "OK", "target": "cicd-pipeline.md §1 job unit (conteggio degli ascolti)" },
+    { "id": "NFR5.2", "status": "OK", "target": "infrastructure-specification.md §1 firestore.rules (tabella degli accessi in commento); cicd-pipeline.md §1 job rules" },
+    { "id": "NFR5.3", "status": "OK", "target": "infrastructure-specification.md §2; monitoring-design.md §2 e §3 (avviso a 35.000 letture al giorno)" },
+    { "id": "NFR4.1", "status": "OK", "target": "cicd-pipeline.md §1 job rules (npm run test:rules con u7.rules.test.mjs)" },
+    { "id": "NFR4.7", "status": "OK", "target": "infrastructure-specification.md §4 (ordine: regole e indice prima dell'app); cicd-pipeline.md §1 e §2 (check_firestore_indexes.sh e il suo test, firebase-deploy.yml)" },
+    { "id": "NFR4.8", "status": "OK", "target": "infrastructure-specification.md §1 firestore.rules (drinkingRecords); cicd-pipeline.md §1 job rules" },
+    { "id": "NFR4.9", "status": "OK", "target": "cicd-pipeline.md §1 job rules (valori al limite dei campi)" },
+    { "id": "NFR8.1", "status": "OK", "target": "infrastructure-specification.md §5 (nessun permesso dei contatti); cicd-pipeline.md §1 job unit (test sul manifest)" },
+    { "id": "NFR8.4", "status": "OK", "target": "monitoring-design.md §4 (voce Data Safety nella checklist)" },
+    { "id": "NFR3.1", "status": "OK", "target": "cicd-pipeline.md §1 job unit (schermate nelle tre lingue)" },
+    { "id": "NFR3.3", "status": "OK", "target": "cicd-pipeline.md §1 job unit (testo al 200%)" },
+    { "id": "NFR6.1", "status": "OK", "target": "cicd-pipeline.md §1 job unit" },
+    { "id": "NFR6.2", "status": "OK", "target": "cicd-pipeline.md §1 job rules (doppioni rifiutati); monitoring-design.md §2 (sharing_*_failed)" },
+    { "id": "NFR6.3", "status": "OK", "target": "monitoring-design.md §2 (rifiuti dopo una revoca); cicd-pipeline.md §1 job e2e" },
+    { "id": "NFR6.4", "status": "OK", "target": "infrastructure-specification.md §1 (chiave sul telefono cancellata nel reset); cicd-pipeline.md §1 job unit" },
+    { "id": "NFR7.5", "status": "OK", "target": "infrastructure-specification.md §4 compatibilità (test compat/); cicd-pipeline.md §1" }
+  ]
+}

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:vinoozy/account/gate_state.dart';
@@ -7,13 +9,26 @@ import 'package:vinoozy/app/providers.dart';
 
 import '../../helpers/ui_harness.dart';
 
+/// A network the test switches on and off; [onChanged] emits each change
+/// (u7-sharing BR1.11, NFR6.1).
 class FakeNetwork implements NetworkStatus {
-  FakeNetwork({this.online = true});
+  FakeNetwork({this._online = true});
 
-  bool online;
+  bool _online;
+  final StreamController<bool> _changes = StreamController<bool>.broadcast();
+
+  bool get online => _online;
+
+  set online(bool value) {
+    _online = value;
+    _changes.add(value);
+  }
 
   @override
-  Future<bool> hasNetwork() async => online;
+  Future<bool> hasNetwork() async => _online;
+
+  @override
+  Stream<bool> get onChanged => _changes.stream;
 }
 
 void main() {
