@@ -123,14 +123,30 @@ class DrinkingRecordRepository {
   /// "Drunk" (BR1.10, FR6.1): one batch with quantity −1 (an increment,
   /// BR1.15) and a drink dated [today]. Refused while the shown quantity
   /// is 0.
+  ///
+  /// ux-redesign FR2.3 (review R-04): the optional [rating] of the
+  /// confirmation sheet travels in the same batch, so there is no second
+  /// write; a rating outside 1-5 is refused before any write.
   Future<DrinkOutcome> drink({
     required String cellarId,
     required AppUser user,
     required Wine wine,
     required DateTime today,
+    int? rating,
   }) async {
     if (!QuantityDelta.canDecrease(wine.storedQuantity)) {
       return DrinkFailed(StateError('no bottle to drink'));
+    }
+    if (rating != null &&
+        (rating < RecordRules.minRating || rating > RecordRules.maxRating)) {
+      return DrinkFailed(
+        RangeError.range(
+          rating,
+          RecordRules.minRating,
+          RecordRules.maxRating,
+          'rating',
+        ),
+      );
     }
     final recordId = _ids.newId();
     final outcome = await _commit(
@@ -148,6 +164,7 @@ class DrinkingRecordRepository {
           DrinkingRecordFields.wineName: wine.name,
           DrinkingRecordFields.vintage: wine.vintage,
           DrinkingRecordFields.drankOn: formatDrankOn(today),
+          DrinkingRecordFields.rating: ?rating,
           DrinkingRecordFields.recordedBy: user.uid,
           DrinkingRecordFields.createdAt: FieldValue.serverTimestamp(),
         }),
@@ -332,7 +349,7 @@ class DrinkingRecordRepository {
         },
       ),
     );
-    unawaited(_probe.trackWrite());
+    unawaited(_probe.trackWrite(write));
     _onWriteStarted?.call();
     return null;
   }

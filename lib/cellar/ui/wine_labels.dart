@@ -62,7 +62,61 @@ String estimateSourceText(AppLocalizations l10n, EstimateLabel label) =>
       EstimateLabel.catalog => l10n.estimateSourceCatalog,
       EstimateLabel.typeEstimate => l10n.estimateSourceType,
       EstimateLabel.correctedByDrinks => l10n.estimateSourceCorrected,
+      EstimateLabel.correctedByYou => l10n.estimateSourceCorrectedByYou,
     });
+
+/// The name of a level (label-autofill-windows FR4.1).
+String levelLabel(AppLocalizations l10n, WineLevel level) => switch (level) {
+  WineLevel.everyday => l10n.levelEveryday,
+  WineLevel.good => l10n.levelGood,
+  WineLevel.aging => l10n.levelAging,
+};
+
+/// How a qualifier is written on labels: a term of the wine law, the same
+/// in every language (label-autofill-windows BR1.8).
+String qualifierDisplayName(Qualifier qualifier) => switch (qualifier) {
+  Qualifier.riserva => 'Riserva',
+  Qualifier.superiore => 'Superiore',
+  Qualifier.granSelezione => 'Gran Selezione',
+  Qualifier.crianza => 'Crianza',
+  Qualifier.reserva => 'Reserva',
+  Qualifier.granReserva => 'Gran Reserva',
+  Qualifier.premierCru => 'Premier Cru',
+  Qualifier.grandCru => 'Grand Cru',
+  Qualifier.kabinett => 'Kabinett',
+  Qualifier.spatlese => 'Spätlese',
+  Qualifier.auslese => 'Auslese',
+  Qualifier.vintage => 'Vintage',
+  Qualifier.lbv => 'LBV',
+  Qualifier.colheita => 'Colheita',
+};
+
+/// The origin of the estimate in one line (interaction-spec "Origine della
+/// stima"): the appellation with its qualifier, the grape, or the type;
+/// `null` for a catalog window, whose source line stays.
+String? estimateOriginText(AppLocalizations l10n, DrinkingWindow window) {
+  switch (window.basis) {
+    case EstimationBasis.denomination:
+      final info = appellationOf(window.denominationKey);
+      if (info == null) return l10n.estimateFromType;
+      final qualifier = window.qualifier;
+      return qualifier == null
+          ? l10n.estimateFromDenomination(info.displayName)
+          : l10n.estimateFromDenominationQualifier(
+              info.displayName,
+              qualifierDisplayName(qualifier),
+            );
+    case EstimationBasis.grape:
+      final name = grapeNameOf(window.denominationKey);
+      return name == null
+          ? l10n.estimateFromType
+          : l10n.estimateFromGrape(name);
+    case EstimationBasis.wineType || EstimationBasis.generic:
+      return l10n.estimateFromType;
+    case EstimationBasis.catalog:
+      return null;
+  }
+}
 
 String conditionLabel(AppLocalizations l10n, DrinkCondition condition) =>
     switch (condition) {

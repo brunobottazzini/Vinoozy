@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:estimation/estimation.dart' show DrinkingWindow;
 
 import '../../account/app_user.dart';
 import '../../app/error_reporter.dart';
@@ -87,6 +88,8 @@ class _WriteContext {
     required this.sensitive,
     required this.reason,
     this.entry,
+    this.quiet = false,
+    this.onFailure,
   });
 
   final String cellarId;
@@ -98,6 +101,12 @@ class _WriteContext {
 
   /// A journal entry for a creation (the rejected-wine notice of U1).
   final JournalEntry? entry;
+
+  /// A background write the person did not ask for (the one-off estimate
+  /// migration, label-autofill-windows NFR4.8a): a failure is told to
+  /// [onFailure] only, never shown nor reported per wine.
+  final bool quiet;
+  final void Function(WriteErrorKind kind)? onFailure;
 }
 
 /// A snapshot of the wines of a cellar, sorted by name, with its metadata.
@@ -343,6 +352,11 @@ class WineRepository {
       WineFields.wineType: ?draft.wineType,
       WineFields.region: ?draft.region,
       WineFields.denomination: ?draft.denomination,
+      // ux-redesign FR1.5: only when known, so a wine without a country
+      // keeps the shape the earlier rules accept (NFR4).
+      WineFields.country: ?draft.country,
+      // label-autofill-windows BR4.3: only a level chosen or accepted.
+      WineFields.level: ?draft.level?.name,
       WineFields.matchKey: matchKeyOf(
         draft.name,
         draft.producer,
@@ -417,6 +431,11 @@ class WineRepository {
 
   /// Saves the edit form (BR1.13): the texts, `matchKey`, [estimate] and the
   /// quantity as a change towards [targetQuantity], never below 0.
+  ///
+  /// ux-redesign FR1.5: `country` is written when the draft has one (an
+  /// earlier wine with an Italian region gets `IT` from the validator,
+  /// review R-06) or to clear the one [before] had; an edit of a wine that
+  /// never had a country does not add the field.
   Future<SaveOutcome> updateWine({
     required String cellarId,
     required AppUser user,
@@ -438,6 +457,14 @@ class WineRepository {
         WineFields.wineType: draft.wineType,
         WineFields.region: draft.region,
         WineFields.denomination: draft.denomination,
+        if (draft.country != null || before.country != null)
+          WineFields.country: draft.country,
+        // label-autofill-windows BR4.3: a level chosen is written; "None"
+        // removes a saved one; a wine that never had one stays without.
+        if (draft.level != null)
+          WineFields.level: draft.level!.name
+        else if (before.level != null)
+          WineFields.level: FieldValue.delete(),
         WineFields.matchKey: matchKeyOf(
           draft.name,
           draft.producer,
@@ -451,14 +478,56 @@ class WineRepository {
   }
 
   /// Writes the estimate of [wine] (BR1.5, BR1.6, BR1.12). Callers write
-  /// only with `canEdit` (BR1.19).
+  /// only with `canEdit` (BR1.19). A [quiet] write (the one-off migration
+  /// of label-autofill-windows, NFR4.8a) tells its failure to [onFailure]
+  /// only.
   Future<SaveOutcome> setEstimate({
     required String cellarId,
     required AppUser user,
     required Wine wine,
     required WineEstimate estimate,
     String reason = CellarErrorReasons.estimateRefreshFailed,
-  }) => _updateWine(cellarId, user, wine, reason, estimate.toFields());
+    bool quiet = false,
+    void Function(WriteErrorKind kind)? onFailure,
+  }) => _updateWine(
+    cellarId,
+    user,
+    wine,
+    reason,
+    estimate.toFields(),
+    quiet: quiet,
+    onFailure: onFailure,
+  );
+
+  /// "Save correction" of "Recommended until" (label-autofill-windows F5,
+  /// NFR4.14): `windowOverride` with the server time and the effective
+  /// [window] in one update, so both are written or neither.
+  Future<SaveOutcome> setOverride({
+    required String cellarId,
+    required AppUser user,
+    required Wine wine,
+    required int endYear,
+    required DrinkingWindow window,
+  }) => _updateWine(cellarId, user, wine, CellarErrorReasons.saveFailed, {
+    WineFields.windowOverride: {
+      OverrideFields.endYear: endYear,
+      OverrideFields.setAt: FieldValue.serverTimestamp(),
+    },
+    WineFields.window: Wine.windowToMap(window),
+  });
+
+  /// "Restore the estimate" (FR5.4, BR4.6): `windowOverride` deleted and
+  /// the effective [window] without it, in one update; the drink feedback
+  /// stays.
+  Future<SaveOutcome> clearOverride({
+    required String cellarId,
+    required AppUser user,
+    required Wine wine,
+    required DrinkingWindow window,
+  }) => _updateWine(cellarId, user, wine, CellarErrorReasons.saveFailed, {
+    WineFields.windowOverride: FieldValue.delete(),
+    WineFields.window: Wine.windowToMap(window),
+  });
 
   /// Merges a possible duplicate (BR1.20) in one batch: the bottles of
   /// [newer] go to [older] (BR1.15), then [newer] is deleted. The caller
@@ -652,6 +721,8 @@ class WineRepository {
     String reason,
     Map<String, Object?> fields, {
     List<String>? sensitive,
+    bool quiet = false,
+    void Function(WriteErrorKind kind)? onFailure,
   }) => _commit(
     _WriteContext(
       cellarId: cellarId,
@@ -660,6 +731,8 @@ class WineRepository {
       wineName: wine.name,
       sensitive: [...sensitiveOfWine(wine), ...?sensitive],
       reason: reason,
+      quiet: quiet,
+      onFailure: onFailure,
     ),
     (batch) => batch.update(_db.doc(winePath(cellarId, wine.id)), {
       ...fields,
@@ -709,18 +782,20 @@ class WineRepository {
             await _onCreateConfirmed(ticket, context.wineId);
           }
         },
-        onError: (Object error, StackTrace stack) => _onWriteError(
-          ticket: ticket,
-          cellarId: context.cellarId,
-          uid: context.user.uid,
-          wineId: context.wineId,
-          wineName: context.wineName,
-          error: error,
-          stack: stack,
-          sensitive: sensitive,
-          journaled: context.entry != null,
-          reason: context.reason,
-        ),
+        onError: (Object error, StackTrace stack) => context.quiet
+            ? _onQuietWriteError(ticket, context, error)
+            : _onWriteError(
+                ticket: ticket,
+                cellarId: context.cellarId,
+                uid: context.user.uid,
+                wineId: context.wineId,
+                wineName: context.wineName,
+                error: error,
+                stack: stack,
+                sensitive: sensitive,
+                journaled: context.entry != null,
+                reason: context.reason,
+              ),
       ),
     );
     _onWriteStarted?.call();
@@ -752,6 +827,17 @@ class WineRepository {
     } catch (error, stack) {
       await _reporter.report(error, stack, reason: 'LedgerUpdateFailed');
     }
+  }
+
+  /// A quiet write failed: only its caller hears of it, and only while the
+  /// write belongs to the current ledger generation.
+  Future<void> _onQuietWriteError(
+    WriteTicket ticket,
+    _WriteContext context,
+    Object error,
+  ) async {
+    if (!await _isCurrentGenerationQuietly(ticket)) return;
+    context.onFailure?.call(classifyWriteError(error));
   }
 
   /// [cellarId] is the cellar of the written path: a refusal on a shared

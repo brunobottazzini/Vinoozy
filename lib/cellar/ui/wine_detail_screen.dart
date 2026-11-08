@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:estimation/estimation.dart' show DrinkingWindow, statusOf;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,10 +9,16 @@ import '../../app/providers.dart';
 import '../../dashboard/today_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../sharing/domain/membership.dart';
+import '../../app/theme.dart';
+import '../../app/ui/country_flag.dart';
 import '../cellar_providers.dart';
+import '../domain/cellar_filter.dart';
 import '../domain/drinking_record.dart';
 import '../domain/quantity_delta.dart';
+import '../domain/window_adjuster.dart';
 import '../domain/wine.dart';
+import '../domain/wine_estimate.dart';
+import '../domain/wine_origins.dart';
 import '../wine_estimator.dart';
 import 'add_wine_screen.dart';
 import 'cellar_dialogs.dart';
@@ -19,7 +26,11 @@ import 'drink_flow.dart';
 import 'drinking_record_sheet.dart';
 import 'duplicate_banner.dart';
 import 'edit_wine_screen.dart';
+import 'ideal_moment_card.dart';
 import 'window_card.dart';
+import 'window_override_widgets.dart';
+import 'wine_badges.dart';
+import 'wine_card.dart' show drinkActionIcon;
 import 'wine_labels.dart';
 
 /// The detail of a wine (BR1.9-BR1.11, BR1.14, BR1.19, BR1.20; NFR2.2).
@@ -110,46 +121,116 @@ class _WineDetailScreenState extends ConsumerState<WineDetailScreen> {
       wine,
       fallbackYear: today.year,
     );
-    final details = [
-      ?wine.producer,
-      vintageText(l10n, wine.vintage),
-      ?wine.denomination,
-      ?wine.region,
-    ].join(' · ');
-    return ListView(
+    // A short page: every part is built, so its commands always exist.
+    return SingleChildScrollView(
+      key: const Key('wine-detail-scroll'),
       padding: const EdgeInsets.all(16),
-      children: [
-        Text(details, style: theme.textTheme.titleMedium),
-        const SizedBox(height: 8),
-        DuplicateBanner(
-          user: widget.user,
-          cellar: cellar,
-          wine: wine,
-          onMerged: (kept) {
-            if (kept.id != wine.id && mounted) Navigator.of(context).pop();
-          },
-        ),
-        WindowCard(estimate: estimate, today: today),
-        if (estimate.pairings != null)
-          PairingsCard(pairings: estimate.pairings!),
-        const SizedBox(height: 8),
-        _QuantityRow(wine: wine, cellar: cellar, user: widget.user),
-        if (wine.quantity == 0)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text(l10n.wineFinished, key: const Key('wine-finished')),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _DetailHero(wine: wine, status: _statusOf(estimate, today)),
+          const SizedBox(height: 8),
+          DuplicateBanner(
+            user: widget.user,
+            cellar: cellar,
+            wine: wine,
+            onMerged: (kept) {
+              if (kept.id != wine.id && mounted) Navigator.of(context).pop();
+            },
           ),
-        const SizedBox(height: 8),
-        _Commands(
-          wine: wine,
-          cellar: cellar,
+          IdealMomentCard(
+            estimate: estimate,
+            today: today,
+            windowOverride: wine.windowOverride,
+            level: wine.level,
+            onCorrect: cellar.canEdit && estimate.window != null
+                ? () => _correct(wine, estimate)
+                : null,
+            onRestore: cellar.canEdit ? () => _restore(wine, estimate) : null,
+          ),
+          if (estimate.pairings != null)
+            PairingsCard(pairings: estimate.pairings!),
+          const SizedBox(height: 8),
+          _QuantityRow(wine: wine, cellar: cellar, user: widget.user),
+          if (wine.quantity == 0)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(l10n.wineFinished, key: const Key('wine-finished')),
+            ),
+          const SizedBox(height: 8),
+          _Commands(
+            wine: wine,
+            cellar: cellar,
+            user: widget.user,
+            onDelete: () => _delete(wine),
+          ),
+          const SizedBox(height: 16),
+          Text(l10n.recentDrinksTitle, style: theme.textTheme.titleMedium),
+          _RecentDrinks(user: widget.user, cellar: cellar, wine: wine),
+        ],
+      ),
+    );
+  }
+
+  static StatusFilter _statusOf(WineEstimate estimate, DateTime today) {
+    final window = estimate.window;
+    if (window == null) return StatusFilter.toEstimate;
+    try {
+      return StatusFilter.of(statusOf(window, today));
+    } on Object {
+      return StatusFilter.toEstimate;
+    }
+  }
+
+  /// The window with the drink feedback and without the owner's correction.
+  static DrinkingWindow? _estimatedOf(WineEstimate estimate) {
+    final base = estimate.baseWindow;
+    if (base == null) return estimate.window;
+    return WindowAdjuster.effective(base, estimate.adjustment);
+  }
+
+  /// "Correct" (FR5.1, BR4.6): the sheet of years, then one write.
+  Future<void> _correct(Wine wine, WineEstimate estimate) async {
+    final window = estimate.window;
+    final estimated = _estimatedOf(estimate) ?? window;
+    if (window == null || estimated == null) return;
+    final year = await CorrectEndYearSheet.show(
+      context,
+      startYear: estimated.startYear,
+      peakYear: estimated.peakYear,
+      currentEnd: window.endYear,
+    );
+    if (year == null || !mounted) return;
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final saved = await ref
+        .read(cellarActionsProvider)
+        .setOverride(
+          cellar: widget.cellar,
           user: widget.user,
-          onDelete: () => _delete(wine),
-        ),
-        const SizedBox(height: 16),
-        Text(l10n.recentDrinksTitle, style: theme.textTheme.titleMedium),
-        _RecentDrinks(user: widget.user, cellar: cellar, wine: wine),
-      ],
+          wine: wine,
+          endYear: year,
+        );
+    messenger.showSnackBar(
+      SnackBar(content: Text(saved ? l10n.overrideSaved : l10n.saveFailed)),
+    );
+  }
+
+  /// "Restore the estimate" (FR5.4): confirmation, then one write.
+  Future<void> _restore(Wine wine, WineEstimate estimate) async {
+    final estimated = _estimatedOf(estimate);
+    if (estimated == null) return;
+    if (!await RestoreEstimateDialog.show(context, estimated.endYear)) return;
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final restored = await ref
+        .read(cellarActionsProvider)
+        .restoreEstimate(cellar: widget.cellar, user: widget.user, wine: wine);
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(restored ? l10n.overrideRestored : l10n.saveFailed),
+      ),
     );
   }
 
@@ -188,6 +269,13 @@ class _QuantityRow extends ConsumerWidget {
   final AccessibleCellar cellar;
   final AppUser user;
 
+  /// FR2.4: "Remove a bottle without a drink" asks first, then removes it.
+  Future<void> _removeWithoutDrink(BuildContext context, WidgetRef ref) async {
+    final actions = ref.read(cellarActionsProvider);
+    if (!await RemoveBottleDialog.show(context, wine.name)) return;
+    await actions.removeBottle(cellar: cellar, user: user, wine: wine);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
@@ -195,49 +283,44 @@ class _QuantityRow extends ConsumerWidget {
     final canDrink =
         cellar.canEdit && QuantityDelta.canDecrease(wine.storedQuantity);
     final actions = ref.read(cellarActionsProvider);
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: 8,
-      runSpacing: 8,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (cellar.canEdit)
-          IconButton(
-            key: const Key('wine-minus'),
-            tooltip: l10n.decreaseQuantity,
-            onPressed: canDrink
-                ? () => actions.removeBottle(
-                    cellar: cellar,
-                    user: user,
-                    wine: wine,
-                  )
-                : null,
-            icon: const Icon(Icons.remove),
-          ),
-        Semantics(
-          label: l10n.bottleCount(wine.quantity),
-          excludeSemantics: true,
-          child: Text(
-            '${wine.quantity}',
-            key: const Key('wine-quantity'),
-            style: theme.textTheme.headlineSmall,
-          ),
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            Text(l10n.quantityLabel, style: theme.textTheme.titleSmall),
+            Semantics(
+              label: l10n.bottleCount(wine.quantity),
+              excludeSemantics: true,
+              child: Text(
+                '${wine.quantity}',
+                key: const Key('wine-quantity'),
+                style: theme.textTheme.headlineSmall,
+              ),
+            ),
+            if (cellar.canEdit)
+              IconButton(
+                key: const Key('wine-plus'),
+                tooltip: l10n.increaseQuantity,
+                // Off at 99 bottles (BR1.3 cap, review R-05).
+                onPressed: QuantityDelta.canIncrease(wine.storedQuantity, 1)
+                    ? () => actions.addBottles(
+                        cellar: cellar,
+                        user: user,
+                        wine: wine,
+                        n: 1,
+                      )
+                    : null,
+                icon: const Icon(Icons.add),
+              ),
+          ],
         ),
-        if (cellar.canEdit)
-          IconButton(
-            key: const Key('wine-plus'),
-            tooltip: l10n.increaseQuantity,
-            // Off at 99 bottles (BR1.3 cap, review R-05).
-            onPressed: QuantityDelta.canIncrease(wine.storedQuantity, 1)
-                ? () => actions.addBottles(
-                    cellar: cellar,
-                    user: user,
-                    wine: wine,
-                    n: 1,
-                  )
-                : null,
-            icon: const Icon(Icons.add),
-          ),
-        if (cellar.canEdit)
+        if (cellar.canEdit) ...[
+          const SizedBox(height: 8),
+          // FR2.1: the main button, with the verb and the glasses icon.
           FilledButton.icon(
             key: const Key('wine-drink'),
             onPressed: canDrink
@@ -249,10 +332,120 @@ class _QuantityRow extends ConsumerWidget {
                     wine: wine,
                   )
                 : null,
-            icon: const Icon(Icons.wine_bar),
-            label: Text(l10n.wineDrink),
+            icon: const Icon(drinkActionIcon),
+            label: Text(l10n.uxDrinkActionDetail),
           ),
+          const SizedBox(height: 8),
+          // FR2.4: explicit label, and a confirmation.
+          OutlinedButton(
+            key: const Key('wine-minus'),
+            onPressed: canDrink
+                ? () => _removeWithoutDrink(context, ref)
+                : null,
+            child: Text(l10n.uxRemoveBottle, textAlign: TextAlign.center),
+          ),
+        ],
       ],
+    );
+  }
+}
+
+/// The top of the detail (FR1.4): the band of the type color, the big flag,
+/// name and vintage, "producer · region, country · type", the status chip
+/// and the bottles.
+class _DetailHero extends StatelessWidget {
+  const _DetailHero({required this.wine, required this.status});
+
+  final Wine wine;
+  final StatusFilter status;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final language = Localizations.localeOf(context).languageCode;
+    final country = WineOrigins.country(wine.displayCountry);
+    final region = wine.region;
+    final family = WineTypeFamily.of(wine.wineType);
+    final place = [
+      if (region != null)
+        WineOrigins.regionDisplayName(country?.code, region, language),
+      ?country?.nameIn(language),
+    ].join(', ');
+    final meta = [
+      ?wine.producer,
+      ?wine.denomination,
+      if (place.isNotEmpty) place,
+      if (family != null) wineFamilyLabel(l10n, family),
+    ].join(' · ');
+    return Card(
+      key: const Key('wine-detail-hero'),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            height: 10,
+            color: wineFamilyColor(WineTypeColors.of(context), family),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (country != null)
+                  Container(
+                    width: 52,
+                    height: 52,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: scheme.surfaceContainer,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: scheme.outlineVariant),
+                    ),
+                    child: CountryFlag(code: country.code, size: 30),
+                  ),
+                const SizedBox(height: 6),
+                Text(
+                  '${wine.name} ${vintageText(l10n, wine.vintage)}',
+                  key: const Key('wine-detail-name'),
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: scheme.onSurface,
+                  ),
+                ),
+                if (meta.isNotEmpty)
+                  Text(
+                    meta,
+                    key: const Key('wine-detail-meta'),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    StateChip(status: status),
+                    Semantics(
+                      label: l10n.bottleCount(wine.quantity),
+                      excludeSemantics: true,
+                      child: Text(
+                        '× ${wine.quantity}',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -370,18 +563,22 @@ class _RecentDrinks extends ConsumerWidget {
 }
 
 /// A drink: name and vintage of the time, date, rating, notes and "How was
-/// it?" (BR1.16).
+/// it?" (BR1.16). With the [wine] still in the cellar (ux-redesign plan,
+/// review Major 3) also its flag and type family; a drink stores neither,
+/// so without it the row stays as before.
 class DrinkRecordTile extends StatelessWidget {
   const DrinkRecordTile({
     super.key,
     required this.record,
     this.onTap,
     this.trailing,
+    this.wine,
   });
 
   final DrinkingRecord record;
   final VoidCallback? onTap;
   final Widget? trailing;
+  final Wine? wine;
 
   @override
   Widget build(BuildContext context) {
@@ -394,10 +591,23 @@ class DrinkRecordTile extends StatelessWidget {
       if (condition != null) conditionLabel(l10n, condition),
       ?record.notes,
     ];
+    final wine = this.wine;
+    final country = wine?.displayCountry;
+    final hasFamily = WineTypeFamily.of(wine?.wineType) != null;
     return ListTile(
       contentPadding: EdgeInsets.zero,
+      leading: country == null ? null : CountryFlag(code: country, size: 24),
       title: Text('${record.wineName} ${vintageText(l10n, record.vintage)}'),
-      subtitle: Text(lines.join('\n')),
+      subtitle: hasFamily
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(lines.join('\n')),
+                const SizedBox(height: 2),
+                WineTypeBadge(wineType: wine!.wineType),
+              ],
+            )
+          : Text(lines.join('\n')),
       trailing: trailing,
       onTap: onTap,
     );

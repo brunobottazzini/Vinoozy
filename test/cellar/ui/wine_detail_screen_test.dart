@@ -95,13 +95,16 @@ void main() {
     expect(find.text('Inizio: 2024'), findsOneWidget);
     expect(find.text('Picco: 2028'), findsOneWidget);
     expect(find.text('Fine: 2034'), findsOneWidget);
-    expect(find.text('pronte'), findsOneWidget);
+    // ux-redesign: the status chip is in the header and in the card.
+    expect(find.text('Pronte'), findsNWidgets(2));
     expect(find.text('Fiducia: media'), findsOneWidget);
     expect(find.text('Fonte: stima per tipologia'), findsOneWidget);
+    expect(find.text('Consigliato fino al 2034'), findsOneWidget);
+    expect(find.text('Al meglio dal 2024 al 2034'), findsOneWidget);
     expect(
       find.text(
-        'Stima indicativa: dipende anche da come è stata conservata la '
-        'bottiglia',
+        '⚠︎ Indicativo: è una stima basata su tipo, denominazione e annata. '
+        'Conservazione e singola bottiglia possono cambiarla.',
       ),
       findsOneWidget,
     );
@@ -158,7 +161,8 @@ void main() {
       await pump(tester, wine: cellarWine('w3', name: ' ', vintage: null));
 
       expect(find.text('Stima non disponibile'), findsOneWidget);
-      expect(find.text('Da stimare'), findsOneWidget);
+      expect(find.text('Indica annata e tipo per avere una stima.'), findsOne);
+      expect(find.text('Da stimare'), findsNWidgets(2));
     },
   );
 
@@ -171,9 +175,13 @@ void main() {
       tester.widget<ButtonStyleButton>(key('wine-drink')).onPressed,
       isNull,
     );
-    expect(tester.widget<IconButton>(key('wine-minus')).onPressed, isNull);
+    expect(
+      tester.widget<ButtonStyleButton>(key('wine-minus')).onPressed,
+      isNull,
+    );
     expect(find.text('Finito: nessuna bottiglia'), findsOneWidget);
 
+    await tester.ensureVisible(key('wine-add-again'));
     await tester.tap(key('wine-add-again'));
     await tester.pumpAndSettle();
     expect(find.byType(AddWineScreen), findsOneWidget);
@@ -184,7 +192,10 @@ void main() {
   ) async {
     await pump(tester);
 
+    await tester.ensureVisible(key('wine-drink'));
     await tester.tap(key('wine-drink'));
+    await tester.pumpAndSettle();
+    await tester.tap(key('drink-confirm'));
     await tester.pumpAndSettle();
     await tester.tap(key('drink-add-notes'));
     await tester.pumpAndSettle();
@@ -195,9 +206,14 @@ void main() {
   testWidgets('BR1.15 "+" and "−" change the quantity by one', (tester) async {
     await pump(tester);
 
+    await tester.ensureVisible(key('wine-plus'));
     await tester.tap(key('wine-plus'));
+    // ux-redesign FR2.4: "Togli una bottiglia senza bevuta" asks first.
+    await tester.ensureVisible(key('wine-minus'));
     await tester.tap(key('wine-minus'));
-    await tester.pump();
+    await tester.pumpAndSettle();
+    await tester.tap(key('remove-bottle-confirm'));
+    await tester.pumpAndSettle();
 
     verify(
       () => ui.actions.addBottles(
@@ -220,7 +236,10 @@ void main() {
     await pump(tester, wine: cellarWine('w5', quantity: 99));
 
     expect(tester.widget<IconButton>(key('wine-plus')).onPressed, isNull);
-    expect(tester.widget<IconButton>(key('wine-minus')).onPressed, isNotNull);
+    expect(
+      tester.widget<ButtonStyleButton>(key('wine-minus')).onPressed,
+      isNotNull,
+    );
   });
 
   testWidgets('BR1.13 "Modifica" opens the edit form', (tester) async {
@@ -333,12 +352,14 @@ void main() {
     (
       const Locale('en'),
       'Source: estimate for the type',
-      'Indicative estimate: it also depends on how the bottle was stored',
+      '⚠︎ Indicative: an estimate based on type, denomination and vintage. '
+          'Storage and the single bottle can change it.',
     ),
     (
       const Locale('pt', 'BR'),
       'Fonte: estimativa por tipo',
-      'Estimativa indicativa: depende também de como a garrafa foi guardada',
+      '⚠︎ Indicativo: é uma estimativa baseada em tipo, denominação e safra. '
+          'A conservação e cada garrafa podem mudá-la.',
     ),
   ]) {
     testWidgets('BR1.9 the estimate in ${locale.toLanguageTag()}', (

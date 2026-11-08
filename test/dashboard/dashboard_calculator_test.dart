@@ -286,13 +286,20 @@ void main() {
         wineOf('blankRegion', region: ' - ', quantity: 5),
       ], today);
 
+      // ux-redesign R-06: Italian regions carry Italy for the flag.
       expect(s.byRegion, const [
         BreakdownBar(
           kind: BreakdownKind.region,
           region: 'Piemonte',
+          country: 'IT',
           bottles: 3,
         ),
-        BreakdownBar(kind: BreakdownKind.region, region: 'Toscana', bottles: 1),
+        BreakdownBar(
+          kind: BreakdownKind.region,
+          region: 'Toscana',
+          country: 'IT',
+          bottles: 1,
+        ),
         BreakdownBar(kind: BreakdownKind.unspecified, bottles: 9),
       ]);
     });

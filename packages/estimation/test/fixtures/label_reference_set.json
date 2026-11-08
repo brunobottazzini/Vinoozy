@@ -1,0 +1,1728 @@
+{
+  "description": "Reference set of the guided check (label-autofill-windows FR7.3, BR7.9, D13), from label-reference-set.md: for each key field the right value (denomination: the key of the table row; null when the text has none) and the expected state: C certain, I uncertain (rank of the right value among the candidates, informative; inText false when the value is not written in the text, noValue for a wine without vintage), A absent. Producers and wine names are invented.",
+  "currentYear": 2026,
+  "texts": [
+    {
+      "id": "IT01",
+      "lang": "it",
+      "text": "CASCINA CASTLET\nBarbera d'Asti Superiore\n14,5% vol  75 cl\n2019",
+      "expected": {
+        "denomination": {
+          "value": "barberaDAsti",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Cascina Castlet",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Barbera d'Asti Superiore",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2019,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "IT02",
+      "lang": "it",
+      "text": "Tenuta Sconosciuta\nRosso Toscana IGT\n2020",
+      "expected": {
+        "denomination": {
+          "value": "toscanaIT",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Tenuta Sconosciuta",
+          "state": "C"
+        },
+        "name": {
+          "value": "Rosso Toscana",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2020,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "IT03",
+      "lang": "it",
+      "text": "CASCINA\nCASTLET\nBARBERA D'ASTI\nSUPERIORE\nDENOMINAZIONE DI ORIGINE\nCONTROLLATA E GARANTITA\n2019",
+      "expected": {
+        "denomination": {
+          "value": "barberaDAsti",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Cascina Castlet",
+          "state": "I",
+          "rank": null,
+          "inText": true
+        },
+        "name": {
+          "value": "Barbera d'Asti Superiore",
+          "state": "I",
+          "rank": 2
+        },
+        "vintage": {
+          "value": 2019,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "IT04",
+      "lang": "it",
+      "text": "BAROLO\nDENOMINAZIONE DI ORIGINE CONTROLLATA E GARANTITA\nBricco Sorì Alto\n2018\nImbottigliato all'origine da Azienda Agricola Ferro Lungo\nLa Morra - Italia",
+      "expected": {
+        "denomination": {
+          "value": "barolo",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Azienda Agricola Ferro Lungo",
+          "state": "C"
+        },
+        "name": {
+          "value": "Barolo Bricco Sorì Alto",
+          "state": "C"
+        },
+        "vintage": {
+          "value": 2018,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "IT05",
+      "lang": "it",
+      "text": "Fattoria di Poggio Ventoso\ndal 1921\nCHIANTI CLASSICO\nRiserva\nDenominazione di Origine Controllata e Garantita\nVendemmia 2019",
+      "expected": {
+        "denomination": {
+          "value": "chiantiClassico",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Fattoria di Poggio Ventoso",
+          "state": "C"
+        },
+        "name": {
+          "value": "Chianti Classico Riserva",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2019,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "IT06",
+      "lang": "it",
+      "text": "PROSECCO\nDENOMINAZIONE DI ORIGINE CONTROLLATA\nEXTRA DRY\nSPUMANTE\nProdotto e imbottigliato da Vigne del Sile S.r.l., Roncade - Italia\n11% vol 750ml\nwww.vignedelsile.it",
+      "expected": {
+        "denomination": {
+          "value": "prosecco",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Vigne del Sile S.r.l.",
+          "state": "C"
+        },
+        "name": {
+          "value": "Prosecco Extra Dry",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": null,
+          "state": "I",
+          "rank": null,
+          "noValue": true
+        }
+      }
+    },
+    {
+      "id": "IT07",
+      "lang": "it",
+      "text": "AMARONE DELLA VALPOLICELLA\nCLASSICO\nDENOMINAZIONE DI ORIGINE CONTROLLATA E GARANTITA\n2017\nCorte Sasso Nero\nImbottigliato nel 2022 da Corte Sasso Nero, Negrar (VR)",
+      "expected": {
+        "denomination": {
+          "value": "amaroneDellaValpolicella",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Corte Sasso Nero",
+          "state": "C"
+        },
+        "name": {
+          "value": "Amarone della Valpolicella Classico",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2017,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "IT08",
+      "lang": "it",
+      "text": "Tenuta Pietra Lavica\n1890 - 2025\n135 anni di storia\nETNA ROSSO\nDenominazione di Origine Controllata\nContrada Feudo\n2021",
+      "expected": {
+        "denomination": {
+          "value": "etnaRosso",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Tenuta Pietra Lavica",
+          "state": "C"
+        },
+        "name": {
+          "value": "Etna Rosso Contrada Feudo",
+          "state": "C"
+        },
+        "vintage": {
+          "value": 2021,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "IT09",
+      "lang": "it",
+      "text": "Grande Vino Rosso d'Italia\nMedaglia d'Oro Concorso Enologico 2018\n2019\nImbottigliato da Cantine Riunite del Sole, Bari",
+      "expected": {
+        "denomination": {
+          "value": null,
+          "state": "A"
+        },
+        "producer": {
+          "value": "Cantine Riunite del Sole",
+          "state": "C"
+        },
+        "name": {
+          "value": "Grande Vino Rosso d'Italia",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2019,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "IT10",
+      "lang": "it",
+      "text": "CANTINA VALLE SCURA 1957\nLUGANA\nDenominazione di Origine Controllata\n2022",
+      "expected": {
+        "denomination": {
+          "value": "lugana",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Cantina Valle Scura",
+          "state": "C"
+        },
+        "name": {
+          "value": "Lugana",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2022,
+          "state": "I",
+          "rank": 1
+        }
+      }
+    },
+    {
+      "id": "IT11",
+      "lang": "it",
+      "text": "PRIMITIVO\nSalento\nIndicazione Geografica Tipica\nMasseria Ulivo Grande\n2023",
+      "expected": {
+        "denomination": {
+          "value": "salentoIT",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Masseria Ulivo Grande",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Masseria Ulivo Grande Primitivo",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2023,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "IT12",
+      "lang": "it",
+      "text": "TENUTA CA' BIANCA\nBARBARESOO\nDENOMINAZIONE DI ORIGINE\nCONTROLLATA E GARANTITA\nRio Sordo\n2O19",
+      "expected": {
+        "denomination": {
+          "value": "barbaresco",
+          "state": "I",
+          "rank": null,
+          "inText": true
+        },
+        "producer": {
+          "value": "Tenuta Ca' Bianca",
+          "state": "C"
+        },
+        "name": {
+          "value": "Barbaresco Rio Sordo",
+          "state": "I",
+          "rank": null,
+          "inText": true
+        },
+        "vintage": {
+          "value": 2019,
+          "state": "I",
+          "rank": null,
+          "inText": true
+        }
+      }
+    },
+    {
+      "id": "IT13",
+      "lang": "it",
+      "text": "Valpolicella Ripasso\nDenominazione di Origine Controllata\nClassico Superiore\nCa' dei Mori\n2021\nImbottigliato da Ca' dei Mori Società Agricola, Fumane (VR) - Italia",
+      "expected": {
+        "denomination": {
+          "value": "valpolicellaRipasso",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Ca' dei Mori Società Agricola",
+          "state": "C"
+        },
+        "name": {
+          "value": "Valpolicella Ripasso Classico Superiore",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2021,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "IT14",
+      "lang": "it",
+      "text": "Vermentino di Sardegna\nIs Arenas\nCantina del Golfo",
+      "expected": {
+        "denomination": {
+          "value": "vermentinoDiSardegna",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Cantina del Golfo",
+          "state": "C"
+        },
+        "name": {
+          "value": "Vermentino di Sardegna Is Arenas",
+          "state": "C"
+        },
+        "vintage": {
+          "value": null,
+          "state": "I",
+          "rank": null,
+          "inText": false
+        }
+      }
+    },
+    {
+      "id": "FR01",
+      "lang": "fr",
+      "text": "CHÂTEAU LA GRAVIÈRE HAUTE\nSAINT-ÉMILION GRAND CRU\nAppellation Saint-Émilion Grand Cru Contrôlée\n2018\nMis en bouteille au château",
+      "expected": {
+        "denomination": {
+          "value": "saintEmilion",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Château La Gravière Haute",
+          "state": "C"
+        },
+        "name": {
+          "value": "Château La Gravière Haute",
+          "state": "C"
+        },
+        "vintage": {
+          "value": 2018,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "FR02",
+      "lang": "fr",
+      "text": "Domaine des Roches Fines\nBOURGOGNE\nPinot Noir\n2022",
+      "expected": {
+        "denomination": {
+          "value": "bourgogne",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Domaine des Roches Fines",
+          "state": "C"
+        },
+        "name": {
+          "value": "Bourgogne Pinot Noir",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2022,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "FR03",
+      "lang": "fr",
+      "text": "CHÂTEAU MOULIN DE BEL-AIR\nBordeaux Supérieur\nAppellation Bordeaux Supérieur Contrôlée\n2020\nVignobles Martineau Frères\nPropriétaires à Saint-Seurin",
+      "expected": {
+        "denomination": {
+          "value": "bordeauxRouge",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Château Moulin de Bel-Air",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Château Moulin de Bel-Air",
+          "state": "C"
+        },
+        "vintage": {
+          "value": 2020,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "FR04",
+      "lang": "fr",
+      "text": "CHAMPAGNE\nMAISON VERMONT-LAURENT\nBRUT RÉSERVE\nÉlaboré par Vermont-Laurent, Épernay - France\n12% vol",
+      "expected": {
+        "denomination": {
+          "value": "champagne",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Maison Vermont-Laurent",
+          "state": "C"
+        },
+        "name": {
+          "value": "Champagne Brut Réserve",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": null,
+          "state": "I",
+          "rank": null,
+          "noValue": true
+        }
+      }
+    },
+    {
+      "id": "FR05",
+      "lang": "fr",
+      "text": "SANCERRE\nAppellation Sancerre Contrôlée\nLes Caillottes\n2023\nDomaine Henri Lauvergne\nVigneron à Bué - Cher - France\nwww.lauvergne-sancerre.fr",
+      "expected": {
+        "denomination": {
+          "value": "sancerre",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Domaine Henri Lauvergne",
+          "state": "C"
+        },
+        "name": {
+          "value": "Sancerre Les Caillottes",
+          "state": "C"
+        },
+        "vintage": {
+          "value": 2023,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "FR06",
+      "lang": "fr",
+      "text": "Côtes du Rhône Villages\nLes Hauts Cailloux\nAppellation Côtes du Rhône Villages Contrôlée\nCave des Vignerons de Sablet\nRouge 2021",
+      "expected": {
+        "denomination": {
+          "value": "cotesDuRhoneVillages",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Cave des Vignerons de Sablet",
+          "state": "C"
+        },
+        "name": {
+          "value": "Côtes du Rhône Villages Les Hauts Cailloux",
+          "state": "C"
+        },
+        "vintage": {
+          "value": 2021,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "FR07",
+      "lang": "fr",
+      "text": "Domaine Klein-Aubert\nRiesling\nVendanges Tardives\nAlsace\n2017\nMis en bouteille le 12/03/2019",
+      "expected": {
+        "denomination": {
+          "value": "alsace",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Domaine Klein-Aubert",
+          "state": "C"
+        },
+        "name": {
+          "value": "Riesling Vendanges Tardives",
+          "state": "I",
+          "rank": null,
+          "inText": true
+        },
+        "vintage": {
+          "value": 2017,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "FR08",
+      "lang": "fr",
+      "text": "Morgon Côte du Py Appellation Morgon Contrôlée Domaine du Vieux Pressoir 2020 Mis en bouteille à la propriété 13% vol 75cl",
+      "expected": {
+        "denomination": {
+          "value": "morgon",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Domaine du Vieux Pressoir",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Morgon Côte du Py",
+          "state": "I",
+          "rank": null,
+          "inText": true
+        },
+        "vintage": {
+          "value": 2020,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "FR09",
+      "lang": "fr",
+      "text": "CHÂTEAU LES TROIS ORMEAUX\nLALANDE-DE-POMEROL\nAppellation Lalande-de-Pomerol Contrôlée\n2019",
+      "expected": {
+        "denomination": {
+          "value": "lalandeDePomerol",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Château Les Trois Ormeaux",
+          "state": "C"
+        },
+        "name": {
+          "value": "Château Les Trois Ormeaux",
+          "state": "C"
+        },
+        "vintage": {
+          "value": 2019,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "FR10",
+      "lang": "fr",
+      "text": "Château Belle Rive\nBORDEAUX\nAppellation Bordeaux Contrôlée\nMis en bouteille par SAS Les Vins de Lormont, 33310 Lormont\n2022",
+      "expected": {
+        "denomination": {
+          "value": "bordeauxRouge",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Château Belle Rive",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Château Belle Rive",
+          "state": "C"
+        },
+        "vintage": {
+          "value": 2022,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "FR11",
+      "lang": "fr",
+      "text": "Crémant de Loire\nBrut\nMéthode Traditionnelle\nCaves Saint-Florent depuis 1885\nSaumur - France",
+      "expected": {
+        "denomination": {
+          "value": "cremantDeLoire",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Caves Saint-Florent",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Crémant de Loire Brut",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": null,
+          "state": "I",
+          "rank": null,
+          "noValue": true
+        }
+      }
+    },
+    {
+      "id": "FR12",
+      "lang": "fr",
+      "text": "Château Doisy-Rieussec\nSAUTERNES\nAppellation Sauternes Contrôlée\nMillésime 2015\nGrand Vin de Bordeaux\nMédaille d'Or Concours de Bordeaux 2017",
+      "expected": {
+        "denomination": {
+          "value": "sauternes",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Château Doisy-Rieussec",
+          "state": "C"
+        },
+        "name": {
+          "value": "Château Doisy-Rieussec",
+          "state": "C"
+        },
+        "vintage": {
+          "value": 2015,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "FR13",
+      "lang": "fr",
+      "text": "CHAMPAGNE\nCuvée 2000\nExtra Brut\nBlanc de Blancs\nR. Lemaire-Fontaine, Récoltant-Manipulant, Avize",
+      "expected": {
+        "denomination": {
+          "value": "champagne",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "R. Lemaire-Fontaine",
+          "state": "C"
+        },
+        "name": {
+          "value": "Cuvée 2000",
+          "state": "C"
+        },
+        "vintage": {
+          "value": null,
+          "state": "I",
+          "rank": null,
+          "noValue": true
+        }
+      }
+    },
+    {
+      "id": "FR14",
+      "lang": "fr",
+      "text": "Domaine de la Combe Haute\nVin Rouge\nCôtes de Bourg\n2020",
+      "expected": {
+        "denomination": {
+          "value": "cotesDeBourg",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Domaine de la Combe Haute",
+          "state": "C"
+        },
+        "name": {
+          "value": "Domaine de la Combe Haute",
+          "state": "C"
+        },
+        "vintage": {
+          "value": 2020,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "ES01",
+      "lang": "es",
+      "text": "BODEGAS VIÑA ALTA\nRIOJA\nDenominación de Origen Calificada\nCRIANZA\n2020",
+      "expected": {
+        "denomination": {
+          "value": "rioja",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Bodegas Viña Alta",
+          "state": "C"
+        },
+        "name": {
+          "value": "Rioja Crianza",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2020,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "ES02",
+      "lang": "es",
+      "text": "Toro Bravo\nTinta de Toro\nBodega Los Arcos\n2019",
+      "expected": {
+        "denomination": {
+          "value": "toro",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Bodega Los Arcos",
+          "state": "C"
+        },
+        "name": {
+          "value": "Toro Bravo",
+          "state": "I",
+          "rank": 2
+        },
+        "vintage": {
+          "value": 2019,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "ES03",
+      "lang": "es",
+      "text": "PAGO DEL CIERZO\nRibera del Duero\nDenominación de Origen\nRESERVA 2016\nEmbotellado por Bodegas Pago del Cierzo S.L., Roa (Burgos) - España",
+      "expected": {
+        "denomination": {
+          "value": "riberaDelDuero",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Bodegas Pago del Cierzo S.L.",
+          "state": "C"
+        },
+        "name": {
+          "value": "Ribera del Duero Reserva",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2016,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "ES04",
+      "lang": "es",
+      "text": "MIRADOR\nCAVA\nBRUT NATURE\nReserva\nElaborado por Cavas Mirador, Sant Sadurní d'Anoia",
+      "expected": {
+        "denomination": {
+          "value": "cava",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Cavas Mirador",
+          "state": "C"
+        },
+        "name": {
+          "value": "Cava Brut Nature Reserva",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": null,
+          "state": "I",
+          "rank": null,
+          "noValue": true
+        }
+      }
+    },
+    {
+      "id": "ES05",
+      "lang": "es",
+      "text": "Clos de l'Ermità Vella\nPriorat\nDenominació d'Origen Qualificada\nCollita 2017\nVi negre",
+      "expected": {
+        "denomination": {
+          "value": "priorat",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Clos de l'Ermità Vella",
+          "state": "C"
+        },
+        "name": {
+          "value": "Clos de l'Ermità Vella",
+          "state": "C"
+        },
+        "vintage": {
+          "value": 2017,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "ES06",
+      "lang": "es",
+      "text": "Pazo de Lourido\nAlbariño\nRías Baixas\nDenominación de Origen\n2023\nDesde 1987",
+      "expected": {
+        "denomination": {
+          "value": "riasBaixas",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Pazo de Lourido",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Pazo de Lourido Albariño",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2023,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "ES07",
+      "lang": "es",
+      "text": "JUMILLA\nDenominación de Origen Protegida\nMONASTRELL\nBodegas Hoya del Viento\nContiene sulfitos\nL-23/118\nCosecha 2021",
+      "expected": {
+        "denomination": {
+          "value": "jumilla",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Bodegas Hoya del Viento",
+          "state": "C"
+        },
+        "name": {
+          "value": "Jumilla Monastrell",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2021,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "ES08",
+      "lang": "es",
+      "text": "Señorío de Valcuerna\nGarnacha Viñas Viejas 2019\nNavarra\nEdición 2021",
+      "expected": {
+        "denomination": {
+          "value": "navarra",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Señorío de Valcuerna",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Garnacha Viñas Viejas",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2019,
+          "state": "I",
+          "rank": 1
+        }
+      }
+    },
+    {
+      "id": "ES09",
+      "lang": "es",
+      "text": "VIÑA DEL PÁRAMO\nVino de España\nTempranillo\nBodegas del Páramo\n2022",
+      "expected": {
+        "denomination": {
+          "value": null,
+          "state": "A"
+        },
+        "producer": {
+          "value": "Bodegas del Páramo",
+          "state": "C"
+        },
+        "name": {
+          "value": "Viña del Páramo Tempranillo",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2022,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "ES10",
+      "lang": "es",
+      "text": "GETARIAKO TXAKOLINA\nJatorri Deitura\nTxomin Etxeberria\n2024",
+      "expected": {
+        "denomination": {
+          "value": "getariakoTxakolina",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Txomin Etxeberria",
+          "state": "A",
+          "inText": true
+        },
+        "name": {
+          "value": "Txomin Etxeberria",
+          "state": "C"
+        },
+        "vintage": {
+          "value": 2024,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "ES11",
+      "lang": "es",
+      "text": "FINCA LOS OLIVOS\nVino Tinto\nRibera del Guadiana\n2021",
+      "expected": {
+        "denomination": {
+          "value": "riberaDelGuadiana",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Finca Los Olivos",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Finca Los Olivos",
+          "state": "I",
+          "rank": 2
+        },
+        "vintage": {
+          "value": 2021,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "ES12",
+      "lang": "es",
+      "text": "Bodegas Altamira\nRioja\nDenominación de Origen Calificada\nReserva\nCosecha MMXVIII",
+      "expected": {
+        "denomination": {
+          "value": "rioja",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Bodegas Altamira",
+          "state": "C"
+        },
+        "name": {
+          "value": "Rioja Reserva",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2018,
+          "state": "I",
+          "rank": null,
+          "inText": true
+        }
+      }
+    },
+    {
+      "id": "EN01",
+      "lang": "en",
+      "text": "HOLLOW OAK\nCabernet Sauvignon\nNapa Valley\n2019\nProduced and bottled by Hollow Oak Cellars, St. Helena, CA",
+      "expected": {
+        "denomination": {
+          "value": "napaValley",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Hollow Oak Cellars",
+          "state": "C"
+        },
+        "name": {
+          "value": "Hollow Oak Cabernet Sauvignon",
+          "state": "I",
+          "rank": 3
+        },
+        "vintage": {
+          "value": 2019,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "EN02",
+      "lang": "en",
+      "text": "Red Gum Creek\nShiraz\nBarossa Valley\n2021\nProduct of Australia",
+      "expected": {
+        "denomination": {
+          "value": "barossaValley",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Red Gum Creek",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Red Gum Creek Shiraz",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2021,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "EN03",
+      "lang": "en",
+      "text": "Kōwhai Ridge\nSauvignon Blanc ’24\nMarlborough\nWine of New Zealand",
+      "expected": {
+        "denomination": {
+          "value": "marlborough",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Kōwhai Ridge",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Kōwhai Ridge Sauvignon Blanc",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2024,
+          "state": "I",
+          "rank": null,
+          "inText": true
+        }
+      }
+    },
+    {
+      "id": "EN04",
+      "lang": "en",
+      "text": "BERGWIND ESTATE\nEst. 1692\nChenin Blanc\nWine of Origin Swartland\nVintage 2023",
+      "expected": {
+        "denomination": {
+          "value": "swartland",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Bergwind Estate",
+          "state": "C"
+        },
+        "name": {
+          "value": "Chenin Blanc",
+          "state": "I",
+          "rank": 2
+        },
+        "vintage": {
+          "value": 2023,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "EN05",
+      "lang": "en",
+      "text": "FERN HOLLOW\nWillamette Valley\nPinot Noir\n2022\nThe 2021 growing season began with a cool spring\nand ended with a warm harvest.",
+      "expected": {
+        "denomination": {
+          "value": "willametteValley",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Fern Hollow",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Fern Hollow Pinot Noir",
+          "state": "I",
+          "rank": 2
+        },
+        "vintage": {
+          "value": 2022,
+          "state": "I",
+          "rank": 1
+        }
+      }
+    },
+    {
+      "id": "EN06",
+      "lang": "en",
+      "text": "Sonoma Coast\nChardonnay\n2022\nGrown, produced and bottled by Driftwood Point Winery, Healdsburg, CA\nProduct of USA",
+      "expected": {
+        "denomination": {
+          "value": "sonomaCoast",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Driftwood Point Winery",
+          "state": "C"
+        },
+        "name": {
+          "value": "Sonoma Coast Chardonnay",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2022,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "EN07",
+      "lang": "en",
+      "text": "Mount Arbel Winery\nGalilee\nCabernet Sauvignon\n2020\nProduct of Israel\nKosher for Passover",
+      "expected": {
+        "denomination": {
+          "value": null,
+          "state": "A"
+        },
+        "producer": {
+          "value": "Mount Arbel Winery",
+          "state": "C"
+        },
+        "name": {
+          "value": "Cabernet Sauvignon",
+          "state": "I",
+          "rank": 3
+        },
+        "vintage": {
+          "value": 2020,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "EN08",
+      "lang": "en",
+      "text": "QUINTA DA SERRA ALTA\nFine Ruby Port\nPorto\nProduct of Portugal\n20% vol 75cl",
+      "expected": {
+        "denomination": {
+          "value": "porto",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Quinta da Serra Alta",
+          "state": "C"
+        },
+        "name": {
+          "value": "Fine Ruby Port",
+          "state": "C"
+        },
+        "vintage": {
+          "value": null,
+          "state": "I",
+          "rank": null,
+          "noValue": true
+        }
+      }
+    },
+    {
+      "id": "EN09",
+      "lang": "en",
+      "text": "VALLE DEL CÓNDOR\nRESERVA\nCarmenère\nColchagua Valley\nHarvest 2021\nWine of Chile",
+      "expected": {
+        "denomination": {
+          "value": "valleDeColchagua",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Valle del Cóndor",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Valle del Cóndor Carmenère",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2021,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "EN10",
+      "lang": "en",
+      "text": "@condorwines\n8 410702 016254\nSCAN FOR TASTING NOTES\nMerlot\n2023",
+      "expected": {
+        "denomination": {
+          "value": null,
+          "state": "A"
+        },
+        "producer": {
+          "value": null,
+          "state": "A"
+        },
+        "name": {
+          "value": "Merlot",
+          "state": "I",
+          "rank": 2
+        },
+        "vintage": {
+          "value": 2023,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "DE01",
+      "lang": "de",
+      "text": "Weingut Brückner-Stein\n2022er\nLindauer Sonnenhang\nRiesling Kabinett\nMosel\nQualitätswein mit Prädikat\nA.P.Nr. 2 602 041 07 23\nGutsabfüllung",
+      "expected": {
+        "denomination": {
+          "value": "mosel",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Weingut Brückner-Stein",
+          "state": "C"
+        },
+        "name": {
+          "value": "Lindauer Sonnenhang Riesling Kabinett",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2022,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "DE02",
+      "lang": "de",
+      "text": "WEINGUT ALTER HOF\nSPÄTBURGUNDER\ntrocken\nPFALZ\n2021",
+      "expected": {
+        "denomination": {
+          "value": "pfalz",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Weingut Alter Hof",
+          "state": "C"
+        },
+        "name": {
+          "value": "Spätburgunder",
+          "state": "I",
+          "rank": 2
+        },
+        "vintage": {
+          "value": 2021,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "DE03",
+      "lang": "de",
+      "text": "Schlossgut Rabenfels\ngegründet 1911\nRheingau\nRiesling Auslese\nJahrgang 2018\nPrädikatswein",
+      "expected": {
+        "denomination": {
+          "value": "rheingau",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Schlossgut Rabenfels",
+          "state": "C"
+        },
+        "name": {
+          "value": "Riesling Auslese",
+          "state": "I",
+          "rank": 2
+        },
+        "vintage": {
+          "value": 2018,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "DE04",
+      "lang": "de",
+      "text": "Franken\nQualitätswein\nSilvaner trocken\nSommerauer Kreuzweg\n2023\nWinzerkeller Mainblick eG, 97332 Volkach",
+      "expected": {
+        "denomination": {
+          "value": "franken",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Winzerkeller Mainblick eG",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Sommerauer Kreuzweg Silvaner trocken",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2023,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "DE05",
+      "lang": "de",
+      "text": "Weingut Rebenhang\nRiesling Spätlese\nNahe\n20\n19",
+      "expected": {
+        "denomination": {
+          "value": "nahe",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Weingut Rebenhang",
+          "state": "C"
+        },
+        "name": {
+          "value": "Riesling Spätlese",
+          "state": "I",
+          "rank": 2
+        },
+        "vintage": {
+          "value": 2019,
+          "state": "I",
+          "rank": null,
+          "inText": true
+        }
+      }
+    },
+    {
+      "id": "DE06",
+      "lang": "de",
+      "text": "Domäne Donautal\nGrüner Veltliner Smaragd\nWachau DAC\n2022",
+      "expected": {
+        "denomination": {
+          "value": "wachau",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Domäne Donautal",
+          "state": "C"
+        },
+        "name": {
+          "value": "Grüner Veltliner Smaragd",
+          "state": "C"
+        },
+        "vintage": {
+          "value": 2022,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "DE07",
+      "lang": "de",
+      "text": "Sektkellerei Lindenhof\nRiesling Sekt\nBrut\nRheinhessen\nHergestellt von Sektkellerei Lindenhof GmbH, D-55232 Alzey",
+      "expected": {
+        "denomination": {
+          "value": "rheinhessen",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Sektkellerei Lindenhof GmbH",
+          "state": "C"
+        },
+        "name": {
+          "value": "Riesling Sekt",
+          "state": "I",
+          "rank": 2
+        },
+        "vintage": {
+          "value": null,
+          "state": "I",
+          "rank": null,
+          "noValue": true
+        }
+      }
+    },
+    {
+      "id": "DE08",
+      "lang": "de",
+      "text": "Weinmanufaktur Neckarhalde seit 1949\nTrollinger mit Lemberger\nWürttemberg\nQualitätswein trocken\n2023",
+      "expected": {
+        "denomination": {
+          "value": "wurttemberg",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Weinmanufaktur Neckarhalde",
+          "state": "C"
+        },
+        "name": {
+          "value": "Trollinger mit Lemberger",
+          "state": "I",
+          "rank": 2
+        },
+        "vintage": {
+          "value": 2023,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "DE09",
+      "lang": "de",
+      "text": "BADEN\nGrauburgunder\nKaiserstühler Winzergenossenschaft\nKabinett trocken 2022",
+      "expected": {
+        "denomination": {
+          "value": "baden",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Kaiserstühler Winzergenossenschaft",
+          "state": "C"
+        },
+        "name": {
+          "value": "Grauburgunder Kabinett",
+          "state": "I",
+          "rank": null,
+          "inText": true
+        },
+        "vintage": {
+          "value": 2022,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "DE10",
+      "lang": "de",
+      "text": "Weingut\nHahn-Berger\nRiesling trocken\nRheinhessen\n2023",
+      "expected": {
+        "denomination": {
+          "value": "rheinhessen",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Weingut Hahn-Berger",
+          "state": "I",
+          "rank": null,
+          "inText": true
+        },
+        "name": {
+          "value": "Hahn-Berger Riesling trocken",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2023,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "PT01",
+      "lang": "pt",
+      "text": "QUINTA DO VALE FUNDO\nDOURO\nDenominação de Origem Controlada\nColheita 2020\nTinto\nEngarrafado na origem por Quinta do Vale Fundo, Lda.",
+      "expected": {
+        "denomination": {
+          "value": "douro",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Quinta do Vale Fundo",
+          "state": "C"
+        },
+        "name": {
+          "value": "Quinta do Vale Fundo",
+          "state": "C"
+        },
+        "vintage": {
+          "value": 2020,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "PT02",
+      "lang": "pt",
+      "text": "Herdade da Coutada Velha\nAlentejo\nDenominação de Origem Controlada\nReserva\n2019\nEngarrafado por: Herdade da Coutada Velha, Évora",
+      "expected": {
+        "denomination": {
+          "value": "alentejo",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Herdade da Coutada Velha",
+          "state": "C"
+        },
+        "name": {
+          "value": "Herdade da Coutada Velha",
+          "state": "C"
+        },
+        "vintage": {
+          "value": 2019,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "PT03",
+      "lang": "pt",
+      "text": "Casa do Lago\nVinho Verde\nLoureiro\n11,5% vol",
+      "expected": {
+        "denomination": {
+          "value": "vinhoVerde",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Casa do Lago",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Casa do Lago Loureiro",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": null,
+          "state": "I",
+          "rank": null,
+          "inText": false
+        }
+      }
+    },
+    {
+      "id": "PT04",
+      "lang": "pt",
+      "text": "VINHO DO PORTO\nVINTAGE 2017\nEngarrafado em 2019\nCaves Ribeira Alta\nVila Nova de Gaia - Portugal",
+      "expected": {
+        "denomination": {
+          "value": "porto",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Caves Ribeira Alta",
+          "state": "C"
+        },
+        "name": {
+          "value": "Vinho do Porto Vintage",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2017,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "PT05",
+      "lang": "pt",
+      "text": "Adega Serra Velha\nFundada em 1952\nDão\nDenominação de Origem Controlada\nColheita\n2018",
+      "expected": {
+        "denomination": {
+          "value": "dao",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Adega Serra Velha",
+          "state": "C"
+        },
+        "name": {
+          "value": "Dão",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": 2018,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "PT06",
+      "lang": "pt",
+      "text": "Vinícola Monte Belo\nCooperativa Vinícola Aliança Gaúcha\nCabernet Franc\nSerra Gaúcha\nSafra 2022\nProduto do Brasil",
+      "expected": {
+        "denomination": {
+          "value": "serraGaucha",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Vinícola Monte Belo",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Cabernet Franc",
+          "state": "I",
+          "rank": 2
+        },
+        "vintage": {
+          "value": 2022,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "PT07",
+      "lang": "pt",
+      "text": "VALE DOS VINHEDOS\nIndicação de Procedência\nEspumante Brut\nMétodo Tradicional\nFamília Bertolin",
+      "expected": {
+        "denomination": {
+          "value": "valeDosVinhedos",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Família Bertolin",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Família Bertolin Espumante Brut",
+          "state": "I",
+          "rank": null,
+          "inText": true
+        },
+        "vintage": {
+          "value": null,
+          "state": "I",
+          "rank": null,
+          "noValue": true
+        }
+      }
+    },
+    {
+      "id": "PT08",
+      "lang": "pt",
+      "text": "Encosta do Moinho\nVinho Regional Lisboa\nCastelão · Touriga Nacional\n2021",
+      "expected": {
+        "denomination": {
+          "value": "lisboa",
+          "state": "C"
+        },
+        "producer": {
+          "value": "Encosta do Moinho",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Encosta do Moinho",
+          "state": "I",
+          "rank": 2
+        },
+        "vintage": {
+          "value": 2021,
+          "state": "C"
+        }
+      }
+    },
+    {
+      "id": "PT09",
+      "lang": "pt",
+      "text": "MADEIRA\n10 Anos\nMalvasia\nDoce\nCompanhia Vinícola da Ilha, fundada em 1880",
+      "expected": {
+        "denomination": {
+          "value": "madeira",
+          "state": "I",
+          "rank": 1
+        },
+        "producer": {
+          "value": "Companhia Vinícola da Ilha",
+          "state": "I",
+          "rank": 1
+        },
+        "name": {
+          "value": "Madeira Malvasia",
+          "state": "I",
+          "rank": 1
+        },
+        "vintage": {
+          "value": null,
+          "state": "I",
+          "rank": null,
+          "noValue": true
+        }
+      }
+    }
+  ]
+}

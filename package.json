@@ -8,7 +8,7 @@
   },
   "scripts": {
     "emulators": "firebase emulators:start --only auth,firestore --project demo-vinoozy",
-    "test:rules": "firebase emulators:exec --only firestore --project demo-vinoozy \"npm --prefix test/rules test -- u1.rules.test.mjs u7.rules.test.mjs u4.rules.test.mjs u8.rules.test.mjs compat/\"",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-vinoozy \"npm --prefix test/rules test -- u1.rules.test.mjs u7.rules.test.mjs u4.rules.test.mjs u8.rules.test.mjs label_autofill.rules.test.mjs compat/\"",
     "test:web": "firebase emulators:exec --only firestore,auth --project demo-vinoozy \"c8 --check-coverage --lines 80 --include docs/account-deletion/account-deletion.js --reporter text --reporter lcov --report-dir coverage/web node --test --test-concurrency=1 test/web/*.test.mjs\"",
     "build:web": "tool/build_web_bundle.sh"
   },

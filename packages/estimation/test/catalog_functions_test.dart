@@ -4,7 +4,8 @@
 import 'package:estimation/estimation.dart';
 import 'package:estimation/src/catalog.dart' show denominationLabels;
 import 'package:estimation/src/recognizer.dart' show tokenize;
-import 'package:estimation/src/tables.dart' show denominationTable;
+import 'package:estimation/src/tables.dart'
+    show denominationTable, italianDenominationTable;
 import 'package:test/test.dart';
 
 const _italianRegions = {
@@ -109,12 +110,21 @@ void main() {
 
   group('denominationCatalog', () {
     test('lists every denomination of the table, in table order', () {
+      // label-autofill-windows: the catalog stays the 47 Italian rows, the
+      // first of the joined table; the world rows have no catalog label.
       expect(
         denominationCatalog.map((d) => d.key).toList(),
-        denominationTable.keys.toList(),
+        italianDenominationTable.keys.toList(),
+      );
+      expect(
+        denominationTable.keys.take(47).toList(),
+        italianDenominationTable.keys.toList(),
       );
       expect(denominationCatalog, hasLength(47));
-      expect(denominationLabels.keys.toSet(), denominationTable.keys.toSet());
+      expect(
+        denominationLabels.keys.toSet(),
+        italianDenominationTable.keys.toSet(),
+      );
     });
 
     test('every entry has its table aliases, type, a display name and an '

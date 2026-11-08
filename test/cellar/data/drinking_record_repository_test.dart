@@ -91,6 +91,61 @@ void main() {
       expect(pendingChanges, [true, false]);
     });
 
+    test('ux FR2.3 R-04 the rating travels in the same single batch', () async {
+      final outcome = await repository.drink(
+        cellarId: 'user-a',
+        user: cellarEditor,
+        wine: cellarWine('w1', quantity: 2),
+        today: DateTime(2026, 11, 7),
+        rating: 4,
+      );
+
+      expect(outcome, isA<DrinkAccepted>());
+      final batch = batches.single;
+      expect(batch.opAt(winePath).data!['quantity'], FieldValue.increment(-1));
+      expect(batch.opAt(recordPath).data!['rating'], 4);
+      expect(batches.batches, hasLength(1), reason: 'no second write');
+    });
+
+    test(
+      'ux FR2.3 offline: the open commit keeps the banner pending',
+      () async {
+        final commit = Completer<void>();
+        batches.commitWith = (_, result) =>
+            commit.future.then((_) => result.complete());
+        queueConfirmed.complete(); // waitForPendingWrites returns at once
+
+        await repository.drink(
+          cellarId: 'user-a',
+          user: cellarEditor,
+          wine: cellarWine('w1', quantity: 1),
+          today: DateTime(2026, 11, 7),
+          rating: 5,
+        );
+        await pumpEventQueue();
+        expect(pendingChanges, [true], reason: 'still queued on the phone');
+
+        commit.complete();
+        await pumpEventQueue();
+        expect(pendingChanges, [true, false]);
+      },
+    );
+
+    test('ux FR2.3 a rating outside 1-5 is refused before any write', () async {
+      for (final rating in [0, 6]) {
+        final outcome = await repository.drink(
+          cellarId: 'user-a',
+          user: cellarEditor,
+          wine: cellarWine('w1'),
+          today: DateTime(2026, 11, 7),
+          rating: rating,
+        );
+        expect(outcome, isA<DrinkFailed>());
+      }
+      expect(batches.batches, isEmpty);
+      expect(pendingChanges, isEmpty);
+    });
+
     test('BR1.10 refused while the shown quantity is 0', () async {
       for (final stored in [0, -2]) {
         final outcome = await repository.drink(
@@ -395,6 +450,92 @@ void main() {
         );
       },
     );
+  });
+
+  // pending-banner-fix: on Android the queue wait can reach the SDK before
+  // the commit and end at once. The probe's wait ends at once here while
+  // each commit stays open: the drinks stay pending until that same commit
+  // completes, for every caller of _commit.
+  group('FR1.1 NFR6.6 pending until the same write completes', () {
+    late List<Completer<void>> commits;
+    late PendingWritesProbe probe;
+    late DrinkingRecordRepository reversed;
+
+    setUp(() {
+      commits = [];
+      batches.commitWith = (_, result) => commits.add(result);
+      probe = PendingWritesProbe(
+        waitForPendingWrites: () async {},
+        onPendingChanged: (_) {},
+        reporter: recordingReporter(sink),
+      );
+      reversed = DrinkingRecordRepository(
+        db: db,
+        ledger: LocalLedger(
+          store: InMemoryKeyValueStore(),
+          reporter: recordingReporter(sink),
+        ),
+        bus: bus,
+        reporter: recordingReporter(sink),
+        probe: probe,
+        ids: SequenceIdGenerator(prefix: 'r'),
+      );
+    });
+
+    Future<void> expectPendingUntilCommitted() async {
+      await pumpEventQueue();
+      expect(probe.isPending, isTrue, reason: 'the commit is still open');
+
+      commits.single.complete();
+      await pumpEventQueue();
+      expect(probe.isPending, isFalse);
+    }
+
+    test('FR1.1 drink: pending until its commit completes', () async {
+      final outcome = await reversed.drink(
+        cellarId: 'user-a',
+        user: cellarEditor,
+        wine: cellarWine('w1', quantity: 1),
+        today: DateTime(2026, 11, 7),
+      );
+
+      expect(outcome, isA<DrinkAccepted>());
+      await expectPendingUntilCommitted();
+    });
+
+    test('FR1.1 undo: pending until its commit completes', () async {
+      final recordRef = MockDocRef();
+      when(() => recordRef.path).thenReturn(recordPath);
+      when(() => db.doc(recordPath)).thenReturn(recordRef);
+      when(() => recordRef.get(any())).thenAnswer(
+        (_) async => docSnapshot(exists: true, data: {'wineId': 'w1'}),
+      );
+
+      final result = await reversed.undo(
+        cellarId: 'user-a',
+        user: cellarEditor,
+        wine: cellarWine('w1', quantity: 0),
+        recordId: 'r-1',
+      );
+
+      expect(result, UndoResult.undone);
+      await expectPendingUntilCommitted();
+    });
+
+    test('FR1.1 updateRecord: pending until its commit completes', () async {
+      final outcome = await reversed.updateRecord(
+        cellarId: 'user-a',
+        user: cellarEditor,
+        record: drinkRecord('r7'),
+        rating: 4,
+        notes: 'Buono',
+        drankOn: DateTime(2026, 11, 7),
+        condition: null,
+      );
+
+      expect(outcome, isA<SaveAccepted>());
+      await expectPendingUntilCommitted();
+    });
   });
 
   test('a ledger failure stops the write and reports it', () async {

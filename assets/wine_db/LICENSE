@@ -1,0 +1,16 @@
+The offline wine database in this folder (wines.jsonl.gz, manifest.json) is a
+derived database of Open Food Facts (https://world.openfoodfacts.org).
+
+It is made available under the Open Database License (ODbL) v1.0:
+https://opendatacommons.org/licenses/odbl/1-0/
+
+Any rights in individual contents of the database are licensed under the
+Database Contents License (DbCL) v1.0:
+https://opendatacommons.org/licenses/dbcl/1-0/
+
+Source: Open Food Facts contributors, https://world.openfoodfacts.org
+The tool that builds it is tool/build_wine_db.dart in this repository.
+
+Only this folder is under the ODbL. The code of the app keeps its own
+licence. No images of Open Food Facts are included, so CC BY-SA (images)
+does not apply.

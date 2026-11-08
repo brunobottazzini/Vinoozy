@@ -1,11 +1,14 @@
 import '../../app/error_reporter.dart';
 
-/// The four fixed reasons of the label photo (BR1.14, NFR8.2).
+/// The fixed reasons of the label photo (BR1.14, NFR8.2); since
+/// label-autofill-windows (NFR4.16) also the failure of the label-text
+/// reader, never with the text.
 enum LabelFailure {
   readFailed('label_read_failed'),
   pickFailed('label_pick_failed'),
   lookupFailed('label_lookup_failed'),
-  cleanupFailed('label_cleanup_failed');
+  cleanupFailed('label_cleanup_failed'),
+  appellationsIndexFailed('appellations_index_failed');
 
   const LabelFailure(this.reason);
 

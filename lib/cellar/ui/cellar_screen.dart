@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../account/app_user.dart';
 import '../../account/ui/profile_screen.dart';
 import '../../app/providers.dart';
+import '../../app/ui/about_screen.dart';
 import '../../l10n/app_localizations.dart';
 import '../../sharing/sharing_providers.dart';
 import '../../sharing/ui/cellar_switcher.dart';
@@ -22,8 +23,8 @@ import 'add_wine_screen.dart';
 import 'archived_wines_screen.dart';
 import 'drink_flow.dart';
 import 'wine_detail_screen.dart';
+import 'wine_card.dart';
 import 'wine_labels.dart';
-import 'wine_list_tile.dart';
 
 /// Whether the personal cellar is ready (BR1.3).
 enum CellarSetup { preparing, ready, failed }
@@ -122,49 +123,48 @@ class CellarScreen extends ConsumerWidget {
         cellar?.value?.cellar != null;
 
     final loaded = wines?.value?.wines ?? const <Wine>[];
-    return Scaffold(
-      key: const Key('cellar-screen'),
-      appBar: AppBar(
-        title: Text(l10n.cellarTitle),
-        actions: [
-          _CellarMenu(
-            onProfile: () => ProfileScreen.open(context, user),
-            onPeople: () => _openPeople(context),
-            onArchive: setup == CellarSetup.ready
-                ? () => _openArchive(context, active)
-                : null,
-          ),
-        ],
+    // ux-redesign: "Add" is a floating button. The cellar has its own
+    // messenger, so the "Drink recorded" message is laid out above the
+    // button instead of covering it (first-version feedback).
+    return ScaffoldMessenger(
+      child: Scaffold(
+        key: const Key('cellar-screen'),
+        appBar: AppBar(
+          title: Text(l10n.cellarTitle),
+          actions: [
+            _CellarMenu(
+              onProfile: () => ProfileScreen.open(context, user),
+              onPeople: () => _openPeople(context),
+              onArchive: setup == CellarSetup.ready
+                  ? () => _openArchive(context, active)
+                  : null,
+              onAbout: () => AboutScreen.open(context),
+            ),
+          ],
+        ),
+        body: Column(
+          children: [
+            CellarSwitcher(user: user),
+            // The banner derives from both listeners (syncStatusProvider).
+            if (!preparing) OfflineBanner(cellarId: cellarId),
+            RejectedWineNotices(
+              uid: user.uid,
+              onAddAgain: (name) => _openForm(context, active, name: name),
+            ),
+            Expanded(child: _content(l10n, wines, listenerFailed, active)),
+          ],
+        ),
+        floatingActionButton: active.canEdit
+            ? _AddButton(
+                label: l10n.addWine,
+                onPressed: canAdd
+                    ? () => onAdd != null
+                          ? onAdd!(active, loaded)
+                          : _openForm(context, active, wines: loaded)
+                    : null,
+              )
+            : null,
       ),
-      body: Column(
-        children: [
-          CellarSwitcher(user: user),
-          // The banner derives from both listeners (syncStatusProvider).
-          if (!preparing) OfflineBanner(cellarId: cellarId),
-          RejectedWineNotices(
-            uid: user.uid,
-            onAddAgain: (name) => _openForm(context, active, name: name),
-          ),
-          Expanded(child: _content(l10n, wines, listenerFailed, active)),
-        ],
-      ),
-      bottomNavigationBar: active.canEdit
-          ? SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: FilledButton.icon(
-                  key: const Key('cellar-add-button'),
-                  onPressed: canAdd
-                      ? () => onAdd != null
-                            ? onAdd!(active, loaded)
-                            : _openForm(context, active, wines: loaded)
-                      : null,
-                  icon: const Icon(Icons.add),
-                  label: Text(l10n.addWine),
-                ),
-              ),
-            )
-          : null,
     );
   }
 
@@ -197,6 +197,29 @@ class CellarScreen extends ConsumerWidget {
   }
 }
 
+/// "Add" as an extended floating button (ux-redesign interaction-spec.md);
+/// disabled, in the disabled colors, until the cellar is ready.
+class _AddButton extends StatelessWidget {
+  const _AddButton({required this.label, required this.onPressed});
+
+  final String label;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final enabled = onPressed != null;
+    return FloatingActionButton.extended(
+      key: const Key('cellar-add-button'),
+      onPressed: onPressed,
+      backgroundColor: enabled ? null : scheme.surfaceContainerHighest,
+      foregroundColor: enabled ? null : scheme.onSurfaceVariant,
+      icon: const Icon(Icons.add),
+      label: Text(label),
+    );
+  }
+}
+
 /// The cellar menu (u7-sharing frontend-components.md): "People" for
 /// everyone, and since u4-cellar "Drunk", the finished wines (BR1.7).
 /// Renaming is the owner's only, and the app has no rename command yet.
@@ -205,12 +228,16 @@ class _CellarMenu extends StatelessWidget {
   const _CellarMenu({
     required this.onProfile,
     required this.onPeople,
+    required this.onAbout,
     this.onArchive,
   });
 
   final VoidCallback onProfile;
   final VoidCallback onPeople;
   final VoidCallback? onArchive;
+
+  /// "Informazioni" (label-recognition BR6.3), always last.
+  final VoidCallback onAbout;
 
   @override
   Widget build(BuildContext context) {
@@ -235,6 +262,11 @@ class _CellarMenu extends StatelessWidget {
             onTap: onArchive,
             child: Text(l10n.cellarArchiveTitle),
           ),
+        PopupMenuItem<void>(
+          key: const Key('cellar-menu-about'),
+          onTap: onAbout,
+          child: Text(l10n.aboutTitle),
+        ),
       ],
     );
   }
@@ -380,10 +412,12 @@ class _WineListState extends ConsumerState<_WineList> {
               // Lazy list (NFR2.2); rows rebuild only when their wine changes.
               : ListView.builder(
                   key: const Key('cellar-wine-list'),
+                  // Room under the last card for the floating "Add".
+                  padding: const EdgeInsets.only(top: 4, bottom: 96),
                   itemCount: shown.length,
                   itemBuilder: (context, index) {
                     final wine = shown[index];
-                    return WineListTile(
+                    return WineCard(
                       key: ValueKey(wine.id),
                       wine: wine,
                       status: statuses[wine.id],

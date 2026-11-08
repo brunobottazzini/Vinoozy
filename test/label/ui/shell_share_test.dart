@@ -73,7 +73,12 @@ void main() {
     expect(find.byType(LabelReadingScreen), findsOneWidget);
     expect(find.text(l10n.labelSharedFirstOnly), findsOneWidget);
     expect(env.channel.readShareCalls, 1);
-    expect(find.byKey(const Key('label-unreadable')), findsOneWidget);
+    // label-recognition FR1.1: a shared photo is the front, the back is
+    // asked too.
+    expect(find.byKey(const Key('label-back-prompt')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('label-back-skip')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('label-not-found-unreadable')), findsOneWidget);
     // "Riprova" after a shared photo opens "Aggiungi".
     await tester.tap(find.byKey(const Key('label-retry')));
     await tester.pumpAndSettle();
@@ -115,9 +120,12 @@ void main() {
     permissionKnown(tester);
     env.channel.arrive();
     await tester.pumpAndSettle();
-    // No wine found: the U4 form filled from the label is open.
+    await tester.tap(find.byKey(const Key('label-back-skip')));
+    await tester.pumpAndSettle();
+    // No wine found but a producer read: the U4 form filled from the label
+    // opens by itself (label-autofill-windows BR2.1).
     expect(find.byType(AddWineScreen), findsOneWidget);
-    expect(find.text(l10n.labelNotFound), findsOneWidget);
+    expect(find.text(l10n.autofillFilledNotice), findsOneWidget);
 
     env.channel.arrive();
     await tester.pumpAndSettle();
@@ -134,7 +142,9 @@ void main() {
     await tester.tap(find.byKey(const Key('label-replace-read')));
     await tester.pumpAndSettle();
     expect(find.byType(AddWineScreen), findsNothing);
-    expect(find.byKey(const Key('label-unreadable')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('label-back-skip')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('label-not-found-unreadable')), findsOneWidget);
     expect(env.channel.readShareCalls, 2);
   });
 }

@@ -1,3 +1,5 @@
+import 'package:estimation/estimation.dart' show WineLevel;
+
 import 'quantity.dart';
 import 'wine.dart';
 
@@ -63,6 +65,8 @@ class WineDraft {
     this.wineType,
     this.region,
     this.denomination,
+    this.country,
+    this.level,
   });
 
   /// Validates raw form input. [currentYear] comes from the injected clock.
@@ -121,13 +125,23 @@ class WineDraft {
   final String? region;
   final String? denomination;
 
-  /// This draft with the u4-cellar details; blank texts become `null` and
-  /// the others are trimmed.
+  /// ISO 3166-1 alpha-2 code added by ux-redesign (FR1.5), or `null`.
+  final String? country;
+
+  /// "Level" chosen or accepted in the form (label-autofill-windows FR4.1,
+  /// BR4.3); `null` is "not chosen" and is never written.
+  final WineLevel? level;
+
+  /// This draft with the u4-cellar details, the ux-redesign country and the
+  /// label-autofill-windows level; blank texts become `null` and the others
+  /// are trimmed.
   WineDraft withDetails({
     String? producer,
     String? wineType,
     String? region,
     String? denomination,
+    String? country,
+    WineLevel? level,
   }) => WineDraft._(
     id: id,
     name: name,
@@ -137,6 +151,8 @@ class WineDraft {
     wineType: _blankToNull(wineType),
     region: _blankToNull(region),
     denomination: _blankToNull(denomination),
+    country: _blankToNull(country),
+    level: level,
   );
 
   static String? _blankToNull(String? value) {

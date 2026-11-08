@@ -19,6 +19,14 @@ abstract final class CellarErrorReasons {
   /// A History page could not be read (e.g. the index is not "Enabled" yet,
   /// infrastructure-specification.md §4): the screen offers "Try again".
   static const String historyFailed = 'cellar_history_failed';
+
+  /// label-autofill-windows NFR4.16: the one-off estimate of the cellar
+  /// with the new tables stopped (`permissionDenied`, `localWriteFailed`).
+  static const String estimatesMigrationFailed = 'estimates_migration_failed';
+
+  /// label-autofill-windows NFR4.16: the appellation table or the label
+  /// text could not be read (an internal error, never a text).
+  static const String appellationsIndexFailed = 'appellations_index_failed';
 }
 
 /// The values of [wine] that must never leave the phone in a report.

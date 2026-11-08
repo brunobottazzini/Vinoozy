@@ -11,6 +11,7 @@ import 'dart:io';
 
 import 'package:benchmark_harness/benchmark_harness.dart';
 import 'package:estimation/estimation.dart';
+import 'package:estimation/src/appellations.dart' show buildDenominationTable;
 import 'package:estimation/src/recognizer.dart';
 
 const _wineCount = 500;
@@ -93,6 +94,60 @@ class BuildIndexBenchmark extends BenchmarkBase {
 
   @override
   void run() {
+    buildAliasIndex();
+  }
+}
+
+/// A label text of 4000 characters: real label lines repeated, with noise
+/// (label-autofill-windows NFR4.1).
+final String _labelText = () {
+  const lines = [
+    'CHÂTEAU MEYNEY',
+    'SAINT-ESTÈPHE',
+    'Appellation Saint-Estèphe Contrôlée',
+    'Mis en bouteille au château',
+    'La Rioja Alta S.A. · Gran Reserva 904 · Rioja',
+    'Denominación de Origen Calificada 2015',
+    'Imbottigliato da Cantina Esempio, Via Roma 1, 12060 Barolo (CN)',
+    'Contiene solfiti 750 ml 14,5% vol L.1234',
+    'Product of Argentina · Catena · Malbec · Mendoza',
+  ];
+  final buffer = StringBuffer();
+  var i = 0;
+  while (buffer.length < 4000) {
+    buffer.writeln(lines[i++ % lines.length]);
+  }
+  return buffer.toString().substring(0, 4000);
+}();
+
+/// `extractLabelFields` on 4000 characters (NFR4.1).
+class ExtractBenchmark extends BenchmarkBase {
+  ExtractBenchmark() : super('extractLabelFields 4000 chars');
+
+  @override
+  void run() {
+    extractLabelFields(_labelText, currentYear: 2026);
+  }
+}
+
+/// `analyzeLabelText` on 4000 characters: candidates, certainty and words
+/// of the guided check (label-autofill-windows NFR4.19, NFR5.9).
+class AnalyzeBenchmark extends BenchmarkBase {
+  AnalyzeBenchmark() : super('analyzeLabelText 4000 chars');
+
+  @override
+  void run() {
+    analyzeLabelText(_labelText, currentYear: 2026);
+  }
+}
+
+/// The joined table and its alias index built from scratch (NFR4.3).
+class BuildTableBenchmark extends BenchmarkBase {
+  BuildTableBenchmark() : super('buildDenominationTable + index');
+
+  @override
+  void run() {
+    buildDenominationTable();
     buildAliasIndex();
   }
 }
@@ -187,6 +242,21 @@ class Measure {
   );
 }
 
+(String, bool) _extract() {
+  final micros = medianMicros(ExtractBenchmark());
+  return (_ms(micros), micros <= 200000);
+}
+
+(String, bool) _analyze() {
+  final micros = medianMicros(AnalyzeBenchmark());
+  return (_ms(micros), micros <= 100000);
+}
+
+(String, bool) _buildTable() {
+  final micros = medianMicros(BuildTableBenchmark());
+  return (_ms(micros), micros <= 150000);
+}
+
 String _ms(double micros) => '${(micros / 1000).toStringAsFixed(3)} ms';
 
 final List<Measure> measures = [
@@ -209,6 +279,16 @@ final List<Measure> measures = [
     'one estimate vs one buildAliasIndex',
     '<= 1/10',
     _estimateVersusBuild,
+  ),
+  // label-autofill-windows (performance-requirements.md): CI pass criteria.
+  const Measure('extractLabelFields on 4000 characters', '<= 200 ms', _extract),
+  // label-autofill-windows reopening (NFR4.19, NFR5.9): candidates and words
+  // of the guided check, target 80 ms.
+  const Measure('analyzeLabelText on 4000 characters', '<= 100 ms', _analyze),
+  const Measure(
+    'joined table and alias index built once',
+    '<= 150 ms',
+    _buildTable,
   ),
 ];
 

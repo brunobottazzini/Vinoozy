@@ -10,6 +10,8 @@ class BarDatum {
     required this.value,
     required this.color,
     this.icon,
+    this.iconColor,
+    this.leading,
     this.onTap,
     this.semanticsLabel,
     this.semanticsHint,
@@ -20,8 +22,14 @@ class BarDatum {
   final int value;
   final Color color;
 
-  /// Shown before the label (status bars, NFR3.5).
+  /// Shown before the label (status bars, NFR3.5; type bars, ux-redesign
+  /// FR3.3), in [iconColor] or the text color.
   final IconData? icon;
+  final Color? iconColor;
+
+  /// A widget before the label when there is no [icon]: the flag of a
+  /// region bar (ux-redesign FR3.3).
+  final Widget? leading;
 
   /// When set the bar is a button reachable on its own by TalkBack, with
   /// [semanticsLabel] and [semanticsHint] (BR1.7, security-design.md §3).
@@ -74,18 +82,32 @@ class _BarRow extends StatelessWidget {
         child: Row(
           children: [
             if (bar.icon != null) ...[
-              Icon(bar.icon, size: 20, color: theme.colorScheme.onSurface),
+              Icon(
+                bar.icon,
+                size: 20,
+                color: bar.iconColor ?? theme.colorScheme.onSurface,
+              ),
+              const SizedBox(width: 8),
+            ] else if (bar.leading != null) ...[
+              bar.leading!,
               const SizedBox(width: 8),
             ],
             Expanded(flex: 2, child: Text(bar.label)),
             const SizedBox(width: 8),
             Expanded(
               flex: 3,
-              child: Align(
+              child: Container(
+                height: 12,
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(6),
+                ),
                 alignment: Alignment.centerLeft,
                 child: FractionallySizedBox(
                   widthFactor: barFactor(bar.value, max),
-                  child: Container(height: 16, color: bar.color),
+                  heightFactor: 1,
+                  child: ColoredBox(color: bar.color),
                 ),
               ),
             ),

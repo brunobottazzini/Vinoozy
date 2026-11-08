@@ -60,4 +60,52 @@ class CrashlyticsCatalogEventLogger implements CatalogEventLogger {
   @override
   void debug(CatalogDebugEvent event, {OffFailure? failure}) =>
       _console.debug(event, failure: failure);
+
+  // label-recognition NFR4.13: the informative events stay on the console,
+  // they would be usage data on Crashlytics.
+
+  @override
+  void wineDbOpened(int wineCount, int durationMs) =>
+      _console.wineDbOpened(wineCount, durationMs);
+
+  @override
+  void labelOutcome(LabelOutcomeKind kind, LabelMatchStep step) =>
+      _console.labelOutcome(kind, step);
+
+  @override
+  void onlineSearch(
+    int offlineCount,
+    int onlineCount, {
+    required bool limited,
+  }) => _console.onlineSearch(offlineCount, onlineCount, limited: limited);
+
+  @override
+  void lensOpened(LensRoute route) => _console.lensOpened(route);
+
+  /// label-recognition NFR4.15: a broken build is seen even when the owner
+  /// has no phone connected; the reason and one number, nothing else.
+  @override
+  void wineDbUnavailable(WineDbFailure reason, int skippedRows) {
+    _console.wineDbUnavailable(reason, skippedRows);
+    unawaited(_recordWineDb(reason, skippedRows).catchError((Object _) {}));
+  }
+
+  Future<void> _recordWineDb(WineDbFailure reason, int skippedRows) async {
+    await _crashlytics.setCustomKey('wine_db_reason', reason.wireName);
+    await _crashlytics.setCustomKey('wine_db_skipped_rows', skippedRows);
+    await _crashlytics.recordError(
+      const WineDbUnavailableEvent(),
+      null,
+      reason: 'wine_db_unavailable',
+      fatal: false,
+    );
+  }
+}
+
+/// The recorded non-fatal error of a missing or broken offline database.
+class WineDbUnavailableEvent implements Exception {
+  const WineDbUnavailableEvent();
+
+  @override
+  String toString() => 'wine_db_unavailable';
 }

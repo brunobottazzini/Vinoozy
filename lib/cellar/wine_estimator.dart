@@ -15,6 +15,7 @@ class WineFactsInput {
     this.region,
     this.denomination,
     required this.referenceYear,
+    this.level,
   });
 
   factory WineFactsInput.ofWine(Wine wine, {required int fallbackYear}) =>
@@ -26,6 +27,7 @@ class WineFactsInput {
         region: wine.region,
         denomination: wine.denomination,
         referenceYear: wine.createdAt?.toLocal().year ?? fallbackYear,
+        level: wine.level,
       );
 
   final String name;
@@ -40,6 +42,10 @@ class WineFactsInput {
   /// Year the wine entered the cellar: the base year without a vintage.
   final int referenceYear;
 
+  /// The level of the wine (label-autofill-windows BR4.1): applied inside
+  /// the estimate, so the base window already holds it.
+  final WineLevel? level;
+
   WineFacts toFacts() => WineFacts(
     name: name,
     producer: producer,
@@ -48,23 +54,29 @@ class WineFactsInput {
     region: region,
     denomination: denomination,
     referenceYear: referenceYear,
+    level: level,
   );
 }
 
 /// Computes the estimate of a wine (BR1.5, BR1.6, BR1.12) with the C2
 /// library, on the phone and without network.
 ///
-/// The base window comes from `estimateWindow` (internal rules, or the
-/// catalog profile when U3 has one), the effective window applies the drink
-/// feedback with [WindowAdjuster], the pairings come from `pairingsFor`. An
-/// estimation error never blocks a save: the wine stays "to estimate".
+/// The base window comes from `estimateWindow` (internal rules with the
+/// level, or the catalog profile when U3 has one); the effective window
+/// applies the drink feedback and then the owner's "Recommended until"
+/// with [WindowAdjuster.effectiveOf] (label-autofill-windows BR4.4, BR4.5);
+/// the pairings come from `pairingsFor`. An estimation error never blocks a
+/// save: the wine stays "to estimate".
 class WineEstimator {
   const WineEstimator();
 
-  /// The internal estimate of [input] with [adjustment], or
+  /// The internal estimate of [input] with [adjustment] and [override], or
   /// [WineEstimate.none] when C2 refuses the input.
-  WineEstimate estimate(WineFactsInput input, {WindowAdjustment? adjustment}) =>
-      _estimate(input.toFacts(), null, adjustment);
+  WineEstimate estimate(
+    WineFactsInput input, {
+    WindowAdjustment? adjustment,
+    WindowOverride? override,
+  }) => _estimate(input.toFacts(), null, adjustment, override);
 
   /// The estimate improved by a catalog [profile] (BR1.5, BR1.6). With a
   /// window, the profile is the C2 `ExternalProfile`; without one (the
@@ -74,9 +86,10 @@ class WineEstimator {
     WineFactsInput input,
     WineProfileResult profile, {
     WindowAdjustment? adjustment,
+    WindowOverride? override,
   }) {
     final facts = input.toFacts();
-    if (!profile.found) return _estimate(facts, null, adjustment);
+    if (!profile.found) return _estimate(facts, null, adjustment, override);
     final window = profile.window;
     if (window != null) {
       final external = ExternalProfile(
@@ -95,7 +108,7 @@ class WineEstimator {
         region: profile.region,
         denomination: profile.denomination,
       );
-      return _estimate(facts, external, adjustment);
+      return _estimate(facts, external, adjustment, override);
     }
     final filled = WineFacts(
       name: facts.name,
@@ -105,17 +118,20 @@ class WineEstimator {
       region: facts.region ?? profile.region,
       denomination: facts.denomination ?? profile.denomination,
       referenceYear: facts.referenceYear,
+      level: facts.level,
     );
-    return _estimate(filled, null, adjustment);
+    return _estimate(filled, null, adjustment, override);
   }
 
-  /// The estimate shown for [wine] (BR1.19): the stored one, or one computed
-  /// in memory and never written when the window is missing.
+  /// The estimate shown for [wine] (BR1.19, BR4.7): the stored one, or one
+  /// computed in memory with its level and correction and never written
+  /// when the window is missing.
   WineEstimate displayed(Wine wine, {required int fallbackYear}) {
     if (wine.window != null) return WineEstimate.of(wine);
     final computed = estimate(
       WineFactsInput.ofWine(wine, fallbackYear: fallbackYear),
       adjustment: wine.windowAdjustment,
+      override: wine.windowOverride,
     );
     return WineEstimate(
       baseWindow: computed.baseWindow,
@@ -125,14 +141,16 @@ class WineEstimator {
     );
   }
 
-  /// [base] with [adjustment] applied (BR1.12), keeping [pairings].
+  /// [base] with [adjustment] and then [override] applied (BR1.12, BR4.4),
+  /// keeping [pairings].
   WineEstimate withAdjustment(
     DrinkingWindow base,
     WindowAdjustment? adjustment,
-    Pairings? pairings,
-  ) => WineEstimate(
+    Pairings? pairings, {
+    WindowOverride? override,
+  }) => WineEstimate(
     baseWindow: base,
-    window: WindowAdjuster.effective(base, adjustment),
+    window: WindowAdjuster.effectiveOf(base, adjustment, override),
     adjustment: adjustment,
     pairings: pairings,
   );
@@ -141,10 +159,16 @@ class WineEstimator {
     WineFacts facts,
     ExternalProfile? external,
     WindowAdjustment? adjustment,
+    WindowOverride? override,
   ) {
     try {
       final base = estimateWindow(facts, external);
-      return withAdjustment(base, adjustment, pairingsFor(facts, external));
+      return withAdjustment(
+        base,
+        adjustment,
+        pairingsFor(facts, external),
+        override: override,
+      );
     } on EstimationArgumentError {
       return adjustment == null
           ? WineEstimate.none

@@ -10,6 +10,7 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -22,18 +23,24 @@ import java.util.concurrent.Executors
 class MainActivity : FlutterActivity() {
     companion object {
         const val LABEL_CHANNEL = "com.vinoozy.app/label"
+
+        /** "Apri in Google Lens" (label-recognition FR4.3, lens_channel.dart). */
+        const val LENS_CHANNEL = "vinoozy/lens"
     }
 
     private val executor: ExecutorService = Executors.newSingleThreadExecutor()
     private val mainHandler = Handler(Looper.getMainLooper())
     private lateinit var preparer: LabelImagePreparer
     private lateinit var receiver: SharedImageReceiver
+    private lateinit var lens: LensIntentLauncher
     private var channel: MethodChannel? = null
+    private var lensChannel: MethodChannel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Before super.onCreate, which configures the engine and the channel.
         preparer = LabelImagePreparer(cacheDir)
         receiver = SharedImageReceiver(contentResolver, preparer)
+        lens = LensIntentLauncher(this, File(cacheDir, LabelImagePreparer.LABEL_DIR_NAME))
         // A restored activity or one reopened from the recents gets the old
         // SEND intent back: it is not a new share (review R-03).
         receiver.onCreate(intent, restored = savedInstanceState != null) { setIntent(it) }
@@ -45,6 +52,40 @@ class MainActivity : FlutterActivity() {
         channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, LABEL_CHANNEL).also {
             it.setMethodCallHandler(::onLabelCall)
         }
+        lensChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, LENS_CHANNEL).also {
+            it.setMethodCallHandler(::onLensCall)
+        }
+    }
+
+    /**
+     * `open(path)`: only after the user's confirmation in Dart (BR5.1). The
+     * answer is "direct", "chooser" or "failed"; nothing from Google comes
+     * back (BR5.3, NFR3.5).
+     *
+     * label-autofill-windows: `openLensCamera` ("From Google Lens", BR2.5)
+     * and `clipTimestamp` (copy time and MIME type of the clipboard, never
+     * its content, BR2.6).
+     */
+    private fun onLensCall(call: MethodCall, result: MethodChannel.Result) {
+        when (call.method) {
+            "open" -> {
+                val path = call.argument<String>("path")
+                result.success(if (path == null) LensIntentLauncher.FAILED else lens.open(path))
+            }
+            "openLensCamera" -> result.success(lens.openLensCamera())
+            "clipTimestamp" -> result.success(lens.clipTimestamp())
+            else -> result.notImplemented()
+        }
+    }
+
+    /**
+     * Android 10+ reads the clipboard only with the window focus, which may
+     * come after the resume: Dart checks the automatic paste again on the
+     * first focus (label-autofill-windows BR2.6, review R-08).
+     */
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) lensChannel?.invokeMethod("windowFocused", null)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -78,6 +119,8 @@ class MainActivity : FlutterActivity() {
                 receiver.discard()
                 result.success(null)
             }
+            // label-autofill-windows FR2.1: the shared text, taken once.
+            "readSharedText" -> result.success(receiver.takeText())
             "openSettings" -> result.success(openAppSettings())
             else -> result.notImplemented()
         }

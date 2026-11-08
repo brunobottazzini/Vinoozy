@@ -46,12 +46,16 @@ class DrinkSoonRow {
     required this.endYear,
     this.vintage,
     this.producer,
+    this.country,
   });
 
   final String wineId;
   final String name;
   final int? vintage;
   final String? producer;
+
+  /// ISO code shown as a flag (ux-redesign FR1.4, FR3.3), or `null`.
+  final String? country;
 
   /// Bottles of this wine, never below 1 (wines with 0 are excluded).
   final int quantity;
@@ -64,12 +68,13 @@ class DrinkSoonRow {
       other.name == name &&
       other.vintage == vintage &&
       other.producer == producer &&
+      other.country == country &&
       other.quantity == quantity &&
       other.endYear == endYear;
 
   @override
   int get hashCode =>
-      Object.hash(wineId, name, vintage, producer, quantity, endYear);
+      Object.hash(wineId, name, vintage, producer, country, quantity, endYear);
 
   @override
   String toString() => 'DrinkSoonRow($wineId, end $endYear, x$quantity)';
@@ -106,6 +111,7 @@ class BreakdownBar {
     required this.bottles,
     this.family,
     this.region,
+    this.country,
   });
 
   final BreakdownKind kind;
@@ -116,6 +122,11 @@ class BreakdownBar {
   /// Written form shown for the region; set only when [kind] is
   /// [BreakdownKind.region].
   final String? region;
+
+  /// The most frequent country of the region's wines (ux-redesign FR3.3),
+  /// shown as a flag; `null` for "others", "not specified" and regions
+  /// whose wines have no country.
+  final String? country;
   final int bottles;
 
   @override
@@ -124,10 +135,11 @@ class BreakdownBar {
       other.kind == kind &&
       other.family == family &&
       other.region == region &&
+      other.country == country &&
       other.bottles == bottles;
 
   @override
-  int get hashCode => Object.hash(kind, family, region, bottles);
+  int get hashCode => Object.hash(kind, family, region, country, bottles);
 
   @override
   String toString() =>

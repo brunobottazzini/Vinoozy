@@ -1,0 +1,146 @@
+# Australia and New Zealand: registered wine geographical indications.
+# Sources: Wine Australia, "Register of Protected GIs and Other Terms",
+# Australian GIs (zones, regions and subregions; Wine Australia Act 2013),
+# https://www.wineaustralia.com/labelling/register-of-protected-gis-and-other-terms/geographical-indications;
+# Intellectual Property Office of New Zealand, "Geographical indications
+# register", New Zealand wine GIs with status Registered (Geographical
+# Indications (Wine and Spirits) Registration Act 2006), export of
+# https://www.iponz.govt.nz/get-ip/geographical-indications/register/
+# "Australia" and "South Eastern Australia" (the whole country and its
+# multi-state zone), "New Zealand", "North Island" and "South Island" are
+# left out: they name no wine area a window can use.
+# Date: 2026-11-08. Verified against the official lists in Build and Test.
+# Licence: public registers of the two governments; only the protected
+# names are used, which are public geographical data.
+name,country,region,types,weak
+Adelaide,AU,,,weak
+Adelaide Hills,AU,,,
+Adelaide Plains,AU,,,
+Albany,AU,,,weak
+Alpine Valleys,AU,,,
+Australian Capital Territory,AU,,,weak
+Barossa,AU,Barossa Valley,rS,
+Barossa Valley,AU,Barossa Valley,rS,
+Beechworth,AU,,,
+Bendigo,AU,,rS,
+Big Rivers,AU,,,
+Blackwood Valley,AU,,,
+Broke Fordwich,AU,Hunter Valley,,
+Canberra District,AU,,,
+Central Ranges,AU,,,
+Central Victoria,AU,,,
+Central Western Australia,AU,,,weak
+Clare Valley,AU,Clare Valley,,
+Coonawarra,AU,Coonawarra,rS,
+Cowra,AU,,B,
+Currency Creek,AU,,,
+Denmark,AU,,,weak
+Eastern Plains Inland and North of Western Australia,AU,,,weak
+Eden Valley,AU,Eden Valley,,
+Far North,AU,,,weak
+Fleurieu,AU,,,
+Frankland River,AU,,,
+Geelong,AU,,,
+Geographe,AU,,,
+Gippsland,AU,,,
+Glenrowan,AU,,F,
+Goulburn Valley,AU,,,
+Grampians,AU,,,
+Granite Belt,AU,,,
+Great Southern,AU,,,weak
+Great Western,AU,,,weak
+Greater Perth,AU,,,weak
+Gundagai,AU,,,
+Hastings River,AU,,,
+Heathcote,AU,,rS,
+Henty,AU,,,
+High Eden,AU,Eden Valley,,
+Hilltops,AU,,,
+Hunter,AU,Hunter Valley,,weak
+Hunter Valley,AU,Hunter Valley,,
+Kangaroo Island,AU,,,
+King Valley,AU,,,
+Langhorne Creek,AU,,,
+Lenswood,AU,,,
+Limestone Coast,AU,,,
+Lower Murray,AU,,,
+Macedon Ranges,AU,,,
+Manjimup,AU,,,
+Margaret River,AU,Margaret River,,
+McLaren Vale,AU,McLaren Vale,rS,
+Mornington Peninsula,AU,,,
+Mount Barker,AU,,,
+Mount Benson,AU,,,
+Mount Gambier,AU,,,
+Mount Lofty Ranges,AU,,,
+Mudgee,AU,,,
+Murray Darling,AU,,,
+Nagambie Lakes,AU,,,
+New England Australia,AU,,,
+New South Wales,AU,,,weak
+North East Victoria,AU,,,
+North West Victoria,AU,,,
+Northern Rivers,AU,,,weak
+Northern Slopes,AU,,,weak
+Northern Territory,AU,,,weak
+Orange,AU,,,weak
+Padthaway,AU,,,
+Peel,AU,,,weak
+Pemberton,AU,,,
+Perricoota,AU,,,
+Perth Hills,AU,,,
+Piccadilly Valley,AU,,,
+Pokolbin,AU,Hunter Valley,,
+Porongurup,AU,,,
+Port Phillip,AU,,,
+Pyrenees,AU,,,weak
+Queensland,AU,,,weak
+Riverina,AU,,,
+Riverland,AU,,,
+Robe,AU,,,weak
+Rutherglen,AU,,F,
+Shoalhaven Coast,AU,,,
+South Australia,AU,,,weak
+South Burnett,AU,,,
+South Coast,AU,,,weak
+South West Australia,AU,,,weak
+Southern Fleurieu,AU,,,
+Southern Flinders Ranges,AU,,,
+Southern Highlands,AU,,,
+Southern New South Wales,AU,,,weak
+Strathbogie Ranges,AU,,,
+Sunbury,AU,,,
+Swan District,AU,,,
+Swan Hill,AU,,,
+Swan Valley,AU,,,
+Tasmania,AU,Tasmania,,
+The Peninsulas,AU,,,weak
+Tumbarumba,AU,,,
+Upper Goulburn,AU,,,
+Upper Hunter Valley,AU,Hunter Valley,,
+Victoria,AU,,,weak
+West Australian South East Coastal,AU,,,weak
+Western Australia,AU,,,weak
+Western Plains,AU,,,weak
+Western Victoria,AU,,,weak
+Wrattonbully,AU,,rS,
+Yarra Valley,AU,Yarra Valley,,
+Auckland,NZ,,,weak
+Bannockburn,NZ,Central Otago,rL,
+Canterbury,NZ,,,weak
+Central Hawke's Bay,NZ,Hawke's Bay,,
+Central Otago,NZ,Central Otago,,
+Gisborne,NZ,Gisborne,,
+Gladstone,NZ,,,weak
+Hawke's Bay,NZ,Hawke's Bay,,
+Kumeu,NZ,,,
+Marlborough,NZ,Marlborough,,
+Martinborough,NZ,Wairarapa,,
+Matakana,NZ,,,
+Nelson,NZ,Nelson,,
+North Canterbury,NZ,North Canterbury,,
+Northland,NZ,,,
+Waiheke Island,NZ,,,
+Waipara Valley,NZ,North Canterbury,,
+Wairarapa,NZ,Wairarapa,,
+Waitaki Valley North Otago,NZ,,,

@@ -27,10 +27,11 @@ class DashboardCard extends StatelessWidget {
       label: description,
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 8),
-        color: theme.colorScheme.surface,
+        // ux-redesign: cards on the cream background (surfaceContainer).
+        color: theme.colorScheme.surfaceContainer,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           side: BorderSide(color: theme.colorScheme.outlineVariant),
         ),
         child: Padding(
@@ -39,7 +40,12 @@ class DashboardCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               ExcludeSemantics(
-                child: Text(title, style: theme.textTheme.titleMedium),
+                child: Text(
+                  title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
               const SizedBox(height: 8),
               body,

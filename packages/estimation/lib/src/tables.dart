@@ -11,7 +11,20 @@
 // Aliases are already normalised as the recognizer normalises names:
 // lowercase, no accents, apostrophes and punctuation turned into spaces.
 
+//
+// label-autofill-windows (D2, BR3.6, BR3.7): the 47 Italian rows below are
+// kept as they are; the hand-written rows of the rest of the world are in
+// world_tables.dart, the rows generated from the official registers in
+// generated/appellations.g.dart, and [denominationTable] joins the three.
+
+import 'appellations.dart' show buildDenominationTable;
 import 'models.dart';
+
+/// Version of the internal tables, stored in every internal window
+/// (`DrinkingWindow.tablesVersion`). Raise it whenever a table value
+/// changes: the app then estimates every cellar wine again once (BR3.9).
+/// Version 1 is the table of u2-estimation, saved without a version.
+const int estimationTablesVersion = 2;
 
 /// Start, peak and end offsets in years.
 class YearOffsets {
@@ -20,26 +33,158 @@ class YearOffsets {
   final int start;
   final int peak;
   final int end;
+
+  /// True for a window of BR3.9: 0 <= start <= peak <= end, end >= start + 1.
+  bool get isValid => start >= 0 && start <= peak && peak <= end && end > start;
+
+  @override
+  bool operator ==(Object other) =>
+      other is YearOffsets &&
+      other.start == start &&
+      other.peak == peak &&
+      other.end == end;
+
+  @override
+  int get hashCode => Object.hash(start, peak, end);
+
+  @override
+  String toString() => '$start/$peak/$end';
 }
 
-/// One row of the denomination table (entities.md `DenominationProfile`).
+/// One row of the denomination table (entities.md `DenominationProfile`,
+/// extended by label-autofill-windows ENT-004).
+///
+/// A row has a main type ([wineType], [offsets]) and, for the wide zones that
+/// make several styles (Bordeaux, Napa, Mendoza...), [otherTypes] with their
+/// own offsets (BR3.1). The qualifiers apply to the main type only.
 class DenominationProfile {
   const DenominationProfile({
     required this.aliases,
     required this.wineType,
     required this.offsets,
     this.qualifierOffsets = const {},
-    required this.pairingCategories,
+    this.pairingCategories = const [],
+    this.key,
+    this.name,
+    this.country,
+    this.region,
+    this.otherTypes = const {},
+    this.weakAliases = const [],
+    this.templateKey,
   });
 
+  /// Compact form of the hand-written rows of world_tables.dart: country,
+  /// canonical region of `WineOrigins` (or `null`), display name, main type
+  /// and offsets. The normalised display name is always a form of the row;
+  /// [aliases] lists the other forms. [key] defaults to the display name in
+  /// lowerCamelCase ([keyOfName]).
+  const DenominationProfile.world(
+    String this.country,
+    this.region,
+    String this.name,
+    this.wineType,
+    this.offsets, {
+    this.key,
+    this.aliases = const [],
+    this.otherTypes = const {},
+    this.qualifierOffsets = const {},
+    this.weakAliases = const [],
+  }) : pairingCategories = const [],
+       templateKey = null;
+
+  /// Normalised forms besides the display name (always for the Italian rows,
+  /// which have no [name] of their own).
   final List<String> aliases;
   final WineType wineType;
   final YearOffsets offsets;
 
   /// Own offsets of the qualifiers this denomination recognises.
   final Map<Qualifier, YearOffsets> qualifierOffsets;
+
+  /// 3-5 categories, or empty for the type's own (ENT-004, review R-11).
   final List<PairingCategory> pairingCategories;
+
+  /// Stable key when given explicitly; see [DenominationProfile.world].
+  final String? key;
+
+  /// Name shown to people ("Saint-Estèphe", "Barolo DOCG").
+  final String? name;
+
+  /// ISO 3166-1 alpha-2 code.
+  final String? country;
+
+  /// Canonical region of `WineOrigins` for [country], or `null` (BR3.5).
+  final String? region;
+
+  /// Further types of a wide zone with their offsets (BR3.1).
+  final Map<WineType, YearOffsets> otherTypes;
+
+  /// Normalised forms that count on a label only next to an indicator such
+  /// as DOC, AOC or the country name (BR1.2): common words like "toro".
+  final List<String> weakAliases;
+
+  /// The model of a generated row (BR3.7); `null` for a dedicated row.
+  final String? templateKey;
+
+  /// True for the rows whose values were decided one by one.
+  bool get dedicated => templateKey == null;
+
+  /// Every type of the row, the main one first.
+  List<WineType> get types => [wineType, ...otherTypes.keys];
+
+  /// Whether the row makes wines of [type].
+  bool hasType(WineType type) =>
+      type == wineType || otherTypes.containsKey(type);
+
+  /// The offsets of [type], the main ones when the row does not make it.
+  YearOffsets offsetsFor(WineType type) =>
+      type == wineType ? offsets : otherTypes[type] ?? offsets;
+
+  /// This row with its key and origin, as the joined table stores it.
+  DenominationProfile withOrigin({
+    required String key,
+    required String? name,
+    required String? country,
+    required String? region,
+  }) => DenominationProfile(
+    aliases: aliases,
+    wineType: wineType,
+    offsets: offsets,
+    qualifierOffsets: qualifierOffsets,
+    pairingCategories: pairingCategories,
+    key: key,
+    name: name,
+    country: country,
+    region: region,
+    otherTypes: otherTypes,
+    weakAliases: weakAliases,
+    templateKey: templateKey,
+  );
 }
+
+/// The lowerCamelCase key of a display name: "Saint-Estèphe" gives
+/// `saintEstephe`, "Côte de Nuits" gives `coteDeNuits`. [words] are the
+/// normalised words of the name.
+String keyOfWords(List<String> words) {
+  final buffer = StringBuffer();
+  for (var i = 0; i < words.length; i++) {
+    final word = words[i];
+    if (i == 0) {
+      buffer.write(word);
+    } else {
+      buffer
+        ..write(word[0].toUpperCase())
+        ..write(word.substring(1));
+    }
+  }
+  return buffer.toString();
+}
+
+/// The table every estimate reads: the 47 Italian rows, the hand-written
+/// rows of the world and the generated rows, built once (BR3.6: the
+/// dedicated rows win over the generated ones).
+final Map<String, DenominationProfile> denominationTable =
+    buildDenominationTable();
 
 /// One row of the wine-type table, or the generic row (entities.md
 /// `TypeProfile`). [wineType] is `null` only for the generic row.
@@ -55,8 +200,10 @@ class TypeProfile {
   final List<PairingCategory> pairingCategories;
 }
 
-/// Denomination table keyed by a stable denomination key (rules.md, BR2.1).
-const Map<String, DenominationProfile> denominationTable = {
+/// The 47 Italian rows of u2-estimation keyed by a stable denomination key
+/// (rules.md, BR2.1), unchanged; their display name and region are in
+/// `denominationLabels` of catalog.dart.
+const Map<String, DenominationProfile> italianDenominationTable = {
   'barolo': DenominationProfile(
     aliases: ['barolo'],
     wineType: WineType.redStructured,

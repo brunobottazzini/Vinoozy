@@ -69,3 +69,8 @@ flutter:
   uses-material-design: true
   # Generates lib/l10n/app_localizations*.dart from the ARB files (l10n.yaml).
   generate: true
+  # Offline wine database derived from Open Food Facts (label-recognition
+  # D1, FR2.2): wines.jsonl.gz and manifest.json, built by
+  # tool/build_wine_db.dart; LICENSE (ODbL) and README.md travel with it.
+  assets:
+    - assets/wine_db/

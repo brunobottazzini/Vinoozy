@@ -1,7 +1,10 @@
+// LabelLookupFlow on a merged reading (label-recognition FR2.4, BR3.1-BR3.5,
+// BR4.1; u6 BR1.8, BR1.11, BR1.12): one matchLabel call, the vintage read,
+// the three not-found kinds and catalog errors that never block.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:vinoozy/catalog/core/wine_catalog.dart';
 import 'package:vinoozy/label/core/label_lookup_flow.dart';
-import 'package:vinoozy/label/core/label_reading.dart';
+import 'package:vinoozy/label/core/label_merge.dart';
 
 import '../label_harness.dart';
 
@@ -20,194 +23,143 @@ void main() {
     );
   });
 
-  LabelReading reading({String text = '', List<String> codes = const []}) =>
-      LabelReading(
-        text: text,
-        barcodes: [
-          for (final value in codes)
-            ReadBarcode(LabelBarcodeFormat.ean13, value),
-        ],
-      );
-
   Future<LookupOutcome> run(
-    LabelReading value, {
-    bool online = true,
+    String text, {
+    String? barcode,
     CatalogLocale locale = CatalogLocale.it,
-  }) => flow.run(value, online: online, locale: locale);
+  }) => flow.run(
+    MergedReading(text: text, barcode: barcode),
+    locale: locale,
+  );
 
-  group('BR1.8 lookup order', () {
-    test(
-      'BR1.8 a barcode and a network: lookupBarcode, text not asked',
-      () async {
-        catalog.byBarcode = candidateOf(
-          'Barolo Riserva',
-          producer: 'Cantina A',
-        );
-        final outcome = await run(
-          reading(text: 'Barolo DOCG', codes: [testEan13]),
-        );
-        expect(outcome, isA<LookupProposal>());
-        final proposal = outcome as LookupProposal;
-        expect(proposal.candidate.name, 'Barolo Riserva');
-        expect(proposal.offline, isFalse);
-        expect(catalog.barcodeCalls, [testEan13]);
-        expect(catalog.textCalls, isEmpty);
-      },
-    );
-
-    test('BR1.8 no result for the barcode: matchLabelText with the text and '
-        'the app language', () async {
-      catalog.byText = LabelMatch.matched(candidateOf('Barolo DOCG'));
+  group('BR1.8 FR2.4 one lookup per reading', () {
+    test('BR1.8 the merged text, the barcode and the app language reach '
+        'matchLabel once (NFR5.1)', () async {
+      catalog.byLabel = sureMatch(candidateOf('Barolo Riserva'));
       final outcome = await run(
-        reading(text: 'Barolo DOCG', codes: [testEan13]),
+        'Barolo DOCG',
+        barcode: testEan13,
         locale: CatalogLocale.ptBR,
       );
-      expect((outcome as LookupProposal).candidate.name, 'Barolo DOCG');
-      expect(catalog.barcodeCalls, [testEan13]);
+      expect((outcome as LookupSure).candidate.name, 'Barolo Riserva');
       expect(catalog.textCalls, ['Barolo DOCG']);
+      expect(catalog.labelBarcodes, [testEan13]);
       expect(catalog.textLocales, [CatalogLocale.ptBR]);
-    });
-
-    test('BR1.8 without network the barcode is skipped and the proposal '
-        'says so (BR1.9)', () async {
-      catalog.byText = LabelMatch.matched(
-        candidateOf('Barolo DOCG', source: CandidateSource.internal),
-      );
-      final outcome = await run(
-        reading(text: 'Barolo DOCG', codes: [testEan13]),
-        online: false,
-      );
-      expect((outcome as LookupProposal).offline, isTrue);
       expect(catalog.barcodeCalls, isEmpty);
-      expect(catalog.textCalls, hasLength(1));
     });
 
-    test(
-      'BR1.8 the vintage read on the label replaces the candidate one',
-      () async {
-        catalog.byBarcode = candidateOf('Barolo', vintage: 2019);
-        final outcome = await run(
-          reading(text: 'Barolo DOCG 2016', codes: [testEan13]),
-        );
-        expect((outcome as LookupProposal).candidate.vintage, 2016);
-      },
-    );
+    test('BR1.8 the vintage read on the label replaces the sure '
+        "candidate's", () async {
+      catalog.byLabel = sureMatch(candidateOf('Barolo', vintage: 2019));
+      final outcome = await run('Barolo DOCG 2016', barcode: testEan13);
+      expect((outcome as LookupSure).candidate.vintage, 2016);
+    });
 
     test(
       "BR1.8 with no year on the label the candidate's vintage stays",
       () async {
-        catalog.byText = LabelMatch.matched(
-          candidateOf('Barolo DOCG', vintage: 2018),
-        );
-        final outcome = await run(reading(text: 'Barolo DOCG'));
-        expect((outcome as LookupProposal).candidate.vintage, 2018);
+        catalog.byLabel = sureMatch(candidateOf('Barolo DOCG', vintage: 2018));
+        final outcome = await run('Barolo DOCG');
+        expect((outcome as LookupSure).candidate.vintage, 2018);
       },
     );
 
-    test('BR1.8 a failing catalog never blocks: next step, then the U4 form '
-        '(NFR6.3)', () async {
-      catalog
-        ..barcodeError = StateError('network down')
-        ..textError = Exception('rate limited');
-      final outcome = await run(
-        reading(text: 'Cantina del Lago\nRosso 2020', codes: [testEan13]),
-      );
-      expect(outcome, isA<LookupIncomplete>());
-      expect((outcome as LookupIncomplete).name, 'Cantina del Lago');
-      expect(outcome.vintage, 2020);
-      expect(failures, hasLength(2), reason: 'reported as lookup failures');
+    test('BR3.2 candidates keep their own vintage; those without get the '
+        'one read', () async {
+      catalog.byLabel = candidatesMatch([
+        candidateOf('Barbaresco Asili', vintage: 2019),
+        candidateOf('Barbaresco'),
+      ]);
+      final outcome = await run('Barbaresco 2017') as LookupCandidates;
+      expect(outcome.candidates.map((c) => c.vintage), [2019, 2017]);
+      expect(outcome.step, LabelMatchStep.offlineText);
+      expect(outcome.notFound.kind, NotFoundKind.noMatch);
     });
 
-    test('BR1.8 an invalid input of the catalog is "no result", not '
-        'reported', () async {
-      catalog
-        ..barcodeError = CatalogArgumentError(CatalogErrorCode.invalidBarcode)
-        ..textError = CatalogArgumentError(CatalogErrorCode.textTooLong);
-      final outcome = await run(
-        reading(text: 'Cantina del Lago', codes: [testEan13]),
+    test('BR3.5 a sure proposal carries the alternatives and the not-found '
+        'outcome for "Non è questo"', () async {
+      catalog.byLabel = sureMatch(
+        candidateOf('Barolo Ravera'),
+        others: [candidateOf('Barolo Bussia')],
+        step: LabelMatchStep.offlineBarcode,
       );
-      expect(outcome, isA<LookupIncomplete>());
+      final outcome = await run('Elvio Cogno\nBarolo\n2016') as LookupSure;
+      expect(outcome.step, LabelMatchStep.offlineBarcode);
+      expect(outcome.alternatives.single.name, 'Barolo Bussia');
+      expect(outcome.alternatives.single.vintage, 2016);
+      expect(outcome.notFound.name, 'Barolo', reason: 'BR1.12 denomination');
+    });
+
+    test('BR1.8 a failing catalog never blocks: not found, reported '
+        '(NFR6.3)', () async {
+      catalog.textError = Exception('rate limited');
+      final outcome = await run('Cantina del Lago\nRosso 2020');
+      final notFound = outcome as LookupNotFound;
+      expect(notFound.kind, NotFoundKind.noMatch);
+      expect(notFound.name, 'Cantina del Lago');
+      expect(notFound.vintage, 2020);
+      expect(failures, hasLength(1));
+    });
+
+    test('BR1.8 an invalid input of the catalog is "nothing found", not '
+        'reported', () async {
+      catalog.textError = CatalogArgumentError(CatalogErrorCode.textTooLong);
+      final outcome = await run('Cantina del Lago', barcode: testEan13);
+      expect(outcome, isA<LookupNotFound>());
       expect(failures, isEmpty);
     });
 
-    test('BR1.8 at most two catalog requests per photo (NFR5.1)', () async {
-      await run(
-        reading(text: 'Barolo DOCG 2016', codes: [testEan13, testEan8]),
+    test('NFR4.1 only the barcode and the text reach the catalog', () async {
+      await run(labelMarkers.first, barcode: testEan13);
+      expect(catalog.labelBarcodes.single, testEan13);
+      expect(catalog.textCalls.single, labelMarkers.first);
+      expect(catalog.textCalls.single, isNot(contains('.jpg')));
+    });
+  });
+
+  group('BR3.4 BR1.11 not found', () {
+    test('BR1.11 BR3.4 no valid code and fewer than 3 letters: unreadable, '
+        'no request', () async {
+      final outcome = await run('12 a');
+      expect((outcome as LookupNotFound).kind, NotFoundKind.unreadable);
+      expect(catalog.calls, 0);
+    });
+
+    test('BR1.12 BR3.4 text read and no wine: noMatch with the most '
+        'significant line, the vintage and the search words', () async {
+      final outcome = await run('750 ml\nTenuta Rossi Collina\n2019');
+      final notFound = outcome as LookupNotFound;
+      expect(notFound.kind, NotFoundKind.noMatch);
+      expect(notFound.name, 'Tenuta Rossi Collina');
+      expect(notFound.vintage, 2019);
+      expect(notFound.query, 'tenuta rossi collina 2019');
+    });
+
+    test('BR3.4 a barcode with no wine and no text: barcodeNotFound, the '
+        'barcode as query', () async {
+      final outcome = await run('75', barcode: testEan13);
+      final notFound = outcome as LookupNotFound;
+      expect(notFound.kind, NotFoundKind.barcodeNotFound);
+      expect(notFound.query, testEan13);
+      expect(catalog.labelBarcodes.single, testEan13);
+    });
+  });
+
+  group('BR4.1 search words', () {
+    test('BR4.1 the longest words in text order, the vintage, at most 120', () {
+      expect(
+        LabelLookupFlow.searchQueryOf(
+          'CHÂTEAU MUSAR\n2015\nBEKAA VALLEY\nLEBANON',
+          vintage: 2015,
+        ),
+        'chateau musar bekaa valley lebanon 2015',
       );
-      expect(catalog.calls, 2);
-      expect(catalog.barcodeCalls, hasLength(1));
+      expect(LabelLookupFlow.searchQueryOf('', barcode: testEan8), testEan8);
+      expect(LabelLookupFlow.searchQueryOf('12'), '');
+      final long = LabelLookupFlow.searchQueryOf(
+        List.filled(6, 'a' * 30).join(' '),
+      );
+      expect(long.length, lessThanOrEqualTo(LabelLookupFlow.maxQueryLength));
     });
-
-    test(
-      'BR1.8 only the barcode and the text reach the catalog (NFR4.1)',
-      () async {
-        await run(reading(text: labelMarkers.first, codes: [testEan13]));
-        expect(catalog.barcodeCalls.single, testEan13);
-        expect(catalog.textCalls.single, labelMarkers.first);
-        expect(catalog.textCalls.single, isNot(contains('.jpg')));
-      },
-    );
-
-    test('BR1.7 the text sent is at most 2000 characters', () async {
-      await run(reading(text: 'Barolo ${'x' * 2500}'));
-      expect(catalog.textCalls.single.length, LabelReading.maxTextLength);
-    });
-  });
-
-  group('BR1.11 hard cases', () {
-    test('BR1.11 no valid code and fewer than 3 letters: unreadable, no '
-        'request', () async {
-      final outcome = await run(reading(text: '12 a', codes: ['123']));
-      expect(outcome, isA<LookupUnreadable>());
-      expect(catalog.calls, 0);
-    });
-
-    test('BR1.11 text read and no wine: the form with the line and the '
-        'vintage', () async {
-      final outcome = await run(reading(text: 'Tenuta Rossi\n2019'));
-      final incomplete = outcome as LookupIncomplete;
-      expect(incomplete.name, 'Tenuta Rossi');
-      expect(incomplete.vintage, 2019);
-    });
-
-    test('BR1.11 a barcode with no result and no text: barcode only, with '
-        'network', () async {
-      final outcome = await run(reading(text: '75', codes: [testEan13]));
-      final only = outcome as LookupBarcodeOnly;
-      expect(only.barcode, testEan13);
-      expect(only.needsNetwork, isFalse);
-      expect(catalog.textCalls, isEmpty);
-    });
-
-    test(
-      'BR1.11 a barcode and no network and no text: needs the network',
-      () async {
-        final outcome = await run(reading(codes: [testEan13]), online: false);
-        expect((outcome as LookupBarcodeOnly).needsNetwork, isTrue);
-        expect(catalog.calls, 0);
-      },
-    );
-  });
-
-  group('BR1.8 "Riprova quando torna la rete"', () {
-    test('BR1.8 still offline: needs the network, no request', () async {
-      final outcome = await flow.retryBarcode(testEan13, online: false);
-      expect((outcome as LookupBarcodeOnly).needsNetwork, isTrue);
-      expect(catalog.calls, 0);
-    });
-
-    test('BR1.8 back online and found: the proposal', () async {
-      catalog.byBarcode = candidateOf('Barolo');
-      final outcome = await flow.retryBarcode(testEan13, online: true);
-      expect((outcome as LookupProposal).candidate.name, 'Barolo');
-    });
-
-    test(
-      'BR1.8 back online and not found: barcode only with network',
-      () async {
-        final outcome = await flow.retryBarcode(testEan13, online: true);
-        expect((outcome as LookupBarcodeOnly).needsNetwork, isFalse);
-      },
-    );
   });
 }

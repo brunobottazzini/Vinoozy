@@ -1,0 +1,242 @@
+{
+  "description": "Reference set of extractLabelFields (label-autofill-windows BR1.10, FR1.1): label texts in Italian, French, Spanish, English, German and Portuguese, some copied from Google Lens with split lines and noise. 'expected' lists every field that must be filled, with its value; a field not listed must stay empty. 'contains' says which fields the text holds without ambiguity (default: the fields listed in 'expected'), for the recall thresholds. Wine names, producers and vintages are examples written for the test.",
+  "currentYear": 2026,
+  "texts": [
+    {
+      "id": "it-barolo-vietti",
+      "lang": "it",
+      "text": "Barolo\nDenominazione di Origine Controllata e Garantita\nRavera\nVietti\n2016\n14,5% vol",
+      "expected": {"name": "Barolo Ravera", "denomination": "Barolo DOCG", "vintage": 2016, "wineType": "redStructured", "country": "IT", "region": "Piemonte"}
+    },
+    {
+      "id": "it-barbera-fondata",
+      "lang": "it",
+      "text": "Cantina fondata nel 1898\nBarbera d'Asti Superiore\n2021",
+      "expected": {"name": "Barbera d'Asti Superiore", "denomination": "Barbera d'Asti DOCG", "vintage": 2021, "wineType": "redLight", "country": "IT", "region": "Piemonte"}
+    },
+    {
+      "id": "it-grande-vino-rosso",
+      "lang": "it",
+      "text": "Grande Vino Rosso d'Italia 2018 2019",
+      "expected": {"name": "Grande Vino Rosso d'Italia", "wineType": "redLight"},
+      "contains": {"vintage": false}
+    },
+    {
+      "id": "it-chianti-classico-riserva",
+      "lang": "it",
+      "text": "CASTELLO DI AMA\nChianti Classico\nRiserva\nDenominazione di Origine Controllata e Garantita\nVendemmia 2019\nImbottigliato all'origine da Castello di Ama, Gaiole in Chianti (SI) Italia\n750 ml 14% vol",
+      "expected": {"name": "Chianti Classico", "producer": "Castello di Ama", "denomination": "Chianti Classico DOCG", "vintage": 2019, "wineType": "redStructured", "country": "IT", "region": "Toscana", "suggestedLevel": "aging"}
+    },
+    {
+      "id": "it-prosecco",
+      "lang": "it",
+      "text": "Prosecco\nDenominazione di Origine Controllata\nExtra Dry\nSpumante\nProdotto e imbottigliato da Bisol1542 s.r.l. - Valdobbiadene - Italia",
+      "expected": {"name": "Prosecco", "producer": "Bisol1542 s.r.l.", "denomination": "Prosecco DOC", "wineType": "sparklingTank", "country": "IT", "region": "Veneto"}
+    },
+    {
+      "id": "it-amarone-tommasi",
+      "lang": "it",
+      "text": "AMARONE DELLA VALPOLICELLA\nCLASSICO\nDENOMINAZIONE DI ORIGINE CONTROLLATA E GARANTITA\n2015\nTOMMASI",
+      "expected": {"name": "Amarone della Valpolicella Tommasi", "denomination": "Amarone della Valpolicella DOCG", "vintage": 2015, "wineType": "redStructured", "country": "IT", "region": "Veneto"}
+    },
+    {
+      "id": "it-lens-vietti-split",
+      "lang": "it",
+      "text": "VIETTI\n\nBAROLO\nCASTIGLIONE\nDENOMINAZIONE DI ORIGINE\nCONTROLLATA E GARANTITA\n2017\n750ml e",
+      "expected": {"name": "Barolo Castiglione", "denomination": "Barolo DOCG", "vintage": 2017, "wineType": "redStructured", "country": "IT", "region": "Piemonte"}
+    },
+    {
+      "id": "it-tignanello-igt",
+      "lang": "it",
+      "text": "Tignanello\nToscana\nIndicazione Geografica Tipica\n2019\nMarchesi Antinori",
+      "expected": {"name": "Tignanello", "producer": "Marchesi Antinori", "denomination": "Toscana", "vintage": 2019, "country": "IT", "region": "Toscana"}
+    },
+    {
+      "id": "fr-meyney",
+      "lang": "fr",
+      "text": "CHÂTEAU MEYNEY\nSAINT-ESTÈPHE\n2016\nAppellation Saint-Estèphe Contrôlée\nMis en bouteille au château",
+      "expected": {"name": "Château Meyney", "producer": "Château Meyney", "denomination": "Saint-Estèphe", "vintage": 2016, "wineType": "redStructured", "country": "FR", "region": "Bordeaux"}
+    },
+    {
+      "id": "fr-chablis-premier-cru",
+      "lang": "fr",
+      "text": "Domaine William Fèvre\nCHABLIS PREMIER CRU\nMontmains\nAppellation Chablis Premier Cru Contrôlée\n2020\nMis en bouteille au domaine",
+      "expected": {"name": "Chablis Premier Cru Montmains", "producer": "Domaine William Fèvre", "denomination": "Chablis", "vintage": 2020, "wineType": "white", "country": "FR", "region": "Bourgogne", "suggestedLevel": "aging"}
+    },
+    {
+      "id": "fr-cremant-alsace",
+      "lang": "fr",
+      "text": "Brut\nMéthode Traditionnelle\nCrémant d'Alsace",
+      "expected": {"name": "Crémant d'Alsace", "denomination": "Crémant d'Alsace", "wineType": "sparklingClassic", "country": "FR", "region": "Alsace"}
+    },
+    {
+      "id": "fr-graves-chateau",
+      "lang": "fr",
+      "text": "Château Graville-Lacoste\nGraves\nBlanc\n2022\nAppellation Graves Contrôlée\nVignobles Hervé Dubourdieu",
+      "expected": {"name": "Château Graville-Lacoste", "producer": "Château Graville-Lacoste", "denomination": "Graves", "vintage": 2022, "wineType": "white", "country": "FR", "region": "Bordeaux"}
+    },
+    {
+      "id": "fr-bordeaux-blanc",
+      "lang": "fr",
+      "text": "BORDEAUX\nBLANC\nAppellation Bordeaux Contrôlée\n2023\nMis en bouteille par Maison Ginestet, 33000 Bordeaux",
+      "expected": {"name": "Bordeaux", "producer": "Maison Ginestet", "denomination": "Bordeaux", "vintage": 2023, "wineType": "white", "country": "FR", "region": "Bordeaux"}
+    },
+    {
+      "id": "fr-cotes-du-rhone",
+      "lang": "fr",
+      "text": "Guigal\nCÔTES DU RHÔNE\nAppellation Côtes du Rhône Contrôlée\nRouge\n2019\nE. Guigal, propriétaire-négociant à Ampuis, France",
+      "expected": {"name": "Côtes du Rhône", "producer": "E. Guigal", "denomination": "Côtes du Rhône", "vintage": 2019, "wineType": "redLight", "country": "FR", "region": "Vallée du Rhône"}
+    },
+    {
+      "id": "fr-champagne",
+      "lang": "fr",
+      "text": "CHAMPAGNE\nBOLLINGER\nSPECIAL CUVÉE\nBRUT\nAY - FRANCE\n12% vol 750 ml",
+      "expected": {"name": "Champagne Special Cuvée", "denomination": "Champagne", "wineType": "sparklingClassic", "country": "FR", "region": "Champagne"}
+    },
+    {
+      "id": "es-rioja-alta-904",
+      "lang": "es",
+      "text": "La Rioja Alta S.A.\nGran Reserva 904\nRioja\nDenominación de Origen Calificada\n2015",
+      "expected": {"name": "Gran Reserva 904", "producer": "La Rioja Alta S.A.", "denomination": "Rioja", "vintage": 2015, "wineType": "redStructured", "country": "ES", "region": "Rioja", "suggestedLevel": "aging"}
+    },
+    {
+      "id": "es-ribera-crianza",
+      "lang": "es",
+      "text": "PROTOS\nRIBERA DEL DUERO\nDenominación de Origen\nCRIANZA\n2019\nEmbotellado por Bodegas Protos S.L., Peñafiel - España",
+      "expected": {"name": "Ribera del Duero", "producer": "Bodegas Protos S.L.", "denomination": "Ribera del Duero", "vintage": 2019, "wineType": "redStructured", "country": "ES", "region": "Ribera del Duero"}
+    },
+    {
+      "id": "es-rias-baixas-albarino",
+      "lang": "es",
+      "text": "Martín Códax\nAlbariño\nRías Baixas\nDenominación de Origen\n2023",
+      "expected": {"name": "Martín Códax Albariño", "denomination": "Rías Baixas", "vintage": 2023, "wineType": "white", "country": "ES", "region": "Rías Baixas"}
+    },
+    {
+      "id": "es-cava-lens",
+      "lang": "es",
+      "text": "FREIXENET\nCORDÓN NEGRO\nBRUT\nCAVA\nD.O. Cava\nProduct of Spain",
+      "expected": {"name": "Cordón Negro", "denomination": "Cava", "wineType": "sparklingClassic", "country": "ES", "region": "Penedès"}
+    },
+    {
+      "id": "es-priorat-clos",
+      "lang": "es",
+      "text": "Clos Mogador\nPriorat\nDenominació d'Origen Qualificada\n2018\nVi negre",
+      "expected": {"name": "Clos Mogador", "producer": "Clos Mogador", "denomination": "Priorat", "vintage": 2018, "wineType": "redStructured", "country": "ES", "region": "Priorat"}
+    },
+    {
+      "id": "es-rueda-verdejo",
+      "lang": "es",
+      "text": "José Pariente\nVerdejo\nRueda\nDenominación de Origen\n2023\nVino blanco",
+      "expected": {"name": "José Pariente Verdejo", "denomination": "Rueda", "vintage": 2023, "wineType": "white", "country": "ES", "region": "Rueda"}
+    },
+    {
+      "id": "en-napa-chardonnay",
+      "lang": "en",
+      "text": "Chardonnay\nNapa Valley\n2021\nProduced and bottled by Grgich Hills Estate, Rutherford, CA\nAlc. 14.1% by vol.",
+      "expected": {"name": "Chardonnay", "producer": "Grgich Hills Estate", "denomination": "Napa Valley", "vintage": 2021, "wineType": "white", "country": "US", "region": "Napa Valley"}
+    },
+    {
+      "id": "en-catena-malbec",
+      "lang": "en",
+      "text": "Catena\nMalbec\nMendoza Argentina\n2020\nProduct of Argentina",
+      "expected": {"name": "Catena Malbec", "denomination": "Mendoza", "vintage": 2020, "wineType": "redStructured", "country": "AR", "region": "Mendoza"}
+    },
+    {
+      "id": "en-cloudy-bay",
+      "lang": "en",
+      "text": "Cloudy Bay\nSauvignon Blanc\nMarlborough\n2023\nWine of New Zealand",
+      "expected": {"name": "Cloudy Bay Sauvignon Blanc", "denomination": "Marlborough", "vintage": 2023, "wineType": "white", "country": "NZ", "region": "Marlborough"}
+    },
+    {
+      "id": "en-penfolds-lens",
+      "lang": "en",
+      "text": "Penfolds\nBin 28\nKalimna Shiraz\nBarossa Valley\nVintage 2019\nProduct of Australia",
+      "expected": {"name": "Kalimna Shiraz", "denomination": "Barossa Valley", "vintage": 2019, "wineType": "redStructured", "country": "AU", "region": "Barossa Valley"}
+    },
+    {
+      "id": "en-drouhin-oregon",
+      "lang": "en",
+      "text": "DOMAINE DROUHIN OREGON\nPinot Noir\nDundee Hills\nWillamette Valley\n2021",
+      "expected": {"name": "Pinot Noir", "producer": "Domaine Drouhin Oregon", "denomination": "Dundee Hills", "vintage": 2021, "wineType": "redLight", "country": "US", "region": "Oregon"}
+    },
+    {
+      "id": "en-kanonkop-pinotage",
+      "lang": "en",
+      "text": "Kanonkop\nPinotage\nStellenbosch\nWine of Origin\n2019",
+      "expected": {"name": "Kanonkop Pinotage", "denomination": "Stellenbosch", "vintage": 2019, "wineType": "redStructured", "country": "ZA", "region": "Stellenbosch"}
+    },
+    {
+      "id": "en-ridge-no-appellation",
+      "lang": "en",
+      "text": "Ridge\nGeyserville\nZinfandel\nAlc. 14.5% by vol\nCalifornia Red Wine\n2019",
+      "expected": {"name": "Geyserville Zinfandel", "vintage": 2019, "wineType": "redStructured"},
+      "contains": {"denomination": false}
+    },
+    {
+      "id": "de-donnhoff-spatlese",
+      "lang": "de",
+      "text": "Dönnhoff\nRiesling Spätlese\nNahe\n2019\nGutsabfüllung",
+      "expected": {"name": "Riesling Spätlese", "producer": "Dönnhoff", "denomination": "Nahe", "vintage": 2019, "wineType": "white", "country": "DE", "region": "Nahe", "suggestedLevel": "aging"}
+    },
+    {
+      "id": "de-prum-kabinett",
+      "lang": "de",
+      "text": "Weingut Joh. Jos. Prüm\nWehlener Sonnenuhr\nRiesling Kabinett\n2020\nMosel\nQualitätswein mit Prädikat\nGutsabfüllung",
+      "expected": {"name": "Wehlener Sonnenuhr Riesling Kabinett", "producer": "Weingut Joh. Jos. Prüm", "denomination": "Wehlener", "vintage": 2020, "wineType": "white", "country": "DE", "region": "Mosel"}
+    },
+    {
+      "id": "de-forster-pfalz",
+      "lang": "de",
+      "text": "Weingut Bassermann-Jordan\nForster Jesuitengarten\nRiesling\nTrocken\n2021\nPfalz\nErzeugerabfüllung",
+      "expected": {"name": "Forster Jesuitengarten Riesling", "producer": "Weingut Bassermann-Jordan", "denomination": "Forster", "vintage": 2021, "wineType": "white", "country": "DE", "region": "Pfalz"}
+    },
+    {
+      "id": "de-johannisberg-auslese",
+      "lang": "de",
+      "text": "Schloss Johannisberg\nRiesling Auslese\nRheingau\n2018\nPrädikatswein",
+      "expected": {"name": "Riesling Auslese", "denomination": "Johannisberger", "vintage": 2018, "wineType": "white", "country": "DE", "region": "Rheingau", "suggestedLevel": "aging"}
+    },
+    {
+      "id": "de-ahr-spatburgunder",
+      "lang": "de",
+      "text": "Meyer-Näkel\nSpätburgunder\nRotwein trocken\n2020\nAhr\nQualitätswein",
+      "expected": {"name": "Meyer-Näkel Spätburgunder", "denomination": "Ahr", "vintage": 2020, "wineType": "redLight", "country": "DE", "region": "Ahr"}
+    },
+    {
+      "id": "pt-vintage-port",
+      "lang": "pt",
+      "text": "Taylor's\nVintage Port\n2017\nProduct of Portugal\nBottled by Fladgate Partnership, Vila Nova de Gaia",
+      "expected": {"name": "Taylor's", "producer": "Fladgate Partnership", "denomination": "Porto", "vintage": 2017, "wineType": "fortified", "country": "PT", "region": "Douro", "suggestedLevel": "aging"}
+    },
+    {
+      "id": "pt-douro-quinta",
+      "lang": "pt",
+      "text": "Quinta do Crasto\nDouro\nDenominação de Origem Controlada\nTinto\n2020\nEngarrafado por Quinta do Crasto S.A., Gouvinhas, Portugal",
+      "expected": {"name": "Quinta do Crasto", "producer": "Quinta do Crasto S.A.", "denomination": "Douro", "vintage": 2020, "wineType": "redStructured", "country": "PT", "region": "Douro"}
+    },
+    {
+      "id": "pt-vinho-verde",
+      "lang": "pt",
+      "text": "Quinta da Aveleda\nVinho Verde\nDenominação de Origem Controlada\nBranco\n2023",
+      "expected": {"name": "Quinta da Aveleda", "producer": "Quinta da Aveleda", "denomination": "Vinho Verde", "vintage": 2023, "wineType": "white", "country": "PT", "region": "Vinho Verde"}
+    },
+    {
+      "id": "pt-madeira",
+      "lang": "pt",
+      "text": "Blandy's\nMalmsey\nMadeira\nProduct of Portugal",
+      "expected": {"name": "Blandy's", "denomination": "Madeira", "wineType": "fortified", "country": "PT", "region": "Madeira"}
+    },
+    {
+      "id": "pt-serra-gaucha-tannat",
+      "lang": "pt",
+      "text": "Vinícola Aurora\nTannat\nSerra Gaúcha\nsafra 2023",
+      "expected": {"name": "Tannat", "producer": "Vinícola Aurora", "denomination": "Serra Gaúcha", "vintage": 2023, "wineType": "redStructured", "country": "BR", "region": "Serra Gaúcha"}
+    },
+    {
+      "id": "it-service-only",
+      "lang": "it",
+      "text": "Contiene solfiti 750 ml 12% vol",
+      "expected": {}
+    }
+  ]
+}

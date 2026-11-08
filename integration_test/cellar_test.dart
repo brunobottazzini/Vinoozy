@@ -7,15 +7,16 @@
 //     "flutter test integration_test/cellar_test.dart \
 //      --dart-define=FIREBASE_ENV=demo --dart-define=E2E=true"
 //
-// Sequence: add a wine -> add it again (duplicate dialog, bottles added) ->
-// "Drunk" and "Undo" -> the History -> the last bottle drunk offline keeps
-// the banner "pending" until the network is back -> the finished wine added
-// again comes back to the Cellar.
+// Sequence: add a wine with country and region (ux-redesign FR1.1, FR1.2,
+// FR1.4) -> add it again (duplicate dialog, bottles added) -> "Ho bevuto",
+// the confirmation and "Undo" (ux-redesign FR2.2, FR2.3) -> the History ->
+// the last bottle drunk offline keeps the banner "pending" until the
+// network is back -> the finished wine added again comes back to the
+// Cellar.
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:vinoozy/cellar/ui/wine_list_tile.dart';
 import 'package:vinoozy/e2e/test_network_control.dart';
 
 import 'e2e_helpers.dart';
@@ -24,16 +25,11 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   final network = TestNetworkControl(() => FirebaseFirestore.instance);
 
-  /// The row of [name], and its quick "Drunk".
-  Finder drinkOf(String name) => find.descendant(
-    of: find.ancestor(of: wineRow(name), matching: find.byType(WineListTile)),
-    matching: find.byIcon(Icons.wine_bar),
-  );
+  /// "Ho bevuto" of [name]'s card (ux-redesign FR2.1).
+  Finder drinkOf(String name) => drinkButtonOf(name);
 
-  Finder quantityOf(String name, int quantity) => find.descendant(
-    of: find.ancestor(of: wineRow(name), matching: find.byType(WineListTile)),
-    matching: find.text('x$quantity'),
-  );
+  Finder quantityOf(String name, int quantity) =>
+      find.descendant(of: wineCardOf(name), matching: find.text('× $quantity'));
 
   /// The form filled with [name] without vintage, then "Save".
   Future<void> saveForm(WidgetTester tester, String name) async {
@@ -43,7 +39,10 @@ void main() {
     await tester.tap(find.byKey(const Key('add-choice-write')));
     await waitFor(tester, find.byKey(const Key('add-wine-name-field')));
     await tester.enterText(find.byKey(const Key('add-wine-name-field')), name);
-    await tester.tap(find.byKey(const Key('add-wine-no-vintage-switch')));
+    await tapVisible(
+      tester,
+      find.byKey(const Key('add-wine-no-vintage-switch')),
+    );
     final save = find.byKey(const Key('add-wine-save-button'));
     await tester.ensureVisible(save);
     await tester.pump();
@@ -58,9 +57,25 @@ void main() {
     await signIn(tester, userA, then: find.byKey(const Key('cellar-empty')));
     const name = 'Nebbiolo Langhe';
 
-    // BR1.5 BR1.18: saved on the phone, back to the list at once.
-    await addWine(tester, name: name);
+    // BR1.5 BR1.18: saved on the phone, back to the list at once; ux-redesign
+    // FR1.1 FR1.2 FR1.4: Italy and Piemonte chosen in the form, the card
+    // shows the flag and the region.
+    await addWine(tester, name: name, country: 'IT', region: 'Piemonte');
     await waitFor(tester, quantityOf(name, 1));
+    expect(
+      find.descendant(
+        of: wineCardOf(name),
+        matching: find.byKey(const Key('flag-IT')),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: wineCardOf(name),
+        matching: find.textContaining('Piemonte'),
+      ),
+      findsOneWidget,
+    );
 
     // BR1.4: the same wine again -> "Già in cantina" -> +1 bottle.
     await saveForm(tester, name);
@@ -68,8 +83,16 @@ void main() {
     await tapWhenHittable(tester, find.byKey(const Key('duplicate-confirm')));
     await waitFor(tester, quantityOf(name, 2));
 
-    // BR1.10: "Drunk" then "Undo".
+    // BR1.10, ux-redesign FR2.2: "Ho bevuto" writes nothing until the
+    // confirmation; "Annulla" in the sheet leaves 2 bottles and no drink.
     await tapWhenHittable(tester, drinkOf(name));
+    await waitFor(tester, find.byKey(const Key('drink-cancel')));
+    await tapWhenHittable(tester, find.byKey(const Key('drink-cancel')));
+    await waitFor(tester, quantityOf(name, 2));
+    expect(await cloudDrinkCount(currentUid), 0);
+
+    // BR1.10: "Ho bevuto" with 4 stars, then "Undo".
+    await drinkAndConfirm(tester, drinkOf(name), stars: 4);
     await waitFor(tester, find.byKey(const Key('drink-undo')));
     await tapWhenHittable(tester, find.byKey(const Key('drink-undo')));
     await waitFor(tester, quantityOf(name, 2));
@@ -80,7 +103,7 @@ void main() {
     );
 
     // BR1.16: one drink in the History.
-    await tapWhenHittable(tester, drinkOf(name));
+    await drinkAndConfirm(tester, drinkOf(name));
     await waitFor(tester, quantityOf(name, 1));
     await tester.tap(find.byKey(const Key('home-nav-history')));
     await waitFor(tester, find.textContaining(name));
@@ -90,7 +113,7 @@ void main() {
     // NFR6.6: the last bottle drunk offline leaves the list, the banner says
     // "pending" until the network is back.
     await network.disableNetwork();
-    await tapWhenHittable(tester, drinkOf(name));
+    await drinkAndConfirm(tester, drinkOf(name));
     await waitFor(tester, find.byKey(const Key('cellar-empty')));
     await waitFor(tester, find.byKey(const Key('offline-banner')));
     await network.enableNetwork();
@@ -127,7 +150,7 @@ void main() {
     await tester.tap(find.byKey(const Key('home-nav-cellar')));
     await tester.pumpAndSettle();
 
-    await tapWhenHittable(tester, drinkOf(name));
+    await drinkAndConfirm(tester, drinkOf(name));
     await waitFor(tester, quantityOf(name, 1));
     await tester.tap(find.byKey(const Key('home-nav-history')));
     await waitFor(tester, find.byKey(const Key('history-list')));

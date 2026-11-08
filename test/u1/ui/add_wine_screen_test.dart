@@ -134,6 +134,9 @@ void main() {
 
     await tester.tap(field('add-wine-name-field'));
     await tester.pump();
+    // label-autofill-windows: the appellation field and the "Paste from
+    // Lens" card make the form longer, so the vintage is scrolled to.
+    await tester.ensureVisible(field('add-wine-vintage-field'));
     await tester.tap(field('add-wine-vintage-field'));
     await tester.pump();
 
@@ -204,6 +207,8 @@ void main() {
   ) async {
     await open(tester);
     await tester.enterText(field('add-wine-name-field'), 'Barbera');
+    // ux-redesign: country and region come first, the switch is lower.
+    await tester.ensureVisible(field('add-wine-no-vintage-switch'));
     await tester.tap(field('add-wine-no-vintage-switch'));
     await tester.pump();
 
@@ -222,6 +227,7 @@ void main() {
     final plus = field('quantity-increase-button');
 
     expect(tester.widget<IconButton>(minus).onPressed, isNull);
+    await tester.ensureVisible(plus);
     await tester.tap(plus);
     await tester.pump();
     expect(tester.widget<Text>(field('quantity-value')).data, '2');

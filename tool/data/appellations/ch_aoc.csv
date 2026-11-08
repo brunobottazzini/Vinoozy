@@ -1,0 +1,113 @@
+# Switzerland: the AOCs of the federal repertory and the communes that the
+# cantonal AOC rules allow on a label.
+# Sources: Federal Office for Agriculture (FOAG/OFAG/BLW), "Répertoire
+# suisse des appellations d'origine contrôlée (AOC)", situation at
+# 1 January 2026 (Ordinance on wine, RS 916.140, art. 25): the 63 AOCs,
+# https://www.blw.admin.ch/dam/it/sd-web/bQQd5jj01Ivw/AOC_KUB-AOC_DOC_1er%20janvier%202026.pdf
+# and the cantonal AOC regulations of Vaud, Valais and Graubünden, which
+# allow the communes and areas below the AOC to be named on the label (the
+# Vaud and Valais communes, Bündner Herrschaft). The bilingual AOCs are one
+# row per language ("Bielersee", "Lac de Bienne"; "Valais" is a region of
+# the app). The cantonal communes (the last rows) are not in the federal
+# repertory: they stay as written at Code Generation and were not checked
+# one by one against the cantonal regulations in Build and Test. Removed in
+# Build and Test because they are not in the federal repertory and are not
+# confirmed as cantonal designations: "Fribourg" (the AOCs of the canton
+# are Cheyres and Vully), "Satigny" and "Mandement" (the Geneva AOC is
+# "Mandement de Jussy"), "Mendrisiotto", "Sopraceneri" and "Sottoceneri"
+# (the Ticino AOCs are Ticino and Rosso, Bianco and Rosato del Ticino).
+# Date: 2026-11-08. Verified against the official list in Build and Test.
+# Licence: public data of the Swiss Confederation and cantons; only the
+# names are used, which are public geographical data.
+name,country,region,types,weak
+Aargau,CH,,rL|B,
+Appenzell Ausserrhoden,CH,,,
+Appenzell Innerrhoden,CH,,,
+Basel-Landschaft,CH,,,
+Basel-Stadt,CH,,,
+Bern,CH,,,weak
+Berne,CH,,,weak
+Bianco del Ticino,CH,Ticino,B,
+Bielersee,CH,,B,
+Bonvillars,CH,Vaud,B,
+Calamin,CH,Vaud,B,
+Chablais,CH,Vaud,B,
+Château de Choully,CH,Genève,,weak
+Château de Collex,CH,Genève,,weak
+Château du Crest,CH,Genève,,weak
+Cheyres,CH,,,
+Coteau de Bossy,CH,Genève,,
+Coteau de Bourdigny,CH,Genève,,
+Coteau de Chevrens,CH,Genève,,
+Coteau de Choully,CH,Genève,,
+Coteau de Choulex,CH,Genève,,
+Coteau de Genthod,CH,Genève,,
+Coteau de la Vigne Blanche,CH,Genève,,
+Coteau de Lully,CH,Genève,,
+Coteau de Peissy,CH,Genève,,
+Coteau des Baillets,CH,Genève,,
+Coteaux de Dardagny,CH,Genève,,
+Coteaux de Peney,CH,Genève,,
+Côtes de Landecy,CH,Genève,,
+Côtes de Russin,CH,Genève,,
+Côtes-de-l'Orbe,CH,Vaud,B,
+Dézaley,CH,Vaud,B,
+Dézaley-Marsens,CH,Vaud,B,
+Domaine de l'Abbaye,CH,Genève,,weak
+Genève,CH,Genève,,
+Glarus,CH,,,weak
+Grand Carraz,CH,Genève,,
+Graubünden,CH,Graubünden,rL,
+Grigioni,CH,Graubünden,rL,
+Jura,CH,,,weak
+La Côte,CH,Vaud,B,weak
+La Feuillée,CH,Genève,,weak
+Lac de Bienne,CH,,B,
+Lavaux,CH,Vaud,B,
+Luzern,CH,,,weak
+Mandement de Jussy,CH,Genève,,
+Neuchâtel,CH,Neuchâtel,,
+Nidwalden,CH,,,
+Obwalden,CH,,,
+Rosato del Ticino,CH,Ticino,Ro,
+Rosso del Ticino,CH,Ticino,rL,
+Rougemont,CH,Genève,,weak
+Schaffhausen,CH,Schaffhausen,rL,
+Schwyz,CH,,,weak
+Solothurn,CH,,,weak
+St. Gallen,CH,,,
+Thunersee,CH,,,
+Thurgau,CH,,rL|B,
+Ticino,CH,Ticino,rL,
+Uri,CH,,,weak
+Valais,CH,Valais,,
+Vaud,CH,Vaud,,
+Vully,CH,Vaud,B,
+Wallis,CH,Valais,,
+Zug,CH,,,weak
+Zürich,CH,,rL|B,weak
+Zürichsee,CH,,,
+Aigle,CH,Vaud,B,weak
+Bex,CH,Vaud,B,
+Chardonne,CH,Vaud,B,
+Épesses,CH,Vaud,B,
+Féchy,CH,Vaud,B,
+Luins,CH,Vaud,B,
+Lutry,CH,Vaud,B,
+Mont-sur-Rolle,CH,Vaud,B,
+Morges,CH,Vaud,B,weak
+Nyon,CH,Vaud,B,weak
+Ollon,CH,Vaud,B,
+Saint-Saphorin,CH,Vaud,B,
+Villeneuve,CH,Vaud,B,weak
+Villette,CH,Vaud,B,weak
+Vinzel,CH,Vaud,B,
+Yvorne,CH,Vaud,B,
+Bündner Herrschaft,CH,Graubünden,rL,
+Chamoson,CH,Valais,,
+Conthey,CH,Valais,,
+Fully,CH,Valais,,weak
+Salgesch,CH,Valais,rL,
+Sion,CH,Valais,,weak
+Vétroz,CH,Valais,,
+Visperterminen,CH,Valais,B,

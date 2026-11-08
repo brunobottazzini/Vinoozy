@@ -254,26 +254,63 @@ service cloud.firestore {
 
       // ---- cellars/{cellarId}/wines/{wineId} (NFR4.4, NFR4.5) ------------
 
+      // label-autofill-windows BR5.1: `level` and `windowOverride` are
+      // optional; wines saved without them stay valid (NFR1.1).
       function wineFields() {
         return ['name', 'producer', 'vintage', 'wineType', 'region', 'denomination',
                 'quantity', 'window', 'pairings', 'createdAt', 'updatedAt', 'updatedBy',
-                'matchKey', 'baseWindow', 'windowAdjustment'];
+                'matchKey', 'baseWindow', 'windowAdjustment', 'country',
+                'level', 'windowOverride'];
+      }
+
+      // label-autofill-windows BR5.1: the level is one of three names.
+      function validLevel(l) {
+        return l == null || l in ['everyday', 'good', 'aging'];
+      }
+
+      // label-autofill-windows BR5.1: the owner's end year (1900..2200),
+      // set with the server time. Checked only when it changes, so an
+      // unrelated edit of a corrected wine keeps passing (review R-09).
+      function validOverride(o) {
+        return o == null || (o is map
+          && o.keys().hasOnly(['endYear', 'setAt'])
+          && o.keys().hasAll(['endYear', 'setAt'])
+          && o.endYear is int && o.endYear >= 1900 && o.endYear <= 2200
+          && o.setAt == request.time);
+      }
+
+      // ux-redesign FR1.5: the country is optional, an ISO 3166-1 alpha-2
+      // code in upper case. Wines saved without it stay valid (NFR4).
+      function validCountry(c) {
+        return c == null || (c is string && c.matches('^[A-Z]{2}$'));
       }
 
       // u4-cellar NFR4.1: `window` and `baseWindow` share the C2 shape;
       // `basis` stays optional for the windows saved before it existed.
+      // label-autofill-windows BR5.1: basis `grape`, the foreign qualifiers,
+      // and the optional `denominationKey` (1-60 characters) and
+      // `tablesVersion` (an integer, BR3.9).
       function validWindow(w) {
         return w == null || (w is map
           && w.keys().hasOnly(['startYear', 'peakYear', 'endYear', 'confidence', 'source',
-                               'basis', 'qualifier'])
+                               'basis', 'qualifier', 'denominationKey', 'tablesVersion'])
           && w.keys().hasAll(['startYear', 'peakYear', 'endYear', 'confidence', 'source'])
           && w.startYear is int && w.peakYear is int && w.endYear is int
           && w.startYear >= 1900 && w.endYear <= 2200
           && w.startYear <= w.peakYear && w.peakYear <= w.endYear
           && w.confidence in ['high', 'medium', 'low']
           && w.source in ['catalog', 'internalRules']
-          && (!('basis' in w) || w.basis in ['catalog', 'denomination', 'wineType', 'generic'])
-          && (!('qualifier' in w) || w.qualifier in ['riserva', 'superiore', 'granSelezione']));
+          && (!('basis' in w)
+            || w.basis in ['catalog', 'denomination', 'grape', 'wineType', 'generic'])
+          && (!('qualifier' in w)
+            || w.qualifier in ['riserva', 'superiore', 'granSelezione', 'crianza', 'reserva',
+                               'granReserva', 'premierCru', 'grandCru', 'kabinett',
+                               'spatlese', 'auslese', 'vintage', 'lbv', 'colheita'])
+          && (!('denominationKey' in w)
+            || (w.denominationKey is string
+              && w.denominationKey.size() >= 1 && w.denominationKey.size() <= 60))
+          && (!('tablesVersion' in w)
+            || (w.tablesVersion is int && w.tablesVersion >= 1 && w.tablesVersion <= 1000)));
       }
 
       function validAdjustment(a) {
@@ -313,7 +350,10 @@ service cloud.firestore {
           && validOptionalText(data.get('producer', null))
           && validOptionalText(data.get('region', null))
           && validOptionalText(data.get('denomination', null))
-          && validPairings(data.get('pairings', null));
+          && validPairings(data.get('pairings', null))
+          && validCountry(data.get('country', null))
+          && validLevel(data.get('level', null))
+          && validOverride(data.get('windowOverride', null));
       }
 
       function validWineName(name) {
@@ -365,7 +405,12 @@ service cloud.firestore {
           && (!changed.hasAny(['region']) || validOptionalText(data.get('region', null)))
           && (!changed.hasAny(['denomination'])
             || validOptionalText(data.get('denomination', null)))
-          && (!changed.hasAny(['pairings']) || validPairings(data.get('pairings', null)));
+          && (!changed.hasAny(['pairings']) || validPairings(data.get('pairings', null)))
+          && (!changed.hasAny(['country']) || validCountry(data.get('country', null)))
+          // label-autofill-windows BR5.1: checked only when they change.
+          && (!changed.hasAny(['level']) || validLevel(data.get('level', null)))
+          && (!changed.hasAny(['windowOverride'])
+            || validOverride(data.get('windowOverride', null)));
       }
 
       // u4-cellar NFR4.2: the one-off backfill writes only matchKey, without

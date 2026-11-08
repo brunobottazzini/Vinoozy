@@ -1,0 +1,61 @@
+code	product_name	brands	categories_tags	labels_tags	countries_tags	quantity	creator	created_t
+8001234567897	Barolo Ravera 2016	Elvio Cogno	en:beverages,en:alcoholic-beverages,en:wines,en:red-wines,en:italian-wines	en:pdo	en:italy	750 ml	contributor-sample	1700000000
+8001234500016	Barbaresco Asili 2019	Produttori del Barbaresco	en:beverages,en:alcoholic-beverages,en:wines,en:red-wines	en:pdo	en:italy	750 ml	contributor-sample	1700000000
+8001234500023	Chianti Classico Riserva	Castello di Ama	en:beverages,en:wines,en:red-wines	en:pdo	en:italy,en:france	0.75 l	contributor-sample	1700000000
+8001234500030	Brunello di Montalcino 2017	Biondi-Santi	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500047	Amarone della Valpolicella Classico	Masi	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500054	Prosecco Superiore Valdobbiadene Brut	Bisol	en:beverages,en:wines,en:sparkling-wines,en:proseccos		en:italy	750 ml	contributor-sample	1700000000
+8001234500061	Franciacorta Brut	Ca' del Bosco	en:beverages,en:wines,en:sparkling-wines,en:franciacorta		en:italy	750 ml	contributor-sample	1700000000
+8001234500078	Champagne Brut Réserve	Charles Heidsieck	en:beverages,en:wines,en:sparkling-wines,en:champagnes		en:france	750 ml	contributor-sample	1700000000
+8001234500085	Crémant d'Alsace Brut	Domaine Zind	en:beverages,en:wines,en:sparkling-wines,en:cremants		en:france	750 ml	contributor-sample	1700000000
+8001234500092	Château Musar Rouge 2015	Château Musar	en:beverages,en:wines,en:red-wines		en:lebanon	750 ml	contributor-sample	1700000000
+8001234500108	Sancerre Blanc	Domaine Vacheron	en:beverages,en:wines,en:white-wines		en:france	750 ml	contributor-sample	1700000000
+8001234500115	Chablis Premier Cru 2020	William Fèvre	en:beverages,en:wines,en:white-wines		en:france	750 ml	contributor-sample	1700000000
+8001234500122	Côtes de Provence Rosé	Château Minuty	en:beverages,en:wines,en:rose-wines		en:france	750 ml	contributor-sample	1700000000
+8001234500139	Beaujolais Nouveau 2023	Georges Duboeuf	en:beverages,en:wines,en:red-wines,en:young-wines		en:france	750 ml	contributor-sample	1700000000
+8001234500146	Porto Tawny 10 Anos	Graham's	en:beverages,en:wines,en:fortified-wines,en:ports		en:portugal	750 ml	contributor-sample	1700000000
+8001234500153	Moscato d'Asti	Saracco	en:beverages,en:wines,en:sweet-wines,en:sparkling-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500160	Sauternes 2015	Château Suduiraut	en:beverages,en:wines,en:dessert-wines		en:france	375 ml	contributor-sample	1700000000
+8001234500177	Marsala Superiore	Florio	en:beverages,en:wines,en:fortified-wines,en:marsala		en:italy	750 ml	contributor-sample	1700000000
+8001234500184	Rioja Reserva 2018	Marqués de Riscal	en:beverages,en:wines,en:red-wines		en:spain	750 ml	contributor-sample	1700000000
+8001234500191	Ribera del Duero Crianza	Protos	en:beverages,en:wines,en:red-wines		en:spain	750 ml	contributor-sample	1700000000
+8001234500207	Malbec Mendoza 2021	Catena Zapata	en:beverages,en:wines,en:red-wines		en:argentina	750 ml	contributor-sample	1700000000
+036000291452	Cabernet Sauvignon Napa Valley	Robert Mondavi	en:beverages,en:wines,en:red-wines		en:united-states	750 ml	contributor-sample	1700000000
+8001234500214	Riesling Mosel Kabinett 2022	Dr. Loosen	en:beverages,en:wines,en:white-wines		en:germany	750 ml	contributor-sample	1700000000
+8001234500221	Vinho Verde	Quinta da Aveleda	en:beverages,en:wines,en:white-wines		en:portugal	750 ml	contributor-sample	1700000000
+8001234500238	Soave Classico 2022	Pieropan	en:beverages,en:wines,en:white-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500245	Etna Rosso	Benanti	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500252	Primitivo di Manduria	Feudi di San Marzano	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500269	Nero d'Avola Sicilia	Donnafugata	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500276	Lambrusco Grasparossa di Castelvetro	Cleto Chiarli	en:beverages,en:wines,en:sparkling-wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500283	Verdicchio dei Castelli di Jesi Classico	Umani Ronchi	en:beverages,en:wines,en:white-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500290	Montepulciano d'Abruzzo	Masciarelli	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500306	Gewürztraminer Alto Adige	Tramin	en:beverages,en:wines,en:white-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500313	Shiraz Barossa Valley	Penfolds	en:beverages,en:wines,en:red-wines		en:australia	750 ml	contributor-sample	1700000000
+8001234500320	Sauvignon Blanc Marlborough	Cloudy Bay	en:beverages,en:wines,en:white-wines		en:new-zealand	750 ml	contributor-sample	1700000000
+8001234500337	Pinotage Stellenbosch	Kanonkop	en:beverages,en:wines,en:red-wines		en:south-africa	750 ml	contributor-sample	1700000000
+8001234500344	Vino rosso da tavola		en:beverages,en:wines		en:italy	1 l	contributor-sample	1700000000
+8001234500351	Valpolicella Ripasso Superiore	Zenato	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500368	Gavi del Comune di Gavi	La Scolca	en:beverages,en:wines,en:white-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500375	Vermentino di Gallura Superiore	Capichera	en:beverages,en:wines,en:white-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500382	Cannonau di Sardegna Riserva	Sella & Mosca	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500399	Langhe Nebbiolo	Azienda Agricola Prova	en:beverages,en:wines,en:red-wines		en:italy	750 ml (2021)	contributor-sample	1700000000
+8001234500405	Château Exemple Grand Vin 2018	Château Exemple	en:beverages,en:wines,en:red-wines,fr:pomerol-aoc	fr:aoc	en:france	750 ml	contributor-sample	1700000000
+96385074	Lagrein Alto Adige	Cantina Bolzano	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500412	Marmellata di uva al vino	Fattoria Esempio	en:spreads,en:jams,en:wines		en:italy	340 g	contributor-sample	1700000000
+8001234500429	Succo d'uva rosso	Frutteto Esempio	en:beverages,en:juices,en:grape-juices,en:wines		en:italy	1 l	contributor-sample	1700000000
+8001234500436	Aceto di vino rosso	Acetaia Esempio	en:condiments,en:vinegars,en:wine-vinegars,en:wines		en:italy	500 ml	contributor-sample	1700000000
+8001234500443	Salsa al vino rosso	Salse Esempio	en:sauces,en:wines		en:italy	180 g	contributor-sample	1700000000
+8001234500450	Birra Bionda	Birrificio Esempio	en:beverages,en:alcoholic-beverages,en:beers		en:italy	330 ml	contributor-sample	1700000000
+8001234500467	Acqua minerale naturale	Fonte Esempio	en:beverages,en:waters		en:italy	1 l	contributor-sample	1700000000
+8001234500474	Brodo al vino bianco	Cucina Esempio	en:meals,en:soups,en:wines		en:italy	500 ml	contributor-sample	1700000000
+8001234567890	Barolo con codice sbagliato	Cantina Codice	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+123	Vino con codice corto	Cantina Codice	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+	Vino senza codice	Cantina Codice	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500481		Cantina Senza Nome	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500498	X	Cantina Nome Corto	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500504	Vino dal nome lunghissimo che continua senza mai finire con parole su parole e ancora parole per superare i centoventi caratteri	Cantina Nome Lungo	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234567897	Barolo Ravera doppione	Elvio Cogno	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500092	Château Musar doppione	Château Musar	en:beverages,en:wines,en:red-wines		en:lebanon	750 ml	contributor-sample	1700000000
+8001234500511	Rosso di Montalcino 2021	Il Poggione	en:beverages,en:wines,en:red-wines		en:italy	750 ml	contributor-sample	1700000000
+8001234500528	Trento Brut Riserva	Ferrari	en:beverages,en:wines,en:sparkling-wines,en:sparkling-wines-made-by-traditional-method		en:italy	750 ml	contributor-sample	1700000000

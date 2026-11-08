@@ -176,7 +176,9 @@ describe('NFR4.1 BR1.4 BR1.5 BR1.12 wines: matchKey, window, baseWindow, windowA
       validWindow({ confidence: 'certain' }),
       validWindow({ source: 'guess' }),
       validWindow({ basis: 'oracle' }),
-      validWindow({ qualifier: 'grandCru' }),
+      // label-autofill-windows BR5.1 accepts the foreign qualifiers
+      // (grandCru...): an unknown one stays refused.
+      validWindow({ qualifier: 'premierGrandCruClasse' }),
       validWindow({ extra: 1 }),
       validWindow({ startYear: '2024' }),
       { startYear: 2024, peakYear: 2028, endYear: 2034, source: 'catalog' },
@@ -639,5 +641,88 @@ describe('NFR8.1 BR1.16 reading drinks and wines', () => {
       where('wineId', '==', 'w1'))));
     await assertFails(getDocs(query(collection(as('stranger'), `${cellarPath()}/wines`),
       where('quantity', '>', 0))));
+  });
+});
+
+// ---- ux-redesign FR1.5, FR2.3, NFR4: country of a wine, drink with rating ---
+
+describe('ux-redesign FR1.5 NFR4 wines: country', () => {
+  test('FR1.5 a wine with a valid country and region is created by owner and edit', async () => {
+    await seedCellar();
+    await assertSucceeds(setDoc(doc(as('owner'), winePath('ar')), newWine(PEOPLE.owner.uid, {
+      country: 'AR',
+      region: 'Mendoza',
+    })));
+    await assertSucceeds(setDoc(doc(as('edit'), winePath('mp')), newWine(PEOPLE.edit.uid, {
+      country: 'MP',
+    })));
+  });
+
+  test('FR1.5 a country that is not two upper-case letters is refused', async () => {
+    await seedCellar();
+    const owner = as('owner');
+    for (const country of ['it', 'ITA', 'I', '', 'I1', 39, true]) {
+      await assertFails(setDoc(doc(owner, winePath('bad')), newWine(PEOPLE.owner.uid, { country })));
+      await assertFails(updateDoc(doc(owner, winePath()), { country, ...stamp(PEOPLE.owner.uid) }));
+    }
+  });
+
+  test('NFR4 a wine without country, or with country null, is still valid', async () => {
+    await seedCellar();
+    const owner = as('owner');
+    await assertSucceeds(setDoc(doc(owner, winePath('none')), newWine(PEOPLE.owner.uid)));
+    await assertSucceeds(setDoc(doc(owner, winePath('null')),
+      newWine(PEOPLE.owner.uid, { country: null })));
+    await assertSucceeds(updateDoc(doc(owner, winePath()), {
+      name: 'Barolo Riserva',
+      ...stamp(PEOPLE.owner.uid),
+    }));
+  });
+
+  test('R-06 an earlier wine edited gets country IT; it can be changed and cleared', async () => {
+    await seedCellar({ wine: { region: 'piemonte' } });
+    const edit = as('edit');
+    await assertSucceeds(updateDoc(doc(edit, winePath()), {
+      region: 'Piemonte',
+      country: 'IT',
+      ...stamp(PEOPLE.edit.uid),
+    }));
+    await assertSucceeds(updateDoc(doc(edit, winePath()), { country: 'FR', ...stamp(PEOPLE.edit.uid) }));
+    await assertSucceeds(updateDoc(doc(edit, winePath()), { country: null, ...stamp(PEOPLE.edit.uid) }));
+    await assertFails(updateDoc(doc(as('read'), winePath()), {
+      country: 'IT',
+      ...stamp(PEOPLE.read.uid),
+    }));
+  });
+
+  test('R-03 the region keeps 1-120 characters with a country', async () => {
+    await seedCellar();
+    const owner = as('owner');
+    await assertSucceeds(setDoc(doc(owner, winePath('r100')), newWine(PEOPLE.owner.uid, {
+      country: 'IT',
+      region: 'r'.repeat(100),
+    })));
+    await assertFails(setDoc(doc(owner, winePath('r121')), newWine(PEOPLE.owner.uid, {
+      country: 'IT',
+      region: 'r'.repeat(121),
+    })));
+  });
+});
+
+describe('ux-redesign FR2.3 drinks: rating in the same batch', () => {
+  test('FR2.3 the drink batch with a rating passes; a rating outside 1-5 is refused', async () => {
+    await seedCellar();
+    const db = as('edit');
+    const batch = writeBatch(db);
+    batch.update(doc(db, winePath()), { quantity: increment(-1), ...stamp(PEOPLE.edit.uid) });
+    batch.set(doc(db, recordPath('rated')), drink(PEOPLE.edit.uid, { rating: 4 }));
+    await assertSucceeds(batch.commit());
+
+    for (const rating of [0, 6, 4.5, '4']) {
+      const bad = writeBatch(db);
+      bad.update(doc(db, winePath()), { quantity: increment(-1), ...stamp(PEOPLE.edit.uid) });
+      bad.set(doc(db, recordPath(`bad-${rating}`)), drink(PEOPLE.edit.uid, { rating }));
+      await assertFails(bad.commit());
+    }
   });
 });

@@ -121,9 +121,11 @@ void main() {
           );
         }
       }
+      // label-autofill-windows: a row's forms are its display name (world
+      // and generated rows) and its aliases.
       final expected = denominationTable.values.fold<int>(
         0,
-        (sum, row) => sum + row.aliases.length,
+        (sum, row) => sum + formsOf(row).length,
       );
       expect(aliases, expected);
     });
@@ -157,8 +159,14 @@ void main() {
     });
 
     test('an unknown user denomination falls back to the name', () {
+      // "Langhe" became a row of the world tables (label-autofill-windows):
+      // a text that is in no table keeps the meaning of this test.
       final resolved = resolveWine(
-        const WineFacts(name: 'Barolo', denomination: 'Langhe', vintage: 2018),
+        const WineFacts(
+          name: 'Barolo',
+          denomination: 'Vigna del nonno',
+          vintage: 2018,
+        ),
         null,
       );
       expect(resolved.denomination, same(denominationTable['barolo']));

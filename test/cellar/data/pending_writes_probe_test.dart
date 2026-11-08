@@ -1,6 +1,8 @@
-// PendingWritesProbe (security-design.md §4; NFR6.6): the drinks keep the
-// banner "pending" until waitForPendingWrites completes; the start-up check
-// waits 300 ms before showing it. Time is the fake time of testWidgets.
+// PendingWritesProbe (security-design.md §4; NFR6.6; pending-banner-fix
+// FR1.1-FR1.3, FR2): the drinks keep the banner "pending" until every
+// tracked commit future has completed, with no waitForPendingWrites; the
+// start-up check still waits for the queue and waits 300 ms before showing
+// it. Time is the fake time of testWidgets.
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -29,43 +31,89 @@ void main() {
     );
   });
 
-  test(
-    'NFR6.6 a drink write is pending until the queue is confirmed',
-    () async {
-      unawaited(probe.trackWrite());
-      expect(changes, [true]);
-      expect(probe.isPending, isTrue);
+  test('FR1.1 a drink write is pending until that write completes, '
+      'with no queue wait', () async {
+    final write = Completer<void>();
+    unawaited(probe.trackWrite(write.future));
+    expect(changes, [true]);
+    expect(probe.isPending, isTrue);
 
-      waits.single.complete();
-      await pumpEventQueue();
-
-      expect(changes, [true, false]);
-    },
-  );
-
-  test('NFR6.6 only the latest wait clears the banner', () async {
-    unawaited(probe.trackWrite());
-    unawaited(probe.trackWrite());
-    waits.first.complete();
     await pumpEventQueue();
-    expect(changes, [true], reason: 'a later write is still queued');
+    expect(probe.isPending, isTrue, reason: 'the write is still open');
 
-    waits.last.complete();
+    write.complete();
     await pumpEventQueue();
+
     expect(changes, [true, false]);
+    expect(probe.isPending, isFalse);
+    expect(waits, isEmpty, reason: 'waitForPendingWrites is never called');
   });
 
   test(
-    'a failed wait clears the banner and reports pending_probe_failed',
+    'FR1.2 two writes, the first completes first: pending until the second',
     () async {
-      unawaited(probe.trackWrite());
-      waits.single.completeError(StateError('signed out'));
+      final first = Completer<void>();
+      final second = Completer<void>();
+      unawaited(probe.trackWrite(first.future));
+      unawaited(probe.trackWrite(second.future));
+
+      first.complete();
+      await pumpEventQueue();
+      expect(changes, [true], reason: 'a later write is still open');
+
+      second.complete();
+      await pumpEventQueue();
+      expect(changes, [true, false]);
+    },
+  );
+
+  test(
+    'FR1.2 two writes, the second completes first: pending until the first',
+    () async {
+      final first = Completer<void>();
+      final second = Completer<void>();
+      unawaited(probe.trackWrite(first.future));
+      unawaited(probe.trackWrite(second.future));
+
+      second.complete();
+      await pumpEventQueue();
+      expect(changes, [true], reason: 'an earlier write is still open');
+
+      first.complete();
+      await pumpEventQueue();
+      expect(changes, [true, false]);
+    },
+  );
+
+  test(
+    'FR1.3 a failed write clears the banner with no pending_probe_failed',
+    () async {
+      final write = Completer<void>();
+      unawaited(probe.trackWrite(write.future));
+      write.completeError(StateError('permission-denied'));
       await pumpEventQueue();
 
       expect(changes, [true, false]);
-      expect(sink.reasons, ['pending_probe_failed']);
+      expect(sink.reasons, isEmpty, reason: 'the writer reports it, once');
     },
   );
+
+  test('FR1.3 the first write fails while the second is open: '
+      'pending until the second', () async {
+    final first = Completer<void>();
+    final second = Completer<void>();
+    unawaited(probe.trackWrite(first.future));
+    unawaited(probe.trackWrite(second.future));
+
+    first.completeError(StateError('invalid-argument'));
+    await pumpEventQueue();
+    expect(changes, [true], reason: 'the second write is still open');
+
+    second.complete();
+    await pumpEventQueue();
+    expect(changes, [true, false]);
+    expect(sink.reasons, isEmpty);
+  });
 
   testWidgets('a start-up wait within 300 ms never shows the banner', (
     tester,

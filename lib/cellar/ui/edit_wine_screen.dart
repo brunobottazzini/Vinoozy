@@ -11,12 +11,16 @@ import '../cellar_actions.dart';
 import '../cellar_providers.dart';
 import '../domain/wine.dart';
 import '../domain/wine_draft.dart';
+import '../domain/wine_origins.dart';
 import '../domain/wine_validator.dart';
+import '../wine_estimator.dart';
 import 'add_wine_screen.dart' show WineTypeField;
+import 'level_section.dart';
+import 'origin_pickers.dart';
 import 'quantity_stepper.dart';
 
-/// Edit a wine (BR1.13, FR3.3, AC3.3.1): name, producer, vintage, type and
-/// quantity. The quantity is saved as a change, never below 0; `matchKey`,
+/// Edit a wine (BR1.13, FR3.3, AC3.3.1): name, producer, since ux-redesign
+/// country and region (FR1.1, FR1.2), vintage, type and quantity. The quantity is saved as a change, never below 0; `matchKey`,
 /// estimate and pairings are computed again (the drink feedback is kept).
 /// The same name, producer and vintage as another wine is refused.
 class EditWineScreen extends ConsumerStatefulWidget {
@@ -48,6 +52,20 @@ class _EditWineScreenState extends ConsumerState<EditWineScreen> {
   late bool _noVintage = widget.wine.vintage == null;
   late int _quantity = widget.wine.quantity;
   late String? _wineType = WineType.tryParse(widget.wine.wineType)?.name;
+
+  /// An earlier wine with an Italian region opens with Italy (review R-06)
+  /// and saves `country = IT`.
+  late OriginSelection _origin = OriginSelection(
+    country: widget.wine.displayCountry,
+    region: widget.wine.region,
+  );
+  late final TextEditingController _denomination = TextEditingController(
+    text: widget.wine.denomination ?? '',
+  );
+
+  /// label-autofill-windows BR4.3: a saved level is never replaced by a
+  /// suggestion; without one the suggestion follows the name.
+  late final LevelChoice _level = LevelChoice(saved: widget.wine.level);
   WineValidation _validation = const WineValidation();
   bool _saving = false;
   EditResult? _result;
@@ -57,7 +75,27 @@ class _EditWineScreenState extends ConsumerState<EditWineScreen> {
     _name.dispose();
     _producer.dispose();
     _vintage.dispose();
+    _denomination.dispose();
     super.dispose();
+  }
+
+  Qualifier? get _suggestion =>
+      _level.suggestionFor(_name.text, _denomination.text);
+
+  WineFactsInput? get _facts {
+    final name = _name.text.trim();
+    if (name.isEmpty) return null;
+    final denomination = _denomination.text.trim();
+    final year = ref.read(clockProvider).now().year;
+    return WineFactsInput(
+      name: name,
+      producer: _producer.text.trim().isEmpty ? null : _producer.text.trim(),
+      vintage: _noVintage ? null : int.tryParse(_vintage.text),
+      wineType: _wineType,
+      region: _origin.region,
+      denomination: denomination.isEmpty ? null : denomination,
+      referenceYear: widget.wine.createdAt?.toLocal().year ?? year,
+    );
   }
 
   Future<void> _save() async {
@@ -70,8 +108,10 @@ class _EditWineScreenState extends ConsumerState<EditWineScreen> {
         noVintage: _noVintage,
         quantity: _quantity,
         wineType: _wineType,
-        region: widget.wine.region,
-        denomination: widget.wine.denomination,
+        region: _origin.region,
+        denomination: _denomination.text,
+        country: _origin.country,
+        level: _level.effective(_suggestion),
       ),
       currentYear: ref.read(clockProvider).now().year,
       minQuantity: 0,
@@ -125,6 +165,7 @@ class _EditWineScreenState extends ConsumerState<EditWineScreen> {
               TextField(
                 key: const Key('edit-wine-name'),
                 controller: _name,
+                onChanged: (_) => setState(() {}),
                 textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                   labelText: l10n.wineNameLabel,
@@ -148,6 +189,35 @@ class _EditWineScreenState extends ConsumerState<EditWineScreen> {
                       : l10n.producerTooLong,
                   errorMaxLines: 3,
                 ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                key: const Key('edit-wine-denomination'),
+                controller: _denomination,
+                onChanged: (_) => setState(() {}),
+                textCapitalization: TextCapitalization.words,
+                decoration: InputDecoration(
+                  labelText: l10n.denominationLabel,
+                  errorText: _validation.denominationError == null
+                      ? null
+                      : l10n.denominationTooLong,
+                  errorMaxLines: 3,
+                ),
+              ),
+              const SizedBox(height: 16),
+              CountryPicker(
+                selected: _origin.country,
+                enabled: !_saving,
+                onChanged: (code) =>
+                    setState(() => _origin = _origin.withCountry(code)),
+              ),
+              const SizedBox(height: 12),
+              RegionPicker(
+                country: _origin.country,
+                selected: _origin.region,
+                enabled: !_saving,
+                onChanged: (region) =>
+                    setState(() => _origin = _origin.withRegion(region)),
               ),
               const SizedBox(height: 16),
               TextField(
@@ -178,6 +248,13 @@ class _EditWineScreenState extends ConsumerState<EditWineScreen> {
                 value: _wineType,
                 onChanged: (value) => setState(() => _wineType = value),
               ),
+              const SizedBox(height: 16),
+              LevelSection(
+                choice: _level,
+                suggestion: _suggestion,
+                facts: _facts,
+                onChanged: (level) => setState(() => _level.choose(level)),
+              ),
               const SizedBox(height: 8),
               Text(l10n.quantityLabel, style: theme.textTheme.titleSmall),
               Align(
@@ -188,7 +265,19 @@ class _EditWineScreenState extends ConsumerState<EditWineScreen> {
                   onChanged: (value) => setState(() => _quantity = value),
                 ),
               ),
-              if (error != null)
+            ],
+          ),
+        ),
+      ),
+      // As the add form: "Save" fixed at the bottom with its error above.
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (error != null) ...[
                 Semantics(
                   liveRegion: true,
                   child: Text(
@@ -197,7 +286,8 @@ class _EditWineScreenState extends ConsumerState<EditWineScreen> {
                     style: TextStyle(color: theme.colorScheme.error),
                   ),
                 ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 8),
+              ],
               FilledButton(
                 key: const Key('edit-wine-save'),
                 onPressed: _saving ? null : _save,

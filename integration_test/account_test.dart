@@ -99,7 +99,7 @@ void main() {
       tester,
       () async =>
           tester
-              .widget<ButtonStyleButton>(
+              .widget<FloatingActionButton>(
                 find.byKey(const Key('cellar-add-button')),
               )
               .onPressed !=

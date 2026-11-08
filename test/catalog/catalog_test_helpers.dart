@@ -132,6 +132,35 @@ class RecordingLogger implements CatalogEventLogger {
     debugFailures.add(failure);
   }
 
+  // label-recognition events (NFR4.13-NFR4.15).
+  final List<(int, int)> wineDbOpenings = [];
+  final List<(WineDbFailure, int)> wineDbFailures = [];
+  final List<(LabelOutcomeKind, LabelMatchStep)> labelOutcomes = [];
+  final List<(int, int, bool)> onlineSearches = [];
+  final List<LensRoute> lensRoutes = [];
+
+  @override
+  void wineDbOpened(int wineCount, int durationMs) =>
+      wineDbOpenings.add((wineCount, durationMs));
+
+  @override
+  void wineDbUnavailable(WineDbFailure reason, int skippedRows) =>
+      wineDbFailures.add((reason, skippedRows));
+
+  @override
+  void labelOutcome(LabelOutcomeKind kind, LabelMatchStep step) =>
+      labelOutcomes.add((kind, step));
+
+  @override
+  void onlineSearch(
+    int offlineCount,
+    int onlineCount, {
+    required bool limited,
+  }) => onlineSearches.add((offlineCount, onlineCount, limited));
+
+  @override
+  void lensOpened(LensRoute route) => lensRoutes.add(route);
+
   /// Everything recorded, as text, to look for marker values (NFR8.3).
   String get everything => [
     for (final (failure, health) in suspensions)
@@ -139,6 +168,11 @@ class RecordingLogger implements CatalogEventLogger {
           '${health.cacheHitRatio} ${health.cacheResets}',
     for (final event in debugEvents) event.name,
     for (final failure in debugFailures) '${failure?.label}',
+    for (final (count, ms) in wineDbOpenings) 'opened $count $ms',
+    for (final (reason, skipped) in wineDbFailures) '${reason.name} $skipped',
+    for (final (kind, step) in labelOutcomes) '${kind.name} ${step.name}',
+    for (final (off, on, limited) in onlineSearches) '$off $on $limited',
+    for (final route in lensRoutes) route.name,
   ].join('\n');
 }
 

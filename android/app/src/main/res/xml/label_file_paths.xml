@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The only folder the FileProvider exposes (label-recognition FR4.3,
+     NFR3.3): the prepared label photos in cacheDir/label/. Checked by
+     tool/check_lens_manifest.sh. -->
+<paths>
+    <cache-path name="label" path="label/" />
+</paths>

@@ -12,8 +12,11 @@ import 'package:vinoozy/catalog/core/catalog_config.dart';
 import 'package:vinoozy/catalog/core/catalog_coordinator.dart';
 import 'package:vinoozy/catalog/core/catalog_event_logger.dart';
 import 'package:vinoozy/catalog/core/internal_catalog.dart';
+import 'package:vinoozy/catalog/core/network_status.dart';
 import 'package:vinoozy/catalog/core/off/open_food_facts_source.dart';
 import 'package:vinoozy/catalog/core/off_circuit_breaker.dart';
+import 'package:vinoozy/catalog/core/offline/wine_db_index.dart';
+import 'package:vinoozy/catalog/core/offline/wine_db_record.dart';
 import 'package:vinoozy/catalog/core/request_budget.dart';
 import 'package:vinoozy/catalog/core/wine_catalog.dart';
 
@@ -27,9 +30,54 @@ typedef _Server = FutureOr<http.Response> Function(http.Request request);
 http.Response _json(String body, [int status = 200]) =>
     http.Response.bytes(utf8.encode(body), status);
 
+const _ravera = WineDbRecord(
+  code: '8001234567897',
+  name: 'Barolo Ravera',
+  producer: 'Elvio Cogno',
+  denomination: 'Barolo DOCG',
+  country: 'IT',
+  vintage: 2016,
+);
+const _bussia = WineDbRecord(
+  code: '8001234500016',
+  name: 'Barolo Bussia',
+  producer: 'Elvio Cogno',
+);
+
+/// The same barcode as the first product of search_wines.json.
+const _cannubi = WineDbRecord(
+  code: '8001234567890',
+  name: 'Barolo Cannubi 2016',
+  producer: 'Cantina Esempio',
+);
+
+OfflineWineDb _db(List<WineDbRecord> records) => OfflineWineDb(
+  manifest: WineDbManifest(
+    exportDate: DateTime.utc(2026, 11, 7),
+    wineCount: records.length,
+  ),
+  index: WineDbIndex.build(records),
+);
+
+/// The network check of the catalog, switched by the test.
+class _Network implements CatalogNetworkStatus {
+  bool online = true;
+  int checks = 0;
+
+  @override
+  Future<bool> hasNetwork() async {
+    checks++;
+    return online;
+  }
+}
+
 class _Harness {
-  _Harness({_Server? server, bool offEnabled = true, InMemoryCacheFile? file})
-    : file = file ?? InMemoryCacheFile() {
+  _Harness({
+    _Server? server,
+    bool offEnabled = true,
+    InMemoryCacheFile? file,
+    this.db,
+  }) : file = file ?? InMemoryCacheFile() {
     this.server = server ?? (_) => _json(fixture('search_empty.json'));
     final client = MockClient((request) async {
       requests.add(request);
@@ -60,9 +108,18 @@ class _Harness {
               )
             : null,
       ),
+      wineDb: () async {
+        dbOpenings++;
+        return db;
+      },
+      network: network,
     );
   }
 
+  /// The offline wine database, or `null` when it is unavailable.
+  final OfflineWineDb? db;
+  int dbOpenings = 0;
+  final network = _Network();
   late _Server server;
   final InMemoryCacheFile file;
   final requests = <http.Request>[];
@@ -165,24 +222,29 @@ void main() {
     });
   });
 
-  group('BR1.3 matchLabelText', () {
-    test('BR1.3 denomination and vintage from the text, name and producer '
-        'from Open Food Facts', () async {
+  group('BR1.3 matchLabel with Open Food Facts', () {
+    test('BR1.3 denomination from the text, name and producer from Open Food '
+        'Facts: a sure proposal (BR3.2)', () async {
       final h = _Harness(server: (_) => _json(fixture('search_wines.json')));
       await h.start();
-      final match = await h.coordinator.matchLabelText(
+      final match = await h.coordinator.matchLabel(
         'LANGHE NEBBIOLO\nDenominazione di Origine Controllata\n2019\n'
         'Imbottigliato da Azienda Agricola Prova',
       );
-      expect(match.matched, isTrue);
+      expect(match.kind, LabelMatchKind.sure);
+      expect(match.step, LabelMatchStep.onlineText);
       final wine = match.candidate!;
       expect(wine.name, 'Langhe Nebbiolo');
       expect(wine.producer, 'Azienda Agricola Prova');
       expect(wine.denomination, 'Langhe Nebbiolo DOC');
       expect(wine.wineType, CatalogWineType.red);
       expect(wine.region, 'Piemonte');
-      expect(wine.vintage, 2019);
       expect(wine.source, CandidateSource.openFoodFacts);
+      expect(
+        match.candidates.single.source,
+        CandidateSource.internal,
+        reason: 'the denomination stays for "Non è questo" (BR3.5)',
+      );
       // The six longest words of 3+ letters, no digits, in text order.
       expect(
         h.requests.single.url.queryParameters['search_terms'],
@@ -190,57 +252,217 @@ void main() {
       );
     });
 
-    test('BR1.3 without a denomination the first result is chosen', () async {
-      final h = _Harness(server: (_) => _json(fixture('search_wines.json')));
-      await h.start();
-      final match = await h.coordinator.matchLabelText('Cannubi Esempio');
-      expect(match.candidate?.name, 'Barolo Cannubi 2016');
-      expect(match.candidate?.denomination, 'Barolo DOCG');
-    });
-
     test(
-      'BR1.3 with no matching result the denomination alone is proposed',
+      'BR3.2 a partial match is a candidate, never chosen silently',
       () async {
         final h = _Harness(server: (_) => _json(fixture('search_wines.json')));
         await h.start();
-        final match = await h.coordinator.matchLabelText('Soave Classico 2021');
+        final match = await h.coordinator.matchLabel('Cannubi Esempio');
+        expect(match.kind, LabelMatchKind.candidates);
+        expect(match.candidates.single.name, 'Barolo Cannubi 2016');
+        expect(match.candidates.single.denomination, 'Barolo DOCG');
+      },
+    );
+
+    test('BR3.1 with no matching result the denomination alone is a '
+        'candidate', () async {
+      final h = _Harness(server: (_) => _json(fixture('search_wines.json')));
+      await h.start();
+      final match = await h.coordinator.matchLabel('Soave Classico 2021');
+      expect(match.kind, LabelMatchKind.candidates);
+      expect(match.step, LabelMatchStep.internalDenomination);
+      expect(
+        match.candidates.single,
+        const WineCandidate(
+          name: 'Soave DOC',
+          source: CandidateSource.internal,
+          vintage: 2021,
+          wineType: CatalogWineType.white,
+          region: 'Veneto',
+          denomination: 'Soave DOC',
+        ),
+      );
+    });
+
+    test(
+      'BR3.4 nothing recognised gives none; too long text is rejected',
+      () async {
+        final h = _Harness();
+        await h.start();
         expect(
-          match.candidate,
-          const WineCandidate(
-            name: 'Soave DOC',
-            source: CandidateSource.internal,
-            vintage: 2021,
-            wineType: CatalogWineType.white,
-            region: 'Veneto',
-            denomination: 'Soave DOC',
-          ),
+          await h.coordinator.matchLabel(''),
+          const LabelMatchResult.none(),
+        );
+        expect(
+          await h.coordinator.matchLabel('12 34 ab'),
+          const LabelMatchResult.none(),
+        );
+        expect(h.requests, isEmpty, reason: 'no word worth a search');
+        expect(
+          await h.coordinator.matchLabel('Vino rosso da tavola'),
+          const LabelMatchResult.none(),
+        );
+        expect(labelSearchWords(['abc', 'abcd', 'a1b2c', 'xyz']), [
+          'abc',
+          'abcd',
+          'xyz',
+        ]);
+      },
+    );
+  });
+
+  group('FR2.4 lookup order with the offline database', () {
+    test('FR2.4 step 1: a barcode of the offline database is sure, no '
+        'request', () async {
+      final h = _Harness(db: _db(const [_ravera, _bussia]));
+      await h.start();
+      final match = await h.coordinator.matchLabel(
+        'Elvio Cogno',
+        barcode: '8001234567897',
+      );
+      expect(match.kind, LabelMatchKind.sure);
+      expect(match.step, LabelMatchStep.offlineBarcode);
+      expect(match.candidate, _ravera.toCandidate());
+      expect(match.candidate!.source, CandidateSource.offline);
+      expect(
+        match.candidates.map((c) => c.name),
+        isNot(contains('Barolo Ravera')),
+      );
+      expect(h.requests, isEmpty);
+    });
+
+    test(
+      'FR2.4 step 4: a barcode found only on Open Food Facts is sure',
+      () async {
+        final h = _Harness(
+          db: _db(const [_ravera]),
+          server: (_) => _json(fixture('product_wine.json')),
+        );
+        await h.start();
+        final match = await h.coordinator.matchLabel('', barcode: '80012345');
+        expect(match.kind, LabelMatchKind.sure);
+        expect(match.step, LabelMatchStep.onlineBarcode);
+        expect(match.candidate!.source, CandidateSource.openFoodFacts);
+        expect(h.requests.single.url.path, '/api/v2/product/80012345.json');
+      },
+    );
+
+    test('FR2.4 step 2: a text of the offline database is sure when BR3.2 '
+        'holds, without any request', () async {
+      final h = _Harness(db: _db(const [_ravera, _bussia]));
+      await h.start();
+      final match = await h.coordinator.matchLabel(
+        'ELVIO COGNO\nBAROLO\nRAVERA\n2016',
+      );
+      expect(match.kind, LabelMatchKind.sure);
+      expect(match.step, LabelMatchStep.offlineText);
+      expect(match.candidate!.name, 'Barolo Ravera');
+      expect(match.candidates.first.name, 'Barolo Bussia');
+      expect(h.requests, isEmpty);
+    });
+
+    test('FR2.4 step 2: two close wines are candidates, offline first then '
+        'the denomination at 0.70', () async {
+      final h = _Harness(db: _db(const [_ravera, _bussia]));
+      await h.start();
+      final match = await h.coordinator.matchLabel('Elvio Cogno Barolo');
+      expect(match.kind, LabelMatchKind.candidates);
+      expect(match.step, LabelMatchStep.offlineText);
+      expect(match.candidates.map((c) => c.name), [
+        'Barolo Bussia',
+        'Barolo Ravera',
+        'Barolo DOCG',
+      ]);
+      expect(match.candidates.last.source, CandidateSource.internal);
+    });
+
+    test('BR3.1 step 3 at 0.70 is never a sure proposal on its own', () async {
+      final h = _Harness(offEnabled: false);
+      await h.start();
+      final match = await h.coordinator.matchLabel('Barolo DOCG Riserva');
+      expect(match.kind, LabelMatchKind.candidates);
+      expect(match.candidates.single.name, 'Barolo DOCG');
+    });
+
+    test(
+      'BR3.3 the same wine offline and online appears once, offline wins',
+      () async {
+        final h = _Harness(
+          db: _db(const [_cannubi]),
+          server: (_) => _json(fixture('search_wines.json')),
+        );
+        await h.start();
+        final match = await h.coordinator.matchLabel('Cannubi Esempio');
+        expect(h.requests, hasLength(1));
+        final cannubi = match.candidates.where(
+          (c) => c.barcode == '8001234567890',
+        );
+        expect(cannubi.single.source, CandidateSource.offline);
+      },
+    );
+
+    test(
+      'FR5 without network: no request, no failure, no off_suspended',
+      () async {
+        final h = _Harness(server: (_) => _json('', 503));
+        h.network.online = false;
+        await h.start();
+        for (var i = 0; i < 4; i++) {
+          final match = await h.coordinator.matchLabel(
+            'Barolo Riserva Cannubi $i',
+            barcode: '80012345',
+          );
+          expect(match.candidates.single.name, 'Barolo DOCG');
+        }
+        expect(await h.coordinator.lookupBarcode('80012345'), isNull);
+        expect(h.requests, isEmpty);
+        expect(h.logger.suspensions, isEmpty);
+        expect(
+          h.logger.debugEvents,
+          contains(CatalogDebugEvent.offSkippedOffline),
+        );
+        expect(
+          h.logger.debugEvents,
+          isNot(contains(CatalogDebugEvent.offFailed)),
         );
       },
     );
 
-    test('BR1.3 nothing recognised gives matched = false; too long text is '
-        'rejected', () async {
-      final h = _Harness();
+    test('NFR4.5 an unavailable database: the flow goes on online', () async {
+      final h = _Harness(server: (_) => _json(fixture('search_wines.json')));
       await h.start();
-      expect(await h.coordinator.matchLabelText(''), const LabelMatch.none());
+      final match = await h.coordinator.matchLabel('Cannubi Esempio');
+      expect(match.candidates.single.source, CandidateSource.openFoodFacts);
+      expect(h.dbOpenings, 1);
+    });
+
+    test('BR1.2 4000 characters are accepted, 4001 rejected; a bad barcode '
+        'is rejected', () async {
+      final h = _Harness(offEnabled: false, db: _db(const [_ravera]));
+      await h.start();
+      final long = 'barolo ravera elvio cogno '.padRight(4000, 'x');
       expect(
-        await h.coordinator.matchLabelText('12 34 ab'),
-        const LabelMatch.none(),
+        (await h.coordinator.matchLabel(long)).kind,
+        isNot(LabelMatchKind.none),
       );
-      expect(h.requests, isEmpty, reason: 'no word worth a search');
       expect(
-        await h.coordinator.matchLabelText('Vino rosso da tavola'),
-        const LabelMatch.none(),
-      );
-      expect(
-        () => h.coordinator.matchLabelText('a' * 2001),
+        () => h.coordinator.matchLabel('${long}x'),
         _throwsCode(CatalogErrorCode.textTooLong),
       );
-      expect(labelSearchWords(['abc', 'abcd', 'a1b2c', 'xyz']), [
-        'abc',
-        'abcd',
-        'xyz',
-      ]);
+      expect(
+        () => h.coordinator.matchLabel('Barolo', barcode: '12'),
+        _throwsCode(CatalogErrorCode.invalidBarcode),
+      );
+      expect(maxLabelTextLength, 4000);
+    });
+
+    test('FR2.3 lookupBarcode asks the offline database first', () async {
+      final h = _Harness(db: _db(const [_ravera]));
+      await h.start();
+      final found = await h.coordinator.lookupBarcode('8001234567897');
+      expect(found?.source, CandidateSource.offline);
+      expect(found?.country, 'IT');
+      expect(h.requests, isEmpty);
     });
   });
 
@@ -370,8 +592,8 @@ void main() {
       await h.start();
       expect(h.coordinator.suggestWines('soave').suggestions, isNotEmpty);
       expect(await h.coordinator.suggestExternal('soave'), SuggestResult.empty);
-      final label = await h.coordinator.matchLabelText('Soave 2020');
-      expect(label.candidate?.denomination, 'Soave DOC');
+      final label = await h.coordinator.matchLabel('Soave 2020');
+      expect(label.candidates.single.denomination, 'Soave DOC');
       expect(await h.coordinator.lookupBarcode('80012345'), isNull);
       final profile = await h.coordinator.getWineProfile('Soave');
       expect(profile.region, 'Veneto');
@@ -384,15 +606,16 @@ void main() {
         final never = Completer<http.Response>();
         final h = _Harness(server: (_) => never.future);
         await h.start();
-        final pending = h.coordinator.matchLabelText('Barolo Riserva 2015');
+        final pending = h.coordinator.matchLabel('Barolo Riserva 2015');
         await settle();
         expect(h.requests, hasLength(1));
         final deadline = h.timers.active.single;
         expect(deadline.duration, const Duration(seconds: 5));
         deadline.fire();
         final match = await pending;
-        expect(match.candidate?.source, CandidateSource.internal);
-        expect(match.candidate?.name, 'Barolo DOCG');
+        expect(match.kind, LabelMatchKind.candidates);
+        expect(match.candidates.single.source, CandidateSource.internal);
+        expect(match.candidates.single.name, 'Barolo DOCG');
       },
     );
   });
@@ -462,7 +685,7 @@ void main() {
       );
       expect(await h.coordinator.lookupBarcode('80012345'), isNull);
       expect(
-        (await h.coordinator.matchLabelText('Barolo 2016')).candidate?.source,
+        (await h.coordinator.matchLabel('Barolo 2016')).candidates.first.source,
         CandidateSource.internal,
       );
       expect(h.requests, isEmpty);
@@ -493,13 +716,13 @@ void main() {
       final h = _Harness(server: (_) => _json('', 503));
       await h.start();
       await h.coordinator.suggestExternal('barolo $_marker');
-      await h.coordinator.matchLabelText('Barolo $_marker 2016');
+      await h.coordinator.matchLabel('Barolo $_marker 2016');
       await h.coordinator.suggestExternal('$_marker barolo');
       final errors = <String>[];
       for (final call in <Future<Object?> Function()>[
         () async => h.coordinator.suggestWines('${_marker * 20}x'),
         () => h.coordinator.lookupBarcode('${_marker}1'),
-        () => h.coordinator.matchLabelText(_marker * 200),
+        () => h.coordinator.matchLabel(_marker * 400),
       ]) {
         try {
           await call();

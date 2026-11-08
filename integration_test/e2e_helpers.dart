@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
@@ -9,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vinoozy/cellar/domain/wine.dart';
-import 'package:vinoozy/cellar/ui/wine_list_tile.dart';
+import 'package:vinoozy/cellar/ui/wine_card.dart';
 import 'package:vinoozy/e2e/emulator_google_auth_service.dart';
 import 'package:vinoozy/firebase/firebase_env.dart';
 import 'package:vinoozy/firebase/firestore_bootstrap.dart';
@@ -185,6 +186,41 @@ Future<void> deleteCloudCellar(String cellarId, List<String> wineIds) =>
         {'delete': _documentName('cellars/$cellarId/wines/$id')},
       {'delete': _documentName('cellars/$cellarId')},
     ]);
+
+/// The wines of a cellar as the emulator stores them: the REST `fields` of
+/// each document (label-autofill-windows e2e).
+Future<List<Map<String, Object?>>> cloudWineDocuments(String cellarId) async {
+  final (status, body) = await emulatorRequest(
+    'GET',
+    FirebaseEnvConfig.firestoreEmulatorPort,
+    '/v1/projects/$_project/databases/(default)/documents/cellars/$cellarId/wines',
+  );
+  if (status != 200) throw StateError('list wines -> $status');
+  final documents = (body as Map?)?['documents'] as List? ?? const [];
+  return [
+    for (final doc in documents)
+      ((doc as Map)['fields'] as Map).cast<String, Object?>(),
+  ];
+}
+
+/// The plain value of a REST field: strings, integers, maps; `null` when
+/// the field is absent.
+Object? restValue(Object? field) {
+  if (field is! Map) return null;
+  if (field.containsKey('stringValue')) return field['stringValue'];
+  if (field.containsKey('integerValue')) {
+    return int.parse('${field['integerValue']}');
+  }
+  if (field.containsKey('mapValue')) {
+    final fields = (field['mapValue'] as Map)['fields'] as Map? ?? const {};
+    return {
+      for (final entry in fields.entries)
+        '${entry.key}': restValue(entry.value),
+    };
+  }
+  if (field.containsKey('nullValue')) return null;
+  return field.values.first;
+}
 
 /// Names of the wines of a cellar, as stored in the cloud.
 Future<List<String>> cloudWineNames(String cellarId) async {
@@ -571,19 +607,22 @@ Future<void> signIn(
 }
 
 /// Adds a wine through the form; returns the time from the Save tap to the
-/// wine's row in the list (NFR1.1).
+/// wine's row in the list (NFR1.1). With [country] the flag of the grid is
+/// tapped, then [region] among its chips (ux-redesign FR1.1, FR1.2).
 Future<Duration> addWine(
   WidgetTester tester, {
   required String name,
   String? vintage,
   int quantity = 1,
+  String? country,
+  String? region,
 }) async {
   await waitFor(tester, find.byKey(const Key('cellar-add-button')));
   await eventually(
     tester,
     () async =>
         tester
-            .widget<ButtonStyleButton>(
+            .widget<FloatingActionButton>(
               find.byKey(const Key('cellar-add-button')),
             )
             .onPressed !=
@@ -597,8 +636,18 @@ Future<Duration> addWine(
   await tester.tap(find.byKey(const Key('add-choice-write')));
   await waitFor(tester, find.byKey(const Key('add-wine-name-field')));
   await tester.enterText(find.byKey(const Key('add-wine-name-field')), name);
+  if (country != null) {
+    await tapVisible(tester, find.byKey(Key('country-cell-$country')));
+    if (region != null) {
+      await tapVisible(tester, find.byKey(Key('region-chip-$region')));
+    }
+  }
   if (vintage == null) {
-    await tester.tap(find.byKey(const Key('add-wine-no-vintage-switch')));
+    // ux-redesign: country and region come first, the switch is lower.
+    await tapVisible(
+      tester,
+      find.byKey(const Key('add-wine-no-vintage-switch')),
+    );
   } else {
     await tester.enterText(
       find.byKey(const Key('add-wine-vintage-field')),
@@ -606,8 +655,7 @@ Future<Duration> addWine(
     );
   }
   for (var i = 1; i < quantity; i++) {
-    await tester.tap(find.byKey(const Key('quantity-increase-button')));
-    await tester.pump();
+    await tapVisible(tester, find.byKey(const Key('quantity-increase-button')));
   }
   // Since u4-cellar the suggestions may push "Save" below the fold.
   final save = find.byKey(const Key('add-wine-save-button'));
@@ -626,9 +674,60 @@ Future<Duration> addWine(
   return stopwatch.elapsed;
 }
 
-/// The cellar row showing [name].
-Finder wineRow(String name) =>
-    find.descendant(of: find.byType(WineListTile), matching: find.text(name));
+/// The cellar card showing [name] (ux-redesign WineCard: "name vintage" on
+/// one line).
+Finder wineRow(String name) => find.descendant(
+  of: find.byType(WineCard),
+  matching: find.textContaining(RegExp('^${RegExp.escape(name)}( |\$)')),
+);
+
+/// The card of [name].
+Finder wineCardOf(String name) =>
+    find.ancestor(of: wineRow(name), matching: find.byType(WineCard));
+
+/// "Ho bevuto" of the card of [name] (ux-redesign FR2.1).
+Finder drinkButtonOf(String name) => find.descendant(
+  of: wineCardOf(name),
+  matching: find.byIcon(drinkActionIcon),
+);
+
+/// Scrolls [finder] into the middle of the view, then taps it.
+///
+/// The real keyboard of the emulator and the fixed "Save" bar of the forms
+/// cover the screen edges: `ensureVisible` alone stops at an edge, so the
+/// keyboard is closed first and the target is centred, then tapped only once
+/// it really receives the tap.
+Future<void> tapVisible(WidgetTester tester, Finder finder) async {
+  FocusManager.instance.primaryFocus?.unfocus();
+  await tester.pump(const Duration(milliseconds: 300));
+  await waitFor(tester, finder, viaCellarTab: false);
+  unawaited(
+    Scrollable.ensureVisible(
+      tester.element(finder),
+      alignment: 0.5,
+      duration: const Duration(milliseconds: 1),
+    ),
+  );
+  await tester.pump(const Duration(milliseconds: 50));
+  await tapWhenHittable(tester, finder);
+}
+
+/// "Ho bevuto" on [button], then the confirmation sheet (ux-redesign
+/// FR2.2): optionally [stars], then "Sì, l'ho bevuta". Nothing is written
+/// before the confirmation.
+Future<void> drinkAndConfirm(
+  WidgetTester tester,
+  Finder button, {
+  int? stars,
+}) async {
+  await tapWhenHittable(tester, button);
+  await waitFor(tester, find.byKey(const Key('drink-confirm')));
+  if (stars != null) {
+    await tester.tap(find.byKey(Key('drink-confirm-star-$stars')));
+    await tester.pump();
+  }
+  await tapWhenHittable(tester, find.byKey(const Key('drink-confirm')));
+}
 
 /// Uid of the signed-in user.
 String get currentUid => FirebaseAuth.instance.currentUser!.uid;

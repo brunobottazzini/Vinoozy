@@ -877,10 +877,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelConfirm => 'Confirm';
 
   @override
-  String get labelOfflineNotice =>
-      'Without network I only recognise the denomination: check the details';
-
-  @override
   String get labelUnreadable => 'I can\'t read the label';
 
   @override
@@ -909,13 +905,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get labelBarcodeFrontHint => 'Take a photo of the front of the label';
-
-  @override
-  String get labelBarcodeNeedsNetwork =>
-      'I read the barcode: I need the network to look it up';
-
-  @override
-  String get labelRetryOnline => 'Try again when the network is back';
 
   @override
   String get labelSharedNotAllowed => 'You can\'t add wines to this cellar';
@@ -1158,4 +1147,823 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deletionFailed => 'Could not complete the deletion. Try again';
+
+  @override
+  String get uxCountryLabel => 'Country';
+
+  @override
+  String get uxCountryOther => 'Other country…';
+
+  @override
+  String get uxCountryNone => 'No country';
+
+  @override
+  String get uxAllCountriesTitle => 'All countries and territories';
+
+  @override
+  String get uxAllCountriesSearch => 'Search a country';
+
+  @override
+  String get uxAllCountriesRare => 'Rare for wine';
+
+  @override
+  String get uxAllCountriesAll => 'All, from A to Z';
+
+  @override
+  String get uxAllCountriesNone => 'No country found';
+
+  @override
+  String get uxRegionLabel => 'Region';
+
+  @override
+  String uxRegionOf(String country) {
+    return 'Region · $country';
+  }
+
+  @override
+  String get uxRegionOther => 'Other region';
+
+  @override
+  String get uxRegionFieldLabel => 'Write the region';
+
+  @override
+  String get uxRegionTooLong => 'At most 120 characters';
+
+  @override
+  String get uxDrinkAction => 'I drank one';
+
+  @override
+  String uxDrinkActionTooltip(String name) {
+    return 'I drank a bottle of $name';
+  }
+
+  @override
+  String get uxDrinkActionDetail => 'I drank a bottle';
+
+  @override
+  String get uxDrinkSheetLabel => 'Confirm the drink';
+
+  @override
+  String get uxDrinkSheetBottles => 'Bottles';
+
+  @override
+  String uxDrinkSheetBottlesChange(int before, int after) {
+    return 'Bottles: from $before to $after';
+  }
+
+  @override
+  String get uxDrinkSheetRating => 'How was it? (optional)';
+
+  @override
+  String uxDrinkSheetStars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count stars of 5',
+      one: '1 star of 5',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get uxDrinkSheetConfirm => 'Yes, I drank it';
+
+  @override
+  String get uxRemoveBottle => 'Remove a bottle without a drink';
+
+  @override
+  String get uxRemoveBottleTitle => 'Remove a bottle?';
+
+  @override
+  String uxRemoveBottleBody(String name) {
+    return 'One bottle of $name is removed without recording a drink.';
+  }
+
+  @override
+  String get uxRemoveBottleConfirm => 'Remove';
+
+  @override
+  String get uxIdealTitle => 'Ideal moment';
+
+  @override
+  String uxIdealUntil(String year) {
+    return 'Recommended until $year';
+  }
+
+  @override
+  String uxIdealUntilPast(String year) {
+    return 'Recommended until $year: it has passed';
+  }
+
+  @override
+  String uxIdealBest(String start, String end) {
+    return 'At its best from $start to $end';
+  }
+
+  @override
+  String uxIdealBar(String start, String end) {
+    return 'Drinking window from $start to $end';
+  }
+
+  @override
+  String get uxIdealDisclaimer =>
+      '⚠︎ Indicative: an estimate based on type, denomination and vintage. Storage and the single bottle can change it.';
+
+  @override
+  String get uxIdealUnavailableHint =>
+      'Add the vintage and the type to get an estimate.';
+
+  @override
+  String uxDashboardDrinkNow(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count to drink now',
+      one: '1 to drink now',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get uxFamilyRed => 'Red';
+
+  @override
+  String get uxFamilyWhite => 'White';
+
+  @override
+  String get uxFamilyRose => 'Rosé';
+
+  @override
+  String get uxFamilySparkling => 'Sparkling';
+
+  @override
+  String get uxFamilySweet => 'Sweet';
+
+  @override
+  String get labelBackTitle => 'Now the back';
+
+  @override
+  String get labelBackHint =>
+      'The back usually has the barcode, the producer and the vintage: they help find the wine.';
+
+  @override
+  String get labelBackTake => 'Take the back';
+
+  @override
+  String get labelBackGallery => 'Choose from the gallery';
+
+  @override
+  String get labelBackSkip => 'Skip';
+
+  @override
+  String get labelStepFront => 'Front';
+
+  @override
+  String get labelStepBack => 'Back';
+
+  @override
+  String get labelStepBarcode => 'Barcode';
+
+  @override
+  String get labelStepDatabase => 'Wine database on the phone';
+
+  @override
+  String get labelStepPending => 'Waiting';
+
+  @override
+  String get labelStepRunning => 'Working…';
+
+  @override
+  String get labelStepDone => 'Done';
+
+  @override
+  String get labelStepSkipped => 'Skipped';
+
+  @override
+  String get labelStepFailed => 'Not readable';
+
+  @override
+  String labelStepStatus(String step, String status) {
+    return '$step: $status';
+  }
+
+  @override
+  String get labelOnPhoneNote =>
+      'Everything happens on the phone: the photos are not sent to anyone.';
+
+  @override
+  String get labelBackUnreadable => 'Back not readable';
+
+  @override
+  String get labelSourceOffline => 'From the database on the phone · offline';
+
+  @override
+  String get labelSourceCatalog => 'From the catalog';
+
+  @override
+  String get labelSourceOnline => 'From Open Food Facts · online';
+
+  @override
+  String get labelNotThis => 'Not this one';
+
+  @override
+  String get labelOffAttribution => 'Data from Open Food Facts, ODbL licence';
+
+  @override
+  String get labelCandidatesTitle => 'Which of these?';
+
+  @override
+  String labelCandidatesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count similar wines',
+      one: '1 similar wine',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get labelCandidatesNone => 'None of these';
+
+  @override
+  String get labelChipOffline => 'offline';
+
+  @override
+  String get labelChipOnline => 'online';
+
+  @override
+  String get labelChipCatalog => 'catalog';
+
+  @override
+  String get labelNoProducer => 'producer not given';
+
+  @override
+  String get labelNoMatch => 'I read the label but I don\'t recognise the wine';
+
+  @override
+  String get labelReadText => 'Text read';
+
+  @override
+  String get labelSearchOnline => 'Search online';
+
+  @override
+  String get labelOpenLens => 'Open in Google Lens';
+
+  @override
+  String get labelLensLastResort =>
+      'Google Lens is the last resort: the photo goes to the Google app only if you confirm.';
+
+  @override
+  String get labelLensTitle => 'Open in Google Lens?';
+
+  @override
+  String get labelLensBody =>
+      'The photo of the front will go to the Google app on your phone, or to the app you choose, which may keep a copy under its own rules. Vinoozy does not receive the results: come back here to choose or write the wine.';
+
+  @override
+  String get labelLensConfirm => 'Open Google Lens';
+
+  @override
+  String get labelLensFailed => 'I can\'t open Google Lens or the share menu';
+
+  @override
+  String get onlineSearchTitle => 'Search online';
+
+  @override
+  String get onlineSearchSubtitle => 'Open Food Facts · wines only';
+
+  @override
+  String get onlineSearchField => 'Words to search';
+
+  @override
+  String get onlineSearchHint => 'You can change the words before searching.';
+
+  @override
+  String get onlineSearchEmptyField => 'Write at least one word';
+
+  @override
+  String get onlineSearchButton => 'Search';
+
+  @override
+  String get onlineSearchLoading => 'Searching…';
+
+  @override
+  String onlineSearchResults(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count results',
+      one: '1 result',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get onlineSearchEmpty =>
+      'No wine found: try other words or \"Write by hand\".';
+
+  @override
+  String get onlineSearchOffline =>
+      'No network: I only search the database on the phone.';
+
+  @override
+  String get onlineSearchRateLimited =>
+      'Online search is not available now, try again in a few minutes.';
+
+  @override
+  String get onlineSearchUnavailable =>
+      'Online search is not active in this version of the app: I only search the database on the phone.';
+
+  @override
+  String get aboutTitle => 'About';
+
+  @override
+  String aboutVersion(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get aboutDbTitle => 'Wine database';
+
+  @override
+  String aboutDbCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count wines',
+      one: '1 wine',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String aboutDbDate(String date) {
+    return 'Open Food Facts export of $date';
+  }
+
+  @override
+  String get aboutDbSample =>
+      'Sample database: a few hand-written test wines, not Open Food Facts data.';
+
+  @override
+  String get aboutDbLoading => 'Opening the wine database…';
+
+  @override
+  String get aboutDbUnavailable =>
+      'The wine database is not available in this version';
+
+  @override
+  String aboutDbSource(String url) {
+    return 'The derived database and the tool that builds it are in the public repository: $url';
+  }
+
+  @override
+  String get aboutLicenseTitle => 'Licences';
+
+  @override
+  String get aboutLicense =>
+      'Contains information from Open Food Facts, made available under the Open Database License (ODbL). Individual contents are under the Database Contents License (DbCL).';
+
+  @override
+  String get aboutPrivacyTitle => 'Label photos';
+
+  @override
+  String get aboutPrivacy =>
+      'Label photos are read on the phone and deleted when you leave the outcome. They leave the phone only if you tap \"Open in Google Lens\" and confirm.';
+
+  @override
+  String get aboutAppellationsTitle => 'Appellations';
+
+  @override
+  String get aboutAppellationsSource =>
+      'Appellations: eAmbrosia register (EU) and official national registers.';
+
+  @override
+  String get aboutAppellationsSample =>
+      'Sample table: a hand-written extract of the registers, until the real registers are downloaded.';
+
+  @override
+  String get denominationLabel => 'Appellation';
+
+  @override
+  String get denominationTooLong => 'At most 120 characters';
+
+  @override
+  String get autofillFilledNotice => 'Filled from the label: check and save';
+
+  @override
+  String get autofillPastedNotice => 'Filled from the text: check and save';
+
+  @override
+  String get autofillFromText => '✦ from the text';
+
+  @override
+  String get autofillFromTextSemantics => 'filled from the label';
+
+  @override
+  String get autofillClear => 'Clear';
+
+  @override
+  String get autofillLens => 'Lens';
+
+  @override
+  String get autofillClearTitle => 'Clear the form?';
+
+  @override
+  String get autofillClearBody =>
+      'You also wrote in some fields. \"Clear\" empties name, producer, appellation, vintage, type, country, region and level. The quantity stays.';
+
+  @override
+  String get autofillClearConfirm => 'Clear';
+
+  @override
+  String get autofillCleared => 'Form cleared';
+
+  @override
+  String get autofillPasteTitle => 'Do you have the text from Google Lens?';
+
+  @override
+  String get autofillPasteHint =>
+      'In Lens select the text of the label and tap \"Copy\", then come back here.';
+
+  @override
+  String get autofillPaste => 'Paste from Lens';
+
+  @override
+  String get autofillOpenLens => 'From Google Lens';
+
+  @override
+  String get autofillOpenLensSemantics => 'opens Google Lens';
+
+  @override
+  String get autofillClipboardEmpty => 'There is no text on the clipboard';
+
+  @override
+  String get autofillNoNewFields => 'I found no data to add in the text';
+
+  @override
+  String get autofillFromLens => 'Form filled from the Lens text';
+
+  @override
+  String get autofillShareEmpty => 'No text received';
+
+  @override
+  String get autofillShareUseTitle => 'Use the text for the empty fields?';
+
+  @override
+  String get autofillShareUse => 'Use';
+
+  @override
+  String get autofillShareIgnore => 'Ignore';
+
+  @override
+  String get addChoiceLens => 'From Google Lens';
+
+  @override
+  String get addChoicePhotoHint => 'Front and back: Vinoozy reads the label.';
+
+  @override
+  String get addChoiceLensHint =>
+      'Opens Lens: frame, select the text and tap Share → Vinoozy.';
+
+  @override
+  String get addChoiceImportHint => 'A photo of the label you already took.';
+
+  @override
+  String get addChoiceWriteHint => 'Empty form, with \"Paste from Lens\".';
+
+  @override
+  String get lensInstructionsTitle => 'Google Lens can\'t be opened from here';
+
+  @override
+  String get lensInstructionsStep1 => 'Open Google Lens and frame the label';
+
+  @override
+  String get lensInstructionsStep2 => 'Select the text of the label';
+
+  @override
+  String get lensInstructionsStep3 => 'Tap Share → Vinoozy';
+
+  @override
+  String get lensInstructionsOk => 'Got it';
+
+  @override
+  String get levelLabel => 'Level';
+
+  @override
+  String get levelEveryday => 'Everyday (inexpensive)';
+
+  @override
+  String get levelGood => 'Good';
+
+  @override
+  String get levelAging => 'For ageing';
+
+  @override
+  String get levelNone => 'None';
+
+  @override
+  String get levelEverydayShort => 'drink early';
+
+  @override
+  String get levelGoodShort => 'normal estimate';
+
+  @override
+  String get levelAgingShort => 'lasts longer';
+
+  @override
+  String get levelSuggested => 'suggested';
+
+  @override
+  String levelSuggestedReason(String qualifier) {
+    return 'Suggested because the name says \"$qualifier\": it is saved like this unless you change it. Choose another one or tap \"None\".';
+  }
+
+  @override
+  String levelSuggestedSemantics(String qualifier) {
+    return 'suggested, because the name says $qualifier';
+  }
+
+  @override
+  String levelOptionSemantics(String option, int index, int count) {
+    return 'Level, $option, $index of $count';
+  }
+
+  @override
+  String get levelWhatChanges => 'What changes';
+
+  @override
+  String get levelEverydayExamples =>
+      'The window gets shorter. E.g. house wine, Lambrusco, basic Prosecco, Bardolino, Vinho Verde.';
+
+  @override
+  String get levelGoodExamples =>
+      'The normal estimate, and the value when you choose nothing. E.g. Chianti Classico, Barbera d\'Asti Superiore, Rioja Crianza, Côtes du Rhône.';
+
+  @override
+  String get levelAgingExamples =>
+      'The window gets longer. E.g. Barolo, Brunello, Amarone, Bordeaux Grand Cru, Rioja Gran Reserva, Vintage Port.';
+
+  @override
+  String levelPreviewBefore(String start, String end) {
+    return 'Before $start – $end';
+  }
+
+  @override
+  String levelPreviewWith(String level, String start, String end) {
+    return 'With \"$level\" $start – $end';
+  }
+
+  @override
+  String levelPreviewNow(String start, String end) {
+    return 'Ready $start – until $end';
+  }
+
+  @override
+  String levelDetail(String level) {
+    return 'Level: $level';
+  }
+
+  @override
+  String get overrideCorrect => 'Correct';
+
+  @override
+  String get overrideRestore => 'Restore estimate';
+
+  @override
+  String get overrideCorrectedByYou => 'corrected by you';
+
+  @override
+  String overrideAppEstimate(String year) {
+    return 'App estimate: until $year';
+  }
+
+  @override
+  String get overrideSheetTitle => 'Recommended until';
+
+  @override
+  String overrideSheetHint(String start) {
+    return 'Choose the year. It cannot be before \"Ready from $start\".';
+  }
+
+  @override
+  String overridePeakNotice(String peak) {
+    return 'If you choose a year before $peak (at its best), \"at its best\" moves to the same year too.';
+  }
+
+  @override
+  String get overrideMore => 'more…';
+
+  @override
+  String get overrideSave => 'Save correction';
+
+  @override
+  String overrideRestoreTitle(String year) {
+    return 'Go back to the app estimate (until $year)?';
+  }
+
+  @override
+  String get overrideRestoreConfirm => 'Restore';
+
+  @override
+  String get overrideSaved => 'Correction saved';
+
+  @override
+  String get overrideRestored => 'Estimate restored';
+
+  @override
+  String get estimateSourceCorrectedByYou => 'corrected by you';
+
+  @override
+  String estimateFromDenomination(String name) {
+    return 'Estimate from the appellation $name';
+  }
+
+  @override
+  String estimateFromDenominationQualifier(String name, String qualifier) {
+    return 'Estimate from the appellation $name, $qualifier';
+  }
+
+  @override
+  String estimateFromGrape(String name) {
+    return 'Estimate from the grape $name';
+  }
+
+  @override
+  String get estimateFromType => 'Estimate from the type of wine';
+
+  @override
+  String get autofillReading => 'Reading the text…';
+
+  @override
+  String get guideChip => 'Guided check';
+
+  @override
+  String guideProgress(int n, int total) {
+    return 'Question $n of $total';
+  }
+
+  @override
+  String get guideClose => 'Close';
+
+  @override
+  String get guideIsDenomination => 'is it the appellation?';
+
+  @override
+  String get guideIsProducer => 'is it the producer?';
+
+  @override
+  String get guideIsName => 'is it the wine name?';
+
+  @override
+  String get guideIsVintage => 'Vintage';
+
+  @override
+  String guideAskDenomination(String value) {
+    return 'Is $value the appellation?';
+  }
+
+  @override
+  String guideAskProducer(String value) {
+    return 'Is $value the producer?';
+  }
+
+  @override
+  String guideAskName(String value) {
+    return 'Is $value the wine name?';
+  }
+
+  @override
+  String get guideAskVintage => 'What is the vintage?';
+
+  @override
+  String guideQuestionSemantics(int n, int total, String question) {
+    return 'Question $n of $total: $question';
+  }
+
+  @override
+  String get guideNoProposal => 'I couldn\'t find it in the text';
+
+  @override
+  String get guideYes => 'Yes';
+
+  @override
+  String get guideNo => 'No, another';
+
+  @override
+  String get guideEdit => 'Edit';
+
+  @override
+  String get guideSkip => 'Skip';
+
+  @override
+  String get guideConfirm => 'Confirm';
+
+  @override
+  String get guideCancel => 'Cancel';
+
+  @override
+  String guideRejected(String value) {
+    return 'Not \"$value\": here\'s the next one';
+  }
+
+  @override
+  String get guideNoMore => 'No other suggestion: compose it or skip';
+
+  @override
+  String guideProposalAnnounce(String value) {
+    return 'Suggestion: $value';
+  }
+
+  @override
+  String get guideComposeLabel => 'Or build it by tapping words of the text';
+
+  @override
+  String get guideComposePreview => 'Preview';
+
+  @override
+  String get guideComposeEmpty => 'Tap one or more words';
+
+  @override
+  String get guideComposeLimit => 'Up to 8 words and 80 characters';
+
+  @override
+  String guideTableMatchSemantics(String name) {
+    return 'matches $name';
+  }
+
+  @override
+  String guideLine(int n, int total) {
+    return 'Line $n of $total';
+  }
+
+  @override
+  String guideWordSelected(String word, int order) {
+    return '$word, selected, $order';
+  }
+
+  @override
+  String guideWordUnavailable(String word) {
+    return '$word, unavailable';
+  }
+
+  @override
+  String guideWordUsedFor(String word, String field) {
+    String _temp0 = intl.Intl.selectLogic(field, {
+      'denomination': 'appellation',
+      'producer': 'producer',
+      'other': 'name',
+    });
+    return '$word, used for the $_temp0';
+  }
+
+  @override
+  String guideUsedMark(String field) {
+    String _temp0 = intl.Intl.selectLogic(field, {
+      'denomination': 'appellation',
+      'producer': 'producer',
+      'other': 'name',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String guideOtherYears(String years) {
+    return 'Also in the text: $years';
+  }
+
+  @override
+  String get guideWheelFromText => 'year found in the text';
+
+  @override
+  String get guideWheelTypeYear => 'Type the year';
+
+  @override
+  String guideWheelConfirm(String year) {
+    return 'Confirm $year';
+  }
+
+  @override
+  String get guideNoVintage => 'No vintage';
+
+  @override
+  String guideSkippedNotice(String field) {
+    String _temp0 = intl.Intl.selectLogic(field, {
+      'denomination': 'Appellation skipped',
+      'producer': 'Producer skipped',
+      'vintage': 'Vintage skipped',
+      'other': 'Name skipped',
+    });
+    return '$_temp0: type it or resume the guide';
+  }
+
+  @override
+  String guideSkippedMany(int count) {
+    return '$count fields skipped: type them or resume the guide';
+  }
+
+  @override
+  String get guideInvalidValue =>
+      'This text contains characters that cannot be saved';
 }

@@ -172,11 +172,11 @@ void main() {
     final suggest = await _medianMs(
       () async => catalog.suggestWines(query, cellarWines: cellar),
     );
-    final match = await _medianMs(() => catalog.matchLabelText(label));
+    final match = await _medianMs(() => catalog.matchLabel(label));
 
     debugPrint(
       'catalog_perf: suggestWines ${suggest.toStringAsFixed(2)} ms '
-      '(limit $_suggestLimitMs), matchLabelText ${match.toStringAsFixed(2)} '
+      '(limit $_suggestLimitMs), matchLabel ${match.toStringAsFixed(2)} '
       'ms (limit $_labelLimitMs)',
     );
     binding.reportData = {

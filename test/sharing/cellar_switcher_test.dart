@@ -160,7 +160,8 @@ void main() {
         );
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.text('Barolo'), findsOneWidget);
+    // ux-redesign WineCard: name and vintage on one line.
+    expect(find.text('Barolo 2016'), findsOneWidget);
     expect(find.text('Cantina di Mario · Può modificare'), findsOneWidget);
   });
 

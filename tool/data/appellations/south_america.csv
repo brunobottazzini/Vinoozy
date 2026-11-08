@@ -1,0 +1,278 @@
+# Argentina, Chile, Brazil and Uruguay: registered wine indications of
+# origin.
+# Sources:
+# - Argentina: Instituto Nacional de Vitivinicultura (INV), "Indicaciones
+#   geográficas y denominaciones de origen reconocidas y protegidas de la
+#   República Argentina" (Ley 25.163), list of 18 April 2024,
+#   https://www.argentina.gob.ar/sites/default/files/i.g._y_d.o.c._de_la_republica_argentina18_de_abril_2024.pdf
+#   A name registered in two provinces (Rivadavia, San Carlos, San Martín,
+#   Sarmiento) is written once. "La Rioja" alone is left out on purpose: it
+#   would be read inside the Spanish Rioja (BR3.2); "La Rioja Argentina" is
+#   the registered name.
+# - Chile: Servicio Agrícola y Ganadero (SAG), Decreto 464 de 1994 del
+#   Ministerio de Agricultura, "Zonificación vitícola" (regions,
+#   subregions, zones and areas of art. 1 and the special DO "Secano
+#   Interior" of art. 3 bis), consolidated text up to Decreto 4 of
+#   2026-07-14, https://www.bcn.cl/leychile/navegar?idNorma=13601
+# - Brazil: Instituto Nacional da Propriedade Industrial (INPI), "Lista das
+#   indicações de procedência reconhecidas" (27 October 2026) and "Lista das
+#   denominações de origem reconhecidas" (20 October 2026), wines only,
+#   https://www.gov.br/inpi/pt-br/servicos/indicacoes-geograficas/pedidos-de-indicacao-geografica-no-brasil
+# - Uruguay: Instituto Nacional de Vitivinicultura (INAVI), indications of
+#   origin by department (Decreto 283/993), https://www.inavi.com.uy/
+#   No current official list of the zones is published in a readable form:
+#   the rows are the names of the departments of Uruguay, checked as such;
+#   the ones that are regions of the app are in the dedicated rows.
+# Date: 2026-11-08. Verified against the official lists in Build and Test
+# (Uruguay: department names only, see above).
+# Licence: public registers and regulations of the four governments; only
+# the protected names are used, which are public geographical data.
+name,country,region,types,weak
+25 de Mayo,AR,San Juan,,weak
+9 de Julio,AR,San Juan,,weak
+Agrelo,AR,Mendoza,rS,
+Albardón,AR,San Juan,,
+Alto Valle de Río Negro,AR,Patagonia,rL,
+Angaco,AR,San Juan,,
+Añelo,AR,Patagonia,,
+Arauco,AR,La Rioja,,weak
+Avellaneda,AR,Patagonia,,weak
+Balcarce,AR,,,weak
+Barrancas,AR,Mendoza,,weak
+Barreal,AR,San Juan,,
+Belén,AR,Catamarca,,weak
+Cachi,AR,Salta,,
+Canota,AR,Mendoza,,
+Castro Barros,AR,La Rioja,,
+Caucete,AR,San Juan,,
+Chapadmalal,AR,,,
+Chilecito,AR,La Rioja,,
+Chimbas,AR,San Juan,,
+Colón,AR,,,weak
+Colonia Caroya,AR,,,
+Confluencia,AR,Patagonia,,weak
+Córdoba Argentina,AR,,,
+Cordón el Cepillo,AR,Mendoza,rS,
+Cruz del Eje,AR,,,
+Cuyo,AR,,,
+Distrito Medrano,AR,Mendoza,,
+El Hoyo,AR,Patagonia,,weak
+El Paraíso,AR,Mendoza,,weak
+El Peral,AR,Mendoza,,weak
+Famatina,AR,La Rioja,,
+Felipe Varela,AR,La Rioja,,
+General Alvear,AR,Mendoza,,
+General Conesa,AR,Patagonia,,
+General Lamadrid,AR,La Rioja,,
+General Roca,AR,Patagonia,,
+Godoy Cruz,AR,Mendoza,,
+Guaymallén,AR,Mendoza,,
+Hilario,AR,San Juan,,weak
+Iglesia,AR,San Juan,,weak
+Jáchal,AR,San Juan,,
+Jujuy,AR,,,
+Junín,AR,Mendoza,,weak
+La Consulta,AR,Mendoza,rS,
+La Paz,AR,Mendoza,,weak
+La Rioja Argentina,AR,La Rioja,,
+Las Compuertas,AR,Mendoza,rS,
+Las Heras,AR,Mendoza,,weak
+Lavalle,AR,Mendoza,,weak
+Los Chacayes,AR,Mendoza,rS,
+Luján de Cuyo,AR,Mendoza,rS,
+Lunlunta,AR,Mendoza,rS,
+Maipú,AR,Mendoza,,weak
+Molinos,AR,Salta,,weak
+Neuquén,AR,Patagonia,,
+Pampa el Cepillo,AR,Mendoza,rS,
+Paraje Altamira,AR,Mendoza,rS,
+Pichimahuida,AR,Patagonia,,
+Pocito,AR,San Juan,,
+Pomán,AR,Catamarca,,
+Pozo de los Algarrobos,AR,San Juan,,
+Quebrada de Humahuaca,AR,,,
+Rawson,AR,San Juan,,
+Reducción,AR,Mendoza,,weak
+Río Negro,AR,Patagonia,,
+Rivadavia,AR,Mendoza,,weak
+Russel,AR,Mendoza,,weak
+San Blas de los Sauces,AR,La Rioja,,
+San Carlos,AR,Mendoza,,weak
+San Javier,AR,,,weak
+San Luis,AR,,,weak
+San Martín,AR,Mendoza,,weak
+San Pablo,AR,Mendoza,,weak
+San Rafael,AR,Mendoza,,
+Sanagasta,AR,La Rioja,,
+Santa Lucía,AR,San Juan,,weak
+Santa María,AR,Catamarca,,weak
+Santa Rosa,AR,Mendoza,,weak
+Sarmiento,AR,San Juan,,weak
+Sorocayense,AR,San Juan,,
+Tafí,AR,,,
+Tamberías,AR,San Juan,,weak
+Tinogasta,AR,Catamarca,,
+Trevelin,AR,Patagonia,,
+Tucumán,AR,,,
+Tunuyán,AR,Mendoza,rS,
+Tupungato,AR,Mendoza,,
+Ullum,AR,San Juan,,
+Valle de Cafayate,AR,Salta,rL|B,
+Valle de Calingasta,AR,San Juan,,
+Valle de Chañarmuyo,AR,La Rioja,,
+Valle de Tupungato,AR,Mendoza,,
+Valle de Uco,AR,Mendoza,rS,
+Valle de Zonda,AR,San Juan,,
+Valle del Pedernal,AR,San Juan,rS,
+Valle del Tulum,AR,San Juan,,
+Valle Fértil,AR,San Juan,,
+Valles Calchaquíes,AR,Salta,rL|B,
+Valles del Famatina,AR,La Rioja,,
+"Victoria, Entre Ríos",AR,,,
+Villa Ventana,AR,,,
+Vinchina,AR,La Rioja,,
+Vista Flores,AR,Mendoza,rS,
+Vistalba,AR,Mendoza,rS,
+Zonda,AR,San Juan,,
+Aconcagua,CL,Valle de Aconcagua,,
+Algarrobo,CL,,,weak
+Alhué,CL,Valle del Maipo,,
+Apalta,CL,Valle de Colchagua,rS,
+Atacama,CL,,,weak
+Austral,CL,,,weak
+Buin,CL,Valle del Maipo,rS,
+Calera de Tango,CL,Valle del Maipo,,
+Calle Larga,CL,Valle de Aconcagua,,weak
+Cartagena,CL,,,weak
+Catemu,CL,Valle de Aconcagua,,
+Cauquenes,CL,Valle del Maule,,
+Chiloé,CL,,,
+Chillán,CL,,,
+Chimbarongo,CL,Valle de Colchagua,,
+Colbún,CL,Valle del Maule,,
+Colina,CL,Valle del Maipo,,weak
+Coltauco,CL,Valle de Cachapoal,,
+Coelemu,CL,,,
+Coquimbo,CL,,,weak
+Curepto,CL,Valle del Maule,,
+Empedrado,CL,Valle del Maule,,weak
+Hijuelas,CL,Valle de Aconcagua,,
+Illapel,CL,,,
+Isla de Maipo,CL,Valle del Maipo,rS,
+La Estrella,CL,Valle de Colchagua,,weak
+La Serena,CL,,,weak
+Lampa,CL,Valle del Maipo,,weak
+Licantén,CL,,,
+Linares,CL,Valle del Maule,,weak
+Litueche,CL,Valle de Colchagua,,
+Llaillay,CL,Valle de Aconcagua,,
+Lo Abarca,CL,,,
+Lolol,CL,Valle de Colchagua,rS,
+Longaví,CL,Valle del Maule,,
+Los Lingues,CL,Valle de Colchagua,,
+Machalí,CL,Valle de Cachapoal,,
+Marchigüe,CL,Valle de Colchagua,rS,
+María Pinto,CL,Valle del Maipo,,
+Melipilla,CL,Valle del Maipo,,
+Molina,CL,,,weak
+Monte Patria,CL,Valle del Limarí,,
+Mulchén,CL,,,
+Nancagua,CL,Valle de Colchagua,,
+Ovalle,CL,Valle del Limarí,,
+Paiguano,CL,,,
+Palmilla,CL,Valle de Colchagua,,weak
+Panquehue,CL,Valle de Aconcagua,,
+Paredones,CL,Valle de Colchagua,,
+Parral,CL,Valle del Maule,,weak
+Pencahue,CL,Valle del Maule,,
+Peralillo,CL,Valle de Colchagua,rS,
+Peumo,CL,Valle de Cachapoal,,
+Pirque,CL,Valle del Maipo,rS,
+Portezuelo,CL,,,weak
+Puente Alto,CL,Valle del Maipo,rS,
+Pumanque,CL,Valle de Colchagua,rS,
+Punitaqui,CL,Valle del Limarí,,
+Quillón,CL,,,
+Quillota,CL,Valle de Aconcagua,,
+Rancagua,CL,Valle de Cachapoal,,
+Rapa Nui,CL,,,
+Rauco,CL,,,
+Rengo,CL,Valle de Cachapoal,,
+Requínoa,CL,Valle de Cachapoal,,
+Retiro,CL,Valle del Maule,,weak
+Río Hurtado,CL,Valle del Limarí,,
+Romeral,CL,,,weak
+Sagrada Familia,CL,,,weak
+Salamanca,CL,,,weak
+San Antonio,CL,,,weak
+San Clemente,CL,Valle del Maule,,weak
+San Esteban,CL,Valle de Aconcagua,,weak
+San Felipe,CL,Valle de Aconcagua,,weak
+San Fernando,CL,Valle de Colchagua,,weak
+San Juan,CL,,,weak
+San Rafael,CL,Valle del Maule,,weak
+Santa Cruz,CL,Valle de Colchagua,,weak
+Santiago,CL,Valle del Maipo,,weak
+Santo Domingo,CL,,,weak
+Secano Interior,CL,,,
+Sur,CL,,,weak
+Talagante,CL,Valle del Maipo,,
+Talca,CL,Valle del Maule,,
+Til Til,CL,Valle del Maipo,,
+Traiguén,CL,,,
+Valle Central,CL,,,weak
+Valle de Casablanca,CL,Valle de Casablanca,,
+Valle de Copiapó,CL,,,
+Valle de Curicó,CL,,,
+Valle de Leyda,CL,Valle de Leyda,,
+Valle de Osorno,CL,,,
+Valle de San Antonio,CL,,B|rL,
+Valle del Aconcagua,CL,Valle de Aconcagua,,
+Valle del Biobío,CL,,,
+Valle del Cachapoal,CL,Valle de Cachapoal,,
+Valle del Cautín,CL,,,
+Valle del Choapa,CL,,,
+Valle del Claro,CL,Valle del Maule,,
+Valle del Elqui,CL,,,
+Valle del Huasco,CL,,,
+Valle del Itata,CL,,,
+Valle del Limarí,CL,Valle del Limarí,,
+Valle del Loncomilla,CL,Valle del Maule,,
+Valle del Lontué,CL,,,
+Valle del Maipo,CL,Valle del Maipo,,
+Valle del Malleco,CL,,,
+Valle del Marga Marga,CL,,,
+Valle del Maule,CL,Valle del Maule,,
+Valle del Rapel,CL,,,
+Valle del Teno,CL,,,
+Valle del Tutuvén,CL,Valle del Maule,,
+Vichuquén,CL,,,
+Vicuña,CL,,,weak
+Villa Alegre,CL,Valle del Maule,,weak
+Yumbel,CL,,,
+Zapallar,CL,,B|rL,
+Altos de Pinto Bandeira,BR,Serra Gaúcha,SpC,
+Altos Montes,BR,Serra Gaúcha,,
+Bituruna,BR,,,
+Campanha Gaúcha,BR,Campanha Gaúcha,,
+Farroupilha,BR,Serra Gaúcha,,
+Monte Belo,BR,Serra Gaúcha,,
+Pinto Bandeira,BR,Serra Gaúcha,,
+Sul de Minas,BR,,,
+Vale do São Francisco,BR,Vale do São Francisco,,
+Vale dos Vinhedos,BR,Serra Gaúcha,,
+Vales da Uva Goethe,BR,,B,
+Vinhos de Altitude de Santa Catarina,BR,Planalto Catarinense,,
+Artigas,UY,,,weak
+Cerro Largo,UY,,,
+Durazno,UY,,,weak
+Flores,UY,,,weak
+Florida,UY,,,weak
+Lavalleja,UY,,,
+Paysandú,UY,,,
+Río Negro,UY,,,
+Rocha,UY,,,weak
+Salto,UY,,,weak
+Soriano,UY,,,weak
+Tacuarembó,UY,,,
+Treinta y Tres,UY,,,

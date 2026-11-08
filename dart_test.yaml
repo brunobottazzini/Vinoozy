@@ -1,0 +1,6 @@
+# Test tags (label-recognition NFR2.1, NFR2.2, NFR2.7): `benchmark` marks the
+# speed tests of the offline wine database. They run in CI with every other
+# test; the tag only lets a developer run them alone
+# (`flutter test --tags benchmark`) or skip them locally.
+tags:
+  benchmark:

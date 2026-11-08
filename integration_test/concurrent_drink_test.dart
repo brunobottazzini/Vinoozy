@@ -19,7 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:vinoozy/cellar/domain/drinking_record.dart';
-import 'package:vinoozy/cellar/ui/wine_list_tile.dart';
 import 'package:vinoozy/e2e/test_network_control.dart';
 
 import 'e2e_helpers.dart';
@@ -57,15 +56,8 @@ void main() {
     await waitFor(tester, wineRow('Barbaresco'), timeout: _wait);
 
     await network.disableNetwork();
-    await tester.tap(
-      find.descendant(
-        of: find.ancestor(
-          of: wineRow('Barbaresco'),
-          matching: find.byType(WineListTile),
-        ),
-        matching: find.byIcon(Icons.wine_bar),
-      ),
-    );
+    // ux-redesign FR2.2: "Ho bevuto", then "Sì, l'ho bevuta".
+    await drinkAndConfirm(tester, drinkButtonOf('Barbaresco'));
     await waitFor(tester, find.byKey(const Key('drink-undo')));
     await owner.recordDrink(
       'shared-w1',

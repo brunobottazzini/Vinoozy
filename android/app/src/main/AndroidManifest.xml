@@ -56,7 +56,29 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:mimeType="image/*"/>
             </intent-filter>
+            <!-- "Share -> Vinoozy" of the text selected in Google Lens
+                 (label-autofill-windows FR2.1, NFR3.3): only ACTION_SEND of
+                 text/plain. The text stays in memory until the form reads it
+                 and is cut to 4000 characters (SharedImageReceiver). -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
         </activity>
+        <!-- "Apri in Google Lens" (label-recognition FR4.3, NFR3.3): the
+             prepared front photo leaves only through this provider, limited to
+             cache/label/ (res/xml/label_file_paths.xml), never exported, with a
+             temporary read grant per URI. Checked by tool/check_lens_manifest.sh. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.labelfiles"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/label_file_paths" />
+        </provider>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
@@ -72,6 +94,16 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- label-recognition BR5.2: whether the Google app (Lens) is installed,
+             and the apps of the share menu for an image; nothing else. -->
+        <package android:name="com.google.android.googlequicksearchbox"/>
+        <!-- label-autofill-windows FR2.6, BR2.5: the Google Lens app, opened by
+             "From Google Lens" with its launch intent; no permission. -->
+        <package android:name="com.google.ar.lens"/>
+        <intent>
+            <action android:name="android.intent.action.SEND"/>
+            <data android:mimeType="image/*"/>
         </intent>
     </queries>
 </manifest>

@@ -151,7 +151,9 @@ Future<(String, bool)> _suggest() async {
 Future<(String, bool)> _label2000() async {
   final catalog = _coordinator();
   await catalog.startSession(null);
-  final micros = await _medianMicros(() => catalog.matchLabelText(_label));
+  // label-recognition: matchLabelText became matchLabel (same work without
+  // the offline database, which has its own benchmark).
+  final micros = await _medianMicros(() => catalog.matchLabel(_label));
   return (_ms(micros), micros <= 10000);
 }
 
@@ -194,7 +196,7 @@ final _measures = [
     '<= 5 ms',
     _suggest,
   ),
-  _Measure('matchLabelText, 2000 chars, no OFF', '<= 10 ms', _label2000),
+  _Measure('matchLabel, 2000 chars, no OFF', '<= 10 ms', _label2000),
   _Measure('cache read in memory', '<= 1 ms', _cacheRead),
   _Measure('InternalCatalog.build', '<= 20 ms', _build),
 ];

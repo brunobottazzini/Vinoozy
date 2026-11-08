@@ -1,0 +1,324 @@
+<title>Vinoozy nuova UX</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Serif:opsz,wght@8..144,600;8..144,700&display=swap">
+<style>
+/* Layout: a contact sheet of phone screens, each labelled with the requirement it shows. */
+:root{
+  --page:#efe9e4; --ink:#2a1d20; --muted:#6b5a5d; --rule:#d8ccc6;
+  --bordeaux:#7a1f32; --bordeaux-ink:#ffffff; --oro:#9a6b12; --oro-soft:#f3e3bf;
+  --crema:#fbf6ee; --card:#ffffff; --surface2:#f3ebe1;
+  --red:#8e1b2c; --white:#c9a227; --rose:#d4687c; --spark:#7f8f3a; --sweet:#a8642a;
+  --now:#2f6b3a; --now-bg:#dcefdc; --wait:#7a5a0f; --wait-bg:#f6e7c4; --past:#8e2b2b; --past-bg:#f7dada;
+  --phone-edge:#1b1416;
+  --display:"Roboto Serif",Georgia,serif; --body:Roboto,"Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --page:#151012; --ink:#f2e8e4; --muted:#bfaeae; --rule:#3a2c30;
+  --crema:#1d1517; --card:#2a1f22; --surface2:#33262a; --oro-soft:#4a3a1c;
+  --now-bg:#1f3a24; --now:#a9dcae; --wait-bg:#46391a; --wait:#f0d48a; --past-bg:#4a2223; --past:#f3b2b2;
+  --phone-edge:#000; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --page:#151012; --ink:#f2e8e4; --muted:#bfaeae; --rule:#3a2c30;
+  --crema:#1d1517; --card:#2a1f22; --surface2:#33262a; --oro-soft:#4a3a1c;
+  --now-bg:#1f3a24; --now:#a9dcae; --wait-bg:#46391a; --wait:#f0d48a; --past-bg:#4a2223; --past:#f3b2b2;
+  --phone-edge:#000; color-scheme:dark}
+body{background:var(--page);color:var(--ink);font-family:var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.intro{max-width:880px;margin:0 auto 28px}
+.intro h1{font-family:var(--display);font-size:2rem;margin:0 0 8px;text-wrap:balance}
+.intro p{color:var(--muted);line-height:1.5;margin:0;max-width:65ch}
+.sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:32px;max-width:1240px;margin:0 auto}
+figure{margin:0;display:grid;gap:10px;justify-items:center}
+figcaption{max-width:320px;font-size:.85rem;color:var(--muted);line-height:1.45}
+figcaption b{color:var(--ink);display:block;font-size:.95rem;margin-bottom:2px}
+.phone{width:300px;max-width:100%;height:620px;border:10px solid var(--phone-edge);border-radius:34px;background:var(--crema);overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(40,10,15,.18)}
+.status{height:22px;flex:none}
+.appbar{display:flex;align-items:center;justify-content:space-between;padding:6px 16px 10px;flex:none}
+.appbar h2{font-family:var(--display);font-size:1.35rem;margin:0;color:var(--bordeaux)}
+.appbar .sub{font-size:.75rem;color:var(--muted)}
+.scroll{flex:1;overflow:hidden;padding:0 12px;display:flex;flex-direction:column;gap:10px}
+.nav{flex:none;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule);background:var(--card);padding:6px 0 10px}
+.nav span{display:grid;justify-items:center;font-size:.68rem;color:var(--muted);gap:2px}
+.nav span.on{color:var(--bordeaux);font-weight:700}
+.nav i{font-style:normal;font-size:1.15rem}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:.72rem;padding:5px 10px;border-radius:999px;background:var(--card);border:1px solid var(--rule)}
+.chip.sel{background:var(--bordeaux);color:var(--bordeaux-ink);border-color:var(--bordeaux)}
+.search{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:9px 12px;font-size:.8rem;color:var(--muted)}
+/* wine card */
+.wine{display:grid;grid-template-columns:6px 1fr;background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--rule)}
+.wine .band{background:var(--c)}
+.wine .in{padding:10px 12px;display:grid;gap:6px}
+.row1{display:flex;align-items:flex-start;gap:8px}
+.flag{font-size:1.25rem;line-height:1}
+.name{font-weight:700;font-size:.92rem;line-height:1.2}
+.meta{font-size:.72rem;color:var(--muted)}
+.row2{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.state{font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:999px}
+.now{background:var(--now-bg);color:var(--now)} .wait{background:var(--wait-bg);color:var(--wait)} .past{background:var(--past-bg);color:var(--past)}
+.bottles{font-size:.78rem;font-weight:700;font-variant-numeric:tabular-nums}
+.drink{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;background:var(--oro-soft);color:var(--ink);font-weight:700;font-size:.75rem;border:1px solid var(--oro)}
+.type{display:inline-flex;align-items:center;gap:4px;font-size:.68rem;color:var(--muted)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--c);display:inline-block}
+.fab{position:absolute;right:16px;bottom:74px;background:var(--bordeaux);color:var(--bordeaux-ink);border-radius:16px;padding:12px 16px;font-weight:700;font-size:.85rem;box-shadow:0 6px 16px rgba(122,31,50,.35)}
+.banner{background:#3a2a2e;color:#fff;font-size:.72rem;padding:7px 12px;border-radius:10px}
+/* form */
+label.f{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.field{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:9px 12px;font-size:.85rem}
+.countries{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.country{display:grid;justify-items:center;gap:2px;background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:7px 2px;font-size:.62rem;text-align:center}
+.country b{font-size:1.4rem;line-height:1.1}
+.country.sel{border:2px solid var(--bordeaux);background:var(--surface2)}
+.btn{background:var(--bordeaux);color:var(--bordeaux-ink);border-radius:14px;padding:12px;text-align:center;font-weight:700;font-size:.9rem}
+.btn.ghost{background:transparent;color:var(--bordeaux);border:1px solid var(--bordeaux)}
+/* sheet */
+.dim{position:absolute;inset:0;background:rgba(20,8,10,.45)}
+.bottom{position:absolute;left:0;right:0;bottom:0;background:var(--card);border-radius:22px 22px 0 0;padding:14px 18px 22px;display:grid;gap:12px}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--rule);justify-self:center}
+.stars{font-size:1.6rem;letter-spacing:6px;color:var(--oro)}
+.count{display:flex;align-items:center;gap:10px;font-variant-numeric:tabular-nums}
+.count .big{font-family:var(--display);font-size:1.8rem;font-weight:700}
+/* dashboard */
+.tile{background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:12px;display:grid;gap:8px}
+.tile h3{margin:0;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.hero{background:var(--bordeaux);color:var(--bordeaux-ink);border-radius:16px;padding:14px;display:grid;gap:4px}
+.hero .n{font-family:var(--display);font-size:2.2rem;font-weight:700;line-height:1}
+.bar{display:grid;grid-template-columns:76px 1fr 26px;align-items:center;gap:6px;font-size:.72rem}
+.bar .t{height:10px;border-radius:5px;background:var(--surface2);overflow:hidden}
+.bar .t i{display:block;height:100%;background:var(--c)}
+.bar .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.detail-hero{background:linear-gradient(180deg,var(--c) 0 64px,var(--card) 64px);border-radius:16px;border:1px solid var(--rule);padding:12px;display:grid;gap:6px}
+.detail-hero .flagbig{font-size:2rem;background:var(--card);border-radius:12px;width:48px;height:48px;display:grid;place-items:center;border:1px solid var(--rule)}
+.window{height:14px;border-radius:7px;background:linear-gradient(90deg,var(--wait-bg) 0 30%,var(--now-bg) 30% 75%,var(--past-bg) 75%);position:relative}
+.window::after{content:"";position:absolute;left:52%;top:-3px;width:3px;height:20px;background:var(--ink);border-radius:2px}
+.legend{display:flex;justify-content:space-between;font-size:.62rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.notes{max-width:880px;margin:36px auto 0;display:grid;gap:10px;line-height:1.5}
+.notes h2{font-family:var(--display);margin:0;font-size:1.3rem}
+.notes ul{margin:0;padding-left:1.1rem;color:var(--muted)}
+.dark{--crema:#1d1517;--card:#2a1f22;--surface2:#33262a;--ink:#f2e8e4;--muted:#bfaeae;--rule:#3a2c30;--oro-soft:#4a3a1c;--now-bg:#1f3a24;--now:#a9dcae;--wait-bg:#46391a;--wait:#f0d48a;--past-bg:#4a2223;--past:#f3b2b2;--bordeaux:#d9768a;--bordeaux-ink:#2a1015;color:var(--ink)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<header class="intro">
+  <h1>Vinoozy, la nuova UX</h1>
+  <p>Mockup delle schermate rifatte dopo la prova sul telefono: paese e regione con le bandiere, "Ho bevuto" con conferma e voto, e una nuova identità visiva bordeaux, oro e crema. I vini sono esempi. La navigazione in basso resta quella di oggi.</p>
+</header>
+
+<main class="sheet">
+
+<!-- 1 Cantina -->
+<figure>
+<div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Cantina</h2><div class="sub">La mia cantina · 38 bottiglie</div></div><span aria-hidden="true">⋮</span></div>
+  <div class="scroll">
+    <div class="search">Cerca per nome, produttore, regione…</div>
+    <div class="chips"><span class="chip sel">Tutti</span><span class="chip">Da bere ora</span><span class="chip">🇮🇹 Italia</span><span class="chip">Rossi</span></div>
+    <article class="wine" style="--c:var(--red)"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag" role="img" aria-label="Italia">🇮🇹</span><div><div class="name">Barolo DOCG 2016</div><div class="meta">G.D. Vajra · Piemonte</div></div></div>
+      <div class="row2"><span class="state now">Da bere ora</span><span class="bottles">× 2</span></div>
+      <div class="row2"><span class="type"><span class="dot"></span>Rosso</span><span class="drink">🥂 Ho bevuto</span></div>
+    </div></article>
+    <article class="wine" style="--c:var(--white)"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag" role="img" aria-label="Francia">🇫🇷</span><div><div class="name">Chablis Premier Cru 2020</div><div class="meta">William Fèvre · Borgogna</div></div></div>
+      <div class="row2"><span class="state wait">Aspettare fino al 2027</span><span class="bottles">× 3</span></div>
+      <div class="row2"><span class="type"><span class="dot"></span>Bianco</span><span class="drink">🥂 Ho bevuto</span></div>
+    </div></article>
+    <article class="wine" style="--c:var(--red)"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag" role="img" aria-label="Argentina">🇦🇷</span><div><div class="name">Malbec Reserva 2019</div><div class="meta">Catena · Mendoza</div></div></div>
+      <div class="row2"><span class="state past">Oltre il picco</span><span class="bottles">× 1</span></div>
+      <div class="row2"><span class="type"><span class="dot"></span>Rosso</span><span class="drink">🥂 Ho bevuto</span></div>
+    </div></article>
+  </div>
+  <span class="fab">＋ Aggiungi</span>
+  <nav class="nav"><span><i>📊</i>Dashboard</span><span class="on"><i>🍷</i>Cantina</span><span><i>📖</i>Storico</span></nav>
+</div>
+<figcaption><b>Cantina con schede e bandiere</b>FR1.4, FR3.2, FR2.1. Ogni vino è una scheda con la fascia del colore del tipo, la bandiera del paese, la regione, lo stato come etichetta colorata e il pulsante "Ho bevuto" con il verbo. Il colore del tipo è sempre accompagnato dal nome ("Rosso"). "Aggiungi" diventa un pulsante flottante, così la SnackBar non lo copre più.</figcaption>
+</figure>
+
+<!-- 2 Aggiungi: paese -->
+<figure>
+<div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Nuovo vino</h2><div class="sub">Scrivi o fotografa l'etichetta</div></div><span aria-hidden="true">✕</span></div>
+  <div class="scroll">
+    <label class="f">Nome</label><div class="field">Malbec Reserva</div>
+    <label class="f">Paese</label>
+    <div class="countries">
+      <span class="country"><b>🇮🇹</b>Italia</span><span class="country"><b>🇫🇷</b>Francia</span><span class="country"><b>🇪🇸</b>Spagna</span><span class="country"><b>🇵🇹</b>Portogallo</span>
+      <span class="country"><b>🇩🇪</b>Germania</span><span class="country"><b>🇦🇹</b>Austria</span><span class="country"><b>🇺🇸</b>Stati Uniti</span><span class="country sel"><b>🇦🇷</b>Argentina</span>
+      <span class="country"><b>🇨🇱</b>Cile</span><span class="country"><b>🇧🇷</b>Brasile</span><span class="country"><b>🇦🇺</b>Australia</span><span class="country"><b>🇳🇿</b>Nuova Zelanda</span>
+      <span class="country"><b>🇿🇦</b>Sudafrica</span><span class="country"><b>🇺🇾</b>Uruguay</span><span class="country"><b>🇬🇷</b>Grecia</span><span class="country"><b>🌍</b>Altro paese…</span>
+    </div>
+    <label class="f">Regione · Argentina</label>
+    <div class="chips"><span class="chip sel">Mendoza</span><span class="chip">Salta</span><span class="chip">San Juan</span><span class="chip">Patagonia</span><span class="chip">La Rioja</span><span class="chip">＋ Altra regione</span></div>
+    <label class="f">Annata · Bottiglie</label>
+    <div class="chips"><span class="field">2019</span><span class="field">− 1 ＋</span></div>
+  </div>
+  <div style="padding:10px 12px 14px"><div class="btn">Salva</div></div>
+</div>
+<figcaption><b>Aggiungi vino: paese e regione</b>FR1.1, FR1.2. Il paese si sceglie toccando la bandiera: prima i paesi del Vecchio Mondo, poi quelli del Nuovo Mondo, e in fondo "Altro paese" con la ricerca. Dopo il paese compaiono le sue regioni, sempre con "Altra regione" da scrivere a mano. Quando il vino viene riconosciuto dal catalogo o dall'etichetta, paese e regione sono già selezionati.</figcaption>
+</figure>
+
+<!-- 3 Italia regioni -->
+<figure>
+<div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Nuovo vino</h2><div class="sub">Riconosciuto dal catalogo</div></div><span aria-hidden="true">✕</span></div>
+  <div class="scroll">
+    <label class="f">Nome</label><div class="field">Barolo DOCG</div>
+    <div class="banner" style="background:var(--now-bg);color:var(--now)">Riconosciuto: Barolo DOCG · Nebbiolo · Rosso</div>
+    <label class="f">Paese</label>
+    <div class="chips"><span class="chip sel">🇮🇹 Italia</span><span class="chip">Cambia</span></div>
+    <label class="f">Regione · Italia (20)</label>
+    <div class="chips">
+      <span class="chip sel">Piemonte</span><span class="chip">Toscana</span><span class="chip">Veneto</span><span class="chip">Sicilia</span><span class="chip">Puglia</span><span class="chip">Campania</span><span class="chip">Friuli-Venezia Giulia</span><span class="chip">Trentino-Alto Adige</span><span class="chip">Lombardia</span><span class="chip">Sardegna</span><span class="chip">Abruzzo</span><span class="chip">Marche</span><span class="chip">Umbria</span><span class="chip">Emilia-Romagna</span><span class="chip">Lazio</span><span class="chip">…altre 5</span><span class="chip">＋ Altra regione</span>
+    </div>
+    <label class="f">Tipo</label>
+    <div class="chips"><span class="chip sel">🔴 Rosso</span><span class="chip">🟡 Bianco</span><span class="chip">🌸 Rosato</span><span class="chip">🫧 Bollicine</span><span class="chip">🍯 Dolce</span></div>
+  </div>
+  <div style="padding:10px 12px 14px"><div class="btn">Salva</div></div>
+</div>
+<figcaption><b>Compilazione automatica dal catalogo</b>FR1.3, FR1.2. "Barolo DOCG" compila da solo Italia e Piemonte, che restano modificabili. Per l'Italia ci sono tutte le 20 regioni. Anche il tipo si sceglie toccando, con il colore e il nome.</figcaption>
+</figure>
+
+<!-- 4 Ho bevuto: pannello -->
+<figure>
+<div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Cantina</h2><div class="sub">La mia cantina · 38 bottiglie</div></div></div>
+  <div class="scroll">
+    <article class="wine" style="--c:var(--red)"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag">🇮🇹</span><div><div class="name">Barolo DOCG 2016</div><div class="meta">G.D. Vajra · Piemonte</div></div></div>
+    </div></article>
+  </div>
+  <div class="dim"></div>
+  <section class="bottom" aria-label="Conferma bevuta">
+    <div class="grab"></div>
+    <div class="row1"><span class="flag" style="font-size:1.8rem">🇮🇹</span><div><div class="name" style="font-size:1.05rem">Barolo DOCG 2016</div><div class="meta">G.D. Vajra · Piemonte · Rosso</div></div></div>
+    <div class="count"><span class="meta">Bottiglie</span><span class="big">2</span><span aria-hidden="true">→</span><span class="big" style="color:var(--bordeaux)">1</span></div>
+    <div><div class="meta">Com'era? (facoltativo)</div><div class="stars" aria-label="Voto da 1 a 5 stelle">★★★★☆</div></div>
+    <div class="btn">Sì, l'ho bevuta</div>
+    <div class="btn ghost">Annulla</div>
+  </section>
+</div>
+<figcaption><b>"Ho bevuto" con conferma</b>FR2.2, FR2.3. Toccare "Ho bevuto" non registra nulla: si apre un pannello con il vino, le bottiglie prima e dopo (2 → 1) e il voto facoltativo. Solo "Sì, l'ho bevuta" registra la bevuta, con il voto nella stessa scrittura. Dopo resta un breve "Annulla" come rete di sicurezza.</figcaption>
+</figure>
+
+<!-- 5 Dettaglio -->
+<figure>
+<div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Dettaglio</h2></div><span aria-hidden="true">✎</span></div>
+  <div class="scroll">
+    <div class="detail-hero" style="--c:var(--red)">
+      <div class="flagbig" role="img" aria-label="Italia">🇮🇹</div>
+      <div class="name" style="font-size:1.1rem">Barolo DOCG 2016</div>
+      <div class="meta">G.D. Vajra · Piemonte, Italia · Rosso</div>
+      <div class="row2"><span class="state now">Da bere ora</span><span class="bottles">× 2</span></div>
+    </div>
+    <div class="tile"><h3>Momento ideale</h3>
+      <div class="name" style="font-size:1rem">Consigliato fino al 2032</div>
+      <div class="meta">Al meglio dal 2024 al 2032</div>
+      <div class="window" aria-label="Finestra di consumo dal 2024 al 2036, oggi nel periodo ideale"></div>
+      <div class="legend"><span>2022</span><span>2024 – 2032</span><span>2036</span></div>
+      <div class="banner" style="background:var(--wait-bg);color:var(--wait)" role="note">⚠︎ Indicativo: è una stima basata su tipo, denominazione e annata. Conservazione e singola bottiglia possono cambiarla.</div>
+    </div>
+    <div class="tile"><h3>Abbinamenti</h3><div class="chips"><span class="chip">🥩 Brasato</span><span class="chip">🍄 Tartufo</span><span class="chip">🧀 Formaggi stagionati</span></div></div>
+    <div class="btn">🥂 Ho bevuto una bottiglia</div>
+    <div class="btn ghost" style="font-size:.78rem">Togli una bottiglia senza bevuta</div>
+  </div>
+</div>
+<figcaption><b>Dettaglio del vino</b>FR1.4, FR2.1, FR2.4. In alto la bandiera grande e la regione. Il "Momento ideale" dice in chiaro fino a quando il vino è consigliato ("Consigliato fino al 2032"), con la barra colorata e il segno di oggi, e sempre l'avviso che la stima è indicativa. "Ho bevuto una bottiglia" è il pulsante principale. Togliere una bottiglia senza registrare una bevuta ha un'etichetta esplicita e chiede conferma.</figcaption>
+</figure>
+
+<!-- 6 Dashboard -->
+<figure>
+<div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Vinoozy</h2><div class="sub">La mia cantina</div></div></div>
+  <div class="scroll">
+    <div class="hero"><span class="n">38</span><span>bottiglie · 7 da bere ora</span></div>
+    <div class="tile"><h3>Da bere presto</h3>
+      <div class="row1"><span class="flag">🇮🇹</span><div><div class="name">Barolo DOCG 2016</div><div class="meta">entro il 2032 · × 2</div></div></div>
+      <div class="row1"><span class="flag">🇦🇷</span><div><div class="name">Malbec Reserva 2019</div><div class="meta">oltre il picco · × 1</div></div></div>
+    </div>
+    <div class="tile"><h3>Per regione</h3>
+      <div class="bar" style="--c:var(--bordeaux)"><span>🇮🇹 Piemonte</span><span class="t"><i style="width:70%"></i></span><span class="v">14</span></div>
+      <div class="bar" style="--c:var(--bordeaux)"><span>🇮🇹 Toscana</span><span class="t"><i style="width:40%"></i></span><span class="v">8</span></div>
+      <div class="bar" style="--c:var(--bordeaux)"><span>🇫🇷 Borgogna</span><span class="t"><i style="width:25%"></i></span><span class="v">5</span></div>
+      <div class="bar" style="--c:var(--bordeaux)"><span>🇦🇷 Mendoza</span><span class="t"><i style="width:15%"></i></span><span class="v">3</span></div>
+    </div>
+    <div class="tile"><h3>Per tipo</h3>
+      <div class="bar" style="--c:var(--red)"><span>🔴 Rosso</span><span class="t"><i style="width:75%"></i></span><span class="v">26</span></div>
+      <div class="bar" style="--c:var(--white)"><span>🟡 Bianco</span><span class="t"><i style="width:22%"></i></span><span class="v">8</span></div>
+    </div>
+  </div>
+  <nav class="nav"><span class="on"><i>📊</i>Dashboard</span><span><i>🍷</i>Cantina</span><span><i>📖</i>Storico</span></nav>
+</div>
+<figcaption><b>Dashboard più ricca</b>FR3.3. In alto il totale grande e quanti vini sono da bere ora. Poi le schede "Da bere presto" con le bandiere, e i grafici per regione (con le bandiere) e per tipo (con i colori del tipo).</figcaption>
+</figure>
+
+<!-- 8 Altro paese: dialog with every flag -->
+<figure>
+<div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Nuovo vino</h2></div></div>
+  <div class="scroll"></div>
+  <div class="dim"></div>
+  <section class="bottom" aria-label="Tutti i paesi" style="top:40px;align-content:start">
+    <div class="grab"></div>
+    <div class="name" style="font-size:1.05rem">Tutti i paesi e territori</div>
+    <div class="search">🔍 marian</div>
+    <div class="row1" style="align-items:center"><span class="flag" style="font-size:1.6rem" role="img" aria-label="Isole Marianne Settentrionali">🇲🇵</span><div><div class="name">Isole Marianne Settentrionali</div><div class="meta">MP · Northern Mariana Islands</div></div></div>
+    <div class="meta" style="margin-top:6px">Rari per il vino</div>
+    <div class="countries">
+      <span class="country"><b>🇯🇵</b>Giappone</span><span class="country"><b>🇨🇳</b>Cina</span><span class="country"><b>🇮🇳</b>India</span><span class="country"><b>🇱🇧</b>Libano</span>
+      <span class="country"><b>🇮🇱</b>Israele</span><span class="country"><b>🇲🇦</b>Marocco</span><span class="country"><b>🇲🇩</b>Moldavia</span><span class="country"><b>🇷🇴</b>Romania</span>
+      <span class="country"><b>🇧🇬</b>Bulgaria</span><span class="country"><b>🇦🇲</b>Armenia</span><span class="country"><b>🇲🇽</b>Messico</span><span class="country"><b>🇵🇪</b>Perù</span>
+    </div>
+    <div class="meta">Tutti i 249 paesi e territori, dalla A alla Z, con bandiera. La ricerca funziona in italiano, inglese e portoghese.</div>
+  </section>
+</div>
+<figcaption><b>"Altro paese": tutte le bandiere</b>FR1.1. Una finestra con tutti i 249 paesi e territori ISO, ognuno con la sua bandiera, anche i più rari per il vino (qui le Isole Marianne Settentrionali). Si cerca scrivendo in una delle 3 lingue e funziona offline. Il paese scelto compare poi in cima alla griglia del modulo.</figcaption>
+</figure>
+
+<!-- 7 Dark + offline -->
+<figure>
+<div class="phone dark" style="background:var(--crema)">
+  <div class="status"></div>
+  <div class="appbar"><div><h2 style="color:var(--bordeaux)">Cantina</h2><div class="sub">Tema scuro · senza rete</div></div></div>
+  <div class="scroll">
+    <div class="banner">☁︎ Senza rete: le modifiche si sincronizzano al ritorno della rete</div>
+    <article class="wine" style="--c:#c75a6c"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag">🇨🇱</span><div><div class="name">Carménère Gran Reserva 2018</div><div class="meta">Concha y Toro · Valle del Colchagua</div></div></div>
+      <div class="row2"><span class="state now">Da bere ora</span><span class="bottles">× 4</span></div>
+      <div class="row2"><span class="type"><span class="dot"></span>Rosso</span><span class="drink">🥂 Ho bevuto</span></div>
+    </div></article>
+    <article class="wine" style="--c:#86a35a"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag">🇧🇷</span><div><div class="name">Espumante Brut</div><div class="meta">Miolo · Serra Gaúcha</div></div></div>
+      <div class="row2"><span class="state wait">Aspettare fino al 2026</span><span class="bottles">× 2</span></div>
+      <div class="row2"><span class="type"><span class="dot"></span>Bollicine</span><span class="drink">🥂 Ho bevuto</span></div>
+    </div></article>
+    <article class="wine" style="--c:#c75a6c"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag">🇦🇺</span><div><div class="name">Shiraz 2017</div><div class="meta">Penfolds · Barossa Valley</div></div></div>
+      <div class="row2"><span class="state now">Da bere ora</span><span class="bottles">× 1</span></div>
+    </div></article>
+  </div>
+  <nav class="nav" style="background:var(--card)"><span><i>📊</i>Dashboard</span><span class="on" style="color:var(--bordeaux)"><i>🍷</i>Cantina</span><span><i>📖</i>Storico</span></nav>
+</div>
+<figcaption><b>Tema scuro, senza rete, Nuovo Mondo</b>FR3.1, NFR1. La stessa palette nel tema scuro, con i contrasti verificati. La fascia "Senza rete" resta in alto. Vini di Cile, Brasile e Australia con le loro regioni.</figcaption>
+</figure>
+
+</main>
+
+<section class="notes">
+  <h2>Cosa resta uguale e cosa no</h2>
+  <ul>
+    <li><b>Uguale:</b> la navigazione in basso (Dashboard, Cantina, Storico), la stima del momento ideale, gli abbinamenti, la lettura delle etichette e il funzionamento offline.</li>
+    <li><b>Nuovo:</b> paese e regione con le bandiere; il pulsante "Ho bevuto" con conferma e voto; le schede con il colore del tipo; il pulsante "Aggiungi" flottante; la palette bordeaux, oro e crema in chiaro e scuro.</li>
+    <li><b>Bandiere:</b> emoji del telefono, senza librerie e anche offline. Se una bandiera manca si vede la sigla del paese (per esempio "JP"). Il lettore di schermo legge il nome del paese.</li>
+    <li><b>Regioni:</b> si salvano con un nome fisso, uguale in tutte le lingue, così la Dashboard non divide la stessa regione in più gruppi.</li>
+  </ul>
+</section>

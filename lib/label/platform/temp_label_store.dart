@@ -84,6 +84,11 @@ class IoLabelFileSystem implements LabelFileSystem {
 ///
 /// A file that cannot be deleted is reported as `label_cleanup_failed` and
 /// retried at the next start or reading; nothing here throws.
+///
+/// label-recognition BR1.4: the front and back of the reading whose outcome
+/// is open are [hold]: neither [beforeRead] (even after 10 minutes) nor
+/// [release] delete them; [releaseCapture] deletes them when the outcome is
+/// left, and [wipeAll] at start-up deletes whatever a killed process left.
 class TempLabelStore {
   TempLabelStore({
     required this._files,
@@ -101,11 +106,15 @@ class TempLabelStore {
   final Clock _clock;
   final LabelErrorReporter _reporter;
   Future<void> _cleanup = Future<void>.value();
+  final Set<String> _inUse = {};
 
   /// The start-up cleanup in progress (tests, start-up order).
   Future<void> get cleanup => _cleanup;
 
-  /// Starts the start-up cleanup: the whole folder, then [alsoDiscard]
+  /// The files of open outcomes (tests).
+  Set<String> get inUse => Set.unmodifiable(_inUse);
+
+  /// Starts the start-up cleanup: [wipeAll], then [alsoDiscard]
   /// (image_picker's lost data). Returns at once.
   void startCleanup({Future<void> Function()? alsoDiscard}) {
     _cleanup = _guard(() async {
@@ -114,25 +123,44 @@ class TempLabelStore {
     });
   }
 
+  /// Deletes every file of the folder not held by an open outcome: at
+  /// start-up nothing is held, so the photos of a process killed while in
+  /// Google Lens are gone (BR1.4, BR5.3, NFR4.12).
+  Future<void> wipeAll() => _guard(() => _deleteWhere((_) => true));
+
   /// Before a reading creates a file: the start-up cleanup is over and no
-  /// file older than [maxAge] is left.
+  /// file older than [maxAge] is left, except the held ones.
   Future<void> beforeRead() async {
     await _cleanup;
     final limit = _clock.now().subtract(maxAge);
     await _guard(() => _deleteWhere((entry) => entry.modified.isBefore(limit)));
   }
 
-  /// Deletes the file of a finished reading; `null` does nothing.
+  /// Keeps [path] while its outcome is open (BR1.4).
+  void hold(String path) => _inUse.add(path);
+
+  /// Deletes the file of a finished reading; `null` and held files do
+  /// nothing.
   Future<void> release(String? path) async {
-    if (path == null) return;
+    if (path == null || _inUse.contains(path)) return;
     await _guard(() => _files.delete(path));
+  }
+
+  /// The outcome is left (confirm, write by hand, back, closed, cancelled):
+  /// [paths] are no longer held and are deleted (BR1.4, FR1.3).
+  Future<void> releaseCapture(Iterable<String> paths) async {
+    final owned = [...paths];
+    _inUse.removeAll(owned);
+    for (final path in owned) {
+      await release(path);
+    }
   }
 
   Future<void> _deleteWhere(bool Function(LabelFileEntry entry) test) async {
     Object? firstError;
     StackTrace? firstStack;
     for (final entry in await _files.list()) {
-      if (!test(entry)) continue;
+      if (_inUse.contains(entry.path) || !test(entry)) continue;
       try {
         await _files.delete(entry.path);
       } catch (error, stack) {

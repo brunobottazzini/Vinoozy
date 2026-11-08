@@ -8,11 +8,13 @@ import '../account/app_user.dart';
 import '../cellar/cellar_providers.dart';
 import '../cellar/domain/cellar_filter.dart';
 import '../cellar/domain/wine.dart';
+import '../cellar/ui/autofill_widgets.dart';
 import '../cellar/ui/cellar_screen.dart';
 import '../cellar/ui/history_screen.dart';
 import '../cellar/ui/wine_detail_screen.dart';
 import '../dashboard/ui/dashboard_screen.dart';
 import '../l10n/app_localizations.dart';
+import '../label/autofill_providers.dart';
 import '../label/core/label_session.dart';
 import '../label/label_providers.dart';
 import '../label/ui/add_choice_screen.dart';
@@ -165,6 +167,8 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     if (event == null || !mounted) return;
     final l10n = AppLocalizations.of(context);
     switch (event) {
+      case SharedImageReadNow(isText: true):
+        unawaited(_readSharedText());
       case SharedImageReadNow(:final multiple):
         unawaited(_readShared(multiple));
       case SharedImageNotAllowed():
@@ -199,6 +203,34 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       ),
     );
     if (multiple) _snack(AppLocalizations.of(context).labelSharedFirstOnly);
+  }
+
+  /// A text shared by Lens (label-autofill-windows FR2.1, BR2.4): taken once
+  /// and kept only in memory. Empty: "No text received". An add form open:
+  /// its empty fields, asking first when it holds changes. Otherwise the
+  /// form opens filled, above the Cellar.
+  Future<void> _readSharedText() async {
+    final l10n = AppLocalizations.of(context);
+    String? text;
+    try {
+      text = await ref.read(sharedImageChannelProvider).readSharedText();
+    } on Object {
+      text = null;
+    }
+    await _shares.decline();
+    if (!mounted) return;
+    if (text == null || text.trim().isEmpty) {
+      _snack(l10n.autofillShareEmpty);
+      return;
+    }
+    final form = ref.read(openAutofillFormProvider);
+    if (form != null) {
+      if (form.isDirty && !await UseSharedTextDialog.show(context)) return;
+      await form.applySharedText(text);
+      return;
+    }
+    if (!mounted) return;
+    LabelCaptureFlow.openForm(context, _target(), sharedText: text);
   }
 
   @override
@@ -246,20 +278,22 @@ class _HomeShellState extends ConsumerState<HomeShell> {
         destinations: [
           NavigationDestination(
             key: const Key('home-nav-dashboard'),
-            icon: const Icon(Icons.dashboard_outlined),
-            selectedIcon: const Icon(Icons.dashboard),
+            icon: const Icon(Icons.bar_chart_outlined),
+            selectedIcon: const Icon(Icons.bar_chart),
             label: l10n.dashboardTitle,
           ),
+          // ux-redesign R-11: the Cellar is the bottle; "I drank one" keeps
+          // the glasses (Icons.wine_bar), so the two never look alike.
           NavigationDestination(
             key: const Key('home-nav-cellar'),
-            icon: const Icon(Icons.wine_bar_outlined),
-            selectedIcon: const Icon(Icons.wine_bar),
+            icon: const Icon(Icons.liquor_outlined),
+            selectedIcon: const Icon(Icons.liquor),
             label: l10n.cellarTitle,
           ),
           NavigationDestination(
             key: const Key('home-nav-history'),
-            icon: const Icon(Icons.history_outlined),
-            selectedIcon: const Icon(Icons.history),
+            icon: const Icon(Icons.menu_book_outlined),
+            selectedIcon: const Icon(Icons.menu_book),
             label: l10n.historyTitle,
           ),
         ],

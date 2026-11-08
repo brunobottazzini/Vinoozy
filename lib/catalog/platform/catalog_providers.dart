@@ -26,12 +26,15 @@ import '../core/catalog_config.dart';
 import '../core/catalog_coordinator.dart';
 import '../core/catalog_event_logger.dart';
 import '../core/internal_catalog.dart';
+import '../core/network_status.dart';
 import '../core/off/open_food_facts_source.dart';
 import '../core/off_circuit_breaker.dart';
 import '../core/request_budget.dart';
 import '../core/wine_catalog.dart';
+import 'connectivity_network_status.dart';
 import 'crashlytics_catalog_event_logger.dart';
 import 'file_cache_file.dart';
+import 'wine_db_loader.dart';
 
 /// Open Food Facts contact of this build; empty outside production.
 final catalogOffContactProvider = Provider<String>(
@@ -69,6 +72,23 @@ final catalogEventLoggerProvider = Provider<CatalogEventLogger>(
       : ConsoleCatalogEventLogger(debugLogging: kDebugMode, sink: debugPrint),
 );
 
+/// The offline wine database of the assets, opened once at first use in a
+/// background isolate (label-recognition BR2.5, NFR2.4, NFR2.6).
+final wineDbLoaderProvider = Provider<WineDbLoader>(
+  (ref) => WineDbLoader(logger: ref.watch(catalogEventLoggerProvider)),
+);
+
+/// The offline database as the About screen shows it: opened (once) at its
+/// first view (label-recognition BR6.3, NFR6.7).
+final wineDbStatusProvider = FutureProvider<WineDbLoadResult>(
+  (ref) => ref.watch(wineDbLoaderProvider).open(),
+);
+
+/// The catalog's network check (label-recognition BR6.1, FR5).
+final catalogNetworkStatusProvider = Provider<CatalogNetworkStatus>(
+  (ref) => ConnectivityCatalogNetworkStatus(),
+);
+
 /// The coordinator and its parts, built once per session (NFR1.5).
 final catalogCoordinatorProvider = Provider<CatalogCoordinator>((ref) {
   final clock = ref.watch(clockProvider);
@@ -99,6 +119,8 @@ final catalogCoordinatorProvider = Provider<CatalogCoordinator>((ref) {
     breaker: OffCircuitBreaker(clock: clock, logger: logger, health: health),
     logger: logger,
     offSource: offSource,
+    wineDb: ref.watch(wineDbLoaderProvider).openDb,
+    network: ref.watch(catalogNetworkStatusProvider),
   );
   ref.onDispose(coordinator.dispose);
   return coordinator;

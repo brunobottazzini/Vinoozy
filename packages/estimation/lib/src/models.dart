@@ -2,6 +2,10 @@
 // Every type is immutable and compares by value (NFR4.4), and none of them has
 // a field for personal data such as email, uid, location or device (NFR8.1).
 
+import 'wine_level.dart';
+
+export 'wine_level.dart' show WineLevel;
+
 /// Warning code exposed when an estimate has `basis == generic` (BR4.3).
 const String genericEstimateWarningCode = 'GENERIC_ESTIMATE';
 
@@ -45,7 +49,26 @@ const Map<String, WineType> _catalogWineTypes = {
 };
 
 /// Qualifier found in the name that has its own year offsets (BR1.1, BR2.1).
-enum Qualifier { riserva, superiore, granSelezione }
+///
+/// label-autofill-windows (ENT-002, BR1.8) adds the foreign qualifiers after
+/// the three Italian ones, so the stored names of the first three never
+/// change.
+enum Qualifier {
+  riserva,
+  superiore,
+  granSelezione,
+  crianza,
+  reserva,
+  granReserva,
+  premierCru,
+  grandCru,
+  kabinett,
+  spatlese,
+  auslese,
+  vintage,
+  lbv,
+  colheita,
+}
 
 /// Confidence level of an estimate (BR3.1).
 enum Confidence { high, medium, low }
@@ -54,9 +77,13 @@ enum Confidence { high, medium, low }
 enum WindowSource { catalog, internalRules }
 
 /// What an estimate is based on (entities.md, addition to C2).
+///
+/// `grape` (label-autofill-windows ENT-002, FR3.2): the window of a grape
+/// variety, used when no denomination is recognised.
 enum EstimationBasis {
   catalog,
   denomination,
+  grape,
   wineType,
   generic;
 
@@ -116,6 +143,7 @@ class WineFacts {
     this.region,
     this.denomination,
     this.referenceYear,
+    this.level,
   });
 
   /// Wine name as typed by the user (1-60 characters after trimming, C3).
@@ -136,6 +164,13 @@ class WineFacts {
   /// [vintage] is missing (BR1.3, BR4.5).
   final int? referenceYear;
 
+  /// "Level" of the wine (label-autofill-windows FR4, BR4.1); `null` is "not
+  /// chosen", which estimates as [WineLevel.good]. It is a field of the facts
+  /// rather than a named parameter of `estimateWindow` because that function
+  /// already has an optional positional parameter, which Dart cannot mix
+  /// with named ones.
+  final WineLevel? level;
+
   @override
   bool operator ==(Object other) =>
       other is WineFacts &&
@@ -145,7 +180,8 @@ class WineFacts {
       other.wineType == wineType &&
       other.region == region &&
       other.denomination == denomination &&
-      other.referenceYear == referenceYear;
+      other.referenceYear == referenceYear &&
+      other.level == level;
 
   @override
   int get hashCode => Object.hash(
@@ -156,13 +192,15 @@ class WineFacts {
     region,
     denomination,
     referenceYear,
+    level,
   );
 
   @override
   String toString() =>
       'WineFacts(name: $name, producer: $producer, vintage: $vintage, '
       'wineType: ${wineType?.name}, region: $region, '
-      'denomination: $denomination, referenceYear: $referenceYear)';
+      'denomination: $denomination, referenceYear: $referenceYear, '
+      'level: ${level?.name})';
 }
 
 /// Catalog profile from C1 `v1-getWineProfile` with `found = true`.
@@ -238,6 +276,8 @@ class DrinkingWindow {
     required this.source,
     required this.basis,
     this.qualifier,
+    this.denominationKey,
+    this.tablesVersion,
   });
 
   final int startYear;
@@ -250,9 +290,32 @@ class DrinkingWindow {
   /// Qualifier whose own offsets were used, if any.
   final Qualifier? qualifier;
 
+  /// Stable key of the table row used: a denomination (`rioja`) or a grape
+  /// (`malbec`); `null` for type, generic and catalog windows
+  /// (label-autofill-windows ENT-002).
+  final String? denominationKey;
+
+  /// Version of the internal tables that computed the window
+  /// ([estimationTablesVersion]); `null` for windows saved before it existed.
+  /// A different version makes the app estimate the wine again once (BR3.9).
+  final int? tablesVersion;
+
   /// [genericEstimateWarningCode] when the estimate is generic, else `null`.
   String? get warningCode =>
       basis == EstimationBasis.generic ? genericEstimateWarningCode : null;
+
+  /// This window with other years, everything else kept.
+  DrinkingWindow withYears(int start, int peak, int end) => DrinkingWindow(
+    startYear: start,
+    peakYear: peak,
+    endYear: end,
+    confidence: confidence,
+    source: source,
+    basis: basis,
+    qualifier: qualifier,
+    denominationKey: denominationKey,
+    tablesVersion: tablesVersion,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -263,7 +326,9 @@ class DrinkingWindow {
       other.confidence == confidence &&
       other.source == source &&
       other.basis == basis &&
-      other.qualifier == qualifier;
+      other.qualifier == qualifier &&
+      other.denominationKey == denominationKey &&
+      other.tablesVersion == tablesVersion;
 
   @override
   int get hashCode => Object.hash(
@@ -274,13 +339,17 @@ class DrinkingWindow {
     source,
     basis,
     qualifier,
+    denominationKey,
+    tablesVersion,
   );
 
   @override
   String toString() =>
       'DrinkingWindow($startYear/$peakYear/$endYear, '
       'confidence: ${confidence.name}, source: ${source.name}, '
-      'basis: ${basis.name}, qualifier: ${qualifier?.name})';
+      'basis: ${basis.name}, qualifier: ${qualifier?.name}'
+      '${denominationKey == null ? '' : ', denominationKey: $denominationKey'}'
+      '${tablesVersion == null ? '' : ', tablesVersion: $tablesVersion'})';
 }
 
 /// Pairings (C2 `Pairings`): catalog texts in [items], or internal category

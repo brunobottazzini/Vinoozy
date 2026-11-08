@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../account/app_user.dart';
+import '../app/app_event_logger.dart';
 import '../app/providers.dart';
 import '../catalog/core/wine_catalog.dart';
 import '../catalog/platform/catalog_providers.dart';
@@ -18,6 +20,7 @@ import 'domain/cellar_filter.dart';
 import 'domain/drinking_record.dart';
 import 'domain/wine.dart';
 import 'estimate_refresher.dart';
+import 'estimates_migration.dart';
 
 // Providers of u4-cellar (logical-components.md). `winesStreamProvider`, the
 // single listener of the wines with `quantity > 0` shared with the Dashboard
@@ -53,6 +56,19 @@ final estimateRefresherProvider = Provider<EstimateRefresher>(
   ),
 );
 
+/// The one-off estimate of the cellar with new tables (label-autofill-windows
+/// BR3.9, NFR4.8a): one per app start, its refusals counted in the phone
+/// preferences.
+final estimatesMigrationProvider = Provider<EstimatesMigration>(
+  (ref) => EstimatesMigration(
+    wines: ref.watch(wineRepositoryProvider),
+    reporter: ref.watch(errorReporterProvider),
+    clock: ref.watch(clockProvider),
+    store: PreferencesMigrationAttemptStore(SharedPreferences.getInstance),
+    logger: ref.watch(appEventLoggerProvider),
+  ),
+);
+
 /// The cellar operations behind the screens.
 final cellarActionsProvider = Provider<CellarActions>(
   (ref) => CellarActions(
@@ -63,6 +79,7 @@ final cellarActionsProvider = Provider<CellarActions>(
     bus: ref.watch(syncErrorBusProvider),
     reporter: ref.watch(errorReporterProvider),
     clock: ref.watch(clockProvider),
+    migration: ref.watch(estimatesMigrationProvider),
   ),
 );
 

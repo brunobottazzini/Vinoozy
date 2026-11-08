@@ -37,6 +37,7 @@ Wine wineOf(
   String? region,
   String? denomination,
   DrinkingWindow? window,
+  String? country,
 }) => Wine(
   id: id,
   name: name,
@@ -47,6 +48,7 @@ Wine wineOf(
   region: region,
   denomination: denomination,
   window: window,
+  country: country,
 );
 
 /// The same wine as the cloud document [Wine.fromMap] reads.

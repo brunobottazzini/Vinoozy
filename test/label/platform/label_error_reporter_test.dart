@@ -6,12 +6,14 @@ import '../label_harness.dart';
 
 void main() {
   group('BR1.14 fixed reasons', () {
-    test('BR1.14 the four reasons are fixed strings', () {
+    // label-autofill-windows NFR4.16 adds `appellations_index_failed`.
+    test('BR1.14 the reasons are fixed strings', () {
       expect(LabelFailure.values.map((failure) => failure.reason), [
         'label_read_failed',
         'label_pick_failed',
         'label_lookup_failed',
         'label_cleanup_failed',
+        'appellations_index_failed',
       ]);
     });
 

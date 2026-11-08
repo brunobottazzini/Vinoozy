@@ -7,11 +7,16 @@ import 'cellar_errors.dart';
 /// (security-design.md §4, NFR6.6), with no read of its own.
 ///
 /// No open listener covers every drink: the History reads pages and a
-/// finished wine leaves the `quantity > 0` list. So after each drink write
-/// the probe marks `SyncSource.drinkingRecords` pending, waits for
-/// `FirebaseFirestore.waitForPendingWrites()` and clears it when the wait
-/// completes. Only the latest wait clears it: an earlier one finishing
-/// while a later write is still queued changes nothing.
+/// finished wine leaves the `quantity > 0` list. So each drink write (drink,
+/// undo, rating and notes) hands its own commit future to [trackWrite]: the
+/// probe counts the writes still open and stays pending until every one of
+/// them has completed, confirmed by the server or failed. A commit future
+/// stays open while offline, so the state never depends on the order in
+/// which the platform channel runs `waitForPendingWrites()` and the commit.
+///
+/// [checkAtStartup] alone still uses `FirebaseFirestore.waitForPendingWrites()`
+/// for the writes queued by an earlier session, with its own state: the
+/// probe is pending while a write is open or the start-up wait is showing.
 class PendingWritesProbe {
   PendingWritesProbe({
     required Future<void> Function() waitForPendingWrites,
@@ -24,46 +29,59 @@ class PendingWritesProbe {
   final void Function(bool pending) _onPendingChanged;
   final ErrorReporter _reporter;
   final Duration _startupGrace;
-  int _token = 0;
+  int _openWrites = 0;
+  bool _startupPending = false;
   bool _pending = false;
 
   bool get isPending => _pending;
 
-  /// Called after every drink write (drink, undo, rating and notes, delete):
-  /// pending at once, cleared when the queue is confirmed.
-  Future<void> trackWrite() {
-    final token = ++_token;
-    _set(true);
-    return _waitFor(token);
+  /// Called with the commit future of every drink write: pending at once,
+  /// cleared when no tracked write is open any more. A failed [write] only
+  /// closes its share here: the writer (`DrinkingRecordRepository._commit`)
+  /// already handles and reports that same error, once.
+  Future<void> trackWrite(Future<void> write) async {
+    _openWrites++;
+    _refresh();
+    try {
+      await write;
+    } catch (_) {
+      // Reported by the writer; a second report would duplicate it.
+    } finally {
+      _openWrites--;
+      _refresh();
+    }
   }
 
   /// At app start, the writes queued by an earlier session count too. A wait
-  /// that completes within [_startupGrace] never shows the banner.
+  /// that completes within [_startupGrace] never shows the banner. Called
+  /// once, at app start.
   Future<void> checkAtStartup() async {
-    final token = ++_token;
-    var done = false;
     final timer = Timer(_startupGrace, () {
-      if (!done && token == _token) _set(true);
+      _startupPending = true;
+      _refresh();
     });
-    await _waitFor(token);
-    done = true;
-    timer.cancel();
-  }
-
-  Future<void> _waitFor(int token) async {
     try {
       await _wait();
-      if (token == _token) _set(false);
     } catch (error, stack) {
       // E.g. at sign-out: the banner must not stay "pending" for ever.
-      if (token == _token) _set(false);
+      _endStartup(timer);
       await _reporter.report(
         error,
         stack,
         reason: CellarErrorReasons.pendingProbeFailed,
       );
+      return;
     }
+    _endStartup(timer);
   }
+
+  void _endStartup(Timer timer) {
+    timer.cancel();
+    _startupPending = false;
+    _refresh();
+  }
+
+  void _refresh() => _set(_openWrites > 0 || _startupPending);
 
   void _set(bool pending) {
     if (pending == _pending) return;

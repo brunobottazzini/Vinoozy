@@ -92,6 +92,21 @@ jobs:
       # firestore_import/ fails).
       - run: tool/check_label_imports.sh
       - run: tool/check_label_imports_test.sh
+      # Google Lens (label-recognition NFR3.3): the FileProvider is not
+      # exported and exposes only cache/label/, <queries> names only the
+      # Google app and ACTION_SEND image/*; then the check of the check
+      # (ok/ passes, bad/ fails on each problem).
+      - run: tool/check_lens_manifest.sh
+      - run: tool/check_lens_manifest_test.sh
+      # Wine database (label-recognition review R-02): only the check of the
+      # check runs here, on fixtures (a real-looking manifest passes, the
+      # sample and fewer than 5000 wines fail). The check itself runs in
+      # promote.yml, before production; the sample is allowed on internal.
+      - run: tool/check_wine_db_release_test.sh
+      # Appellation table (label-autofill-windows BR3.6, BR6.3): the same,
+      # for the table generated from eAmbrosia; the sample built with
+      # --allow-sample is refused by promote.yml before production.
+      - run: tool/check_appellations_release_test.sh
       # Account (u8 NFR7.2): every rule BR1.1-BR1.13 is in a test name.
       - run: tool/check_rule_ids.sh BR1. 13 test/account test/rules/u8.rules.test.mjs
       # Account deletion page (u8 NFR4.7, infrastructure-specification.md
@@ -141,7 +156,12 @@ jobs:
           dart run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib
       - run: cat coverage/lcov.info packages/estimation/coverage/lcov.info > coverage/merged.lcov.info
       - run: tool/check_coverage.sh 80 coverage/merged.lcov.info
-      # Wine catalog (u3 NFR7.1): lib/catalog/ alone at 80% too.
+      # Wine catalog (u3 NFR7.1, label-recognition NFR4.1): lib/catalog/
+      # alone at 80% too, the offline wine database included. The speed of
+      # the database (NFR2.1, NFR2.2, NFR2.7) is measured by the `benchmark`
+      # tests of test/catalog/offline/, run by `flutter test` above; the
+      # build tool tests (test/tool/) never download the Open Food Facts
+      # export (NFR5.8).
       - run: tool/check_coverage.sh 80 coverage/lcov.info lib/catalog/
       # Dashboard (u5 team.md, Copertura): lib/dashboard/ alone at 80% too.
       - run: tool/check_coverage.sh 80 coverage/lcov.info lib/dashboard/

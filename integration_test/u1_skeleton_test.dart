@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:vinoozy/cellar/data/cellar_repository.dart';
-import 'package:vinoozy/cellar/ui/wine_list_tile.dart';
+import 'package:vinoozy/cellar/ui/wine_card.dart';
 import 'package:vinoozy/e2e/test_network_control.dart';
 
 import 'e2e_helpers.dart';
@@ -79,7 +79,8 @@ void main() {
     debugPrint(
       'E2E NFR1.1 save-to-list offline: ${saveToList.inMilliseconds} ms',
     );
-    expect(find.text('x2'), findsOneWidget);
+    // ux-redesign WineCard: "× n" bottles.
+    expect(find.text('× 2'), findsOneWidget);
     await waitFor(tester, offlineBanner);
     expect(await cloudWineNames(uid), isEmpty, reason: 'still on the phone');
     // Provisional non-regression limit, NOT the NFR1.1 target (300 ms): this
@@ -271,9 +272,10 @@ void main() {
     tester,
   ) async {
     final cellarError = find.byKey(const Key('cellar-error'));
+    // ux-redesign: "Aggiungi" is a floating button.
     bool addEnabled() =>
         tester
-            .widget<ButtonStyleButton>(
+            .widget<FloatingActionButton>(
               find.byKey(const Key('cellar-add-button')),
             )
             .onPressed !=
@@ -344,7 +346,7 @@ void main() {
       // same as before u5-dashboard, without a tap in it.
       await waitFor(
         tester,
-        find.byType(WineListTile, skipOffstage: false),
+        find.byType(WineCard, skipOffstage: false),
         viaCellarTab: false,
       );
       // The first run warms up and is excluded.

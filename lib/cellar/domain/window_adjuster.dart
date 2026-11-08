@@ -2,6 +2,7 @@ import 'package:estimation/estimation.dart';
 
 import 'drinking_record.dart';
 import 'firestore_values.dart';
+import 'window_override.dart';
 
 /// Field names of the `windowAdjustment` map of a wine (C3, u4-cellar).
 abstract final class AdjustmentFields {
@@ -80,6 +81,10 @@ enum EstimateLabel {
 
   /// "Estimate corrected by your drinks": a feedback changed the window.
   correctedByDrinks,
+
+  /// "Corrected by you" (label-autofill-windows FR5.2, BR4.7): the owner set
+  /// "Recommended until"; it comes before every other label.
+  correctedByYou,
 }
 
 /// Applies the drink feedback to the base estimate (BR1.12). Pure: no
@@ -170,15 +175,34 @@ abstract final class WindowAdjuster {
     return latest == null ? null : WindowAdjustment.ofRecord(latest);
   }
 
+  /// The effective window of a wine (label-autofill-windows BR4.4, BR4.5):
+  /// [base] (the estimate, level included) with the drink feedback, then
+  /// the owner's end year. The one function every place that writes or
+  /// shows a window uses.
+  static DrinkingWindow effectiveOf(
+    DrinkingWindow base,
+    WindowAdjustment? adjustment,
+    WindowOverride? override,
+  ) => effectiveWindow(
+    effective(base, adjustment),
+    overrideEndYear: override?.endYear,
+  );
+
   /// The source label of a wine's estimate (functional-spec "Fonte
-  /// mostrata"): corrected only when an adjustment exists and the window
-  /// differs from the base; otherwise the source of the window.
+  /// mostrata", label-autofill-windows BR4.7): "corrected by you" with an
+  /// override; "corrected by your drinks" when an adjustment changes the
+  /// base (the base already holds the level, so a level is never taken for
+  /// a feedback); otherwise the source of the window.
   static EstimateLabel labelOf({
     required DrinkingWindow window,
     DrinkingWindow? base,
     WindowAdjustment? adjustment,
+    WindowOverride? override,
   }) {
-    if (adjustment != null && base != null && !_sameYears(window, base)) {
+    if (override != null) return EstimateLabel.correctedByYou;
+    if (adjustment != null &&
+        base != null &&
+        !_sameYears(effective(base, adjustment), base)) {
       return EstimateLabel.correctedByDrinks;
     }
     return (base ?? window).source == WindowSource.catalog

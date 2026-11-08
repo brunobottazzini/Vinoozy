@@ -108,7 +108,7 @@ class SharedImageReceiverTest {
         val image = uri("1")
         assertTrue(receiver.onCreateFresh(send(image), replace))
         assertTrue(receiver.hasPending)
-        assertEquals(mapOf("multiple" to false), receiver.pendingInfo())
+        assertEquals(mapOf("multiple" to false, "kind" to "image"), receiver.pendingInfo())
         assertEquals(1, replaced.size)
         assertNull("replaced with an empty intent", replaced.single().action)
         assertTrue("no copy at reception", labelFiles().isEmpty())
@@ -170,7 +170,7 @@ class SharedImageReceiverTest {
         serve(first, jpegBytes(), opened)
         serve(second, jpegBytes(), opened)
         assertTrue(receiver.onCreateFresh(sendMultiple(first, second, uri("third")), replace))
-        assertEquals(mapOf("multiple" to true), receiver.pendingInfo())
+        assertEquals(mapOf("multiple" to true, "kind" to "image"), receiver.pendingInfo())
         val share = receiver.takePending()!!
         assertTrue(share.multiple)
         assertTrue(receiver.read(share) is PrepareResult.Ready)

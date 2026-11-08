@@ -144,6 +144,8 @@ void main() {
         'region',
         'denomination',
         'referenceYear',
+        // label-autofill-windows ENT-005: the level, not personal either.
+        'level',
       ]);
     });
 

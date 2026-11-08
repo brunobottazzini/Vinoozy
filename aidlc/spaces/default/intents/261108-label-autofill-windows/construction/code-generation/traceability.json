@@ -1,0 +1,1073 @@
+{
+  "stage": "code-generation",
+  "upstream_ids": [
+    "FR1.1",
+    "FR1.2",
+    "FR1.3",
+    "FR1.4",
+    "FR1.5",
+    "FR1.6",
+    "FR2.1",
+    "FR2.2",
+    "FR2.3",
+    "FR2.4",
+    "FR2.5",
+    "FR2.6",
+    "FR2.7",
+    "FR3.1",
+    "FR3.2",
+    "FR3.3",
+    "FR3.4",
+    "FR3.5",
+    "FR4.1",
+    "FR4.2",
+    "FR4.3",
+    "FR4.4",
+    "FR5.1",
+    "FR5.2",
+    "FR5.3",
+    "FR5.4",
+    "FR5.5",
+    "FR5.6",
+    "FR6.1",
+    "FR6.2",
+    "FR6.3",
+    "FR6.4",
+    "NFR1.1",
+    "NFR1.2",
+    "NFR1.3",
+    "NFR1.4",
+    "NFR1.5",
+    "NFR1.6",
+    "NFR2.1",
+    "NFR2.2",
+    "NFR3.1",
+    "NFR3.2",
+    "NFR3.3",
+    "NFR3.4",
+    "NFR3.5",
+    "NFR3.6",
+    "NFR3.7",
+    "NFR4.1",
+    "NFR4.2",
+    "NFR4.3",
+    "NFR4.4",
+    "NFR4.5",
+    "NFR4.6",
+    "NFR4.7",
+    "NFR4.8",
+    "NFR4.8a",
+    "NFR4.9",
+    "NFR4.10",
+    "NFR4.11",
+    "NFR4.12",
+    "NFR4.13",
+    "NFR4.14",
+    "NFR4.15",
+    "NFR4.16",
+    "NFR5.1",
+    "NFR5.2",
+    "NFR5.3",
+    "NFR5.4",
+    "NFR5.5",
+    "NFR5.6",
+    "NFR6.1",
+    "BR1.1",
+    "BR1.2",
+    "BR1.3",
+    "BR1.4",
+    "BR1.5",
+    "BR1.6",
+    "BR1.7",
+    "BR1.8",
+    "BR1.9",
+    "BR1.10",
+    "BR2.1",
+    "BR2.2",
+    "BR2.3",
+    "BR2.4",
+    "BR2.5",
+    "BR2.6",
+    "BR2.7",
+    "BR3.1",
+    "BR3.2",
+    "BR3.3",
+    "BR3.4",
+    "BR3.5",
+    "BR3.6",
+    "BR3.7",
+    "BR3.8",
+    "BR3.9",
+    "BR4.1",
+    "BR4.2",
+    "BR4.3",
+    "BR4.4",
+    "BR4.5",
+    "BR4.6",
+    "BR4.7",
+    "BR5.1",
+    "BR5.2",
+    "BR5.3",
+    "BR6.1",
+    "BR6.2",
+    "BR6.3",
+    "NFR6",
+    "FR2.8",
+    "FR7.1",
+    "FR7.2",
+    "FR7.3",
+    "FR7.4",
+    "FR7.5",
+    "FR7.6",
+    "FR7.7",
+    "FR7.8",
+    "FR7.9",
+    "NFR5.8",
+    "NFR5.9",
+    "NFR4.17",
+    "NFR4.18",
+    "NFR4.19",
+    "NFR4.23",
+    "NFR4.24",
+    "NFR4.20",
+    "NFR3.8",
+    "NFR3.9",
+    "NFR4.21",
+    "NFR4.22",
+    "BR7.10",
+    "BR7.8",
+    "BR7.1",
+    "BR7.14",
+    "BR7.7",
+    "BR7.2",
+    "BR7.4",
+    "BR7.6",
+    "BR7.3",
+    "BR7.5",
+    "BR7.9",
+    "BR7.17",
+    "BR7.11",
+    "BR7.12",
+    "BR7.15",
+    "BR7.13",
+    "BR7.16",
+    "BR7.18",
+    "BR7.19",
+    "BR7.20",
+    "BR7.21",
+    "BR7.22",
+    "BR7.23",
+    "BR7.24",
+    "BR7.25",
+    "D7",
+    "D8",
+    "D9",
+    "D10",
+    "D11",
+    "D12",
+    "D13",
+    "ENT-007",
+    "ENT-008",
+    "ENT-009",
+    "ENT-010",
+    "ENT-011",
+    "ENT-012",
+    "ENT-013",
+    "ENT-014",
+    "NFR6.2"
+  ],
+  "coverage": [
+    {
+      "id": "FR1.1",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_fields.dart"
+    },
+    {
+      "id": "FR1.2",
+      "status": "OK",
+      "target": "lib/label/ui/label_reading_screen.dart"
+    },
+    {
+      "id": "FR1.3",
+      "status": "OK",
+      "target": "lib/cellar/ui/autofill_widgets.dart"
+    },
+    {
+      "id": "FR1.4",
+      "status": "OK",
+      "target": "lib/cellar/ui/add_wine_screen.dart"
+    },
+    {
+      "id": "FR1.5",
+      "status": "OK",
+      "target": "lib/cellar/domain/wine_validator.dart"
+    },
+    {
+      "id": "FR1.6",
+      "status": "OK",
+      "target": "lib/label/core/text_autofill.dart"
+    },
+    {
+      "id": "FR2.1",
+      "status": "OK",
+      "target": "lib/app/home_shell.dart"
+    },
+    {
+      "id": "FR2.2",
+      "status": "OK",
+      "target": "lib/cellar/ui/add_wine_screen.dart"
+    },
+    {
+      "id": "FR2.3",
+      "status": "OK",
+      "target": "android/app/src/main/kotlin/com/vinoozy/vinoozy/SharedImageReceiver.kt"
+    },
+    {
+      "id": "FR2.4",
+      "status": "OK",
+      "target": "lib/cellar/ui/add_wine_screen.dart"
+    },
+    {
+      "id": "FR2.5",
+      "status": "OK",
+      "target": "lib/label/core/text_autofill.dart"
+    },
+    {
+      "id": "FR2.6",
+      "status": "OK",
+      "target": "android/app/src/main/kotlin/com/vinoozy/vinoozy/LensIntentLauncher.kt"
+    },
+    {
+      "id": "FR2.7",
+      "status": "OK",
+      "target": "lib/label/core/lens_session.dart"
+    },
+    {
+      "id": "FR3.1",
+      "status": "OK",
+      "target": "tool/build_appellations.dart"
+    },
+    {
+      "id": "FR3.2",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/grapes.dart"
+    },
+    {
+      "id": "FR3.3",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/world_tables.dart"
+    },
+    {
+      "id": "FR3.4",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/recognizer.dart"
+    },
+    {
+      "id": "FR3.5",
+      "status": "OK",
+      "target": "lib/cellar/estimates_migration.dart"
+    },
+    {
+      "id": "FR4.1",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/wine_level.dart"
+    },
+    {
+      "id": "FR4.2",
+      "status": "OK",
+      "target": "lib/cellar/ui/wine_level_selector.dart"
+    },
+    {
+      "id": "FR4.3",
+      "status": "OK",
+      "target": "lib/cellar/ui/level_section.dart"
+    },
+    {
+      "id": "FR4.4",
+      "status": "OK",
+      "target": "lib/cellar/ui/ideal_moment_card.dart"
+    },
+    {
+      "id": "FR5.1",
+      "status": "OK",
+      "target": "lib/cellar/ui/window_override_widgets.dart"
+    },
+    {
+      "id": "FR5.2",
+      "status": "OK",
+      "target": "lib/cellar/ui/ideal_moment_card.dart"
+    },
+    {
+      "id": "FR5.3",
+      "status": "OK",
+      "target": "lib/cellar/data/wine_repository.dart"
+    },
+    {
+      "id": "FR5.4",
+      "status": "OK",
+      "target": "lib/cellar/cellar_actions.dart"
+    },
+    {
+      "id": "FR5.5",
+      "status": "OK",
+      "target": "lib/cellar/domain/window_adjuster.dart"
+    },
+    {
+      "id": "FR5.6",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/effective_window.dart"
+    },
+    {
+      "id": "FR6.1",
+      "status": "N/A",
+      "target": "docs/release-checklist.md"
+    },
+    {
+      "id": "FR6.2",
+      "status": "N/A",
+      "target": "docs/release-checklist.md"
+    },
+    {
+      "id": "FR6.3",
+      "status": "N/A",
+      "target": "docs/release-checklist.md"
+    },
+    {
+      "id": "FR6.4",
+      "status": "OK",
+      "target": ".gitignore"
+    },
+    {
+      "id": "NFR1.1",
+      "status": "OK",
+      "target": "lib/cellar/domain/wine.dart"
+    },
+    {
+      "id": "NFR1.2",
+      "status": "OK",
+      "target": "firestore.rules"
+    },
+    {
+      "id": "NFR1.3",
+      "status": "OK",
+      "target": "test/rules/compat/app-writes.json"
+    },
+    {
+      "id": "NFR1.4",
+      "status": "OK",
+      "target": "test/rules/label_autofill.rules.test.mjs"
+    },
+    {
+      "id": "NFR1.5",
+      "status": "OK",
+      "target": ".github/workflows/promote.yml"
+    },
+    {
+      "id": "NFR1.6",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/generated/appellations.g.dart"
+    },
+    {
+      "id": "NFR2.1",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/appellations.dart"
+    },
+    {
+      "id": "NFR2.2",
+      "status": "OK",
+      "target": "tool/data/appellations/README.md"
+    },
+    {
+      "id": "NFR3.1",
+      "status": "OK",
+      "target": "lib/label/core/lens_session.dart"
+    },
+    {
+      "id": "NFR3.2",
+      "status": "OK",
+      "target": "lib/app/app_event_logger.dart"
+    },
+    {
+      "id": "NFR3.3",
+      "status": "OK",
+      "target": "android/app/src/main/AndroidManifest.xml"
+    },
+    {
+      "id": "NFR3.4",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_fields.dart"
+    },
+    {
+      "id": "NFR3.5",
+      "status": "OK",
+      "target": "lib/label/ui/label_capture_flow.dart"
+    },
+    {
+      "id": "NFR3.6",
+      "status": "OK",
+      "target": "docs/release-checklist.md"
+    },
+    {
+      "id": "NFR3.7",
+      "status": "OK",
+      "target": "lib/label/core/lens_session.dart"
+    },
+    {
+      "id": "NFR4.1",
+      "status": "OK",
+      "target": "packages/estimation/benchmark/estimation_benchmark.dart"
+    },
+    {
+      "id": "NFR4.2",
+      "status": "OK",
+      "target": "packages/estimation/benchmark/estimation_benchmark.dart"
+    },
+    {
+      "id": "NFR4.3",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/recognizer.dart"
+    },
+    {
+      "id": "NFR4.4",
+      "status": "OK",
+      "target": "lib/cellar/estimates_migration.dart"
+    },
+    {
+      "id": "NFR4.5",
+      "status": "OK",
+      "target": "tool/build_appellations.dart"
+    },
+    {
+      "id": "NFR4.6",
+      "status": "OK",
+      "target": "packages/estimation/test/tables_test.dart"
+    },
+    {
+      "id": "NFR4.7",
+      "status": "OK",
+      "target": "lib/cellar/estimates_migration.dart"
+    },
+    {
+      "id": "NFR4.8",
+      "status": "OK",
+      "target": "lib/cellar/estimates_migration.dart"
+    },
+    {
+      "id": "NFR4.8a",
+      "status": "OK",
+      "target": "lib/cellar/estimates_migration.dart"
+    },
+    {
+      "id": "NFR4.9",
+      "status": "OK",
+      "target": "lib/label/ui/lens_instructions_sheet.dart"
+    },
+    {
+      "id": "NFR4.10",
+      "status": "OK",
+      "target": "lib/label/platform/lens_channel.dart"
+    },
+    {
+      "id": "NFR4.11",
+      "status": "OK",
+      "target": "test/cellar/level_override_test.dart"
+    },
+    {
+      "id": "NFR4.12",
+      "status": "OK",
+      "target": "tool/build_appellations.dart"
+    },
+    {
+      "id": "NFR4.13",
+      "status": "OK",
+      "target": "packages/estimation/test/tables_test.dart"
+    },
+    {
+      "id": "NFR4.14",
+      "status": "OK",
+      "target": "lib/cellar/data/wine_repository.dart"
+    },
+    {
+      "id": "NFR4.15",
+      "status": "OK",
+      "target": "lib/app/app_event_logger.dart"
+    },
+    {
+      "id": "NFR4.16",
+      "status": "OK",
+      "target": "lib/label/platform/label_error_reporter.dart"
+    },
+    {
+      "id": "NFR5.1",
+      "status": "OK",
+      "target": "tool/check_coverage.sh"
+    },
+    {
+      "id": "NFR5.2",
+      "status": "OK",
+      "target": "packages/estimation/test/tables_test.dart"
+    },
+    {
+      "id": "NFR5.3",
+      "status": "OK",
+      "target": "test/rules/label_autofill.rules.test.mjs"
+    },
+    {
+      "id": "NFR5.4",
+      "status": "OK",
+      "target": "integration_test/autofill_test.dart"
+    },
+    {
+      "id": "NFR5.5",
+      "status": "OK",
+      "target": "test/label/ui/label_screens_test.dart"
+    },
+    {
+      "id": "NFR5.6",
+      "status": "OK",
+      "target": ".gitignore"
+    },
+    {
+      "id": "NFR6.1",
+      "status": "OK",
+      "target": "test/cellar/ui/autofill_components_test.dart"
+    },
+    {
+      "id": "BR1.1",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_fields.dart"
+    },
+    {
+      "id": "BR1.2",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/recognizer.dart"
+    },
+    {
+      "id": "BR1.3",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/vintage_parser.dart"
+    },
+    {
+      "id": "BR1.4",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_fields.dart"
+    },
+    {
+      "id": "BR1.5",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_fields.dart"
+    },
+    {
+      "id": "BR1.6",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_fields.dart"
+    },
+    {
+      "id": "BR1.7",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/country_names.dart"
+    },
+    {
+      "id": "BR1.8",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/qualifiers.dart"
+    },
+    {
+      "id": "BR1.9",
+      "status": "OK",
+      "target": "lib/cellar/domain/wine_validator.dart"
+    },
+    {
+      "id": "BR1.10",
+      "status": "OK",
+      "target": "packages/estimation/test/fixtures/label_texts.json"
+    },
+    {
+      "id": "BR2.1",
+      "status": "OK",
+      "target": "lib/label/ui/label_reading_screen.dart"
+    },
+    {
+      "id": "BR2.2",
+      "status": "OK",
+      "target": "lib/label/core/text_autofill.dart"
+    },
+    {
+      "id": "BR2.3",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_fields.dart"
+    },
+    {
+      "id": "BR2.4",
+      "status": "OK",
+      "target": "lib/app/home_shell.dart"
+    },
+    {
+      "id": "BR2.5",
+      "status": "OK",
+      "target": "android/app/src/main/kotlin/com/vinoozy/vinoozy/LensIntentLauncher.kt"
+    },
+    {
+      "id": "BR2.6",
+      "status": "OK",
+      "target": "lib/label/core/lens_session.dart"
+    },
+    {
+      "id": "BR2.7",
+      "status": "OK",
+      "target": "lib/cellar/ui/add_wine_screen.dart"
+    },
+    {
+      "id": "BR3.1",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/recognizer.dart"
+    },
+    {
+      "id": "BR3.2",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/appellations.dart"
+    },
+    {
+      "id": "BR3.3",
+      "status": "OK",
+      "target": "lib/cellar/domain/wine_origins.dart"
+    },
+    {
+      "id": "BR3.4",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/window.dart"
+    },
+    {
+      "id": "BR3.5",
+      "status": "OK",
+      "target": "packages/estimation/test/appellations_test.dart"
+    },
+    {
+      "id": "BR3.6",
+      "status": "OK",
+      "target": "tool/build_appellations.dart"
+    },
+    {
+      "id": "BR3.7",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/world_tables.dart"
+    },
+    {
+      "id": "BR3.8",
+      "status": "OK",
+      "target": "lib/cellar/estimate_refresher.dart"
+    },
+    {
+      "id": "BR3.9",
+      "status": "OK",
+      "target": "lib/cellar/estimates_migration.dart"
+    },
+    {
+      "id": "BR4.1",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/wine_level.dart"
+    },
+    {
+      "id": "BR4.2",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/wine_level.dart"
+    },
+    {
+      "id": "BR4.3",
+      "status": "OK",
+      "target": "lib/cellar/ui/level_section.dart"
+    },
+    {
+      "id": "BR4.4",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/effective_window.dart"
+    },
+    {
+      "id": "BR4.5",
+      "status": "OK",
+      "target": "lib/cellar/wine_estimator.dart"
+    },
+    {
+      "id": "BR4.6",
+      "status": "OK",
+      "target": "lib/cellar/ui/window_override_widgets.dart"
+    },
+    {
+      "id": "BR4.7",
+      "status": "OK",
+      "target": "lib/cellar/ui/ideal_moment_card.dart"
+    },
+    {
+      "id": "BR5.1",
+      "status": "OK",
+      "target": "firestore.rules"
+    },
+    {
+      "id": "BR5.2",
+      "status": "OK",
+      "target": "test/rules/compat/app-writes.json"
+    },
+    {
+      "id": "BR5.3",
+      "status": "OK",
+      "target": ".github/workflows/promote.yml"
+    },
+    {
+      "id": "BR6.1",
+      "status": "N/A",
+      "target": "docs/release-checklist.md"
+    },
+    {
+      "id": "BR6.2",
+      "status": "N/A",
+      "target": "docs/release-checklist.md"
+    },
+    {
+      "id": "BR6.3",
+      "status": "OK",
+      "target": "tool/check_appellations_release.sh"
+    },
+    {
+      "id": "NFR6",
+      "status": "OK",
+      "target": "lib/l10n/app_it.arb"
+    },
+    {
+      "id": "FR2.8",
+      "status": "OK",
+      "target": "lib/label/core/text_autofill.dart"
+    },
+    {
+      "id": "FR7.1",
+      "status": "OK",
+      "target": "lib/cellar/ui/add_wine_screen.dart"
+    },
+    {
+      "id": "FR7.2",
+      "status": "OK",
+      "target": "lib/label/core/guided_session.dart"
+    },
+    {
+      "id": "FR7.3",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_candidates.dart"
+    },
+    {
+      "id": "FR7.4",
+      "status": "OK",
+      "target": "lib/cellar/ui/guided_confirm_sheet.dart"
+    },
+    {
+      "id": "FR7.5",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_words.dart"
+    },
+    {
+      "id": "FR7.6",
+      "status": "OK",
+      "target": "lib/cellar/ui/guided_confirm_sheet.dart"
+    },
+    {
+      "id": "FR7.7",
+      "status": "OK",
+      "target": "lib/cellar/ui/guided_confirm_controller.dart"
+    },
+    {
+      "id": "FR7.8",
+      "status": "OK",
+      "target": "lib/l10n/app_it.arb"
+    },
+    {
+      "id": "FR7.9",
+      "status": "OK",
+      "target": "lib/label/core/guided_session.dart"
+    },
+    {
+      "id": "NFR5.8",
+      "status": "OK",
+      "target": "packages/estimation/test/label_analysis_test.dart"
+    },
+    {
+      "id": "NFR5.9",
+      "status": "OK",
+      "target": "packages/estimation/benchmark/estimation_benchmark.dart"
+    },
+    {
+      "id": "NFR4.17",
+      "status": "OK",
+      "target": "integration_test/autofill_test.dart"
+    },
+    {
+      "id": "NFR4.18",
+      "status": "OK",
+      "target": "lib/label/core/text_autofill.dart"
+    },
+    {
+      "id": "NFR4.19",
+      "status": "OK",
+      "target": "packages/estimation/benchmark/estimation_benchmark.dart"
+    },
+    {
+      "id": "NFR4.23",
+      "status": "OK",
+      "target": "lib/cellar/ui/autofill_widgets.dart"
+    },
+    {
+      "id": "NFR4.24",
+      "status": "OK",
+      "target": "lib/cellar/ui/add_wine_screen.dart"
+    },
+    {
+      "id": "NFR4.20",
+      "status": "OK",
+      "target": "test/cellar/ui/guided_confirm_test.dart"
+    },
+    {
+      "id": "NFR3.8",
+      "status": "OK",
+      "target": "lib/cellar/ui/guided_confirm_controller.dart"
+    },
+    {
+      "id": "NFR3.9",
+      "status": "OK",
+      "target": "lib/label/core/guided_session.dart"
+    },
+    {
+      "id": "NFR4.21",
+      "status": "OK",
+      "target": "lib/label/core/text_autofill.dart"
+    },
+    {
+      "id": "NFR4.22",
+      "status": "OK",
+      "target": "test/cellar/ui/guided_confirm_test.dart"
+    },
+    {
+      "id": "BR7.10",
+      "status": "OK",
+      "target": "lib/label/core/label_lookup_flow.dart"
+    },
+    {
+      "id": "BR7.8",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_candidates.dart"
+    },
+    {
+      "id": "BR7.1",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_candidates.dart"
+    },
+    {
+      "id": "BR7.14",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_words.dart"
+    },
+    {
+      "id": "BR7.7",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_scoring.dart"
+    },
+    {
+      "id": "BR7.2",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_candidates.dart"
+    },
+    {
+      "id": "BR7.4",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_candidates.dart"
+    },
+    {
+      "id": "BR7.6",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_candidates.dart"
+    },
+    {
+      "id": "BR7.3",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_candidates.dart"
+    },
+    {
+      "id": "BR7.5",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_candidates.dart"
+    },
+    {
+      "id": "BR7.9",
+      "status": "OK",
+      "target": "packages/estimation/test/fixtures/label_reference_set.json"
+    },
+    {
+      "id": "BR7.17",
+      "status": "OK",
+      "target": "lib/label/core/guided_session.dart"
+    },
+    {
+      "id": "BR7.11",
+      "status": "OK",
+      "target": "lib/label/core/guided_session.dart"
+    },
+    {
+      "id": "BR7.12",
+      "status": "OK",
+      "target": "lib/label/core/guided_session.dart"
+    },
+    {
+      "id": "BR7.15",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_words.dart"
+    },
+    {
+      "id": "BR7.13",
+      "status": "OK",
+      "target": "lib/cellar/ui/guided_confirm_sheet.dart"
+    },
+    {
+      "id": "BR7.16",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_words.dart"
+    },
+    {
+      "id": "BR7.18",
+      "status": "OK",
+      "target": "lib/label/core/guided_session.dart"
+    },
+    {
+      "id": "BR7.19",
+      "status": "OK",
+      "target": "lib/cellar/ui/guided_confirm_controller.dart"
+    },
+    {
+      "id": "BR7.20",
+      "status": "OK",
+      "target": "lib/cellar/ui/add_wine_screen.dart"
+    },
+    {
+      "id": "BR7.21",
+      "status": "OK",
+      "target": "lib/cellar/ui/guided_confirm_controller.dart"
+    },
+    {
+      "id": "BR7.22",
+      "status": "OK",
+      "target": "lib/label/core/guided_session.dart"
+    },
+    {
+      "id": "BR7.23",
+      "status": "OK",
+      "target": "lib/label/core/text_autofill.dart"
+    },
+    {
+      "id": "BR7.24",
+      "status": "OK",
+      "target": "lib/cellar/ui/autofill_widgets.dart"
+    },
+    {
+      "id": "BR7.25",
+      "status": "OK",
+      "target": "lib/cellar/ui/guided_confirm_sheet.dart"
+    },
+    {
+      "id": "D7",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_candidates.dart"
+    },
+    {
+      "id": "D8",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_scoring.dart"
+    },
+    {
+      "id": "D9",
+      "status": "OK",
+      "target": "lib/label/core/text_autofill.dart"
+    },
+    {
+      "id": "D10",
+      "status": "OK",
+      "target": "lib/cellar/ui/guided_confirm_sheet.dart"
+    },
+    {
+      "id": "D11",
+      "status": "OK",
+      "target": "lib/cellar/ui/guided_confirm_controller.dart"
+    },
+    {
+      "id": "D12",
+      "status": "OK",
+      "target": "lib/cellar/ui/add_wine_screen.dart"
+    },
+    {
+      "id": "D13",
+      "status": "OK",
+      "target": "packages/estimation/test/fixtures/label_reference_set.json"
+    },
+    {
+      "id": "ENT-007",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_candidates.dart"
+    },
+    {
+      "id": "ENT-008",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_candidates.dart"
+    },
+    {
+      "id": "ENT-009",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_candidates.dart"
+    },
+    {
+      "id": "ENT-010",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_candidates.dart"
+    },
+    {
+      "id": "ENT-011",
+      "status": "OK",
+      "target": "packages/estimation/lib/src/label_words.dart"
+    },
+    {
+      "id": "ENT-012",
+      "status": "OK",
+      "target": "lib/label/core/guided_session.dart"
+    },
+    {
+      "id": "ENT-013",
+      "status": "OK",
+      "target": "lib/label/core/guided_session.dart"
+    },
+    {
+      "id": "ENT-014",
+      "status": "OK",
+      "target": "lib/label/core/guided_session.dart"
+    },
+    {
+      "id": "NFR6.2",
+      "status": "OK",
+      "target": "test/cellar/ui/guided_confirm_test.dart"
+    }
+  ],
+  "reverse": [
+    {
+      "id": "lib/cellar/ui/level_section.dart",
+      "status": "OK",
+      "target": "lib/cellar/ui/add_wine_screen.dart"
+    },
+    {
+      "id": "lib/label/autofill_providers.dart",
+      "status": "OK",
+      "target": "lib/cellar/ui/add_wine_screen.dart"
+    },
+    {
+      "id": "tool/check_lens_manifest.sh",
+      "status": "OK",
+      "target": "android/app/src/main/AndroidManifest.xml"
+    },
+    {
+      "id": "tool/data/appellations/README.md",
+      "status": "OK",
+      "target": "tool/build_appellations.dart"
+    }
+  ]
+}

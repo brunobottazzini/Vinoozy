@@ -1558,12 +1558,6 @@ abstract class AppLocalizations {
   /// **'Confirm'**
   String get labelConfirm;
 
-  /// No description provided for @labelOfflineNotice.
-  ///
-  /// In en, this message translates to:
-  /// **'Without network I only recognise the denomination: check the details'**
-  String get labelOfflineNotice;
-
   /// No description provided for @labelUnreadable.
   ///
   /// In en, this message translates to:
@@ -1617,18 +1611,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Take a photo of the front of the label'**
   String get labelBarcodeFrontHint;
-
-  /// No description provided for @labelBarcodeNeedsNetwork.
-  ///
-  /// In en, this message translates to:
-  /// **'I read the barcode: I need the network to look it up'**
-  String get labelBarcodeNeedsNetwork;
-
-  /// No description provided for @labelRetryOnline.
-  ///
-  /// In en, this message translates to:
-  /// **'Try again when the network is back'**
-  String get labelRetryOnline;
 
   /// No description provided for @labelSharedNotAllowed.
   ///
@@ -2001,6 +1983,1314 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not complete the deletion. Try again'**
   String get deletionFailed;
+
+  /// ux-redesign: label of the country grid of the wine form (FR1.1).
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get uxCountryLabel;
+
+  /// ux-redesign: last cell of the country grid, opens every ISO country (FR1.1).
+  ///
+  /// In en, this message translates to:
+  /// **'Other country…'**
+  String get uxCountryOther;
+
+  /// ux-redesign: chip that clears the chosen country (country is optional, FR1.2).
+  ///
+  /// In en, this message translates to:
+  /// **'No country'**
+  String get uxCountryNone;
+
+  /// ux-redesign: title of the sheet with the 249 ISO countries (FR1.1).
+  ///
+  /// In en, this message translates to:
+  /// **'All countries and territories'**
+  String get uxAllCountriesTitle;
+
+  /// ux-redesign: search field of the country sheet, works in it, en and pt-BR.
+  ///
+  /// In en, this message translates to:
+  /// **'Search a country'**
+  String get uxAllCountriesSearch;
+
+  /// ux-redesign: section of wine countries outside the grid.
+  ///
+  /// In en, this message translates to:
+  /// **'Rare for wine'**
+  String get uxAllCountriesRare;
+
+  /// ux-redesign: section with every country in alphabetical order.
+  ///
+  /// In en, this message translates to:
+  /// **'All, from A to Z'**
+  String get uxAllCountriesAll;
+
+  /// ux-redesign: the search found no country.
+  ///
+  /// In en, this message translates to:
+  /// **'No country found'**
+  String get uxAllCountriesNone;
+
+  /// ux-redesign: label of the region chips without a country (FR1.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Region'**
+  String get uxRegionLabel;
+
+  /// ux-redesign: label of the region chips of the chosen country (FR1.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Region · {country}'**
+  String uxRegionOf(String country);
+
+  /// ux-redesign: chip that opens the free region field (FR1.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Other region'**
+  String get uxRegionOther;
+
+  /// ux-redesign: free region field, 1-120 characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Write the region'**
+  String get uxRegionFieldLabel;
+
+  /// ux-redesign: error of the free region field (review R-03).
+  ///
+  /// In en, this message translates to:
+  /// **'At most 120 characters'**
+  String get uxRegionTooLong;
+
+  /// ux-redesign: the verb button of a wine card, opens the confirmation (FR2.1).
+  ///
+  /// In en, this message translates to:
+  /// **'I drank one'**
+  String get uxDrinkAction;
+
+  /// ux-redesign: screen reader label of the card button (FR2.1).
+  ///
+  /// In en, this message translates to:
+  /// **'I drank a bottle of {name}'**
+  String uxDrinkActionTooltip(String name);
+
+  /// ux-redesign: main button of the wine detail (FR2.1).
+  ///
+  /// In en, this message translates to:
+  /// **'I drank a bottle'**
+  String get uxDrinkActionDetail;
+
+  /// ux-redesign: screen reader name of the confirmation sheet (FR2.2, A6).
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm the drink'**
+  String get uxDrinkSheetLabel;
+
+  /// ux-redesign: label of the bottles before and after (FR2.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Bottles'**
+  String get uxDrinkSheetBottles;
+
+  /// ux-redesign: screen reader text of the bottles before and after (FR2.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Bottles: from {before} to {after}'**
+  String uxDrinkSheetBottlesChange(int before, int after);
+
+  /// ux-redesign: the optional rating of the confirmation (FR2.2).
+  ///
+  /// In en, this message translates to:
+  /// **'How was it? (optional)'**
+  String get uxDrinkSheetRating;
+
+  /// ux-redesign: screen reader label of a rating star (A7).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 star of 5} other{{count} stars of 5}}'**
+  String uxDrinkSheetStars(int count);
+
+  /// ux-redesign: the only button that records the drink (FR2.2, FR2.3).
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, I drank it'**
+  String get uxDrinkSheetConfirm;
+
+  /// ux-redesign: secondary button of the detail, asks for confirmation (FR2.4).
+  ///
+  /// In en, this message translates to:
+  /// **'Remove a bottle without a drink'**
+  String get uxRemoveBottle;
+
+  /// ux-redesign: title of the confirmation of FR2.4.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove a bottle?'**
+  String get uxRemoveBottleTitle;
+
+  /// ux-redesign: text of the confirmation of FR2.4.
+  ///
+  /// In en, this message translates to:
+  /// **'One bottle of {name} is removed without recording a drink.'**
+  String uxRemoveBottleBody(String name);
+
+  /// ux-redesign: confirm button of FR2.4.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get uxRemoveBottleConfirm;
+
+  /// ux-redesign: title of the drinking window card of the detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Ideal moment'**
+  String get uxIdealTitle;
+
+  /// ux-redesign: plain sentence with the end of the effective window.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended until {year}'**
+  String uxIdealUntil(String year);
+
+  /// ux-redesign: the window is over.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended until {year}: it has passed'**
+  String uxIdealUntilPast(String year);
+
+  /// ux-redesign: start and end of the window.
+  ///
+  /// In en, this message translates to:
+  /// **'At its best from {start} to {end}'**
+  String uxIdealBest(String start, String end);
+
+  /// ux-redesign: screen reader label of the window bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Drinking window from {start} to {end}'**
+  String uxIdealBar(String start, String end);
+
+  /// ux-redesign: notice always shown under the window, read as a note.
+  ///
+  /// In en, this message translates to:
+  /// **'⚠︎ Indicative: an estimate based on type, denomination and vintage. Storage and the single bottle can change it.'**
+  String get uxIdealDisclaimer;
+
+  /// ux-redesign: how to get an estimate when there is none.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the vintage and the type to get an estimate.'**
+  String get uxIdealUnavailableHint;
+
+  /// ux-redesign: bottles ready or to drink soon, under the total (FR3.3).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 to drink now} other{{count} to drink now}}'**
+  String uxDashboardDrinkNow(int count);
+
+  /// ux-redesign: graphic family of redLight and redStructured (FR3.2).
+  ///
+  /// In en, this message translates to:
+  /// **'Red'**
+  String get uxFamilyRed;
+
+  /// ux-redesign: graphic family of white.
+  ///
+  /// In en, this message translates to:
+  /// **'White'**
+  String get uxFamilyWhite;
+
+  /// ux-redesign: graphic family of rose.
+  ///
+  /// In en, this message translates to:
+  /// **'Rosé'**
+  String get uxFamilyRose;
+
+  /// ux-redesign: graphic family of sparklingClassic and sparklingTank.
+  ///
+  /// In en, this message translates to:
+  /// **'Sparkling'**
+  String get uxFamilySparkling;
+
+  /// ux-redesign: graphic family of sweet and fortified.
+  ///
+  /// In en, this message translates to:
+  /// **'Sweet'**
+  String get uxFamilySweet;
+
+  /// label-recognition FR1.1: title of the back photo prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Now the back'**
+  String get labelBackTitle;
+
+  /// label-recognition FR1.1: why the back helps.
+  ///
+  /// In en, this message translates to:
+  /// **'The back usually has the barcode, the producer and the vintage: they help find the wine.'**
+  String get labelBackHint;
+
+  /// label-recognition FR1.1: camera for the back.
+  ///
+  /// In en, this message translates to:
+  /// **'Take the back'**
+  String get labelBackTake;
+
+  /// label-recognition FR1.1: gallery for the back.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from the gallery'**
+  String get labelBackGallery;
+
+  /// label-recognition FR1.1: go on with the front only.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get labelBackSkip;
+
+  /// label-recognition F1: reading step.
+  ///
+  /// In en, this message translates to:
+  /// **'Front'**
+  String get labelStepFront;
+
+  /// label-recognition F1: reading step.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get labelStepBack;
+
+  /// label-recognition F1: reading step.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode'**
+  String get labelStepBarcode;
+
+  /// label-recognition F1: reading step, the offline database.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine database on the phone'**
+  String get labelStepDatabase;
+
+  /// label-recognition F1: status of a step.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting'**
+  String get labelStepPending;
+
+  /// label-recognition F1: status of a step.
+  ///
+  /// In en, this message translates to:
+  /// **'Working…'**
+  String get labelStepRunning;
+
+  /// label-recognition F1: status of a step.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get labelStepDone;
+
+  /// label-recognition F1: status of a step.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get labelStepSkipped;
+
+  /// label-recognition F1: status of a step.
+  ///
+  /// In en, this message translates to:
+  /// **'Not readable'**
+  String get labelStepFailed;
+
+  /// label-recognition L3: one step as read by the screen reader.
+  ///
+  /// In en, this message translates to:
+  /// **'{step}: {status}'**
+  String labelStepStatus(String step, String status);
+
+  /// label-recognition NFR3.1: under the reading steps.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything happens on the phone: the photos are not sent to anyone.'**
+  String get labelOnPhoneNote;
+
+  /// label-recognition BR1.5: the back could not be read, the front was used.
+  ///
+  /// In en, this message translates to:
+  /// **'Back not readable'**
+  String get labelBackUnreadable;
+
+  /// label-recognition: origin of a sure proposal.
+  ///
+  /// In en, this message translates to:
+  /// **'From the database on the phone · offline'**
+  String get labelSourceOffline;
+
+  /// label-recognition: origin of a sure proposal.
+  ///
+  /// In en, this message translates to:
+  /// **'From the catalog'**
+  String get labelSourceCatalog;
+
+  /// label-recognition: origin of a sure proposal.
+  ///
+  /// In en, this message translates to:
+  /// **'From Open Food Facts · online'**
+  String get labelSourceOnline;
+
+  /// label-recognition BR3.5: the proposal is wrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Not this one'**
+  String get labelNotThis;
+
+  /// label-recognition BR6.2: attribution wherever offline or Open Food Facts data appear.
+  ///
+  /// In en, this message translates to:
+  /// **'Data from Open Food Facts, ODbL licence'**
+  String get labelOffAttribution;
+
+  /// label-recognition FR3.2: title of the candidate list.
+  ///
+  /// In en, this message translates to:
+  /// **'Which of these?'**
+  String get labelCandidatesTitle;
+
+  /// label-recognition FR3.2: under the candidate list title.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 similar wine} other{{count} similar wines}}'**
+  String labelCandidatesCount(int count);
+
+  /// label-recognition F2: no candidate is the wine.
+  ///
+  /// In en, this message translates to:
+  /// **'None of these'**
+  String get labelCandidatesNone;
+
+  /// label-recognition L4: chip of a candidate from the phone database.
+  ///
+  /// In en, this message translates to:
+  /// **'offline'**
+  String get labelChipOffline;
+
+  /// label-recognition L4: chip of a candidate from Open Food Facts.
+  ///
+  /// In en, this message translates to:
+  /// **'online'**
+  String get labelChipOnline;
+
+  /// label-recognition L4: chip of a denomination of the internal catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'catalog'**
+  String get labelChipCatalog;
+
+  /// label-recognition FR3.2: a candidate without producer.
+  ///
+  /// In en, this message translates to:
+  /// **'producer not given'**
+  String get labelNoProducer;
+
+  /// label-recognition BR3.4: text read, no candidate.
+  ///
+  /// In en, this message translates to:
+  /// **'I read the label but I don\'t recognise the wine'**
+  String get labelNoMatch;
+
+  /// label-recognition: the text read, on the not-found outcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Text read'**
+  String get labelReadText;
+
+  /// label-recognition FR3.1: button of the not-found outcomes.
+  ///
+  /// In en, this message translates to:
+  /// **'Search online'**
+  String get labelSearchOnline;
+
+  /// label-recognition FR4.1: last button of the not-found outcomes.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Google Lens'**
+  String get labelOpenLens;
+
+  /// label-recognition FR4.1: under the Lens button.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Lens is the last resort: the photo goes to the Google app only if you confirm.'**
+  String get labelLensLastResort;
+
+  /// label-recognition FR4.2: title of the confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Google Lens?'**
+  String get labelLensTitle;
+
+  /// label-recognition FR4.2, NFR3.2: what leaves the phone.
+  ///
+  /// In en, this message translates to:
+  /// **'The photo of the front will go to the Google app on your phone, or to the app you choose, which may keep a copy under its own rules. Vinoozy does not receive the results: come back here to choose or write the wine.'**
+  String get labelLensBody;
+
+  /// label-recognition FR4.2: confirmation button.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Google Lens'**
+  String get labelLensConfirm;
+
+  /// label-recognition NFR4.10: neither the Google app nor the share menu opened.
+  ///
+  /// In en, this message translates to:
+  /// **'I can\'t open Google Lens or the share menu'**
+  String get labelLensFailed;
+
+  /// label-recognition FR3.2: title of the search screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Search online'**
+  String get onlineSearchTitle;
+
+  /// label-recognition FR3.2: under the title.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Food Facts · wines only'**
+  String get onlineSearchSubtitle;
+
+  /// label-recognition L7: label of the search field.
+  ///
+  /// In en, this message translates to:
+  /// **'Words to search'**
+  String get onlineSearchField;
+
+  /// label-recognition L7: helper of the search field.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change the words before searching.'**
+  String get onlineSearchHint;
+
+  /// label-recognition BR4.2: the field is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Write at least one word'**
+  String get onlineSearchEmptyField;
+
+  /// label-recognition BR4.2: start the search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get onlineSearchButton;
+
+  /// label-recognition: loading state.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching…'**
+  String get onlineSearchLoading;
+
+  /// label-recognition FR3.2: number of results.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 result} other{{count} results}}'**
+  String onlineSearchResults(int count);
+
+  /// label-recognition: no result.
+  ///
+  /// In en, this message translates to:
+  /// **'No wine found: try other words or \"Write by hand\".'**
+  String get onlineSearchEmpty;
+
+  /// label-recognition FR3.4: no network.
+  ///
+  /// In en, this message translates to:
+  /// **'No network: I only search the database on the phone.'**
+  String get onlineSearchOffline;
+
+  /// label-recognition FR3.4, BR4.3: Open Food Facts over its limits, suspended or failing.
+  ///
+  /// In en, this message translates to:
+  /// **'Online search is not available now, try again in a few minutes.'**
+  String get onlineSearchRateLimited;
+
+  /// label-recognition BR4.3 (review R-03): Open Food Facts is off in this build; trying again does not help.
+  ///
+  /// In en, this message translates to:
+  /// **'Online search is not active in this version of the app: I only search the database on the phone.'**
+  String get onlineSearchUnavailable;
+
+  /// label-recognition BR6.3: title of the About screen and its cellar menu item.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get aboutTitle;
+
+  /// label-recognition BR6.3: app version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String aboutVersion(String version);
+
+  /// label-recognition BR6.3: section of the offline database.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine database'**
+  String get aboutDbTitle;
+
+  /// label-recognition NFR6.7: wines loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 wine} other{{count} wines}}'**
+  String aboutDbCount(int count);
+
+  /// label-recognition FR2.2: date of the export used.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Food Facts export of {date}'**
+  String aboutDbDate(String date);
+
+  /// label-recognition BR6.3 (review R-02): the database is the hand-written sample, shown in place of the export date.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample database: a few hand-written test wines, not Open Food Facts data.'**
+  String get aboutDbSample;
+
+  /// label-recognition: the database is being opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening the wine database…'**
+  String get aboutDbLoading;
+
+  /// label-recognition NFR4.5: the database could not be opened.
+  ///
+  /// In en, this message translates to:
+  /// **'The wine database is not available in this version'**
+  String get aboutDbUnavailable;
+
+  /// label-recognition TS5: where the ODbL database can be found.
+  ///
+  /// In en, this message translates to:
+  /// **'The derived database and the tool that builds it are in the public repository: {url}'**
+  String aboutDbSource(String url);
+
+  /// label-recognition BR6.3: section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Licences'**
+  String get aboutLicenseTitle;
+
+  /// label-recognition TS5: attribution of the About screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Contains information from Open Food Facts, made available under the Open Database License (ODbL). Individual contents are under the Database Contents License (DbCL).'**
+  String get aboutLicense;
+
+  /// label-recognition BR6.3: section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Label photos'**
+  String get aboutPrivacyTitle;
+
+  /// label-recognition BR6.3, NFR3.1: photo privacy note.
+  ///
+  /// In en, this message translates to:
+  /// **'Label photos are read on the phone and deleted when you leave the outcome. They leave the phone only if you tap \"Open in Google Lens\" and confirm.'**
+  String get aboutPrivacy;
+
+  /// label-autofill-windows NFR5.7: section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Appellations'**
+  String get aboutAppellationsTitle;
+
+  /// label-autofill-windows NFR5.7, TS3: source of the appellation table.
+  ///
+  /// In en, this message translates to:
+  /// **'Appellations: eAmbrosia register (EU) and official national registers.'**
+  String get aboutAppellationsSource;
+
+  /// label-autofill-windows BR6.3: the generated table is still the sample.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample table: a hand-written extract of the registers, until the real registers are downloaded.'**
+  String get aboutAppellationsSample;
+
+  /// label-autofill-windows: the appellation field of the add and edit forms.
+  ///
+  /// In en, this message translates to:
+  /// **'Appellation'**
+  String get denominationLabel;
+
+  /// label-autofill-windows: appellation over 120 characters.
+  ///
+  /// In en, this message translates to:
+  /// **'At most 120 characters'**
+  String get denominationTooLong;
+
+  /// label-autofill-windows FR1.2: notice above a form filled from the label photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Filled from the label: check and save'**
+  String get autofillFilledNotice;
+
+  /// label-autofill-windows FR2.1, FR2.2: notice above a form filled from a pasted or shared text.
+  ///
+  /// In en, this message translates to:
+  /// **'Filled from the text: check and save'**
+  String get autofillPastedNotice;
+
+  /// label-autofill-windows FR1.3: mark under a field filled from the text.
+  ///
+  /// In en, this message translates to:
+  /// **'✦ from the text'**
+  String get autofillFromText;
+
+  /// label-autofill-windows A1: what the screen reader says of a field filled from the text.
+  ///
+  /// In en, this message translates to:
+  /// **'filled from the label'**
+  String get autofillFromTextSemantics;
+
+  /// label-autofill-windows FR1.4: empties the descriptive fields.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get autofillClear;
+
+  /// label-autofill-windows: opens the Lens confirmation with the front photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Lens'**
+  String get autofillLens;
+
+  /// label-autofill-windows FR1.4, BR2.7: confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear the form?'**
+  String get autofillClearTitle;
+
+  /// label-autofill-windows FR1.4: confirmation text.
+  ///
+  /// In en, this message translates to:
+  /// **'You also wrote in some fields. \"Clear\" empties name, producer, appellation, vintage, type, country, region and level. The quantity stays.'**
+  String get autofillClearBody;
+
+  /// label-autofill-windows FR1.4: confirms the clearing.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get autofillClearConfirm;
+
+  /// label-autofill-windows A11: announced after clearing.
+  ///
+  /// In en, this message translates to:
+  /// **'Form cleared'**
+  String get autofillCleared;
+
+  /// label-autofill-windows FR2.2: title of the paste card.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you have the text from Google Lens?'**
+  String get autofillPasteTitle;
+
+  /// label-autofill-windows FR2.2: hint of the paste card.
+  ///
+  /// In en, this message translates to:
+  /// **'In Lens select the text of the label and tap \"Copy\", then come back here.'**
+  String get autofillPasteHint;
+
+  /// label-autofill-windows FR2.2: reads the clipboard once.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste from Lens'**
+  String get autofillPaste;
+
+  /// label-autofill-windows FR2.6: opens Google Lens.
+  ///
+  /// In en, this message translates to:
+  /// **'From Google Lens'**
+  String get autofillOpenLens;
+
+  /// label-autofill-windows A14: the button opens another app.
+  ///
+  /// In en, this message translates to:
+  /// **'opens Google Lens'**
+  String get autofillOpenLensSemantics;
+
+  /// label-autofill-windows FR2.2: the clipboard has no text.
+  ///
+  /// In en, this message translates to:
+  /// **'There is no text on the clipboard'**
+  String get autofillClipboardEmpty;
+
+  /// label-autofill-windows BR2.2: the text fills no empty field.
+  ///
+  /// In en, this message translates to:
+  /// **'I found no data to add in the text'**
+  String get autofillNoNewFields;
+
+  /// label-autofill-windows FR2.7: announced after the automatic paste.
+  ///
+  /// In en, this message translates to:
+  /// **'Form filled from the Lens text'**
+  String get autofillFromLens;
+
+  /// label-autofill-windows BR2.4: an empty shared text.
+  ///
+  /// In en, this message translates to:
+  /// **'No text received'**
+  String get autofillShareEmpty;
+
+  /// label-autofill-windows BR2.4: a text shared while the form holds changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the text for the empty fields?'**
+  String get autofillShareUseTitle;
+
+  /// label-autofill-windows BR2.4: fills the empty fields.
+  ///
+  /// In en, this message translates to:
+  /// **'Use'**
+  String get autofillShareUse;
+
+  /// label-autofill-windows BR2.4: drops the shared text.
+  ///
+  /// In en, this message translates to:
+  /// **'Ignore'**
+  String get autofillShareIgnore;
+
+  /// label-autofill-windows FR2.6: choice of the Add screen.
+  ///
+  /// In en, this message translates to:
+  /// **'From Google Lens'**
+  String get addChoiceLens;
+
+  /// label-autofill-windows: explanation of "Take a photo".
+  ///
+  /// In en, this message translates to:
+  /// **'Front and back: Vinoozy reads the label.'**
+  String get addChoicePhotoHint;
+
+  /// label-autofill-windows FR2.6: explanation of "From Google Lens".
+  ///
+  /// In en, this message translates to:
+  /// **'Opens Lens: frame, select the text and tap Share → Vinoozy.'**
+  String get addChoiceLensHint;
+
+  /// label-autofill-windows: explanation of "Import a photo".
+  ///
+  /// In en, this message translates to:
+  /// **'A photo of the label you already took.'**
+  String get addChoiceImportHint;
+
+  /// label-autofill-windows: explanation of "Write".
+  ///
+  /// In en, this message translates to:
+  /// **'Empty form, with \"Paste from Lens\".'**
+  String get addChoiceWriteHint;
+
+  /// label-autofill-windows BR2.5: neither Lens nor the Google app opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Lens can\'t be opened from here'**
+  String get lensInstructionsTitle;
+
+  /// label-autofill-windows A14: step 1.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Google Lens and frame the label'**
+  String get lensInstructionsStep1;
+
+  /// label-autofill-windows A14: step 2.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the text of the label'**
+  String get lensInstructionsStep2;
+
+  /// label-autofill-windows A14: step 3.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap Share → Vinoozy'**
+  String get lensInstructionsStep3;
+
+  /// label-autofill-windows: closes the instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get lensInstructionsOk;
+
+  /// label-autofill-windows FR4.1: title of the level selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Level'**
+  String get levelLabel;
+
+  /// label-autofill-windows FR4.1.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyday (inexpensive)'**
+  String get levelEveryday;
+
+  /// label-autofill-windows FR4.1.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get levelGood;
+
+  /// label-autofill-windows FR4.1.
+  ///
+  /// In en, this message translates to:
+  /// **'For ageing'**
+  String get levelAging;
+
+  /// label-autofill-windows: back to "not chosen".
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get levelNone;
+
+  /// label-autofill-windows: line under "Everyday".
+  ///
+  /// In en, this message translates to:
+  /// **'drink early'**
+  String get levelEverydayShort;
+
+  /// label-autofill-windows: line under "Good".
+  ///
+  /// In en, this message translates to:
+  /// **'normal estimate'**
+  String get levelGoodShort;
+
+  /// label-autofill-windows: line under "For ageing".
+  ///
+  /// In en, this message translates to:
+  /// **'lasts longer'**
+  String get levelAgingShort;
+
+  /// label-autofill-windows A3: the suggested level.
+  ///
+  /// In en, this message translates to:
+  /// **'suggested'**
+  String get levelSuggested;
+
+  /// label-autofill-windows FR4.3: why a level is suggested.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested because the name says \"{qualifier}\": it is saved like this unless you change it. Choose another one or tap \"None\".'**
+  String levelSuggestedReason(String qualifier);
+
+  /// label-autofill-windows A3, A10: read with the suggested option.
+  ///
+  /// In en, this message translates to:
+  /// **'suggested, because the name says {qualifier}'**
+  String levelSuggestedSemantics(String qualifier);
+
+  /// label-autofill-windows A10: an option of the single-choice group.
+  ///
+  /// In en, this message translates to:
+  /// **'Level, {option}, {index} of {count}'**
+  String levelOptionSemantics(String option, int index, int count);
+
+  /// label-autofill-windows FR4.1: title of the examples.
+  ///
+  /// In en, this message translates to:
+  /// **'What changes'**
+  String get levelWhatChanges;
+
+  /// label-autofill-windows FR4.1.
+  ///
+  /// In en, this message translates to:
+  /// **'The window gets shorter. E.g. house wine, Lambrusco, basic Prosecco, Bardolino, Vinho Verde.'**
+  String get levelEverydayExamples;
+
+  /// label-autofill-windows FR4.1.
+  ///
+  /// In en, this message translates to:
+  /// **'The normal estimate, and the value when you choose nothing. E.g. Chianti Classico, Barbera d\'Asti Superiore, Rioja Crianza, Côtes du Rhône.'**
+  String get levelGoodExamples;
+
+  /// label-autofill-windows FR4.1.
+  ///
+  /// In en, this message translates to:
+  /// **'The window gets longer. E.g. Barolo, Brunello, Amarone, Bordeaux Grand Cru, Rioja Gran Reserva, Vintage Port.'**
+  String get levelAgingExamples;
+
+  /// label-autofill-windows FR4.2: window with the level saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Before {start} – {end}'**
+  String levelPreviewBefore(String start, String end);
+
+  /// label-autofill-windows FR4.2: window with the level chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'With \"{level}\" {start} – {end}'**
+  String levelPreviewWith(String level, String start, String end);
+
+  /// label-autofill-windows FR4.2: window of the form with the level shown.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready {start} – until {end}'**
+  String levelPreviewNow(String start, String end);
+
+  /// label-autofill-windows FR4.4: the level in the detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Level: {level}'**
+  String levelDetail(String level);
+
+  /// label-autofill-windows FR5.1: opens the year sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct'**
+  String get overrideCorrect;
+
+  /// label-autofill-windows FR5.4.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore estimate'**
+  String get overrideRestore;
+
+  /// label-autofill-windows FR5.2: replaces the "Indicative" notice.
+  ///
+  /// In en, this message translates to:
+  /// **'corrected by you'**
+  String get overrideCorrectedByYou;
+
+  /// label-autofill-windows FR5.2: the estimate under a correction.
+  ///
+  /// In en, this message translates to:
+  /// **'App estimate: until {year}'**
+  String overrideAppEstimate(String year);
+
+  /// label-autofill-windows FR5.1: title of the year sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended until'**
+  String get overrideSheetTitle;
+
+  /// label-autofill-windows FR5.1, BR4.6.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the year. It cannot be before \"Ready from {start}\".'**
+  String overrideSheetHint(String start);
+
+  /// label-autofill-windows FR5.1: a year before the peak.
+  ///
+  /// In en, this message translates to:
+  /// **'If you choose a year before {peak} (at its best), \"at its best\" moves to the same year too.'**
+  String overridePeakNotice(String peak);
+
+  /// label-autofill-windows: every year of the range in a list.
+  ///
+  /// In en, this message translates to:
+  /// **'more…'**
+  String get overrideMore;
+
+  /// label-autofill-windows FR5.1.
+  ///
+  /// In en, this message translates to:
+  /// **'Save correction'**
+  String get overrideSave;
+
+  /// label-autofill-windows FR5.4.
+  ///
+  /// In en, this message translates to:
+  /// **'Go back to the app estimate (until {year})?'**
+  String overrideRestoreTitle(String year);
+
+  /// label-autofill-windows FR5.4.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get overrideRestoreConfirm;
+
+  /// label-autofill-windows A7: announced after saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Correction saved'**
+  String get overrideSaved;
+
+  /// label-autofill-windows A7: announced after restoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate restored'**
+  String get overrideRestored;
+
+  /// label-autofill-windows BR4.7: source label with a correction.
+  ///
+  /// In en, this message translates to:
+  /// **'corrected by you'**
+  String get estimateSourceCorrectedByYou;
+
+  /// label-autofill-windows: origin of the estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate from the appellation {name}'**
+  String estimateFromDenomination(String name);
+
+  /// label-autofill-windows: origin of the estimate with its qualifier.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate from the appellation {name}, {qualifier}'**
+  String estimateFromDenominationQualifier(String name, String qualifier);
+
+  /// label-autofill-windows FR3.2: origin of the estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate from the grape {name}'**
+  String estimateFromGrape(String name);
+
+  /// label-autofill-windows: origin of the estimate.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate from the type of wine'**
+  String get estimateFromType;
+
+  /// label-autofill-windows FR2.8, BR7.24, A15: the paste button while the text is read.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the text…'**
+  String get autofillReading;
+
+  /// label-autofill-windows FR7.7, BR7.17: reopens the guided check of the uncertain fields.
+  ///
+  /// In en, this message translates to:
+  /// **'Guided check'**
+  String get guideChip;
+
+  /// label-autofill-windows FR7.6: progress of the guided check.
+  ///
+  /// In en, this message translates to:
+  /// **'Question {n} of {total}'**
+  String guideProgress(int n, int total);
+
+  /// label-autofill-windows FR7.7: closes the guided check, keeping the confirmed fields.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get guideClose;
+
+  /// label-autofill-windows FR7.4: phrase under the proposed appellation.
+  ///
+  /// In en, this message translates to:
+  /// **'is it the appellation?'**
+  String get guideIsDenomination;
+
+  /// label-autofill-windows FR7.4: phrase under the proposed producer.
+  ///
+  /// In en, this message translates to:
+  /// **'is it the producer?'**
+  String get guideIsProducer;
+
+  /// label-autofill-windows FR7.4: phrase under the proposed name.
+  ///
+  /// In en, this message translates to:
+  /// **'is it the wine name?'**
+  String get guideIsName;
+
+  /// label-autofill-windows FR7.4: title of the vintage question.
+  ///
+  /// In en, this message translates to:
+  /// **'Vintage'**
+  String get guideIsVintage;
+
+  /// label-autofill-windows A16: the whole question read by the screen reader.
+  ///
+  /// In en, this message translates to:
+  /// **'Is {value} the appellation?'**
+  String guideAskDenomination(String value);
+
+  /// label-autofill-windows A16: the whole question read by the screen reader.
+  ///
+  /// In en, this message translates to:
+  /// **'Is {value} the producer?'**
+  String guideAskProducer(String value);
+
+  /// label-autofill-windows A16: the whole question read by the screen reader.
+  ///
+  /// In en, this message translates to:
+  /// **'Is {value} the wine name?'**
+  String guideAskName(String value);
+
+  /// label-autofill-windows A16: the vintage question read by the screen reader.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the vintage?'**
+  String get guideAskVintage;
+
+  /// label-autofill-windows A16: what the screen reader says when a question opens.
+  ///
+  /// In en, this message translates to:
+  /// **'Question {n} of {total}: {question}'**
+  String guideQuestionSemantics(int n, int total, String question);
+
+  /// label-autofill-windows BR7.12: a question with no candidate.
+  ///
+  /// In en, this message translates to:
+  /// **'I couldn\'t find it in the text'**
+  String get guideNoProposal;
+
+  /// label-autofill-windows FR7.4: confirms the proposed value.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get guideYes;
+
+  /// label-autofill-windows FR7.4: proposes the next candidate.
+  ///
+  /// In en, this message translates to:
+  /// **'No, another'**
+  String get guideNo;
+
+  /// label-autofill-windows FR7.4: writes the value by hand.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get guideEdit;
+
+  /// label-autofill-windows FR7.4: leaves the field empty and goes on.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get guideSkip;
+
+  /// label-autofill-windows FR7.4, FR7.5: confirms an edited or composed value.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get guideConfirm;
+
+  /// label-autofill-windows FR7.4, FR7.5: back to the question.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get guideCancel;
+
+  /// label-autofill-windows BR7.12: notice after "No".
+  ///
+  /// In en, this message translates to:
+  /// **'Not \"{value}\": here\'s the next one'**
+  String guideRejected(String value);
+
+  /// label-autofill-windows BR7.12: notice after the last "No".
+  ///
+  /// In en, this message translates to:
+  /// **'No other suggestion: compose it or skip'**
+  String get guideNoMore;
+
+  /// label-autofill-windows A20: announced after "No".
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestion: {value}'**
+  String guideProposalAnnounce(String value);
+
+  /// label-autofill-windows FR7.5: title of the words of the text.
+  ///
+  /// In en, this message translates to:
+  /// **'Or build it by tapping words of the text'**
+  String get guideComposeLabel;
+
+  /// label-autofill-windows FR7.5: title of the composed value.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get guideComposePreview;
+
+  /// label-autofill-windows FR7.5: empty preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap one or more words'**
+  String get guideComposeEmpty;
+
+  /// label-autofill-windows BR7.15: limits of a composed value.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 8 words and 80 characters'**
+  String get guideComposeLimit;
+
+  /// label-autofill-windows BR7.16: the composed appellation matches a table row.
+  ///
+  /// In en, this message translates to:
+  /// **'matches {name}'**
+  String guideTableMatchSemantics(String name);
+
+  /// label-autofill-windows A21: group of the words of one line.
+  ///
+  /// In en, this message translates to:
+  /// **'Line {n} of {total}'**
+  String guideLine(int n, int total);
+
+  /// label-autofill-windows A17: a chosen word and its place in the value.
+  ///
+  /// In en, this message translates to:
+  /// **'{word}, selected, {order}'**
+  String guideWordSelected(String word, int order);
+
+  /// label-autofill-windows A21: a word beyond the limits.
+  ///
+  /// In en, this message translates to:
+  /// **'{word}, unavailable'**
+  String guideWordUnavailable(String word);
+
+  /// label-autofill-windows BR7.15: a word already used by another field, still selectable.
+  ///
+  /// In en, this message translates to:
+  /// **'{word}, used for the {field, select, denomination{appellation} producer{producer} other{name}}'**
+  String guideWordUsedFor(String word, String field);
+
+  /// label-autofill-windows BR7.15: small mark under a word used by another field.
+  ///
+  /// In en, this message translates to:
+  /// **'{field, select, denomination{appellation} producer{producer} other{name}}'**
+  String guideUsedMark(String field);
+
+  /// label-autofill-windows FR7.4: the other years of the text, without thousands separator (A9).
+  ///
+  /// In en, this message translates to:
+  /// **'Also in the text: {years}'**
+  String guideOtherYears(String years);
+
+  /// label-autofill-windows BR7.13: a year of the text on the wheel.
+  ///
+  /// In en, this message translates to:
+  /// **'year found in the text'**
+  String get guideWheelFromText;
+
+  /// label-autofill-windows BR7.13: the number pad of the wheel.
+  ///
+  /// In en, this message translates to:
+  /// **'Type the year'**
+  String get guideWheelTypeYear;
+
+  /// label-autofill-windows BR7.13: confirms the year of the wheel, without thousands separator.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm {year}'**
+  String guideWheelConfirm(String year);
+
+  /// label-autofill-windows BR7.13: the wine has no vintage; it counts as an answer.
+  ///
+  /// In en, this message translates to:
+  /// **'No vintage'**
+  String get guideNoVintage;
+
+  /// label-autofill-windows BR7.12: one field skipped at the end of the guide.
+  ///
+  /// In en, this message translates to:
+  /// **'{field, select, denomination{Appellation skipped} producer{Producer skipped} vintage{Vintage skipped} other{Name skipped}}: type it or resume the guide'**
+  String guideSkippedNotice(String field);
+
+  /// label-autofill-windows BR7.12: several fields skipped at the end of the guide.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} fields skipped: type them or resume the guide'**
+  String guideSkippedMany(int count);
+
+  /// label-autofill-windows NFR3.9: a typed or composed value with control characters.
+  ///
+  /// In en, this message translates to:
+  /// **'This text contains characters that cannot be saved'**
+  String get guideInvalidValue;
 }
 
 class _AppLocalizationsDelegate

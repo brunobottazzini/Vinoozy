@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/theme.dart';
+import '../../app/ui/country_flag.dart';
+import '../../cellar/domain/wine_origins.dart';
+import '../../cellar/ui/wine_badges.dart';
 import '../../l10n/app_localizations.dart';
 import '../dashboard_providers.dart';
 import '../domain/dashboard_summary.dart';
@@ -149,33 +152,83 @@ class BreakdownChartCard extends ConsumerWidget {
   final List<BreakdownBar> byType;
   final List<BreakdownBar> byRegion;
 
-  static String labelOf(AppLocalizations l10n, BreakdownBar bar) =>
-      switch (bar.kind) {
-        BreakdownKind.family => switch (bar.family!) {
-          WineFamily.red => l10n.familyRed,
-          WineFamily.white => l10n.familyWhite,
-          WineFamily.rose => l10n.familyRose,
-          WineFamily.sparkling => l10n.familySparkling,
-          WineFamily.sweet => l10n.familySweet,
-        },
-        BreakdownKind.region => bar.region!,
-        BreakdownKind.otherRegions => l10n.breakdownOtherRegions,
-        BreakdownKind.unspecified => l10n.breakdownUnspecified,
-      };
+  /// The bar label; a listed region is shown in [languageCode] (Bourgogne
+  /// as "Borgogna" in Italian, review R-02).
+  static String labelOf(
+    AppLocalizations l10n,
+    BreakdownBar bar, {
+    String languageCode = 'en',
+  }) => switch (bar.kind) {
+    BreakdownKind.family => wineFamilyLabel(l10n, _familyOf(bar.family!)),
+    BreakdownKind.region => WineOrigins.regionDisplayName(
+      bar.country,
+      bar.region!,
+      languageCode,
+    ),
+    BreakdownKind.otherRegions => l10n.breakdownOtherRegions,
+    BreakdownKind.unspecified => l10n.breakdownUnspecified,
+  };
+
+  static WineTypeFamily _familyOf(WineFamily family) => switch (family) {
+    WineFamily.red => WineTypeFamily.red,
+    WineFamily.white => WineTypeFamily.white,
+    WineFamily.rose => WineTypeFamily.rose,
+    WineFamily.sparkling => WineTypeFamily.sparkling,
+    WineFamily.sweet => WineTypeFamily.sweet,
+  };
+
+  /// ux-redesign FR3.3: type bars in the color of the family with its icon;
+  /// region bars with the flag, "others" with a globe, "not specified" and
+  /// a region without country with an icon (review R-06 of the mockups).
+  static BarDatum barOf(
+    BuildContext context,
+    AppLocalizations l10n,
+    BreakdownBar bar,
+  ) {
+    final language = Localizations.localeOf(context).languageCode;
+    final label = labelOf(l10n, bar, languageCode: language);
+    final neutral = StatusColors.of(context).neutral;
+    final typeColors = WineTypeColors.of(context);
+    final country = bar.country;
+    return switch (bar.kind) {
+      BreakdownKind.family => BarDatum(
+        label: label,
+        value: bar.bottles,
+        color: wineFamilyColor(typeColors, _familyOf(bar.family!)),
+        icon: wineFamilyIcon(_familyOf(bar.family!)),
+        iconColor: wineFamilyColor(typeColors, _familyOf(bar.family!)),
+      ),
+      BreakdownKind.region => BarDatum(
+        label: label,
+        value: bar.bottles,
+        color: neutral,
+        icon: country == null ? Icons.place_outlined : null,
+        leading: country == null ? null : CountryFlag(code: country, size: 18),
+      ),
+      BreakdownKind.otherRegions => BarDatum(
+        label: label,
+        value: bar.bottles,
+        color: neutral,
+        icon: Icons.public,
+      ),
+      BreakdownKind.unspecified => BarDatum(
+        label: label,
+        value: bar.bottles,
+        color: typeColors.unknown,
+        icon: Icons.help_outline,
+      ),
+    };
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final mode = ref.watch(breakdownModeProvider);
-    final color = StatusColors.of(context).neutral;
     final source = mode == BreakdownMode.type ? byType : byRegion;
     final title = mode == BreakdownMode.type
         ? l10n.breakdownTypeTitle
         : l10n.breakdownRegionTitle;
-    final bars = [
-      for (final bar in source)
-        BarDatum(label: labelOf(l10n, bar), value: bar.bottles, color: color),
-    ];
+    final bars = [for (final bar in source) barOf(context, l10n, bar)];
     return DashboardCard(
       key: const Key('chart-breakdown'),
       title: title,

@@ -12,6 +12,7 @@
 import 'package:estimation/estimation.dart';
 
 import '../../cellar/domain/wine.dart';
+import '../../cellar/domain/wine_origins.dart';
 import 'dashboard_summary.dart';
 
 /// Builds the [DashboardSummary] of a cellar on a given day.
@@ -71,6 +72,24 @@ class _RegionTally {
   final String key;
   int bottles = 0;
   final Map<String, int> forms = {};
+
+  /// Bottles by country (ux-redesign FR3.3): the flag of the bar.
+  final Map<String, int> countries = {};
+
+  /// The country with most bottles; on a tie, the first by code.
+  String? get country {
+    String? best;
+    var bestCount = 0;
+    countries.forEach((code, count) {
+      if (best == null ||
+          count > bestCount ||
+          (count == bestCount && code.compareTo(best!) < 0)) {
+        best = code;
+        bestCount = count;
+      }
+    });
+    return best;
+  }
 
   /// The most frequent written form; on a tie, the first alphabetically.
   String get displayForm {
@@ -164,6 +183,7 @@ class _Tally {
               name: wine.name,
               vintage: wine.vintage,
               producer: _textOrNull(wine.producer),
+              country: wine.displayCountry,
               quantity: bottles,
               endYear: window.endYear,
             ),
@@ -205,6 +225,14 @@ class _Tally {
     final tally = regions.putIfAbsent(key, () => _RegionTally(key));
     tally.bottles += bottles;
     tally.forms.update(form, (count) => count + 1, ifAbsent: () => 1);
+    final country = WineOrigins.effectiveCountry(wine.country, form);
+    if (country != null) {
+      tally.countries.update(
+        country,
+        (count) => count + bottles,
+        ifAbsent: () => bottles,
+      );
+    }
   }
 
   /// The wine's own region, else the region of its denomination, else
@@ -289,6 +317,7 @@ class _Tally {
         BreakdownBar(
           kind: BreakdownKind.region,
           region: tally.displayForm,
+          country: tally.country,
           bottles: tally.bottles,
         ),
       if (others > 0)

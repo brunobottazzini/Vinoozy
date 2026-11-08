@@ -46,6 +46,7 @@ class CellarUi {
         cellar: any(named: 'cellar'),
         user: any(named: 'user'),
         wine: any(named: 'wine'),
+        rating: any(named: 'rating'),
       ),
     ).thenAnswer((_) async => const DrinkAccepted('r-new'));
     when(

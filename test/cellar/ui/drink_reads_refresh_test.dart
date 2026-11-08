@@ -82,6 +82,8 @@ void main() {
     history = [drinkRecord('r-new')];
     await tester.tap(find.byKey(const Key('wine-tile-drink-w1')));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('drink-confirm')));
+    await tester.pumpAndSettle();
     expect(
       container.read(historyPagerProvider('user-a')).records.single.id,
       'r-new',
@@ -102,6 +104,8 @@ void main() {
     expect(recentReads(), 1);
 
     await tester.tap(find.byKey(const Key('wine-tile-drink-w1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('drink-confirm')));
     await tester.pumpAndSettle();
     expect(recentReads(), 1, reason: 'counted from the last verify');
 

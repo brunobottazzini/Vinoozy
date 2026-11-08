@@ -692,6 +692,322 @@
           "path": "users/$uid"
         }
       ]
+    },
+    {
+      "app": "ux-redesign",
+      "writes": [
+        {
+          "label": "profile created on first sign-in (UserRepository.ensureProfile)",
+          "op": "set",
+          "path": "users/$uid",
+          "data": {
+            "displayName": "User A",
+            "email": "user-a@example.com",
+            "onboardingSeen": false,
+            "createdAt": "$serverTimestamp",
+            "schemaVersion": 1
+          }
+        },
+        {
+          "label": "personal cellar created (CellarRepository.ensurePersonalCellar)",
+          "op": "set",
+          "path": "cellars/$uid",
+          "data": {
+            "ownerId": "$uid",
+            "name": "La mia cantina",
+            "schemaVersion": 1,
+            "createdAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "a wine left by an earlier version, Italian region and no country",
+          "requiresRules": "cellar",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "set",
+              "path": "cellars/$uid/wines/compat-w0",
+              "data": {
+                "name": "Barolo",
+                "vintage": 2016,
+                "quantity": 2,
+                "updatedBy": "$uid",
+                "region": "piemonte",
+                "matchKey": "barolo||2016",
+                "createdAt": "$serverTimestamp",
+                "updatedAt": "$serverTimestamp"
+              }
+            }
+          ]
+        },
+        {
+          "label": "wine created with country and canonical region (WineRepository.addWine)",
+          "requiresRules": "origin",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "set",
+              "path": "cellars/$uid/wines/compat-w1",
+              "data": {
+                "name": "Malbec Reserva",
+                "vintage": 2019,
+                "quantity": 2,
+                "updatedBy": "$uid",
+                "producer": "Bodega Esempio",
+                "wineType": "redStructured",
+                "region": "Mendoza",
+                "country": "AR",
+                "matchKey": "malbec reserva|bodega esempio|2019",
+                "createdAt": "$serverTimestamp",
+                "updatedAt": "$serverTimestamp"
+              }
+            }
+          ]
+        },
+        {
+          "label": "wine created without country (WineRepository.addWine)",
+          "requiresRules": "cellar",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "set",
+              "path": "cellars/$uid/wines/compat-w2",
+              "data": {
+                "name": "Vino della casa",
+                "vintage": null,
+                "quantity": 1,
+                "updatedBy": "$uid",
+                "matchKey": "vino della casa||",
+                "createdAt": "$serverTimestamp",
+                "updatedAt": "$serverTimestamp"
+              }
+            }
+          ]
+        },
+        {
+          "label": "earlier wine edited: country IT from its Italian region (WineRepository.updateWine)",
+          "requiresRules": "origin",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "update",
+              "path": "cellars/$uid/wines/compat-w0",
+              "data": {
+                "name": "Barolo",
+                "producer": null,
+                "vintage": 2016,
+                "wineType": null,
+                "region": "Piemonte",
+                "denomination": null,
+                "country": "IT",
+                "matchKey": "barolo||2016",
+                "updatedAt": "$serverTimestamp",
+                "updatedBy": "$uid"
+              }
+            }
+          ]
+        },
+        {
+          "label": "drink confirmed with a rating in the same batch (DrinkingRecordRepository.drink)",
+          "requiresRules": "cellar",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "update",
+              "path": "cellars/$uid/wines/compat-w1",
+              "data": {
+                "quantity": "$increment:-1",
+                "updatedAt": "$serverTimestamp",
+                "updatedBy": "$uid"
+              }
+            },
+            {
+              "op": "set",
+              "path": "cellars/$uid/drinkingRecords/compat-r1",
+              "data": {
+                "wineId": "compat-w1",
+                "wineName": "Malbec Reserva",
+                "vintage": 2019,
+                "drankOn": "2026-11-07",
+                "rating": 4,
+                "recordedBy": "$uid",
+                "createdAt": "$serverTimestamp"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "app": "label-autofill-windows",
+      "writes": [
+        {
+          "label": "profile created on first sign-in (UserRepository.ensureProfile)",
+          "op": "set",
+          "path": "users/$uid",
+          "data": {
+            "displayName": "User A",
+            "email": "user-a@example.com",
+            "onboardingSeen": false,
+            "createdAt": "$serverTimestamp",
+            "schemaVersion": 1
+          }
+        },
+        {
+          "label": "personal cellar created (CellarRepository.ensurePersonalCellar)",
+          "op": "set",
+          "path": "cellars/$uid",
+          "data": {
+            "ownerId": "$uid",
+            "name": "La mia cantina",
+            "schemaVersion": 1,
+            "createdAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "wine created with a level and a world estimate (WineRepository.addWine)",
+          "requiresRules": "level-override",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "set",
+              "path": "cellars/$uid/wines/compat-w1",
+              "data": {
+                "name": "Gran Reserva 904",
+                "vintage": 2015,
+                "quantity": 1,
+                "updatedBy": "$uid",
+                "producer": "La Rioja Alta S.A.",
+                "wineType": "redStructured",
+                "region": "Rioja",
+                "denomination": "Rioja",
+                "country": "ES",
+                "level": "aging",
+                "matchKey": "gran reserva 904|la rioja alta s a|2015",
+                "baseWindow": {
+                  "startYear": 2021,
+                  "peakYear": 2027,
+                  "endYear": 2040,
+                  "confidence": "medium",
+                  "source": "internalRules",
+                  "basis": "denomination",
+                  "qualifier": "granReserva",
+                  "denominationKey": "rioja",
+                  "tablesVersion": 2
+                },
+                "window": {
+                  "startYear": 2021,
+                  "peakYear": 2027,
+                  "endYear": 2040,
+                  "confidence": "medium",
+                  "source": "internalRules",
+                  "basis": "denomination",
+                  "qualifier": "granReserva",
+                  "denominationKey": "rioja",
+                  "tablesVersion": 2
+                },
+                "pairings": {
+                  "items": [],
+                  "categoryKeys": ["braisedRedMeat", "grilledRedMeat", "game", "agedCheese"],
+                  "source": "internalRules"
+                },
+                "createdAt": "$serverTimestamp",
+                "updatedAt": "$serverTimestamp"
+              }
+            }
+          ]
+        },
+        {
+          "label": "correction of Recommended until, one update (WineRepository.setOverride)",
+          "requiresRules": "level-override",
+          "op": "update",
+          "path": "cellars/$uid/wines/compat-w1",
+          "data": {
+            "windowOverride": { "endYear": 2035, "setAt": "$serverTimestamp" },
+            "window": {
+              "startYear": 2021,
+              "peakYear": 2027,
+              "endYear": 2035,
+              "confidence": "medium",
+              "source": "internalRules",
+              "basis": "denomination",
+              "qualifier": "granReserva",
+              "denominationKey": "rioja",
+              "tablesVersion": 2
+            },
+            "updatedAt": "$serverTimestamp",
+            "updatedBy": "$uid"
+          }
+        },
+        {
+          "label": "the version in production edits the corrected wine, without the new fields (BR5.2, NFR1.4)",
+          "op": "update",
+          "path": "cellars/$uid/wines/compat-w1",
+          "data": {
+            "name": "Gran Reserva 904",
+            "producer": "La Rioja Alta S.A.",
+            "vintage": 2015,
+            "wineType": "redStructured",
+            "region": "Rioja",
+            "denomination": "Rioja",
+            "country": "ES",
+            "matchKey": "gran reserva 904|la rioja alta s a|2015",
+            "updatedAt": "$serverTimestamp",
+            "updatedBy": "$uid"
+          }
+        },
+        {
+          "label": "wine estimated from its grape, basis grape (WineRepository.setEstimate)",
+          "requiresRules": "level-override",
+          "op": "update",
+          "path": "cellars/$uid/wines/compat-w1",
+          "data": {
+            "baseWindow": {
+              "startYear": 2019,
+              "peakYear": 2023,
+              "endYear": 2030,
+              "confidence": "low",
+              "source": "internalRules",
+              "basis": "grape",
+              "denominationKey": "tempranillo",
+              "tablesVersion": 2
+            },
+            "updatedAt": "$serverTimestamp",
+            "updatedBy": "$uid"
+          }
+        },
+        {
+          "label": "Restore the estimate (WineRepository.clearOverride)",
+          "requiresRules": "level-override",
+          "op": "update",
+          "path": "cellars/$uid/wines/compat-w1",
+          "data": {
+            "windowOverride": "$deleteField",
+            "window": {
+              "startYear": 2019,
+              "peakYear": 2023,
+              "endYear": 2030,
+              "confidence": "low",
+              "source": "internalRules",
+              "basis": "grape",
+              "denominationKey": "tempranillo",
+              "tablesVersion": 2
+            },
+            "updatedAt": "$serverTimestamp",
+            "updatedBy": "$uid"
+          }
+        },
+        {
+          "label": "None removes the saved level (WineRepository.updateWine)",
+          "op": "update",
+          "path": "cellars/$uid/wines/compat-w1",
+          "data": {
+            "level": "$deleteField",
+            "updatedAt": "$serverTimestamp",
+            "updatedBy": "$uid"
+          }
+        }
+      ]
     }
   ]
 }

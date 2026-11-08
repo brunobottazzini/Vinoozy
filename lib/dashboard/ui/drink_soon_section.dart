@@ -1,6 +1,7 @@
 import 'package:estimation/estimation.dart';
 import 'package:flutter/material.dart';
 
+import '../../app/ui/country_flag.dart';
 import '../../l10n/app_localizations.dart';
 import '../domain/dashboard_summary.dart';
 import 'status_icons.dart';
@@ -31,42 +32,48 @@ class DrinkSoonSection extends StatelessWidget {
       key: const Key('dashboard-drink-soon'),
       container: true,
       label: l10n.drinkSoonTitle,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ExcludeSemantics(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                l10n.drinkSoonTitle,
-                style: theme.textTheme.titleLarge,
-              ),
-            ),
-          ),
-          if (rows.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                l10n.drinkSoonEmpty,
-                key: const Key('drink-soon-empty'),
-                style: theme.textTheme.bodyLarge,
-              ),
-            ),
-          for (final row in rows)
-            _DrinkSoonTile(row: row, onTap: () => onOpenWine(row.wineId)),
-          if (total > rows.length)
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: TextButton(
-                key: const Key('drink-soon-all'),
-                onPressed: () => onOpenStatus(WineStatus.drinkSoon),
-                child: Text(l10n.drinkSoonSeeAll(total)),
-              ),
-            ),
-        ],
+      // ux-redesign mockup 6: "Drink soon" is a card of compact rows with
+      // the flags (review R-06 of the mockups).
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+          child: _content(l10n, theme),
+        ),
       ),
     );
   }
+
+  Widget _content(AppLocalizations l10n, ThemeData theme) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      ExcludeSemantics(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(l10n.drinkSoonTitle, style: theme.textTheme.titleLarge),
+        ),
+      ),
+      if (rows.isEmpty)
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            l10n.drinkSoonEmpty,
+            key: const Key('drink-soon-empty'),
+            style: theme.textTheme.bodyLarge,
+          ),
+        ),
+      for (final row in rows)
+        _DrinkSoonTile(row: row, onTap: () => onOpenWine(row.wineId)),
+      if (total > rows.length)
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: TextButton(
+            key: const Key('drink-soon-all'),
+            onPressed: () => onOpenStatus(WineStatus.drinkSoon),
+            child: Text(l10n.drinkSoonSeeAll(total)),
+          ),
+        ),
+    ],
+  );
 }
 
 class _DrinkSoonTile extends StatelessWidget {
@@ -84,10 +91,15 @@ class _DrinkSoonTile extends StatelessWidget {
       l10n.bottleCount(row.quantity),
       l10n.drinkSoonUntil('${row.endYear}'),
     ];
+    final country = row.country;
     return ListTile(
       key: Key('drink-soon-${row.wineId}'),
       contentPadding: EdgeInsets.zero,
-      leading: Icon(statusIcons[WineStatus.drinkSoon]),
+      // ux-redesign FR1.4, FR3.3: the flag of the wine; the status icon
+      // when it has no country.
+      leading: country == null
+          ? Icon(statusIcons[WineStatus.drinkSoon])
+          : CountryFlag(code: country, size: 24),
       title: Text(row.name),
       subtitle: Text(details.join(' · ')),
       onTap: onTap,

@@ -90,6 +90,8 @@ void main() {
       tester.widget<TextField>(key('edit-wine-producer')).controller!.text,
       'Cantina Esempio',
     );
+    // ux-redesign: country and region come first, the stepper is lower.
+    await tester.ensureVisible(key('quantity-decrease-button'));
     await tester.tap(key('quantity-decrease-button'));
     await tester.pump();
     expect(tester.widget<Text>(key('quantity-value')).data, '0');

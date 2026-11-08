@@ -6,5 +6,37 @@
     "scope": "mvp",
     "status": "complete",
     "request": "04d13b77"
+  },
+  {
+    "uuid": "01a1b561-3537-70bf-9562-5af9fd4268f6",
+    "slug": "pending-banner-fix",
+    "dirName": "261107-pending-banner-fix",
+    "scope": "bugfix",
+    "status": "complete",
+    "request": "79b1ea0d"
+  },
+  {
+    "uuid": "01a1b5be-1dca-763e-9d95-52fe4b983e32",
+    "slug": "ux-redesign",
+    "dirName": "261107-ux-redesign",
+    "scope": "bugfix",
+    "status": "complete",
+    "request": "1bec8969"
+  },
+  {
+    "uuid": "01a1b67b-3f14-7f52-aaaa-7fa7715c41c9",
+    "slug": "label-recognition",
+    "dirName": "261107-label-recognition",
+    "scope": "refactor",
+    "status": "complete",
+    "request": "cc668fa3"
+  },
+  {
+    "uuid": "01a1b9e5-98eb-7de6-9bb2-19b8469a8c4b",
+    "slug": "label-autofill-windows",
+    "dirName": "261108-label-autofill-windows",
+    "scope": "refactor",
+    "status": "complete",
+    "request": "27d80019"
   }
 ]

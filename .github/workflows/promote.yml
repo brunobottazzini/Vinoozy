@@ -57,8 +57,13 @@ jobs:
           # `cellar` (u4-cellar cicd-pipeline.md §2): every wine creation
           # carries matchKey, which the earlier rules refuse. `account`
           # (u8-account NFR4.5): deletionStartedAt and the deletion of
-          # users and cellars, which the earlier rules refuse.
-          RULES_FEATURES: sharing cellar account
+          # users and cellars, which the earlier rules refuse. `origin`
+          # (ux-redesign R-01): the `country` field of a wine, which the
+          # earlier rules refuse. `level-override` (label-autofill-windows
+          # BR5.3, NFR1.5): `level`, `windowOverride` and the new window
+          # values (`grape`, the foreign qualifiers, `denominationKey`,
+          # `tablesVersion`), which the earlier rules refuse.
+          RULES_FEATURES: sharing cellar account origin level-override
         run: |
           title="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/firebase-deploy.yml/runs?status=success&per_page=1" \
             --jq '.workflow_runs[0].display_title // empty')"
@@ -76,6 +81,30 @@ jobs:
             fi
           done
           echo "Rules and indexes of build-$VERSION_CODE match the deployment of $deployed_ref"
+      # label-recognition review R-02: the offline wine database of the build
+      # is the real Open Food Facts one, never the hand-written sample of
+      # tool/fixtures/ (at least 5000 wines, source not "sample"). The
+      # manifest is read from the build-<versionCode> commit, the one being
+      # promoted. Checked before Google Play is asked anything; not run for
+      # "halt". The internal testing track (deploy on merge) does not run it.
+      - name: The wine database of the build is a release one
+        if: inputs.action != 'halt'
+        run: |
+          manifest="$RUNNER_TEMP/wine_db_manifest.json"
+          git show "build-$VERSION_CODE:assets/wine_db/manifest.json" > "$manifest"
+          tool/check_wine_db_release.sh "$manifest"
+      # label-autofill-windows BR3.6, BR6.3: the appellation table of the
+      # build comes from the real registers (at least 1500 appellations),
+      # never the sample built with --allow-sample, and its manifest describes
+      # the generated file the app uses (review R-04). Not run for "halt".
+      - name: The appellation table of the build is a release one
+        if: inputs.action != 'halt'
+        run: |
+          manifest="$RUNNER_TEMP/appellations_manifest.json"
+          generated="$RUNNER_TEMP/appellations.g.dart"
+          git show "build-$VERSION_CODE:packages/estimation/lib/src/generated/appellations_manifest.json" > "$manifest"
+          git show "build-$VERSION_CODE:packages/estimation/lib/src/generated/appellations.g.dart" > "$generated"
+          tool/check_appellations_release.sh "$manifest" "$generated"
       - name: Write the Play credentials
         env:
           PLAY_SA_JSON: ${{ secrets.PLAY_PRODUCTION_SA_JSON }}

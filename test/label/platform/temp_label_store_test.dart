@@ -96,6 +96,63 @@ void main() {
     });
   });
 
+  group('BR1.4 photos of an open outcome (label-recognition)', () {
+    const front = '/cache/label/front.jpg';
+    const back = '/cache/label/back.jpg';
+
+    test('NFR3.4 held files survive the 10-minute cleanup and the end of '
+        'the reading', () async {
+      final old = clock.current.subtract(const Duration(minutes: 30));
+      files
+        ..add(front, old)
+        ..add(back, old)
+        ..add('/cache/label/stray.jpg', old);
+      store
+        ..hold(front)
+        ..hold(back);
+      await store.beforeRead();
+      await store.release(front);
+      expect(files.files.keys, unorderedEquals([front, back]));
+      expect(store.inUse, {front, back});
+    });
+
+    test(
+      'FR1.3 leaving the outcome releases and deletes front and back',
+      () async {
+        files
+          ..add(front, clock.current)
+          ..add(back, clock.current);
+        store
+          ..hold(front)
+          ..hold(back);
+        await store.releaseCapture([front, back]);
+        expect(files.files, isEmpty);
+        expect(store.inUse, isEmpty);
+      },
+    );
+
+    test('NFR4.12 at start-up every leftover photo is deleted (process '
+        'killed while in Google Lens)', () async {
+      files
+        ..add(front, clock.current)
+        ..add(back, clock.current);
+      await store.wipeAll();
+      expect(files.files, isEmpty);
+      store.startCleanup();
+      await store.cleanup;
+      expect(sink.recorded, isEmpty);
+    });
+
+    test('a held file is not wiped while its outcome is open', () async {
+      files
+        ..add(front, clock.current)
+        ..add('/cache/label/other.jpg', clock.current);
+      store.hold(front);
+      await store.wipeAll();
+      expect(files.files.keys, [front]);
+    });
+  });
+
   group('BR1.6 IoLabelFileSystem', () {
     late Directory root;
 

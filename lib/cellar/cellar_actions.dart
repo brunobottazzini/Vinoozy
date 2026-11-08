@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:estimation/estimation.dart'
+    show DrinkingWindow, isValidOverrideYear;
+
 import '../account/app_user.dart';
 import '../app/error_reporter.dart';
 import '../core/clock.dart';
@@ -16,6 +19,7 @@ import 'domain/wine.dart';
 import 'domain/wine_draft.dart';
 import 'domain/wine_estimate.dart';
 import 'estimate_refresher.dart';
+import 'estimates_migration.dart';
 import 'wine_estimator.dart';
 
 /// Result of [CellarActions.saveNewWine] (BR1.4).
@@ -62,6 +66,7 @@ class CellarActions {
     required this._reporter,
     required this._clock,
     this._estimator = const WineEstimator(),
+    this._migration,
   });
 
   final WineRepository _wines;
@@ -72,6 +77,10 @@ class CellarActions {
   final ErrorReporter _reporter;
   final Clock _clock;
   final WineEstimator _estimator;
+
+  /// The one-off estimate with new tables (label-autofill-windows BR3.9),
+  /// run by [ensureEstimates]; `null` runs none.
+  final EstimatesMigration? _migration;
 
   int get _year => _clock.now().year;
 
@@ -121,6 +130,8 @@ class CellarActions {
   }) async {
     final duplicates = await duplicatesOf(cellar.cellarId, draft);
     if (duplicates.isNotEmpty) return AddDuplicate(duplicates.first);
+    // label-autofill-windows BR4.5: the level chosen in the form enters the
+    // estimate here for the first time.
     final estimate = _estimator.estimate(
       WineFactsInput(
         name: draft.name,
@@ -130,6 +141,7 @@ class CellarActions {
         region: draft.region,
         denomination: draft.denomination,
         referenceYear: _year,
+        level: draft.level,
       ),
     );
     final outcome = await _wines.addWine(
@@ -148,10 +160,12 @@ class CellarActions {
       wineType: draft.wineType,
       region: draft.region,
       denomination: draft.denomination,
+      country: draft.country,
       window: estimate.window,
       baseWindow: estimate.baseWindow,
       pairings: estimate.pairings,
       matchKey: matchKeyOf(draft.name, draft.producer, draft.vintage),
+      level: draft.level,
     );
     unawaited(_refresher.refreshWine(cellar, user, wine));
     return AddSaved(wine);
@@ -199,8 +213,11 @@ class CellarActions {
         region: draft.region,
         denomination: draft.denomination,
         referenceYear: before.createdAt?.toLocal().year ?? _year,
+        level: draft.level,
       ),
       adjustment: before.windowAdjustment,
+      // FR5.3: an edit never removes the owner's correction.
+      override: before.windowOverride,
     );
     final outcome = await _wines.updateWine(
       cellarId: cellar.cellarId,
@@ -213,16 +230,19 @@ class CellarActions {
     return outcome is SaveAccepted ? EditResult.saved : EditResult.failed;
   }
 
-  /// "Drunk" (BR1.10), dated today on the phone.
+  /// "Drunk" (BR1.10), dated today on the phone; since ux-redesign with the
+  /// optional [rating] of the confirmation sheet in the same write (FR2.3).
   Future<DrinkOutcome> drink({
     required AccessibleCellar cellar,
     required AppUser user,
     required Wine wine,
+    int? rating,
   }) => _records.drink(
     cellarId: cellar.cellarId,
     user: user,
     wine: wine,
     today: _clock.now(),
+    rating: rating,
   );
 
   /// "Undo" (BR1.10): when the undone drink gave the feedback in use, the
@@ -314,7 +334,13 @@ class CellarActions {
         wine.baseWindow ?? (wine.windowAdjustment == null ? wine.window : null);
     final next = base == null
         ? WineEstimate(adjustment: adjustment, pairings: wine.pairings)
-        : _estimator.withAdjustment(base, adjustment, wine.pairings);
+        : _estimator.withAdjustment(
+            base,
+            adjustment,
+            wine.pairings,
+            // FR5.3, FR5.6: a drink never removes the owner's end year.
+            override: wine.windowOverride,
+          );
     if (base == null || next == WineEstimate.of(wine)) return;
     await _wines.setEstimate(
       cellarId: cellar.cellarId,
@@ -325,7 +351,10 @@ class CellarActions {
   }
 
   /// Wines without an estimate (created by U1) get the internal one, once,
-  /// by someone with `canEdit` (functional-spec "Vini senza stima").
+  /// by someone with `canEdit` (functional-spec "Vini senza stima"); since
+  /// label-autofill-windows the wines estimated with older tables are
+  /// estimated again, once ([EstimatesMigration], BR3.9, NFR4.8a). Level and
+  /// correction are kept in both (BR4.5).
   Future<int> ensureEstimates({
     required AccessibleCellar cellar,
     required AppUser user,
@@ -338,6 +367,7 @@ class CellarActions {
       final estimate = _estimator.estimate(
         WineFactsInput.ofWine(wine, fallbackYear: _year),
         adjustment: wine.windowAdjustment,
+        override: wine.windowOverride,
       );
       if (estimate.window == null) continue;
       final outcome = await _wines.setEstimate(
@@ -348,8 +378,70 @@ class CellarActions {
       );
       if (outcome is SaveAccepted) written++;
     }
+    final migration = _migration;
+    if (migration != null) {
+      written += await migration.run(cellar, user, wines);
+    }
     return written;
   }
+
+  /// "Save correction" of "Recommended until" (label-autofill-windows FR5.1,
+  /// F5, NFR4.14): [endYear] within BR4.6, then the effective window with
+  /// it, both in one update. `false` when the year is out of range, the
+  /// wine has no estimate or the save failed.
+  Future<bool> setOverride({
+    required AccessibleCellar cellar,
+    required AppUser user,
+    required Wine wine,
+    required int endYear,
+  }) async {
+    if (!cellar.canEdit) return false;
+    final base = _baseOf(wine);
+    if (base == null) return false;
+    final adjusted = WindowAdjuster.effective(base, wine.windowAdjustment);
+    if (!isValidOverrideYear(adjusted, endYear)) return false;
+    final window = WindowAdjuster.effectiveOf(
+      base,
+      wine.windowAdjustment,
+      WindowOverride(endYear: endYear),
+    );
+    final outcome = await _wines.setOverride(
+      cellarId: cellar.cellarId,
+      user: user,
+      wine: wine,
+      endYear: endYear,
+      window: window,
+    );
+    return outcome is SaveAccepted;
+  }
+
+  /// "Restore the estimate" (FR5.4, BR4.6): the correction is removed and
+  /// the window goes back to the estimate with the drink feedback, in one
+  /// update.
+  Future<bool> restoreEstimate({
+    required AccessibleCellar cellar,
+    required AppUser user,
+    required Wine wine,
+  }) async {
+    if (!cellar.canEdit || wine.windowOverride == null) return false;
+    final base = _baseOf(wine);
+    if (base == null) return false;
+    final outcome = await _wines.clearOverride(
+      cellarId: cellar.cellarId,
+      user: user,
+      wine: wine,
+      window: WindowAdjuster.effective(base, wine.windowAdjustment),
+    );
+    return outcome is SaveAccepted;
+  }
+
+  /// The estimate of [wine] before the feedback and the correction: the
+  /// stored base, else the window of a wine saved before u4-cellar.
+  static DrinkingWindow? _baseOf(Wine wine) =>
+      wine.baseWindow ??
+      (wine.windowAdjustment == null && wine.windowOverride == null
+          ? wine.window
+          : null);
 
   /// "Delete" (BR1.14): the owner only. Offline or after a part refused
   /// twice, a `purgeRecords` entry completes the deletion the user asked for

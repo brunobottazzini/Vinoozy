@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../account/app_user.dart';
+import '../../app/ui/country_flag.dart';
 import '../../l10n/app_localizations.dart';
 import '../../sharing/domain/membership.dart';
 import '../cellar_providers.dart';
@@ -44,8 +45,13 @@ class ArchivedWinesScreen extends ConsumerWidget {
           itemCount: value.length,
           itemBuilder: (context, index) {
             final wine = value[index];
+            final country = wine.displayCountry;
             return ListTile(
               key: Key('archive-tile-${wine.id}'),
+              // ux-redesign FR3.4: the same flag as the cards.
+              leading: country == null
+                  ? null
+                  : CountryFlag(code: country, size: 24),
               title: Text(wine.name),
               subtitle: Text(
                 [?wine.producer, vintageText(l10n, wine.vintage)].join(' · '),

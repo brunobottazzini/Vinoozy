@@ -149,11 +149,8 @@ class _DashboardContentState extends State<DashboardContent> {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           sliver: SliverList.list(
             children: [
-              Text(
-                l10n.dashboardTotalBottles(summary.totalBottles),
-                key: const Key('dashboard-total'),
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              _TotalHero(summary: summary, l10n: l10n),
+              const SizedBox(height: 8),
               DrinkSoonSection(
                 rows: summary.drinkSoon,
                 total: summary.drinkSoonTotal,
@@ -176,6 +173,54 @@ class _DashboardContentState extends State<DashboardContent> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// The bordeaux box on top (ux-redesign FR3.3, mockup 6): the total in
+/// large serif digits and how many bottles are to drink now (ready or to
+/// drink soon). `dashboard-total` keeps the full sentence (u1 e2e).
+class _TotalHero extends StatelessWidget {
+  const _TotalHero({required this.summary, required this.l10n});
+
+  final DashboardSummary summary;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final onHero = TextStyle(color: scheme.onPrimary);
+    return Container(
+      key: const Key('dashboard-hero'),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: scheme.primary,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ExcludeSemantics(
+            child: Text(
+              '${summary.totalBottles}',
+              style: theme.textTheme.displaySmall?.merge(onHero),
+            ),
+          ),
+          Text(
+            l10n.dashboardTotalBottles(summary.totalBottles),
+            key: const Key('dashboard-total'),
+            style: theme.textTheme.titleMedium?.merge(onHero),
+          ),
+          Text(
+            l10n.uxDashboardDrinkNow(
+              summary.readyBottles + summary.drinkSoonBottles,
+            ),
+            key: const Key('dashboard-drink-now'),
+            style: theme.textTheme.bodyMedium?.merge(onHero),
+          ),
+        ],
+      ),
     );
   }
 }

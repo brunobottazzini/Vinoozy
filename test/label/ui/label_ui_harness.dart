@@ -18,6 +18,17 @@ import '../../helpers/ui_harness.dart';
 import '../../sharing/sharing_harness.dart' show noSharingOverrides;
 import '../label_harness.dart';
 
+/// label-autofill-windows FR7.1, A19: the form filled from a photo opens
+/// the guided check of its uncertain fields; "Close" shuts it, keeping the
+/// form, so that Back then leaves the form. The sheet must be there: a
+/// test adapted for FR7.1 fails if the guide never opens.
+Future<void> closeGuideSheet(WidgetTester tester) async {
+  expect(find.byKey(const Key('guide-sheet')), findsOneWidget);
+  await tester.tap(find.byKey(const Key('guide-close')));
+  await tester.pumpAndSettle();
+  expect(find.byKey(const Key('guide-sheet')), findsNothing);
+}
+
 /// The cellar the photo adds to: the owner's own.
 const labelTarget = LabelTarget(user: cellarOwner, cellar: ownerCellar);
 
@@ -48,11 +59,15 @@ class LabelUi {
   /// What "Conferma" gets from the U4 save.
   AddResult saveResult = AddSaved(cellarWine('new'));
 
+  /// More overrides of one test, after the usual ones.
+  List<Override> extraOverrides = [];
+
   List<Override> get overrides => [
     ...env.overrides,
     cellarActionsProvider.overrideWithValue(actions),
     idGeneratorProvider.overrideWithValue(SequenceIdGenerator()),
     ...noSharingOverrides(),
+    ...extraOverrides,
   ];
 
   /// "Aggiungi" pushed above a root page, like the shell does.

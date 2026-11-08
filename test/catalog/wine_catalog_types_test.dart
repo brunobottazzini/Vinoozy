@@ -137,17 +137,90 @@ void main() {
       expect(a.toString(), 'SuggestResult(1, external: true)');
     });
 
-    test('LabelMatch has a candidate only when matched', () {
-      const matched = LabelMatch.matched(_offWine);
-      expect(matched.matched, isTrue);
-      expect(matched.candidate, _offWine);
-      const none = LabelMatch.none();
-      expect(none.matched, isFalse);
+    test('LabelMatchResult has a candidate only when sure (label-recognition '
+        'BR3.2)', () {
+      const sure = LabelMatchResult.sure(
+        _offWine,
+        step: LabelMatchStep.onlineBarcode,
+      );
+      expect(sure.kind, LabelMatchKind.sure);
+      expect(sure.candidate, _offWine);
+      expect(sure.candidates, isEmpty);
+      const none = LabelMatchResult.none();
+      expect(none.kind, LabelMatchKind.none);
       expect(none.candidate, isNull);
-      expect(matched, const LabelMatch.matched(_offWine));
-      expect(matched.hashCode, const LabelMatch.matched(_offWine).hashCode);
-      expect(matched, isNot(none));
-      expect(none.toString(), 'LabelMatch(matched: false)');
+      expect(none.step, LabelMatchStep.none);
+      const list = LabelMatchResult.candidates([
+        _offWine,
+      ], step: LabelMatchStep.onlineText);
+      expect(list.candidate, isNull);
+      expect(
+        sure,
+        const LabelMatchResult.sure(
+          _offWine,
+          step: LabelMatchStep.onlineBarcode,
+        ),
+      );
+      expect(
+        sure.hashCode,
+        const LabelMatchResult.sure(
+          _offWine,
+          step: LabelMatchStep.onlineBarcode,
+        ).hashCode,
+      );
+      expect(sure, isNot(none));
+      expect(list, isNot(sure));
+      expect(none.toString(), 'LabelMatchResult(none, 0, none)');
+    });
+
+    test('OnlineSearchResult equality (label-recognition BR4.2)', () {
+      const a = OnlineSearchResult(
+        candidates: [_offWine],
+        status: OnlineSearchStatus.ok,
+      );
+      expect(
+        a,
+        const OnlineSearchResult(
+          candidates: [_offWine],
+          status: OnlineSearchStatus.ok,
+        ),
+      );
+      expect(
+        a.hashCode,
+        const OnlineSearchResult(
+          candidates: [_offWine],
+          status: OnlineSearchStatus.ok,
+        ).hashCode,
+      );
+      expect(
+        a,
+        isNot(
+          const OnlineSearchResult(
+            candidates: [_offWine],
+            status: OnlineSearchStatus.offline,
+          ),
+        ),
+      );
+      expect(a.toString(), 'OnlineSearchResult(1, ok)');
+    });
+
+    test('a candidate keeps its country through the cache form', () {
+      const offline = WineCandidate(
+        name: 'Barolo Ravera',
+        source: CandidateSource.offline,
+        barcode: '8001234567897',
+        country: 'IT',
+      );
+      expect(WineCandidate.fromJson(offline.toJson()), offline);
+      expect(offline.copyWith(vintage: 2016).country, 'IT');
+      expect(
+        CandidateSource.offline.rank,
+        lessThan(CandidateSource.internal.rank),
+      );
+      expect(
+        CandidateSource.offline.rank,
+        lessThan(CandidateSource.openFoodFacts.rank),
+      );
     });
 
     test('WineProfileResult and ProfileWindow equality', () {

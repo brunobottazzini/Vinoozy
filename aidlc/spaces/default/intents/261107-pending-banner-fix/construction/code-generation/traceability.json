@@ -1,0 +1,61 @@
+{
+  "stage": "code-generation",
+  "upstream_ids": [
+    "FR1",
+    "FR1.1",
+    "FR1.2",
+    "FR1.3",
+    "FR2",
+    "NFR1",
+    "NFR2",
+    "NFR3",
+    "NFR4"
+  ],
+  "coverage": [
+    {
+      "id": "FR1",
+      "status": "OK",
+      "target": "lib/cellar/data/drinking_record_repository.dart"
+    },
+    {
+      "id": "FR1.1",
+      "status": "OK",
+      "target": "lib/cellar/data/pending_writes_probe.dart"
+    },
+    {
+      "id": "FR1.2",
+      "status": "OK",
+      "target": "lib/cellar/data/pending_writes_probe.dart"
+    },
+    {
+      "id": "FR1.3",
+      "status": "OK",
+      "target": "lib/cellar/data/pending_writes_probe.dart"
+    },
+    {
+      "id": "FR2",
+      "status": "OK",
+      "target": "lib/cellar/data/pending_writes_probe.dart"
+    },
+    {
+      "id": "NFR1",
+      "status": "OK",
+      "target": "test/cellar/data/drinking_record_repository_test.dart"
+    },
+    {
+      "id": "NFR2",
+      "status": "Deferred",
+      "target": "integration_test/cellar_test.dart: le 5 corse consecutive sull'emulatore Android (Step 7 del piano) si eseguono in Build and Test"
+    },
+    {
+      "id": "NFR3",
+      "status": "OK",
+      "target": "lib/cellar/data/pending_writes_probe.dart"
+    },
+    {
+      "id": "NFR4",
+      "status": "OK",
+      "target": "lib/cellar/data/pending_writes_probe.dart"
+    }
+  ]
+}

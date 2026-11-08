@@ -1,0 +1,396 @@
+# Sample of the eAmbrosia wine export (EU register of geographical
+# indications, https://ec.europa.eu/agriculture/eambrosia/), written by hand
+# for tool/build_appellations.dart and its test (label-autofill-windows
+# BR3.6, BR6.3). It is NOT the register: a few hundred real names of
+# registered wine PDOs and PGIs, plus a few rows the builder must skip
+# (spirits, foods, applications not yet registered).
+# Source: eAmbrosia, the EU geographical indications register, wine
+# category, as known at Code Generation.
+# Date: 2026-11-08. Licence: eAmbrosia data are published by the European
+# Commission and may be reused with acknowledgement of the source
+# (Commission Decision 2011/833/EU).
+# To verify against the official list in Build and Test: the real export is
+# downloaded there and replaces this sample (docs/release-checklist.md).
+File number,GI name,Country,GI type,Product category,Status
+PDO-IT-A0418,Barolo,IT,PDO,Wine,Registered
+PDO-IT-A0419,Barbaresco,IT,PDO,Wine,Registered
+PDO-IT-A0430,Chianti,IT,PDO,Wine,Registered
+PDO-IT-A0431,Chianti Classico,IT,PDO,Wine,Registered
+PDO-IT-A0500,Prosecco,IT,PDO,Wine,Registered
+PDO-IT-A0501,Conegliano Valdobbiadene - Prosecco,IT,PDO,Wine,Registered
+PDO-IT-A0520,Lambrusco di Sorbara,IT,PDO,Wine,Registered
+PDO-IT-A0521,Lambrusco Grasparossa di Castelvetro,IT,PDO,Wine,Registered
+PDO-IT-A0522,Lambrusco Salamino di Santa Croce,IT,PDO,Wine,Registered
+PDO-IT-A0530,Dolcetto d'Alba,IT,PDO,Wine,Registered
+PDO-IT-A0531,Dolcetto d'Acqui,IT,PDO,Wine,Registered
+PDO-IT-A0532,Dolcetto d'Asti,IT,PDO,Wine,Registered
+PDO-IT-A0540,Alba,IT,PDO,Wine,Registered
+PDO-IT-A0541,Albugnano,IT,PDO,Wine,Registered
+PDO-IT-A0542,Calosso,IT,PDO,Wine,Registered
+PDO-IT-A0543,Cisterna d'Asti,IT,PDO,Wine,Registered
+PDO-IT-A0544,Colli Tortonesi,IT,PDO,Wine,Registered
+PDO-IT-A0545,Collina Torinese,IT,PDO,Wine,Registered
+PDO-IT-A0546,Cortese dell'Alto Monferrato,IT,PDO,Wine,Registered
+PDO-IT-A0547,Coste della Sesia,IT,PDO,Wine,Registered
+PDO-IT-A0548,Gabiano,IT,PDO,Wine,Registered
+PDO-IT-A0549,Piemonte,IT,PDO,Wine,Registered
+PDO-IT-A0550,Pinerolese,IT,PDO,Wine,Registered
+PDO-IT-A0551,Rubino di Cantavenna,IT,PDO,Wine,Registered
+PDO-IT-A0552,Strevi,IT,PDO,Wine,Registered
+PDO-IT-A0553,Valsusa,IT,PDO,Wine,Registered
+PDO-IT-A0554,Verduno Pelaverga,IT,PDO,Wine,Registered
+PDO-IT-A0555,Canavese,IT,PDO,Wine,Registered
+PDO-IT-A0556,Colline Novaresi,IT,PDO,Wine,Registered
+PDO-IT-A0557,Colline Saluzzesi,IT,PDO,Wine,Registered
+PDO-IT-A0558,Valli Ossolane,IT,PDO,Wine,Registered
+PDO-IT-A0559,Terre Alfieri,IT,PDO,Wine,Registered
+PDO-IT-A0560,Lessona,IT,PDO,Wine,Registered
+PDO-IT-A0570,Oltrepò Pavese Pinot grigio,IT,PDO,Wine,Registered
+PDO-IT-A0571,Pinot nero dell'Oltrepò Pavese,IT,PDO,Wine,Registered
+PDO-IT-A0572,Casteggio,IT,PDO,Wine,Registered
+PDO-IT-A0573,Terre del Colleoni,IT,PDO,Wine,Registered
+PDO-IT-A0574,Garda Colli Mantovani,IT,PDO,Wine,Registered
+PDO-IT-A0575,Riviera del Garda Bresciano,IT,PDO,Wine,Registered
+PDO-IT-A0576,Cellatica,IT,PDO,Wine,Registered
+PDO-IT-A0577,Capriano del Colle,IT,PDO,Wine,Registered
+PDO-IT-A0578,Lambrusco Mantovano,IT,PDO,Wine,Registered
+PDO-IT-A0590,Arcole,IT,PDO,Wine,Registered
+PDO-IT-A0591,Bianco di Custoza,IT,PDO,Wine,Registered
+PDO-IT-A0592,Colli Euganei Fior d'Arancio,IT,PDO,Wine,Registered
+PDO-IT-A0593,Corti Benedettine del Padovano,IT,PDO,Wine,Registered
+PDO-IT-A0594,Merlara,IT,PDO,Wine,Registered
+PDO-IT-A0595,Monti Lessini,IT,PDO,Wine,Registered
+PDO-IT-A0596,Riviera del Brenta,IT,PDO,Wine,Registered
+PDO-IT-A0597,Vicenza,IT,PDO,Wine,Registered
+PDO-IT-A0598,Venezia,IT,PDO,Wine,Registered
+PDO-IT-A0599,Delle Venezie,IT,PDO,Wine,Registered
+PDO-IT-A0600,Friuli Annia,IT,PDO,Wine,Registered
+PDO-IT-A0601,Friuli Aquileia,IT,PDO,Wine,Registered
+PDO-IT-A0602,Friuli Latisana,IT,PDO,Wine,Registered
+PDO-IT-A0603,Friuli,IT,PDO,Wine,Registered
+PDO-IT-A0604,Prosecco Rosé,IT,PDO,Wine,Registered
+PDO-IT-A0610,Alto Adige / Südtirol,IT,PDO,Wine,Registered
+PDO-IT-A0611,Casteller,IT,PDO,Wine,Registered
+PDO-IT-A0612,Valdadige Terradeiforti,IT,PDO,Wine,Registered
+PDO-IT-A0620,Colli Bolognesi,IT,PDO,Wine,Registered
+PDO-IT-A0621,Colli di Parma,IT,PDO,Wine,Registered
+PDO-IT-A0622,Colli di Rimini,IT,PDO,Wine,Registered
+PDO-IT-A0623,Colli Piacentini,IT,PDO,Wine,Registered
+PDO-IT-A0624,Reggiano,IT,PDO,Wine,Registered
+PDO-IT-A0625,Romagna,IT,PDO,Wine,Registered
+PDO-IT-A0626,Ortrugo dei Colli Piacentini,IT,PDO,Wine,Registered
+PDO-IT-A0640,Ansonica Costa dell'Argentario,IT,PDO,Wine,Registered
+PDO-IT-A0641,Bianco di Pitigliano,IT,PDO,Wine,Registered
+PDO-IT-A0642,Capalbio,IT,PDO,Wine,Registered
+PDO-IT-A0643,Colline Lucchesi,IT,PDO,Wine,Registered
+PDO-IT-A0644,Elba,IT,PDO,Wine,Registered
+PDO-IT-A0645,Montecarlo,IT,PDO,Wine,Registered
+PDO-IT-A0646,Montescudaio,IT,PDO,Wine,Registered
+PDO-IT-A0647,Parrina,IT,PDO,Wine,Registered
+PDO-IT-A0648,Sant'Antimo,IT,PDO,Wine,Registered
+PDO-IT-A0649,Terratico di Bibbona,IT,PDO,Wine,Registered
+PDO-IT-A0650,Val d'Arbia,IT,PDO,Wine,Registered
+PDO-IT-A0651,Valdichiana toscana,IT,PDO,Wine,Registered
+PDO-IT-A0652,Vin Santo di Montepulciano,IT,PDO,Wine,Registered
+PDO-IT-A0653,Grance Senesi,IT,PDO,Wine,Registered
+PDO-IT-A0660,Assisi,IT,PDO,Wine,Registered
+PDO-IT-A0661,Colli del Trasimeno,IT,PDO,Wine,Registered
+PDO-IT-A0662,Colli Martani,IT,PDO,Wine,Registered
+PDO-IT-A0663,Spoleto,IT,PDO,Wine,Registered
+PDO-IT-A0664,Todi,IT,PDO,Wine,Registered
+PDO-IT-A0670,Bianchello del Metauro,IT,PDO,Wine,Registered
+PDO-IT-A0671,Colli Maceratesi,IT,PDO,Wine,Registered
+PDO-IT-A0672,Colli Pesaresi,IT,PDO,Wine,Registered
+PDO-IT-A0673,Esino,IT,PDO,Wine,Registered
+PDO-IT-A0674,Falerio,IT,PDO,Wine,Registered
+PDO-IT-A0675,Pergola,IT,PDO,Wine,Registered
+PDO-IT-A0676,Serrapetrona,IT,PDO,Wine,Registered
+PDO-IT-A0680,Aleatico di Gradoli,IT,PDO,Wine,Registered
+PDO-IT-A0681,Castelli Romani,IT,PDO,Wine,Registered
+PDO-IT-A0682,Cerveteri,IT,PDO,Wine,Registered
+PDO-IT-A0683,Cesanese di Affile,IT,PDO,Wine,Registered
+PDO-IT-A0684,Cesanese di Olevano Romano,IT,PDO,Wine,Registered
+PDO-IT-A0685,Marino,IT,PDO,Wine,Registered
+PDO-IT-A0686,Roma,IT,PDO,Wine,Registered
+PDO-IT-A0687,Tarquinia,IT,PDO,Wine,Registered
+PDO-IT-A0688,Velletri,IT,PDO,Wine,Registered
+PDO-IT-A0689,Zagarolo,IT,PDO,Wine,Registered
+PDO-IT-A0700,Abruzzo,IT,PDO,Wine,Registered
+PDO-IT-A0701,Controguerra,IT,PDO,Wine,Registered
+PDO-IT-A0702,Ortona,IT,PDO,Wine,Registered
+PDO-IT-A0703,Villamagna,IT,PDO,Wine,Registered
+PDO-IT-A0704,Molise,IT,PDO,Wine,Registered
+PDO-IT-A0705,Pentro di Isernia,IT,PDO,Wine,Registered
+PDO-IT-A0710,Aversa,IT,PDO,Wine,Registered
+PDO-IT-A0711,Capri,IT,PDO,Wine,Registered
+PDO-IT-A0712,Casavecchia di Pontelatone,IT,PDO,Wine,Registered
+PDO-IT-A0713,Castel San Lorenzo,IT,PDO,Wine,Registered
+PDO-IT-A0714,Cilento,IT,PDO,Wine,Registered
+PDO-IT-A0715,Falerno del Massico,IT,PDO,Wine,Registered
+PDO-IT-A0716,Galluccio,IT,PDO,Wine,Registered
+PDO-IT-A0717,Ischia,IT,PDO,Wine,Registered
+PDO-IT-A0718,Penisola Sorrentina,IT,PDO,Wine,Registered
+PDO-IT-A0719,Vesuvio,IT,PDO,Wine,Registered
+PDO-IT-A0730,Aleatico di Puglia,IT,PDO,Wine,Registered
+PDO-IT-A0731,Alezio,IT,PDO,Wine,Registered
+PDO-IT-A0732,Barletta,IT,PDO,Wine,Registered
+PDO-IT-A0733,Cacc'e mmitte di Lucera,IT,PDO,Wine,Registered
+PDO-IT-A0734,Galatina,IT,PDO,Wine,Registered
+PDO-IT-A0735,Gravina,IT,PDO,Wine,Registered
+PDO-IT-A0736,Leverano,IT,PDO,Wine,Registered
+PDO-IT-A0737,Locorotondo,IT,PDO,Wine,Registered
+PDO-IT-A0738,Martina Franca,IT,PDO,Wine,Registered
+PDO-IT-A0739,Matino,IT,PDO,Wine,Registered
+PDO-IT-A0740,Nardò,IT,PDO,Wine,Registered
+PDO-IT-A0741,Orta Nova,IT,PDO,Wine,Registered
+PDO-IT-A0742,Rosso di Cerignola,IT,PDO,Wine,Registered
+PDO-IT-A0743,San Severo,IT,PDO,Wine,Registered
+PDO-IT-A0744,Squinzano,IT,PDO,Wine,Registered
+PDO-IT-A0745,Tavoliere delle Puglie,IT,PDO,Wine,Registered
+PDO-IT-A0750,Bivongi,IT,PDO,Wine,Registered
+PDO-IT-A0751,Lamezia,IT,PDO,Wine,Registered
+PDO-IT-A0752,Melissa,IT,PDO,Wine,Registered
+PDO-IT-A0753,Savuto,IT,PDO,Wine,Registered
+PDO-IT-A0754,Scavigna,IT,PDO,Wine,Registered
+PDO-IT-A0755,Terre di Cosenza,IT,PDO,Wine,Registered
+PDO-IT-A0760,Alcamo,IT,PDO,Wine,Registered
+PDO-IT-A0761,Contea di Sclafani,IT,PDO,Wine,Registered
+PDO-IT-A0762,Contessa Entellina,IT,PDO,Wine,Registered
+PDO-IT-A0763,Delia Nivolelli,IT,PDO,Wine,Registered
+PDO-IT-A0764,Eloro,IT,PDO,Wine,Registered
+PDO-IT-A0765,Erice,IT,PDO,Wine,Registered
+PDO-IT-A0766,Etna,IT,PDO,Wine,Registered
+PDO-IT-A0767,Mamertino di Milazzo,IT,PDO,Wine,Registered
+PDO-IT-A0768,Menfi,IT,PDO,Wine,Registered
+PDO-IT-A0769,Monreale,IT,PDO,Wine,Registered
+PDO-IT-A0770,Riesi,IT,PDO,Wine,Registered
+PDO-IT-A0771,Salaparuta,IT,PDO,Wine,Registered
+PDO-IT-A0772,Sambuca di Sicilia,IT,PDO,Wine,Registered
+PDO-IT-A0773,Santa Margherita di Belice,IT,PDO,Wine,Registered
+PDO-IT-A0774,Sciacca,IT,PDO,Wine,Registered
+PDO-IT-A0775,Siracusa,IT,PDO,Wine,Registered
+PDO-IT-A0780,Alghero,IT,PDO,Wine,Registered
+PDO-IT-A0781,Arborea,IT,PDO,Wine,Registered
+PDO-IT-A0782,Cagliari,IT,PDO,Wine,Registered
+PDO-IT-A0783,Campidano di Terralba,IT,PDO,Wine,Registered
+PDO-IT-A0784,Girò di Cagliari,IT,PDO,Wine,Registered
+PDO-IT-A0785,Malvasia di Bosa,IT,PDO,Wine,Registered
+PDO-IT-A0786,Mandrolisai,IT,PDO,Wine,Registered
+PDO-IT-A0787,Moscato di Sorso-Sennori,IT,PDO,Wine,Registered
+PDO-IT-A0788,Sardegna Semidano,IT,PDO,Wine,Registered
+PDO-IT-A0789,Vermentino di Gallura,IT,PDO,Wine,Registered
+PDO-IT-A0790,Golfo del Tigullio-Portofino,IT,PDO,Wine,Registered
+PDO-IT-A0791,Pornassio,IT,PDO,Wine,Registered
+PDO-IT-A0792,Riviera Ligure di Ponente,IT,PDO,Wine,Registered
+PDO-IT-A0793,Val Polcèvera,IT,PDO,Wine,Registered
+PGI-IT-A0900,Toscana,IT,PGI,Wine,Registered
+PGI-IT-A0901,Costa Toscana,IT,PGI,Wine,Registered
+PGI-IT-A0902,Veneto,IT,PGI,Wine,Registered
+PGI-IT-A0903,Trevenezie,IT,PGI,Wine,Registered
+PGI-IT-A0904,Vigneti delle Dolomiti / Weinberg Dolomiten,IT,PGI,Wine,Registered
+PGI-IT-A0905,Puglia,IT,PGI,Wine,Registered
+PGI-IT-A0906,Salento,IT,PGI,Wine,Registered
+PGI-IT-A0907,Terre Siciliane,IT,PGI,Wine,Registered
+PGI-IT-A0908,Umbria,IT,PGI,Wine,Registered
+PGI-IT-A0909,Marche,IT,PGI,Wine,Registered
+PGI-IT-A0910,Lazio,IT,PGI,Wine,Registered
+PGI-IT-A0911,Emilia,IT,PGI,Wine,Registered
+PGI-IT-A0912,Rubicone,IT,PGI,Wine,Registered
+PGI-IT-A0913,Provincia di Pavia,IT,PGI,Wine,Registered
+PGI-IT-A0914,Sebino,IT,PGI,Wine,Registered
+PGI-IT-A0915,Bergamasca,IT,PGI,Wine,Registered
+PGI-IT-A0916,Benaco bresciano,IT,PGI,Wine,Registered
+PGI-IT-A0917,Colli Trevigiani,IT,PGI,Wine,Registered
+PGI-IT-A0918,Marca Trevigiana,IT,PGI,Wine,Registered
+PGI-IT-A0919,Verona,IT,PGI,Wine,Registered
+PGI-IT-A0920,Venezia Giulia,IT,PGI,Wine,Registered
+PGI-IT-A0921,Calabria,IT,PGI,Wine,Registered
+PGI-IT-A0922,Basilicata,IT,PGI,Wine,Registered
+PGI-IT-A0923,Campania,IT,PGI,Wine,Registered
+PGI-IT-A0924,Beneventano,IT,PGI,Wine,Registered
+PGI-IT-A0925,Paestum,IT,PGI,Wine,Registered
+PGI-IT-A0926,Isola dei Nuraghi,IT,PGI,Wine,Registered
+PGI-IT-A0927,Colli Aprutini,IT,PGI,Wine,Registered
+PGI-IT-A0928,Terre di Chieti,IT,PGI,Wine,Registered
+PGI-IT-A0929,Murgia,IT,PGI,Wine,Registered
+PGI-IT-A0930,Daunia,IT,PGI,Wine,Registered
+PGI-IT-A0931,Tarantino,IT,PGI,Wine,Registered
+PGI-IT-A0932,Valle d'Itria,IT,PGI,Wine,Registered
+PGI-IT-A0933,Passito di Pantelleria,IT,PGI,Wine,Registered
+PDO-FR-A0001,Bordeaux,FR,PDO,Wine,Registered
+PDO-FR-A0002,Bordeaux supérieur,FR,PDO,Wine,Registered
+PDO-FR-A0003,Saint-Émilion grand cru,FR,PDO,Wine,Registered
+PDO-FR-A0004,Graves supérieures,FR,PDO,Wine,Registered
+PDO-FR-A0005,Graves de Vayres,FR,PDO,Wine,Registered
+PDO-FR-A0006,Sainte-Foy-Bordeaux,FR,PDO,Wine,Registered
+PDO-FR-A0007,Bordeaux Côtes de Francs,FR,PDO,Wine,Registered
+PDO-FR-A0010,Alsace grand cru Schlossberg,FR,PDO,Wine,Registered
+PDO-FR-A0011,Chablis grand cru,FR,PDO,Wine,Registered
+PDO-FR-A0012,Irancy,FR,PDO,Wine,Registered
+PDO-FR-A0013,Saint-Bris,FR,PDO,Wine,Registered
+PDO-FR-A0014,Côte de Nuits-villages,FR,PDO,Wine,Registered
+PDO-FR-A0015,Blagny,FR,PDO,Wine,Registered
+PDO-FR-A0016,Mazis-Chambertin,FR,PDO,Wine,Registered
+PDO-FR-A0017,Vézelay,FR,PDO,Wine,Registered
+PDO-FR-A0020,Coteaux du Lyonnais,FR,PDO,Wine,Registered
+PDO-FR-A0021,Côtes du Vivarais,FR,PDO,Wine,Registered
+PDO-FR-A0022,Duché d'Uzès,FR,PDO,Wine,Registered
+PDO-FR-A0023,Côtes du Forez,FR,PDO,Wine,Registered
+PDO-FR-A0024,Brézème,FR,PDO,Wine,Registered
+PDO-FR-A0030,Anjou-Coteaux de la Loire,FR,PDO,Wine,Registered
+PDO-FR-A0031,Anjou Villages Brissac,FR,PDO,Wine,Registered
+PDO-FR-A0032,Coteaux de Saumur,FR,PDO,Wine,Registered
+PDO-FR-A0033,Coteaux du Loir,FR,PDO,Wine,Registered
+PDO-FR-A0034,Coteaux du Vendômois,FR,PDO,Wine,Registered
+PDO-FR-A0035,Haut-Poitou,FR,PDO,Wine,Registered
+PDO-FR-A0036,Orléans,FR,PDO,Wine,Registered
+PDO-FR-A0037,Valençay,FR,PDO,Wine,Registered
+PDO-FR-A0038,Chateaumeillant,FR,PDO,Wine,Registered
+PDO-FR-A0039,Coteaux du Giennois,FR,PDO,Wine,Registered
+PDO-FR-A0040,Fiefs Vendéens,FR,PDO,Wine,Registered
+PDO-FR-A0041,Gros Plant du Pays nantais,FR,PDO,Wine,Registered
+PDO-FR-A0050,Cabardès,FR,PDO,Wine,Registered
+PDO-FR-A0051,Clairette du Languedoc,FR,PDO,Wine,Registered
+PDO-FR-A0052,Côtes de la Malepère,FR,PDO,Wine,Registered
+PDO-FR-A0053,Muscat de Frontignan,FR,PDO,Wine,Registered
+PDO-FR-A0054,Muscat de Lunel,FR,PDO,Wine,Registered
+PDO-FR-A0055,Picpoul de Pinet,FR,PDO,Wine,Registered
+PDO-FR-A0056,Malepère,FR,PDO,Wine,Registered
+PDO-FR-A0060,Bellet,FR,PDO,Wine,Registered
+PDO-FR-A0061,Coteaux Varois en Provence,FR,PDO,Wine,Registered
+PDO-FR-A0062,Pierrevert,FR,PDO,Wine,Registered
+PDO-FR-A0070,Béarn,FR,PDO,Wine,Registered
+PDO-FR-A0071,Brulhois,FR,PDO,Wine,Registered
+PDO-FR-A0072,Côtes de Duras,FR,PDO,Wine,Registered
+PDO-FR-A0073,Côtes du Marmandais,FR,PDO,Wine,Registered
+PDO-FR-A0074,Entraygues - Le Fel,FR,PDO,Wine,Registered
+PDO-FR-A0075,Marcillac,FR,PDO,Wine,Registered
+PDO-FR-A0076,Montravel,FR,PDO,Wine,Registered
+PDO-FR-A0077,Pacherenc du Vic-Bilh,FR,PDO,Wine,Registered
+PDO-FR-A0078,Rosette,FR,PDO,Wine,Registered
+PDO-FR-A0079,Saussignac,FR,PDO,Wine,Registered
+PDO-FR-A0080,Tursan,FR,PDO,Wine,Registered
+PDO-FR-A0090,Bugey,FR,PDO,Wine,Registered
+PDO-FR-A0091,Seyssel,FR,PDO,Wine,Registered
+PDO-FR-A0092,Macvin du Jura,FR,PDO,Wine,Registered
+PDO-FR-A0093,Crémant de Savoie,FR,PDO,Wine,Registered
+PDO-FR-A0094,Vin de Corse,FR,PDO,Wine,Registered
+PDO-FR-A0095,Muscat du Cap Corse,FR,PDO,Wine,Registered
+PDO-FR-A0096,Côtes de Toul,FR,PDO,Wine,Registered
+PDO-FR-A0097,Moselle,FR,PDO,Wine,Registered
+PDO-FR-A0098,Saint-Pourçain,FR,PDO,Wine,Registered
+PGI-FR-A0200,Pays d'Oc,FR,PGI,Wine,Registered
+PGI-FR-A0201,Val de Loire,FR,PGI,Wine,Registered
+PGI-FR-A0202,Côtes de Gascogne,FR,PGI,Wine,Registered
+PGI-FR-A0203,Comté Tolosan,FR,PGI,Wine,Registered
+PGI-FR-A0204,Méditerranée,FR,PGI,Wine,Registered
+PGI-FR-A0205,Atlantique,FR,PGI,Wine,Registered
+PGI-FR-A0206,Vin des Allobroges,FR,PGI,Wine,Registered
+PGI-FR-A0207,Côtes Catalanes,FR,PGI,Wine,Registered
+PGI-FR-A0208,Ile de Beauté,FR,PGI,Wine,Registered
+PGI-FR-A0209,Collines Rhodaniennes,FR,PGI,Wine,Registered
+PGI-FR-A0210,Cévennes,FR,PGI,Wine,Registered
+PGI-FR-A0211,Haute Vallée de l'Aude,FR,PGI,Wine,Registered
+PDO-ES-A0001,Rioja,ES,PDO,Wine,Registered
+PDO-ES-A0002,Cava,ES,PDO,Wine,Registered
+PDO-ES-A0003,Abona,ES,PDO,Wine,Registered
+PDO-ES-A0004,Bizkaiko Txakolina,ES,PDO,Wine,Registered
+PDO-ES-A0005,Arabako Txakolina,ES,PDO,Wine,Registered
+PDO-ES-A0006,Campo de La Guardia,ES,PDO,Wine,Registered
+PDO-ES-A0007,Dehesa del Carrizal,ES,PDO,Wine,Registered
+PDO-ES-A0008,Dominio de Valdepusa,ES,PDO,Wine,Registered
+PDO-ES-A0009,El Hierro,ES,PDO,Wine,Registered
+PDO-ES-A0010,Gran Canaria,ES,PDO,Wine,Registered
+PDO-ES-A0011,La Gomera,ES,PDO,Wine,Registered
+PDO-ES-A0012,La Palma,ES,PDO,Wine,Registered
+PDO-ES-A0013,Mondéjar,ES,PDO,Wine,Registered
+PDO-ES-A0014,Pla i Llevant,ES,PDO,Wine,Registered
+PDO-ES-A0015,Sierras de Málaga,ES,PDO,Wine,Registered
+PDO-ES-A0016,Tierra del Vino de Zamora,ES,PDO,Wine,Registered
+PDO-ES-A0017,Valle de Güímar,ES,PDO,Wine,Registered
+PDO-ES-A0018,Valle de la Orotava,ES,PDO,Wine,Registered
+PDO-ES-A0019,Ycoden-Daute-Isora,ES,PDO,Wine,Registered
+PDO-ES-A0020,Valtiendas,ES,PDO,Wine,Registered
+PDO-ES-A0021,Vino de la Tierra de Castilla y León,ES,PGI,Wine,Registered
+PGI-ES-A0100,Castilla,ES,PGI,Wine,Registered
+PGI-ES-A0101,Castilla y León,ES,PGI,Wine,Registered
+PGI-ES-A0102,Extremadura,ES,PGI,Wine,Registered
+PGI-ES-A0103,Mallorca,ES,PGI,Wine,Registered
+PGI-ES-A0104,Cádiz,ES,PGI,Wine,Registered
+PDO-PT-A0001,Porto,PT,PDO,Wine,Registered
+PDO-PT-A0002,Douro,PT,PDO,Wine,Registered
+PDO-PT-A0003,Arruda,PT,PDO,Wine,Registered
+PDO-PT-A0004,Alenquer,PT,PDO,Wine,Registered
+PDO-PT-A0005,Biscoitos,PT,PDO,Wine,Registered
+PDO-PT-A0006,Graciosa,PT,PDO,Wine,Registered
+PDO-PT-A0007,Encostas de Aire,PT,PDO,Wine,Registered
+PDO-PT-A0008,Lafões,PT,PDO,Wine,Registered
+PDO-PT-A0009,Lagoa,PT,PDO,Wine,Registered
+PDO-PT-A0010,Lagos,PT,PDO,Wine,Registered
+PDO-PT-A0011,Lourinhã,PT,PDO,Wine,Registered
+PDO-PT-A0012,Óbidos,PT,PDO,Wine,Registered
+PDO-PT-A0013,Portimão,PT,PDO,Wine,Registered
+PDO-PT-A0014,Tavira,PT,PDO,Wine,Registered
+PDO-PT-A0015,Torres Vedras,PT,PDO,Wine,Registered
+PGI-PT-A0100,Minho,PT,PGI,Wine,Registered
+PGI-PT-A0101,Duriense,PT,PGI,Wine,Registered
+PGI-PT-A0102,Terras do Dão,PT,PGI,Wine,Registered
+PGI-PT-A0103,Alentejano,PT,PGI,Wine,Registered
+PDO-DE-A0001,Mosel,DE,PDO,Wine,Registered
+PDO-DE-A0002,Rheinhessen,DE,PDO,Wine,Registered
+PDO-DE-A0003,Uhlen Blaufüsser Lay,DE,PDO,Wine,Registered
+PDO-DE-A0004,Bürgstadter Berg,DE,PDO,Wine,Registered
+PGI-DE-A0100,Landwein der Mosel,DE,PGI,Wine,Registered
+PGI-DE-A0101,Pfälzer Landwein,DE,PGI,Wine,Registered
+PGI-DE-A0102,Badischer Landwein,DE,PGI,Wine,Registered
+PGI-DE-A0103,Rheinhessischer Landwein,DE,PGI,Wine,Registered
+PDO-AT-A0001,Wachau,AT,PDO,Wine,Registered
+PDO-AT-A0002,Österreichischer Sekt,AT,PDO,Wine,Registered
+PDO-AT-A0003,Steirerland,AT,PGI,Wine,Registered
+PGI-AT-A0100,Weinland,AT,PGI,Wine,Registered
+PGI-AT-A0101,Bergland,AT,PGI,Wine,Registered
+PDO-GR-A0001,Santorini,GR,PDO,Wine,Registered
+PDO-GR-A0002,Goumenissa,GR,PDO,Wine,Registered
+PDO-GR-A0003,Rapsani,GR,PDO,Wine,Registered
+PDO-GR-A0004,Malvasia Paros,GR,PDO,Wine,Registered
+PDO-GR-A0005,Dafnes,GR,PDO,Wine,Registered
+PDO-GR-A0006,Peza,GR,PDO,Wine,Registered
+PDO-GR-A0007,Robola Kefalonias,GR,PDO,Wine,Registered
+PDO-GR-A0008,Muscat of Patras,GR,PDO,Wine,Registered
+PDO-GR-A0009,Monemvasia-Malvasia,GR,PDO,Wine,Registered
+PGI-GR-A0100,Attiki,GR,PGI,Wine,Registered
+PGI-GR-A0101,Makedonia,GR,PGI,Wine,Registered
+PGI-GR-A0102,Peloponnisos,GR,PGI,Wine,Registered
+PDO-HU-A0001,Tokaji,HU,PDO,Wine,Registered
+PDO-HU-A0002,Etyek-Buda,HU,PDO,Wine,Registered
+PDO-HU-A0003,Mátra,HU,PDO,Wine,Registered
+PDO-HU-A0004,Pannonhalma,HU,PDO,Wine,Registered
+PDO-HU-A0005,Balatonfüred-Csopak,HU,PDO,Wine,Registered
+PDO-HU-A0006,Neszmély,HU,PDO,Wine,Registered
+PDO-HU-A0007,Hajós-Baja,HU,PDO,Wine,Registered
+PDO-HU-A0008,Pécs,HU,PDO,Wine,Registered
+PGI-HU-A0100,Duna-Tisza-közi,HU,PGI,Wine,Registered
+PGI-HU-A0101,Felső-Magyarország,HU,PGI,Wine,Registered
+PDO-SI-A0001,Goriška Brda,SI,PDO,Wine,Registered
+PDO-SI-A0002,Bizeljsko Sremič,SI,PDO,Wine,Registered
+PDO-SI-A0003,Cviček,SI,PDO,Wine,Registered
+PDO-HR-A0001,Dingač,HR,PDO,Wine,Registered
+PDO-HR-A0002,Hrvatska Istra,HR,PDO,Wine,Registered
+PDO-HR-A0003,Komarna,HR,PDO,Wine,Registered
+PDO-RO-A0001,Cotnari,RO,PDO,Wine,Registered
+PDO-RO-A0002,Dealu Mare,RO,PDO,Wine,Registered
+PDO-RO-A0003,Murfatlar,RO,PDO,Wine,Registered
+PDO-RO-A0004,Recaș,RO,PDO,Wine,Registered
+PDO-BG-A0001,Melnik,BG,PDO,Wine,Registered
+PDO-BG-A0002,Sakar,BG,PDO,Wine,Registered
+PGI-BG-A0100,Thracian Lowlands,BG,PGI,Wine,Registered
+PDO-CY-A0001,Commandaria,CY,PDO,Wine,Registered
+PDO-LU-A0001,Moselle Luxembourgeoise,LU,PDO,Wine,Registered
+PDO-CZ-A0001,Znojmo,CZ,PDO,Wine,Registered
+PDO-SK-A0001,Vinohradnícka oblasť Tokaj,SK,PDO,Wine,Registered
+PDO-MT-A0001,Malta,MT,PDO,Wine,Registered
+PDO-NL-A0001,Mergelland,NL,PDO,Wine,Registered
+PDO-BE-A0001,Côtes de Sambre et Meuse,BE,PDO,Wine,Registered
+PGI-IT-SPIR,Grappa,IT,PGI,Spirit drinks,Registered
+PDO-IT-FOOD,Parmigiano Reggiano,IT,PDO,Fresh meat and cheese,Registered
+PDO-IT-APPL,Colline del Sale,IT,PDO,Wine,Applied

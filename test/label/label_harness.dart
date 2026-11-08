@@ -15,11 +15,13 @@ import 'package:vinoozy/catalog/platform/catalog_providers.dart';
 import 'package:vinoozy/label/label_providers.dart';
 import 'package:vinoozy/label/platform/label_error_reporter.dart';
 
+import '../catalog/catalog_test_helpers.dart' show RecordingLogger;
 import '../cellar/cellar_harness.dart' show FakeCellarNetwork;
 import '../helpers/fakes.dart';
 
 import 'package:vinoozy/label/core/label_reading.dart';
 import 'package:vinoozy/label/core/label_session.dart';
+import 'package:vinoozy/label/core/lens_launcher.dart';
 import 'package:vinoozy/label/platform/picker_image_source.dart';
 import 'package:vinoozy/label/platform/shared_image_channel.dart';
 import 'package:vinoozy/label/platform/temp_label_store.dart';
@@ -82,38 +84,78 @@ class FakeLabelReader implements LabelReader {
   Future<void> close() async => closeCount++;
 }
 
+/// A sure answer of [WineCatalog.matchLabel] for [candidate].
+LabelMatchResult sureMatch(
+  WineCandidate candidate, {
+  List<WineCandidate> others = const [],
+  LabelMatchStep step = LabelMatchStep.offlineText,
+}) => LabelMatchResult.sure(candidate, step: step, candidates: others);
+
+/// A candidates answer of [WineCatalog.matchLabel].
+LabelMatchResult candidatesMatch(
+  List<WineCandidate> candidates, {
+  LabelMatchStep step = LabelMatchStep.offlineText,
+}) => LabelMatchResult.candidates(candidates, step: step);
+
 /// A [WineCatalog] for the label flow: chosen answers, counted calls, and
-/// failures on demand. Only [lookupBarcode] and [matchLabelText] are used
-/// by U6; the other operations answer empty.
+/// failures on demand. [matchLabel] and [searchOnline] are what the label
+/// module uses (label-recognition); the other operations answer empty.
 class LabelCatalog implements WineCatalog {
   WineCandidate? byBarcode;
-  LabelMatch byText = const LabelMatch.none();
-  Object? barcodeError;
+
+  /// The answer of [matchLabel].
+  LabelMatchResult byLabel = const LabelMatchResult.none();
   Object? textError;
+
+  /// Holds [matchLabel] until completed: a catalog that is slow to answer
+  /// (offline database opening, slow network).
+  Completer<void>? labelGate;
   final List<String> barcodeCalls = [];
   final List<String> textCalls = [];
+  final List<String?> labelBarcodes = [];
   final List<CatalogLocale> textLocales = [];
+
+  /// The answer of [searchOnline], and the queries received.
+  OnlineSearchResult searchResult = const OnlineSearchResult(
+    candidates: [],
+    status: OnlineSearchStatus.ok,
+  );
+  Completer<void>? searchGate;
+  final List<String> searchCalls = [];
 
   int get calls => barcodeCalls.length + textCalls.length;
 
   @override
   Future<WineCandidate?> lookupBarcode(String code) async {
     barcodeCalls.add(code);
-    final failure = barcodeError;
-    if (failure != null) throw failure;
     return byBarcode;
   }
 
   @override
-  Future<LabelMatch> matchLabelText(
+  Future<LabelMatchResult> matchLabel(
     String text, {
+    String? barcode,
     CatalogLocale locale = CatalogLocale.en,
   }) async {
     textCalls.add(text);
+    labelBarcodes.add(barcode);
     textLocales.add(locale);
+    final gate = labelGate;
+    if (gate != null) await gate.future;
     final failure = textError;
     if (failure != null) throw failure;
-    return byText;
+    return byLabel;
+  }
+
+  @override
+  Future<OnlineSearchResult> searchOnline(
+    String query, {
+    CatalogLocale locale = CatalogLocale.en,
+  }) async {
+    searchCalls.add(query);
+    final wait = searchGate;
+    if (wait != null) await wait.future;
+    return searchResult;
   }
 
   @override
@@ -221,6 +263,25 @@ class FakeSharedImageChannel implements SharedImageChannel {
     _arrivals.add(SharedImageNotice(multiple: multiple));
   }
 
+  /// The text of a "Share -> Vinoozy" from Lens (label-autofill-windows).
+  String? sharedText;
+  int readTextCalls = 0;
+
+  void arriveText(String text) {
+    sharedText = text;
+    pending = const SharedImageNotice(multiple: false, isText: true);
+    _arrivals.add(const SharedImageNotice(multiple: false, isText: true));
+  }
+
+  @override
+  Future<String?> readSharedText() async {
+    readTextCalls++;
+    final text = sharedText;
+    sharedText = null;
+    pending = null;
+    return text;
+  }
+
   Future<PrepareResult> _answer() async {
     final wait = gate;
     if (wait != null) await wait.future;
@@ -276,6 +337,19 @@ class FakeSharedImageChannel implements SharedImageChannel {
   void dispose() => unawaited(_arrivals.close());
 }
 
+/// The `vinoozy/lens` launcher, answered by the test; never the real Google
+/// app (label-recognition NFR4.4).
+class FakeLensLauncher implements LensLauncher {
+  LensRoute route = LensRoute.direct;
+  final List<String> paths = [];
+
+  @override
+  Future<LensRoute> open(String path) async {
+    paths.add(path);
+    return route;
+  }
+}
+
 /// The signed-in user of the label tests.
 const labelUser = AppUser(
   uid: 'user-a',
@@ -291,10 +365,14 @@ class LabelEnv {
 
   final files = InMemoryLabelFileSystem();
   late final FakeSharedImageChannel channel;
-  final reader = FakeLabelReader();
+
+  /// Replaceable before the first reading (a reader answering by path).
+  FakeLabelReader reader = FakeLabelReader();
   final catalog = LabelCatalog();
   final source = FakeImageSource();
   final network = FakeCellarNetwork();
+  final lens = FakeLensLauncher();
+  final logger = RecordingLogger();
   final sink = RecordingErrorSink();
   final clock = FakeClock(DateTime(2026, 11, 6, 20));
   final gate = ValueNotifier<GateState>(const GateCellar(labelUser));
@@ -314,6 +392,8 @@ class LabelEnv {
   /// Only the label providers, to add to another harness (the shell).
   List<Override> get labelOnlyOverrides => [
     labelFileSystemProvider.overrideWithValue(files),
+    lensLauncherProvider.overrideWithValue(lens),
+    catalogEventLoggerProvider.overrideWithValue(logger),
     sharedImageChannelProvider.overrideWithValue(channel),
     imageSourceProvider.overrideWithValue(source),
     labelReaderFactoryProvider.overrideWithValue(() {

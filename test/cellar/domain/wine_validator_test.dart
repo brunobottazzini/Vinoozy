@@ -90,6 +90,68 @@ void main() {
     expect(result.quantityError, QuantityError.outOfRange);
   });
 
+  group('ux-redesign FR1.2 FR1.5 country and region', () {
+    WineValidation withOrigin({String? country, String? region}) =>
+        WineValidator.validate(
+          WineInput(
+            id: 'w1',
+            name: 'Malbec',
+            vintage: '2019',
+            noVintage: false,
+            quantity: 1,
+            country: country,
+            region: region,
+          ),
+          currentYear: currentYear,
+        );
+
+    test('a chosen country and listed region are saved as they are', () {
+      final draft = withOrigin(country: 'AR', region: 'Mendoza').draft!;
+      expect(draft.country, 'AR');
+      expect(draft.region, 'Mendoza');
+    });
+
+    test('a translated region is saved with its canonical name', () {
+      final draft = withOrigin(country: 'FR', region: ' Borgogna ').draft!;
+      expect(draft.region, 'Bourgogne');
+      expect(draft.country, 'FR');
+    });
+
+    test('R-06 an Italian region without country saves Italy', () {
+      final draft = withOrigin(region: 'piemonte').draft!;
+      expect(draft.country, 'IT');
+      expect(draft.region, 'Piemonte');
+    });
+
+    test('a free region of 100 characters is valid, trimmed', () {
+      final free = 'a' * 100;
+      final draft = withOrigin(country: 'MP', region: '  $free  ').draft!;
+      expect(draft.region, free);
+      expect(draft.country, 'MP');
+    });
+
+    test('a region over 120 characters is refused', () {
+      final result = withOrigin(region: 'b' * 121);
+      expect(result.isValid, isFalse);
+      expect(result.regionError, RegionError.tooLong);
+      expect(withOrigin(region: 'b' * 120).isValid, isTrue);
+    });
+
+    test('an unknown or lower-case country code is refused', () {
+      for (final code in ['XX', 'it', 'ITA', '']) {
+        final result = withOrigin(country: code);
+        expect(result.countryError, CountryError.unknown, reason: code);
+        expect(result.draft, isNull);
+      }
+    });
+
+    test('no country and no region stay absent', () {
+      final draft = withOrigin(region: '   ').draft!;
+      expect(draft.country, isNull);
+      expect(draft.region, isNull);
+    });
+  });
+
   test('WineDraft.withDetails keeps the U1 creation fields unchanged', () {
     final draft = validate().draft!;
 

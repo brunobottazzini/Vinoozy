@@ -20,8 +20,9 @@
 # text (not the binary one inside the AAB):
 #   - negative check: no CAMERA, READ_MEDIA_IMAGES, READ_EXTERNAL_STORAGE;
 #   - positive check: MainActivity has the share filter, with only
-#     ACTION_SEND / ACTION_SEND_MULTIPLE and image/*, and no other action
-#     besides MAIN.
+#     ACTION_SEND / ACTION_SEND_MULTIPLE and image/*, plus (since
+#     label-autofill-windows NFR3.3) ACTION_SEND of text/plain, and no other
+#     action besides MAIN.
 # It fails when the merged manifest is missing. The plain AAB is kept as
 # build/check_release/app-release.aab for tool/check_app_size.sh.
 #
@@ -68,11 +69,15 @@ check_merged_manifest() {
     echo "check_release_build: FAILED, MainActivity actions are:"$'\n'"$actions" >&2
     exit 1
   fi
-  if [[ "$mimes" != "image/*" ]]; then
+  # label-autofill-windows NFR3.3: the text shared by Google Lens
+  # (ACTION_SEND text/plain) is the only other type.
+  local expected_mimes
+  expected_mimes="$(printf '%s\n' 'image/*' 'text/plain' | sort -u)"
+  if [[ "$mimes" != "$expected_mimes" ]]; then
     echo "check_release_build: FAILED, MainActivity share types are:"$'\n'"$mimes" >&2
     exit 1
   fi
-  echo "merged manifest: share filter SEND/SEND_MULTIPLE image/* only (ok)"
+  echo "merged manifest: share filters SEND/SEND_MULTIPLE image/* and SEND text/plain only (ok)"
 }
 # A previous `flutter test integration_test` leaves a plugin registrant that
 # references the dev-only integration_test plugin, which release builds do not

@@ -115,8 +115,9 @@ void main() {
     );
   });
 
-  ButtonStyleButton addButton(WidgetTester tester) => tester
-      .widget<ButtonStyleButton>(find.byKey(const Key('cellar-add-button')));
+  // ux-redesign: "Aggiungi" is a floating button.
+  FloatingActionButton addButton(WidgetTester tester) => tester
+      .widget<FloatingActionButton>(find.byKey(const Key('cellar-add-button')));
 
   group('CellarScreen: a listener error is the cellar error (BR1.3, §8)', () {
     late CellarFixture fixture;

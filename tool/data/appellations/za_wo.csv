@@ -1,0 +1,80 @@
+# South Africa: Wine of Origin units (geographical units, regions, districts
+# and wards).
+# Source: Wine and Spirit Board, Wine of Origin Scheme (Liquor Products Act
+# 60 of 1989, Tables 1-4 of the Wine of Origin regulations), as published by
+# SAWIS, https://www.sawis.co.za/ and https://www.wosa.co.za/
+# Checked in Build and Test against what SAWIS publishes in a readable form:
+# the booklet "Wine of Origin" (SAWIS, April 2016,
+# https://www.sawis.co.za/cert/download/wineoforiginbooklet201604.pdf), which
+# names the geographical units (Western Cape, Northern Cape, KwaZulu-Natal,
+# Limpopo, Eastern Cape), the Coastal and Boberg regions and some districts
+# and wards, and Wine Law 5 of 2019 on new demarcations. The complete tables
+# of the regulations are published only as maps (images), so the other
+# names below could not be checked one by one against an official list:
+# they stay as written at Code Generation. Proposals not yet in force
+# (Cape West Coast, Greater Cape, the wards of Central Orange River) are not
+# added.
+# Date: 2026-11-08. Verified against the official list in Build and Test
+# where it is readable (see above).
+# Licence: public regulation of the Republic of South Africa; only the
+# names are used, which are public geographical data.
+name,country,region,types,weak
+Western Cape,ZA,,,weak
+Northern Cape,ZA,,,weak
+Eastern Cape,ZA,,,weak
+KwaZulu-Natal,ZA,,,
+Limpopo,ZA,,,weak
+Coastal Region,ZA,,,weak
+Breede River Valley,ZA,,,
+Cape South Coast,ZA,,,
+Klein Karoo,ZA,,,
+Olifants River,ZA,,,
+Boberg,ZA,,F,
+Cape Town,ZA,,,weak
+Darling,ZA,,,weak
+Lutzville Valley,ZA,,,
+Tulbagh,ZA,,,
+Worcester,ZA,,,weak
+Overberg,ZA,,,
+Cape Agulhas,ZA,,,
+Plettenberg Bay,ZA,,,
+Swellendam,ZA,,,
+Calitzdorp,ZA,,F,
+Langeberg-Garcia,ZA,,,
+Cederberg,ZA,,,
+Simonsberg-Stellenbosch,ZA,Stellenbosch,rS,
+Banghoek,ZA,Stellenbosch,rS,
+Bottelary,ZA,Stellenbosch,,
+Devon Valley,ZA,Stellenbosch,,
+Jonkershoek Valley,ZA,Stellenbosch,rS,
+Papegaaiberg,ZA,Stellenbosch,,
+Polkadraai Hills,ZA,Stellenbosch,,
+Simonsberg-Paarl,ZA,Paarl,rS,
+Voor-Paardeberg,ZA,Paarl,,
+Agter-Paarl,ZA,Paarl,,
+Piekenierskloof,ZA,,,
+Citrusdal Mountain,ZA,,,
+Bot River,ZA,,,
+Elim,ZA,,,weak
+Greyton,ZA,,,
+Sunday's Glen,ZA,,,
+Stilbaai East,ZA,,,
+Lamberts Bay,ZA,,,
+Bamboes Bay,ZA,,,
+Ceres Plateau,ZA,,,
+Philadelphia,ZA,,,weak
+Groenekloof,ZA,,,
+Upper Hemel-en-Aarde Valley,ZA,Walker Bay,rL|B,
+Hemel-en-Aarde Ridge,ZA,Walker Bay,rL|B,
+Bonnievale,ZA,,,
+Eilandia,ZA,,,
+McGregor,ZA,,,
+Hex River Valley,ZA,,,
+Slanghoek,ZA,,,
+Goudini,ZA,,,
+Franschhoek Valley,ZA,Franschhoek,,
+Riebeekberg,ZA,,,
+Malmesbury,ZA,,,
+Tygerberg,ZA,,,
+Philippi,ZA,,,
+Hout Bay,ZA,,,

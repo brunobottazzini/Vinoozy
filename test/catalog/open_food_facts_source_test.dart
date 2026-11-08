@@ -384,6 +384,34 @@ void main() {
       expect(normalizeBarcode(''), isNull);
     });
   });
+
+  group('label-recognition "Cerca online" (BR4.2, NFR3.8)', () {
+    test('NFR3.8 the text search asks wines only, with exactly these '
+        'parameters and nothing about the user', () {
+      final uri = OpenFoodFactsSource.searchUri(
+        'chateau musar',
+        CatalogLocale.ptBR,
+      );
+      expect(uri.host, 'world.openfoodfacts.org');
+      expect(uri.path, '/cgi/search.pl');
+      expect(uri.queryParameters, {
+        'search_terms': 'chateau musar',
+        'tagtype_0': 'categories',
+        'tag_contains_0': 'contains',
+        'tag_0': 'wines',
+        'json': '1',
+        'page_size': '10',
+        'lc': 'pt',
+        'fields': OpenFoodFactsSource.fields,
+      });
+    });
+
+    test('NFR3.8 the product read sends only the barcode and the fields', () {
+      final uri = OpenFoodFactsSource.productUri('8001234567897');
+      expect(uri.path, '/api/v2/product/8001234567897.json');
+      expect(uri.queryParameters, {'fields': OpenFoodFactsSource.fields});
+    });
+  });
 }
 
 /// Error type standing in for a socket failure mid-body.

@@ -15,7 +15,7 @@ Si usa prima di ogni promozione in produzione (`cicd-pipeline.md` §5). La build
 - [ ] App Check: le richieste di questa versione risultano verificate.
 - [ ] Profilo di prestazioni in modalità profile con 500 vini: meno del 5% di fotogrammi oltre 16 ms (NFR2.2).
 - [ ] Velocità della stima sul telefono collegato (u2-estimation, NFR2.1 b): `flutter drive --profile --driver=test_driver/perf_driver.dart --target=integration_test_perf/estimation_perf_test.dart`. La mediana stampata deve essere al massimo **25 ms**, altrimenti la versione non va in produzione. Mediana misurata: ______ ms (versione ______).
-- [ ] Velocità del catalogo dei vini sul telefono (u3-wine-catalog, NFR1.1 e NFR1.2), nello stesso comando: `suggestWines` con 500 vini al massimo **25 ms** e `matchLabelText` su 2000 caratteri al massimo **50 ms**. Mediane misurate: `suggestWines` ______ ms, `matchLabelText` ______ ms.
+- [ ] Velocità del catalogo dei vini sul telefono (u3-wine-catalog, NFR1.1 e NFR1.2), nello stesso comando: `suggestWines` con 500 vini al massimo **25 ms** e `matchLabel` (era `matchLabelText`, label-recognition) su 2000 caratteri al massimo **50 ms**. Mediane misurate: `suggestWines` ______ ms, `matchLabel` ______ ms.
 
 ## 1-bis. Catalogo dei vini e Open Food Facts (u3-wine-catalog, BR5.3, NFR8.2)
 
@@ -131,6 +131,82 @@ Solo per chi non può più accedere al proprio account Google; tutti gli altri u
 
 Registro (data richiesta · conferma · data cancellazione o chiusura): ______.
 
+## 1-octies. Nuova UX (ux-redesign, FR1–FR3, NFR1, NFR4)
+
+**Prima di installare la build:** le regole nuove (campo `country`) devono essere già pubblicate su `vinoozy-d6f45` con `firebase-deploy.yml`, e solo con il via del proprietario (R-01, NFR4). Con le regole vecchie ogni vino salvato con un paese viene rifiutato dal server e compare l'avviso "non salvato". Regole pubblicate il: ______ (versione ______).
+
+Sul telefono del proprietario, con la build del canale Test interno, in tema chiaro e scuro:
+
+- [ ] **Bandiere:** nel modulo "Aggiungi" la griglia mostra le 21 bandiere a colori (non le sigle) e "Altro paese…". "Altro paese…" apre tutti i paesi; cercando "marian" compaiono le Isole Marianne Settentrionali con la loro bandiera. Paesi senza bandiera visibile (sigla in un riquadro): ______.
+- [ ] **Regioni:** scelta l'Italia compaiono le 20 regioni; scelta l'Argentina, Mendoza e le altre; "Altra regione" accetta testo libero.
+- [ ] **Compilazione automatica:** scrivendo "Barolo" e scegliendo la proposta, Italia e Piemonte sono già scelti e modificabili.
+- [ ] **Scheda della Cantina:** bandiera, fascia del colore del tipo, nome del tipo, stato e "Ho bevuto" ben leggibili; il pulsante "Aggiungi" resta visibile anche con il messaggio "Bevuta segnata" aperto.
+- [ ] **Pannello "Ho bevuto":** il tocco non registra nulla; "Annulla" e il gesto indietro chiudono senza effetto; "Sì, l'ho bevuta" con 4 stelle registra la bevuta con il voto (nello Storico compare "Voto 4 su 5"). Con TalkBack le stelle sono lette come "4 stelle su 5".
+- [ ] **Dettaglio:** "Consigliato fino al …" e "Al meglio dal … al …" corrispondono alla finestra; la barra ha il segno di oggi; l'avviso "⚠︎ Indicativo…" è sempre visibile; "Togli una bottiglia senza bevuta" chiede conferma.
+- [ ] **Titoli con le grazie:** i titoli delle schermate e il numero grande del Cruscotto usano il serif di sistema (Noto Serif).
+- [ ] **Vini già salvati:** un vino di prima con regione italiana mostra la bandiera italiana; modificato e salvato, nella Console Firestore ha `country: "IT"`.
+
+## 1-nonies. Riconoscimento delle etichette migliorato (label-recognition, FR1–FR5, NFR1–NFR3, NFR5)
+
+### Base dei vini sul telefono (FR2.1, FR2.2, NFR1.2, NFR5.8)
+
+Oggi `assets/wine_db/` contiene la base costruita in Build and Test (2026-11-08) dall'**export reale** di Open Food Facts del 2026-11-07: 15.616 vini, `wines.jsonl.gz` di 339.982 byte (1.254.545 byte non compressi), `source` uguale a `Open Food Facts`. Prima di ogni rilascio successivo va ricostruita da un export recente (al massimo 180 giorni).
+
+- [ ] **Scarica a mano** l'export CSV completo di Open Food Facts, dal file pubblicato per i download completi (mai l'API pagina per pagina; al massimo una volta per rilascio; nessun job di CI lo scarica). Data dell'export: ______.
+- [ ] **Costruisci la base** dalla radice del progetto: `dart run tool/build_wine_db.dart --input <export.csv.gz> --output assets/wine_db/ --export-date <AAAA-MM-GG>`. Lo strumento esce con errore e lascia la base precedente se ci sono meno di 5000 vini, codici doppi, un export più vecchio di 180 giorni, un file compresso oltre **3 MB** o dati non compressi oltre **30 MB** (limite deciso dal proprietario).
+- [ ] **Controllo automatico**: `tool/check_wine_db_release.sh` deve dare OK. Lo stesso controllo gira in `promote.yml` sul manifesto della build da promuovere e blocca la produzione se ci sono meno di 5000 vini o se `source` è `sample` (l'estratto di prova, costruito con `--allow-small-sample`).
+- [ ] **Controlla il manifesto** `assets/wine_db/manifest.json`: `source` uguale a `Open Food Facts`, data dell'export ______, numero di vini ______ (atteso: qualche migliaio, l'export di novembre 2026 ha circa 17.000 prodotti nella categoria vini prima dei filtri). Aggiorna la riga "Contenuto attuale" di `assets/wine_db/README.md`.
+- [ ] **Informazioni** (Cantina → menu → "Informazioni"): numero di vini e data dell'export corrispondono al manifesto (NFR6.7).
+- [ ] **Dimensione** (NFR1.1): `tool/check_app_size.sh` sul nuovo AAB rispetto alla versione `0d99791` (soglia **+15 MB**; oltre 40 MB si chiede al proprietario). Prima: ______ byte; dopo: ______ byte.
+
+### Prove sul telefono (OnePlus CPH2581, build release, mediana di 5 prove)
+
+- [ ] **Fronte e retro** (FR1.1, FR1.2): dopo la foto del fronte compare "Ora il retro" con "Scatta il retro", "Scegli dalla galleria" e "Salta", anche con "Condividi → Vinoozy". Un vino con il codice a barre solo sul retro viene proposto con certezza.
+- [ ] **Candidati e "Non è questo"** (FR2.4, FR3.2, FR3.3): un'etichetta simile a più vini mostra la lista; un candidato apre il modulo compilato; "indietro" torna alla lista.
+- [ ] **Cerca online** (FR3.1–FR3.4): in modalità aereo compare "Senza rete: cerco solo nella base sul telefono"; con la rete compaiono anche i risultati "online" con l'attribuzione.
+- [ ] **Google Lens** (FR4, BR5.2): "Apri in Google Lens" chiede conferma a ogni tocco; dopo "Apri Google Lens" l'**app Google apre Lens con la foto del fronte**. Esito: ______. Senza l'app Google (o disattivata) si apre il menu "Condividi". Tornando in Vinoozy l'esito è ancora aperto.
+- [ ] **Nessun file rimasto** (FR1.3, NFR3.4): dopo l'uscita dall'esito, e dopo aver chiuso Vinoozy dal multitasking mentre si è in Google Lens e averlo riaperto, `adb shell run-as com.vinoozy.app ls cache/label` è vuoto.
+- [ ] **Velocità** (NFR2.1–NFR2.3, NFR2.5), con la base reale: ricerca per codice ______ ms (soglia **50 ms**); confronto del testo ______ ms (soglia **300 ms**); apertura della base, dall'evento `wine_db_opened` in console, ______ ms (soglia **1,5 s**); memoria in più con `adb shell dumpsys meminfo com.vinoozy.app` ______ MB (soglia **40 MB**). Le misure si scrivono anche in `construction/build-and-test/` dell'intent.
+- [ ] **Senza rete nessun falso guasto** (FR5): 10 letture in modalità aereo, poi in Crashlytics nessun `off_suspended` nuovo per questo telefono.
+
+### Pubblicazione della base e del repository (NFR3.10, NFR5.7)
+
+- [ ] **Prima di rendere pubblico il repository** (Q1 = A, azione del proprietario), tutte e quattro:
+  - [ ] (a) il job `secrets` della CI (gitleaks su tutta la storia, `fetch-depth: 0`) è verde sull'ultimo commit di `main`;
+  - [ ] (b) `git log --all -- config/firebase_prod.json android/app/google-services.json` non restituisce nulla (questi file non sono mai entrati in un commit). Esito: ______;
+  - [ ] (c) il contatto `offContact` è un indirizzo che il proprietario accetta di rendere pubblico (sta già nel User-Agent dell'APK);
+  - [ ] (d) `firebase-config.js` contiene solo i segnaposto TODO.
+- [ ] **Repository pubblico prima della pubblicazione sullo store** (NFR5.7): la base derivata (`assets/wine_db/`, licenza ODbL) e lo strumento che la genera sono disponibili a tutti, come dice la schermata Informazioni.
+
+## 1-decies. Modulo compilato dall'etichetta e finestre per tutto il mondo (label-autofill-windows, FR1–FR6, NFR3.6, NFR5.6, NFR5.7, BR6)
+
+### Tabelle da generare prima della pubblicazione (BR3.6, BR6.3, NFR5.6)
+
+Oggi la tabella generata delle denominazioni (`packages/estimation/lib/src/generated/appellations.g.dart`) è costruita in Build and Test (2026-11-08) dall'**export reale** di eAmbrosia del 2026-11-08 e dai file non UE verificati: `"source": "eAmbrosia and official national registers"`, 2424 denominazioni in tutto (724 dedicate, 1700 generate). Anche la base dei vini è quella dell'export reale (§1-nonies). Prima di ogni rilascio successivo si rigenerano entrambe da export recenti.
+
+- [ ] **Scarica a mano l'export di eAmbrosia** (registro pubblico dell'UE, DOP e IGP dei vini) in `.cache/eambrosia/`, che non entra nel repository: il JSON dell'API pubblica, `curl -o .cache/eambrosia/eambrosia-<AAAA-MM-GG>.json https://webgate.ec.europa.eu/eambrosia-api/api/geographical-indications` (lo strumento legge anche un export CSV). Una volta per rilascio, mai da un job di CI. Data dell'export: ______.
+- [ ] **Controlla i file non UE** di `tool/data/appellations/` (AVA, GI australiane e neozelandesi, Wine of Origin, DO sudamericane, AOC svizzere) con le liste ufficiali indicate nell'intestazione di ciascun file; aggiorna la data nell'intestazione.
+- [ ] **Genera la tabella** dalla radice del progetto: `dart run tool/build_appellations.dart --eambrosia .cache/eambrosia/<export>.json --export-date <AAAA-MM-GG>`. Lo strumento esce con errore e lascia la tabella precedente se le denominazioni sono meno di **1500**, se ci sono chiavi doppie o se un modello non esiste.
+- [ ] **Controllo automatico**: `tool/check_appellations_release.sh` deve dare OK. Lo stesso controllo gira in `promote.yml` e blocca la produzione se `source` è `sample`, se le denominazioni sono meno di 1500 o se il manifesto non descrive il file `.g.dart` della build (fonte in `generatedAppellationsSource` e numero di righe generate). Numero di denominazioni: ______ (dedicate 724, generate ______).
+- [ ] **Base dei vini di Open Food Facts**: scarica e genera la base come al §1-nonies (`dart run tool/build_wine_db.dart`, poi `tool/check_wine_db_release.sh`).
+- [ ] Dopo la generazione: `(cd packages/estimation && dart test)` e `flutter test` verdi, con la copertura del pacchetto **≥ 90%** (file generato compreso) e del progetto **≥ 80%**, poi commit della tabella e del manifesto.
+- [ ] **Informazioni** (Cantina → menu → "Informazioni"): la voce delle denominazioni mostra la fonte e la data dell'export, senza la nota dell'estratto di prova (NFR5.7).
+
+### Regole prima della build (BR4.3, BR4.6)
+
+- [ ] **Prima le regole**: le regole di questa versione accettano `level`, `windowOverride` e i campi nuovi della finestra (`denominationKey`, `tablesVersion`, base `grape`, qualifiche nuove). Pubblicale con `firebase-deploy.yml` (§3) **prima** di caricare la build sul Test interno: con le regole vecchie il salvataggio di un vino con un livello o una correzione viene rifiutato. `promote.yml` controlla la funzione `level-override` in `RULES_FEATURES`.
+
+### Prove sul telefono (FR1, FR2, FR4, FR5)
+
+- [ ] **Da Google Lens** (FR2.6, BR2.5): "Aggiungi" → "Da Google Lens" apre prima il modulo vuoto e subito dopo Lens. Esito con l'app Lens: ______. Con Lens solo dentro l'app Google: ______. Senza nessuna delle due (app Google disattivata) compaiono i tre passi e "Ho capito".
+- [ ] **Incolla automatico** (FR2.7, BR2.6, Android 8.0 o più recente): in Lens seleziona il testo dell'etichetta, "Copia", torna in Vinoozy entro 5 minuti. Il modulo si compila da solo, TalkBack legge "Modulo compilato dal testo di Lens" e Android 12+ mostra il suo avviso di lettura degli appunti **una sola volta**. Un secondo ritorno senza copiare nulla non incolla di nuovo. Esito: ______.
+- [ ] **Condividi → Vinoozy** dal testo di Lens (FR2.1, BR2.4): ad app chiusa si apre il modulo compilato; con un modulo già modificato compare "Usare il testo per i campi vuoti?".
+- [ ] **Foto senza vino trovato** (FR1.2, BR2.1): un'etichetta non in catalogo apre il modulo compilato con i segni "✦ dal testo"; "Pulisci" svuota, "indietro" torna a "Non trovato".
+- [ ] **Livello e correzione** (FR4, FR5): un "Riserva" propone "Da invecchiamento"; nel dettaglio "Correggi" e poi "Ripristina stima" funzionano anche in modalità aereo e si sincronizzano al ritorno della rete.
+- [ ] **Stime dei vini già in cantina** (BR3.9, NFR4.8a): dopo l'aggiornamento, i vini salvati con la versione precedente hanno la stima ricalcolata una volta (in console Firestore `window.tablesVersion` = 2), con livello e correzione rispettati.
+- [ ] **Risposta entro 2 secondi** (FR2.8, NFR4.17, BR7.23, BR7.24): app appena aperta (base offline ancora chiusa), "Incolla da Lens" con il testo di un'etichetta copiato da Lens. Il pulsante mostra subito "Leggo il testo…" e un secondo tocco non fa nulla; entro 2 secondi compare il modulo compilato, la proposta del vino o la prima domanda della guida. Ripeti 5 volte, anche con la rete mobile lenta. Tempi: ______.
+- [ ] **Conferma guidata** (FR7, NFR4.20, NFR4.22): con il testo di Cascina Castlet ("CASCINA CASTLET" / "Barbera d'Asti Superiore", senza annata) la guida chiede "Domanda 1 di 3": prova "Sì", "No, un'altra", "Modifica", "Salta", la composizione toccando le parole e la ruota dell'annata (anche il tocco sull'anno al centro). Poi: "Indietro" chiude la scheda prima del modulo; "Conferma guidata" la riapre; rotazione e ritorno dal secondo piano riprendono alla stessa domanda; TalkBack legge "Domanda N di T: …" e le parole come pulsanti. Nessun salto di fotogrammi visibile tra una domanda e l'altra. Esito: ______.
+
 ## 2. Data Safety in Play Console (NFR8.1–NFR8.3)
 
 Da aggiornare se cambiano i dati raccolti. Per U1 la dichiarazione è:
@@ -148,6 +224,9 @@ Da aggiornare se cambiano i dati raccolti. Per U1 la dichiarazione è:
 - [ ] **Foto delle etichette** (u6-label-recognition, NFR8.3): **non** si dichiarano come raccolte. Si leggono solo sul telefono con ML Kit, non si conservano e non vanno nel cloud; la copia di lavoro sta in `cache/label/` e si cancella appena la lettura finisce (al più 10 minuti, e al successivo avvio dopo una chiusura improvvisa). Il codice a barre e le parole verso Open Food Facts sono nella riga di Open Food Facts sopra.
 - [ ] **ML Kit** (NFR8.3): ML Kit può inviare a Google dati diagnostici e di utilizzo anonimi. Verificata la guida di Google sulla divulgazione dei dati di ML Kit per la scheda "Sicurezza dei dati", e dichiarato di conseguenza. Pagina controllata e data: ______.
 - [ ] **Informativa privacy** (u6): le foto delle etichette si leggono sul telefono e non si conservano; con la rete il codice a barre e alcune parole lette servono a cercare il vino su Open Food Facts.
+- [ ] **Foto condivisa con Google Lens** (label-recognition, NFR3.1, NFR3.6): solo quando l'utente tocca "Apri in Google Lens" **e** conferma, la foto del fronte (copia preparata, senza metadati EXIF) passa all'app Google sul telefono, o all'app scelta nel menu "Condividi", che può conservarne una copia secondo le sue regole. Vinoozy non riceve i risultati. Informativa privacy e scheda "Sicurezza dei dati" aggiornate con questa condivisione su richiesta dell'utente (azione del proprietario). Verificato: ______.
+- [ ] **Cerca online** (label-recognition, NFR3.8): le parole del campo "Cerca online" (o il codice a barre) vanno a Open Food Facts come per i suggerimenti: rientrano nella riga di Open Food Facts sopra.
+- [ ] **Base dei vini sul telefono** (label-recognition, NFR3.7, NFR3.9): contiene solo dati pubblici dei prodotti, nessun dato personale; l'evento `wine_db_unavailable` rientra nei "Rapporti di crash (Crashlytics, anonimi)" già dichiarati, nessun tipo di dato nuovo.
 - [ ] **Cancellazione dell'account** (u8-account, NFR8.4): nella scheda "Sicurezza dei dati" la richiesta di cancellazione è disponibile nell'app e all'URL `https://brunobottazzini.github.io/Vinoozy/account-deletion/`; i dati si cancellano subito dall'app o dalla pagina, entro 30 giorni con la richiesta via email.
 - [ ] **Informativa privacy** (u8-account, NFR8.1, NFR8.4): dichiara che, dopo una cancellazione, nelle cantine di altre persone restano le bevute registrate lì (nome del vino e note, parte del loro Storico) con i soli codici tecnici casuali `recordedBy` e `updatedBy`, senza email né nome. Il testo è anche nella sezione "Privacy" della pagina di cancellazione, che è l'indirizzo predefinito del link "Informativa sulla privacy" del profilo (`PRIVACY_POLICY_URL` lo cambia).
 
@@ -206,9 +285,13 @@ Ordine obbligatorio quando la versione cambia le regole o gli indici (u7-sharing
 - [ ] Crashlytics, ultimi 7 giorni: errori non fatali `sharing_invite_failed`, `sharing_permission_failed`, `sharing_revoke_failed`, `sharing_leave_failed`, `sharing_activate_failed`, `sharing_delete_failed`, `sharing_revoke_all_failed` (u7-sharing). Se sono **più di 10** oppure riguardano **più di 3 utenti**, controlla la traduzione degli errori e le regole, poi correggi con una nuova versione.
 - [ ] Crashlytics, ultimi 7 giorni: errori non fatali della Cantina (u4-cellar, monitoring-design.md §1), cercando `cellar_` tra i non fatali: `cellar_save_failed`, `cellar_drink_failed`, `cellar_undo_failed`, `cellar_record_update_failed`, `cellar_delete_failed`, `cellar_merge_failed`, `cellar_reconcile_failed`, `cellar_history_failed`, più `estimate_refresh_failed`, `match_key_backfill_failed` e `pending_probe_failed`. Se sono **più di 10** oppure riguardano **più di 3 utenti**, indaga e correggi con una nuova versione. `match_key_backfill_failed` ripetuto per lo stesso utente indica un backfill che non finisce: la cantina funziona comunque. Alcuni rifiuti delle regole sono attesi ("Annulla" arrivato dopo 10 minuti, parti di un'eliminazione con una bevuta già cancellata) e non contano come accesso perso.
 - [ ] Crashlytics, ultimi 7 giorni: errori non fatali della foto dell'etichetta (u6-label-recognition, monitoring-design.md §1), cercando `label_` tra i non fatali: `label_read_failed`, `label_pick_failed`, `label_lookup_failed`, `label_cleanup_failed`. Se sono **più di 10** oppure riguardano **più di 3 utenti**, indaga; un aumento di `label_read_failed` dopo un aggiornamento di ML Kit si confronta con la misura delle 20 etichette (§1-sexies). Ogni crash nuovo con ML Kit o `LabelImagePreparer` nello stack si corregge con una nuova versione.
+- [ ] Crashlytics, ultimi 7 giorni: errori non fatali `wine_db_unavailable` (label-recognition, NFR3.9, NFR4.15), con le chiavi `wine_db_reason` e `wine_db_skipped_rows`. Se sono **più di 10** oppure riguardano **più di 3 utenti**, controlla il file della base nella build (`assets/wine_db/` dell'AAB) e correggi con una nuova versione; nel frattempo il riconoscimento continua con il catalogo interno e Open Food Facts.
+- [ ] Crashlytics, ultimi 7 giorni: errori non fatali `estimates_migration_failed` (label-autofill-windows, BR3.9, NFR4.8a), con il motivo `permissionDenied` o `localWriteFailed`. Se sono **più di 5** in 7 giorni (NFR3.6), controlla che le regole pubblicate siano quelle di questa versione (§1-decies) e correggi con una nuova versione; nel frattempo i vini restano con la stima precedente e l'app riprova al massimo 3 volte. Guarda anche `appellations_index_failed`: ogni evento si corregge con una nuova versione della tabella.
 - [ ] Crashlytics, ultimi 30 giorni: errori non fatali dell'account (u8-account, monitoring-design.md §1) `account_delete_failed`, `account_signout_failed`, `account_reauth_failed`, con il passo. Se sono **più di 3**, indaga: una cancellazione bloccata è un problema di privacy. Obiettivo: nessun utente con `account_delete_failed` senza una cancellazione completata dopo.
 - [ ] Richieste di cancellazione via email (BR1.12): nessuna richiesta aperta oltre 30 giorni nel registro del §1-septies; tutte chiuse entro 30 giorni.
 - [ ] App Check (console Firebase → App Check → metriche): percentuale di richieste verificate, Android e web insieme. L'obbligo su Firestore si attiva solo dopo **7 giorni consecutivi ≥ 99%** (`docs/firebase-setup.md` §2).
 - Eventi `account_*`: ______. Richieste via email aperte: ______. App Check verificate: ______ %.
 - Eventi `label_*`: ______. Utenti coinvolti: ______.
+- Eventi `wine_db_unavailable`: ______. Utenti coinvolti: ______.
+- Eventi `estimates_migration_failed`: ______. Utenti coinvolti: ______. Eventi `appellations_index_failed`: ______.
 - Data del controllo: ______. Eventi `off_suspended`: ______. Utenti coinvolti: ______. Eventi `dashboard_invalid_window`: ______. Utenti coinvolti: ______. Letture giornaliere massime: ______. Eventi `sharing_*_failed`: ______. Utenti coinvolti: ______. Eventi `cellar_*`, `estimate_refresh_failed`, `match_key_backfill_failed`, `pending_probe_failed`: ______. Utenti coinvolti: ______.

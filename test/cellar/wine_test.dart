@@ -151,10 +151,11 @@ void main() {
     });
 
     test('unknown basis and qualifier are not exceptions', () {
+      // label-autofill-windows made grandCru a known qualifier (ENT-002).
       final window = Wine.windowFrom(
         validWindow()
           ..[WindowFields.basis] = 'guess'
-          ..[WindowFields.qualifier] = 'grandCru',
+          ..[WindowFields.qualifier] = 'premierGrandCruClasse',
       );
 
       expect(window!.basis, EstimationBasis.catalog);

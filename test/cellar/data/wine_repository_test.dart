@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:vinoozy/account/app_user.dart';
 import 'package:vinoozy/cellar/data/wine_repository.dart';
+import 'package:vinoozy/cellar/domain/wine.dart';
 import 'package:vinoozy/cellar/domain/wine_estimate.dart';
 import 'package:vinoozy/cellar/domain/wine_validator.dart';
 import 'package:vinoozy/sync/ledger/local_ledger.dart';
@@ -260,6 +261,40 @@ void main() {
       },
     );
 
+    test('ux FR1.5 writes the country and the canonical region', () async {
+      final withCountry = WineValidator.validate(
+        const WineInput(
+          id: 'w8',
+          name: 'Malbec Reserva',
+          vintage: '2019',
+          noVintage: false,
+          quantity: 1,
+          country: 'AR',
+          region: ' mendoza ',
+        ),
+        currentYear: 2026,
+      ).draft!;
+
+      await repository.addWine(
+        cellarId: 'user-a',
+        user: user,
+        draft: withCountry,
+      );
+
+      final data = batches.single.opAt(path('w8')).data!;
+      expect(data['country'], 'AR');
+      expect(data['region'], 'Mendoza');
+    });
+
+    test('ux NFR4 a wine without country has no country key', () async {
+      await repository.addWine(cellarId: 'user-a', user: user, draft: draft);
+
+      expect(
+        batches.single.opAt(path('w9')).data!.containsKey('country'),
+        isFalse,
+      );
+    });
+
     test(
       'NFR8.2 a refused creation is reported with a fixed reason, no names',
       () async {
@@ -398,6 +433,75 @@ void main() {
       expect(data.containsKey('window'), isTrue);
       expect(data['window'], isNull);
       expect(data['updatedAt'], FieldValue.serverTimestamp());
+    });
+
+    WineValidation withOrigin({String? country, String? region}) =>
+        WineValidator.validate(
+          WineInput(
+            id: 'w1',
+            name: 'Barolo',
+            vintage: '2016',
+            noVintage: false,
+            quantity: 2,
+            country: country,
+            region: region,
+          ),
+          currentYear: 2026,
+        );
+
+    Future<Map<String, Object?>> update(
+      Wine before,
+      WineValidation input,
+    ) async {
+      await repository.updateWine(
+        cellarId: 'user-a',
+        user: user,
+        before: before,
+        draft: input.draft!,
+        targetQuantity: before.quantity,
+        estimate: WineEstimate.none,
+      );
+      return batches.batches.last.opAt(path(before.id)).data!;
+    }
+
+    test(
+      'ux R-06 an earlier wine with an Italian region saves country IT',
+      () async {
+        final data = await update(
+          cellarWine('w1', region: 'piemonte'),
+          withOrigin(region: 'piemonte'),
+        );
+        expect(data['country'], 'IT');
+        expect(data['region'], 'Piemonte');
+      },
+    );
+
+    test(
+      'ux FR1.5 NFR4 a wine that never had a country gets no country key',
+      () async {
+        final data = await update(
+          cellarWine('w1', region: 'Somewhere'),
+          withOrigin(region: 'Somewhere'),
+        );
+        expect(data.containsKey('country'), isFalse);
+        expect(data['region'], 'Somewhere');
+      },
+    );
+
+    test('ux FR1.5 a country can be changed and cleared', () async {
+      final changed = await update(
+        cellarWine('w1', country: 'AR', region: 'Mendoza'),
+        withOrigin(country: 'CL', region: 'Maipo'),
+      );
+      expect(changed['country'], 'CL');
+      expect(changed['region'], 'Valle del Maipo');
+      final cleared = await update(
+        cellarWine('w1', country: 'AR', region: 'Mendoza'),
+        withOrigin(),
+      );
+      expect(cleared.containsKey('country'), isTrue);
+      expect(cleared['country'], isNull);
+      expect(cleared['region'], isNull);
     });
 
     test('BR1.13 an unchanged quantity is not written', () async {

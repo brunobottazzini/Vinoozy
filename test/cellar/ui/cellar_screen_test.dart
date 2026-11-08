@@ -56,11 +56,12 @@ void main() {
     ui.emitWines(cellar);
     await tester.pumpAndSettle();
 
-    // The status labels are the Dashboard ones (u5 statusLabel).
-    expect(inRow('w1', 'pronte'), findsOneWidget);
+    // The status labels are the Dashboard ones (u5 statusLabel), shown in
+    // the ux-redesign StateChip with a capital letter.
+    expect(inRow('w1', 'Pronte'), findsOneWidget);
     expect(inRow('w1', 'Fiducia: media'), findsOneWidget);
-    expect(inRow('w1', 'x2'), findsOneWidget);
-    expect(inRow('w2', 'da aspettare'), findsOneWidget);
+    expect(inRow('w1', '× 2'), findsOneWidget);
+    expect(inRow('w2', 'Da aspettare'), findsOneWidget);
     expect(inRow('w3', 'Da stimare'), findsOneWidget);
     expect(
       find.descendant(
@@ -98,7 +99,9 @@ void main() {
     expect(find.text('Sincronizzazione della cantina…'), findsNothing);
     expect(
       tester
-          .widget<ButtonStyleButton>(find.byKey(const Key('cellar-add-button')))
+          .widget<FloatingActionButton>(
+            find.byKey(const Key('cellar-add-button')),
+          )
           .onPressed,
       isNotNull,
     );
@@ -164,6 +167,17 @@ void main() {
 
     await tester.tap(find.byKey(const Key('wine-tile-drink-w1')));
     await tester.pumpAndSettle();
+    // ux-redesign FR2.2: nothing is written before the confirmation.
+    verifyNever(
+      () => ui.actions.drink(
+        cellar: any(named: 'cellar'),
+        user: any(named: 'user'),
+        wine: any(named: 'wine'),
+        rating: any(named: 'rating'),
+      ),
+    );
+    await tester.tap(find.byKey(const Key('drink-confirm')));
+    await tester.pumpAndSettle();
     expect(find.text('Bevuta segnata: Barolo'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('drink-undo')));
@@ -193,6 +207,8 @@ void main() {
 
     await tester.tap(find.byKey(const Key('wine-tile-drink-w1')));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('drink-confirm')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('drink-undo')));
     await tester.pumpAndSettle();
 
@@ -204,7 +220,7 @@ void main() {
     ui.emitWines(cellar);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Soave'));
+    await tester.tap(find.text('Soave 2016'));
     await tester.pumpAndSettle();
 
     expect(find.byType(WineDetailScreen), findsOneWidget);

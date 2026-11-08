@@ -1,0 +1,20 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:label="Fixture">
+        <!-- Review R-05: the only FileProvider is commented out, and the
+             comment has ">" inside:
+             <provider android:name="androidx.core.content.FileProvider"
+                 android:exported="false" android:grantUriPermissions="true">
+             It is not active: the check must fail. -->
+    </application>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+        <package android:name="com.google.android.googlequicksearchbox"/>
+        <intent>
+            <action android:name="android.intent.action.SEND"/>
+            <data android:mimeType="image/*"/>
+        </intent>
+    </queries>
+</manifest>

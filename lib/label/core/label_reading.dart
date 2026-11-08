@@ -31,7 +31,8 @@ class ReadBarcode {
 class LabelReading {
   const LabelReading({this.barcodes = const [], this.text = ''});
 
-  /// The most text sent on: the limit of `matchLabelText` (BR1.7, C1).
+  /// The most text kept per photo (BR1.7; label-recognition BR1.2: front
+  /// and back together up to 4000, the limit of `matchLabel`).
   static const int maxTextLength = 2000;
 
   final List<ReadBarcode> barcodes;

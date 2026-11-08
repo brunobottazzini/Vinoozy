@@ -100,8 +100,9 @@ void main() {
     overrides: fixture.overrides,
   );
 
-  ButtonStyleButton addButton(WidgetTester tester) => tester
-      .widget<ButtonStyleButton>(find.byKey(const Key('cellar-add-button')));
+  // ux-redesign: "Aggiungi" is a floating button.
+  FloatingActionButton addButton(WidgetTester tester) => tester
+      .widget<FloatingActionButton>(find.byKey(const Key('cellar-add-button')));
 
   testWidgets('while the cellar is prepared: loading, "Aggiungi" disabled', (
     tester,
@@ -160,12 +161,15 @@ void main() {
       of: find.byKey(ValueKey(id)),
       matching: find.text(text),
     );
-    expect(find.text('Barolo'), findsOneWidget);
-    expect(inRow('w1', '2016'), findsOneWidget);
+    // ux-redesign WineCard: name and vintage on one line, "× n" bottles.
+    expect(find.text('Barolo 2016'), findsOneWidget);
     expect(inRow('w1', 'Da stimare'), findsOneWidget);
-    expect(inRow('w2', 'Senza annata'), findsOneWidget);
-    expect(find.text('x2'), findsOneWidget);
-    expect(find.text('x0'), findsOneWidget, reason: 'ADR-004');
+    expect(
+      inRow('w2', "Barbera d'Asti Superiore DOCG Senza annata"),
+      findsOneWidget,
+    );
+    expect(find.text('× 2'), findsOneWidget);
+    expect(find.text('× 0'), findsOneWidget, reason: 'ADR-004');
     expect(find.byKey(const ValueKey('w1')), findsOneWidget);
   });
 

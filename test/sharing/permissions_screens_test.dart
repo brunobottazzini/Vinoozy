@@ -83,7 +83,8 @@ void main() {
     ) async {
       await pumpOnMarios(tester, cellarScreen(), MemberPermission.edit);
 
-      final add = tester.widget<ButtonStyleButton>(
+      // ux-redesign: "Aggiungi" is a floating button.
+      final add = tester.widget<FloatingActionButton>(
         find.byKey(const Key('cellar-add-button')),
       );
       expect(add.onPressed, isNotNull);
@@ -115,6 +116,14 @@ void main() {
 
       expect(find.byType(SharingScreen), findsOneWidget);
       expect(find.text('Cantina di Mario'), findsWidgets);
+    });
+
+    testWidgets('label-recognition BR6.3 "Informazioni" is in the cellar menu '
+        'for everyone', (tester) async {
+      await pumpOnMarios(tester, cellarScreen(), MemberPermission.read);
+      await tester.tap(find.byKey(const Key('cellar-menu')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('cellar-menu-about')), findsOneWidget);
     });
 
     testWidgets('u8-account BR1.2 "Profilo" in the cellar menu opens the '

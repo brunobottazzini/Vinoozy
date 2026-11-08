@@ -5,11 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vinoozy/app/ui/country_flag.dart';
 import 'package:vinoozy/cellar/domain/wine.dart';
 import 'package:vinoozy/cellar/ui/cellar_screen.dart';
 import 'package:vinoozy/dashboard/dashboard_providers.dart';
+import 'package:vinoozy/dashboard/domain/dashboard_summary.dart';
+import 'package:vinoozy/dashboard/ui/bar_chart.dart';
 import 'package:vinoozy/dashboard/ui/chart_cards.dart';
 import 'package:vinoozy/dashboard/ui/dashboard_screen.dart';
+import 'package:vinoozy/l10n/app_localizations.dart';
 
 import '../helpers/ui_harness.dart';
 import 'dashboard_harness.dart';
@@ -340,8 +344,9 @@ void main() {
       );
       expect(
         find.bySemanticsLabel(
-          'Bottles by type: red: 5 bottles, white: 1 bottle, rosé: 0 bottles, '
-          'sparkling: 1 bottle, sweet: 0 bottles, not specified: 2 bottles',
+          // ux-redesign: the family names of the cards (FR3.2, FR3.4).
+          'Bottles by type: Red: 5 bottles, White: 1 bottle, Rosé: 0 bottles, '
+          'Sparkling: 1 bottle, Sweet: 0 bottles, not specified: 2 bottles',
         ),
         findsOneWidget,
       );
@@ -392,6 +397,148 @@ void main() {
 
     expect(find.byKey(const Key('column-chart-scroll')), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  group('ux-redesign FR1.4 FR3.3 flags and the top box', () {
+    List<Wine> withCountries() => [
+      ...sampleCellar(),
+      wineOf(
+        'w6',
+        name: 'Malbec Reserva',
+        quantity: 4,
+        wineType: 'redStructured',
+        region: 'Mendoza',
+        country: 'AR',
+        window: window(2019, 2023, 2026),
+      ),
+    ];
+
+    testWidgets('the box shows the total and the bottles to drink now', (
+      tester,
+    ) async {
+      await pump(tester);
+      await emit(tester, withCountries());
+
+      // 13 bottles; ready 1 + drink soon 2 + Malbec 4 = 7 to drink now.
+      expect(find.text('13 bottiglie in cantina'), findsOneWidget);
+      expect(find.text('7 da bere ora'), findsOneWidget);
+      expect(find.byKey(const Key('dashboard-hero')), findsOneWidget);
+    });
+
+    testWidgets('"Da bere presto" rows show the flag, read as the country', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pump(tester);
+      await emit(tester, withCountries());
+
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('drink-soon-w6')),
+          matching: find.byKey(const Key('flag-AR')),
+        ),
+        findsOneWidget,
+      );
+      // Barolo has no country but an Italian region: shown as Italy (R-06).
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('drink-soon-w1')),
+          matching: find.byKey(const Key('flag-IT')),
+        ),
+        findsOneWidget,
+      );
+      // The row merges the flag label with the wine (A3).
+      expect(find.bySemanticsLabel(RegExp('^Argentina\\n')), findsOneWidget);
+      handle.dispose();
+    });
+
+    testWidgets('region bars: flag per region, an icon for "non indicata"', (
+      tester,
+    ) async {
+      await pump(tester);
+      await emit(tester, withCountries());
+      final region = find.byKey(const Key('breakdown-region'));
+      await scrollTo(tester, region);
+      await tester.tap(region);
+      await tester.pumpAndSettle();
+
+      final chart = find.byKey(const Key('chart-breakdown'));
+      expect(
+        find.descendant(of: chart, matching: find.byKey(const Key('flag-AR'))),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: chart, matching: find.byKey(const Key('flag-IT'))),
+        findsNWidgets(2),
+        reason: 'Piemonte and Veneto',
+      );
+      expect(
+        find.descendant(of: chart, matching: find.byIcon(Icons.help_outline)),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('type bars: the family icon and name (FR3.2 FR3.3)', (
+      tester,
+    ) async {
+      await pump(tester);
+      await emit(tester, withCountries());
+      await scrollTo(tester, find.byKey(const Key('chart-breakdown')));
+
+      final chart = find.byKey(const Key('chart-breakdown'));
+      expect(
+        find.descendant(of: chart, matching: find.text('Rosso')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: chart, matching: find.byIcon(Icons.water_drop)),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: chart, matching: find.byIcon(Icons.bubble_chart)),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('"altre" has the globe, a region without country the place '
+        'icon, a listed region is shown translated (R-02)', (tester) async {
+      late List<BarDatum> bars;
+      await pumpScreen(
+        tester,
+        Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context);
+            bars = [
+              for (final bar in const [
+                BreakdownBar(
+                  kind: BreakdownKind.region,
+                  region: 'Bourgogne',
+                  country: 'FR',
+                  bottles: 2,
+                ),
+                BreakdownBar(
+                  kind: BreakdownKind.region,
+                  region: 'Vigna del nonno',
+                  bottles: 1,
+                ),
+                BreakdownBar(kind: BreakdownKind.otherRegions, bottles: 3),
+              ])
+                BreakdownChartCard.barOf(context, l10n, bar),
+            ];
+            return const SizedBox();
+          },
+        ),
+        overrides: streams.overrides,
+      );
+
+      expect(bars[0].label, 'Borgogna');
+      expect(bars[0].leading, isA<CountryFlag>());
+      expect(bars[0].icon, isNull);
+      expect(bars[1].label, 'Vigna del nonno');
+      expect(bars[1].icon, Icons.place_outlined);
+      expect(bars[2].label, 'altre');
+      expect(bars[2].icon, Icons.public);
+    });
   });
 
   accessibilityMatrix(

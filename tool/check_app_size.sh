@@ -73,7 +73,9 @@ apks="build/tools/app-size.apks"
 java -jar "$jar" build-apks --bundle="$aab" --output="$apks" --overwrite >/dev/null
 # get-size total prints a CSV header and "MIN,MAX".
 size_line="$(java -jar "$jar" get-size total --apks="$apks" | tail -n 1)"
-max_bytes="${size_line##*,}"
+# The last field, without the trailing carriage return or spaces bundletool
+# may print (seen on macOS: '10189998,20573582' was refused as is).
+max_bytes="$(tr -d '[:space:]' <<<"${size_line##*,}")"
 if ! [[ "$max_bytes" =~ ^[0-9]+$ ]]; then
   echo "check_app_size: unexpected bundletool output '$size_line'" >&2
   exit 2

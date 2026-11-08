@@ -127,6 +127,45 @@ class DeleteWineDialog extends StatelessWidget {
   }
 }
 
+/// "Remove a bottle?" (ux-redesign FR2.4): the bottle leaves the cellar
+/// without a drink. Returns true when confirmed.
+class RemoveBottleDialog extends StatelessWidget {
+  const RemoveBottleDialog({super.key, required this.wineName});
+
+  final String wineName;
+
+  static Future<bool> show(BuildContext context, String wineName) async =>
+      await showDialog<bool>(
+        context: context,
+        builder: (_) => RemoveBottleDialog(wineName: wineName),
+      ) ??
+      false;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AlertDialog(
+      key: const Key('remove-bottle-dialog'),
+      title: Text(l10n.uxRemoveBottleTitle),
+      content: SingleChildScrollView(
+        child: Text(l10n.uxRemoveBottleBody(wineName)),
+      ),
+      actions: [
+        TextButton(
+          key: const Key('remove-bottle-cancel'),
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          key: const Key('remove-bottle-confirm'),
+          onPressed: () => Navigator.of(context).pop(true),
+          child: Text(l10n.uxRemoveBottleConfirm),
+        ),
+      ],
+    );
+  }
+}
+
 /// "Merge the two entries?" (BR1.20). Returns true when confirmed.
 class MergeDialog extends StatelessWidget {
   const MergeDialog({super.key});

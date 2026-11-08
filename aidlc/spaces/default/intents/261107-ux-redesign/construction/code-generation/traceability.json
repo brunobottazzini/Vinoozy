@@ -1,0 +1,133 @@
+{
+  "stage": "code-generation",
+  "upstream_ids": [
+    "FR1",
+    "FR1.1",
+    "FR1.2",
+    "FR1.3",
+    "FR1.4",
+    "FR1.5",
+    "FR2",
+    "FR2.1",
+    "FR2.2",
+    "FR2.3",
+    "FR2.4",
+    "FR3",
+    "FR3.1",
+    "FR3.2",
+    "FR3.3",
+    "FR3.4",
+    "NFR1",
+    "NFR2",
+    "NFR3",
+    "NFR4",
+    "NFR5"
+  ],
+  "coverage": [
+    {
+      "id": "FR1",
+      "status": "OK",
+      "target": "lib/cellar/domain/wine_origins.dart"
+    },
+    {
+      "id": "FR1.1",
+      "status": "OK",
+      "target": "lib/cellar/ui/origin_pickers.dart"
+    },
+    {
+      "id": "FR1.2",
+      "status": "OK",
+      "target": "lib/cellar/ui/origin_pickers.dart"
+    },
+    {
+      "id": "FR1.3",
+      "status": "OK",
+      "target": "lib/cellar/domain/wine_origins.dart"
+    },
+    {
+      "id": "FR1.4",
+      "status": "OK",
+      "target": "lib/app/ui/country_flag.dart"
+    },
+    {
+      "id": "FR1.5",
+      "status": "OK",
+      "target": "lib/cellar/data/wine_repository.dart"
+    },
+    {
+      "id": "FR2",
+      "status": "OK",
+      "target": "lib/cellar/ui/drink_flow.dart"
+    },
+    {
+      "id": "FR2.1",
+      "status": "OK",
+      "target": "lib/cellar/ui/wine_card.dart"
+    },
+    {
+      "id": "FR2.2",
+      "status": "OK",
+      "target": "lib/cellar/ui/drink_confirm_sheet.dart"
+    },
+    {
+      "id": "FR2.3",
+      "status": "OK",
+      "target": "lib/cellar/data/drinking_record_repository.dart"
+    },
+    {
+      "id": "FR2.4",
+      "status": "OK",
+      "target": "lib/cellar/ui/cellar_dialogs.dart"
+    },
+    {
+      "id": "FR3",
+      "status": "OK",
+      "target": "lib/app/theme.dart"
+    },
+    {
+      "id": "FR3.1",
+      "status": "OK",
+      "target": "lib/app/theme.dart"
+    },
+    {
+      "id": "FR3.2",
+      "status": "OK",
+      "target": "lib/cellar/ui/wine_card.dart"
+    },
+    {
+      "id": "FR3.3",
+      "status": "OK",
+      "target": "lib/dashboard/ui/chart_cards.dart"
+    },
+    {
+      "id": "FR3.4",
+      "status": "OK",
+      "target": "lib/cellar/ui/wine_badges.dart"
+    },
+    {
+      "id": "NFR1",
+      "status": "OK",
+      "target": "test/cellar/ui/ux_redesign_test.dart"
+    },
+    {
+      "id": "NFR2",
+      "status": "OK",
+      "target": "test/cellar/ui/ux_redesign_test.dart"
+    },
+    {
+      "id": "NFR3",
+      "status": "OK",
+      "target": "lib/cellar/domain/wine_origins.dart"
+    },
+    {
+      "id": "NFR4",
+      "status": "OK",
+      "target": "firestore.rules"
+    },
+    {
+      "id": "NFR5",
+      "status": "OK",
+      "target": "lib/l10n/app_it.arb"
+    }
+  ]
+}

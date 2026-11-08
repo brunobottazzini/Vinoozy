@@ -98,6 +98,8 @@ void main() {
     expect(draft.wineType, 'redStructured');
     expect(draft.denomination, 'Barolo DOCG');
     expect(draft.region, 'Piemonte');
+    // ux-redesign FR1.3: Barolo DOCG fills Italy (and Piemonte) by itself.
+    expect(draft.country, 'IT');
     expect(find.byType(AddWineScreen), findsNothing, reason: 'back at once');
   });
 
@@ -305,6 +307,8 @@ void main() {
       await tester.tap(key('cellar-add-button'));
       await tester.pumpAndSettle();
       await tester.enterText(key('add-wine-name-field'), 'Barolo');
+      // ux-redesign: country and region come first, the switch is lower.
+      await tester.ensureVisible(key('add-wine-no-vintage-switch'));
       await tester.tap(key('add-wine-no-vintage-switch'));
       await tester.ensureVisible(key('add-wine-save-button'));
       await tester.tap(key('add-wine-save-button'));

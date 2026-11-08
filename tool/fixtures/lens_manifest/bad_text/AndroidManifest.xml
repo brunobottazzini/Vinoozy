@@ -1,0 +1,26 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:label="Fixture">
+        <activity android:name=".MainActivity" android:exported="true">
+            <!-- Too wide: several texts and every text type. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/*"/>
+            </intent-filter>
+        </activity>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.labelfiles"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/label_file_paths" />
+        </provider>
+    </application>
+    <queries>
+        <package android:name="com.google.android.googlequicksearchbox"/>
+        <package android:name="com.google.ar.lens"/>
+    </queries>
+</manifest>

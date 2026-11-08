@@ -5,15 +5,18 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../account/gate_state.dart';
-import '../account/network_status.dart';
 import '../app/providers.dart';
+import '../catalog/core/catalog_event_logger.dart';
 import '../catalog/core/wine_catalog.dart';
 import '../catalog/platform/catalog_providers.dart';
 import 'core/label_lookup_flow.dart';
+import 'core/label_merge.dart';
 import 'core/label_reading.dart';
 import 'core/label_session.dart';
+import 'core/lens_launcher.dart';
 import 'core/shared_image_policy.dart';
 import 'platform/label_error_reporter.dart';
+import 'platform/lens_channel.dart';
 import 'platform/mlkit_label_reader.dart';
 import 'platform/picker_image_source.dart';
 import 'platform/shared_image_channel.dart';
@@ -37,6 +40,12 @@ final labelReaderFactoryProvider = Provider<LabelReader Function()>(
 
 final labelErrorReporterProvider = Provider<LabelErrorReporter>(
   (ref) => LabelErrorReporter(ref.watch(errorReporterProvider)),
+);
+
+/// "Apri in Google Lens" (label-recognition FR4): the native channel in the
+/// app, a fake in tests (NFR4.4: never the real Google app in a test).
+final lensLauncherProvider = Provider<LensLauncher>(
+  (ref) => const MethodChannelLensLauncher(),
 );
 
 final labelFileSystemProvider = Provider<LabelFileSystem>(
@@ -121,6 +130,32 @@ class LabelImageRejected implements Exception {
   String toString() => 'LabelImageRejected($code)';
 }
 
+/// The services a reading talks to beyond the phone's own storage: the
+/// camera or gallery, Google Lens and the wine catalog. They are taken from
+/// the scope of the screen that started the reading and carried through it,
+/// because the reading screens are pushed on the app Navigator, above any
+/// nested ProviderScope that overrides them (the end-to-end tests replace
+/// them there), and [labelSessionProvider] lives in the root container. In
+/// the app nothing is scoped, so these are the root services.
+class LabelServices {
+  const LabelServices({
+    required this.source,
+    required this.lens,
+    required this.catalog,
+  });
+
+  /// The services seen by [ref], the ref of the screen starting a reading.
+  factory LabelServices.of(WidgetRef ref) => LabelServices(
+    source: ref.read(imageSourceProvider),
+    lens: ref.read(lensLauncherProvider),
+    catalog: ref.read(catalogProvider),
+  );
+
+  final ImageSource source;
+  final LensLauncher lens;
+  final WineCatalog catalog;
+}
+
 /// One reading session per reading screen, keyed by a token of the screen
 /// so a replaced screen never sees the state of the new one (BR1.4).
 final labelSessionProvider = NotifierProvider.autoDispose
@@ -128,12 +163,16 @@ final labelSessionProvider = NotifierProvider.autoDispose
       LabelSessionController.new,
     );
 
-/// Runs a reading (BR1.6-BR1.8, BR1.11, BR1.13, BR1.14): waits for the
-/// start-up cleanup, prepares the image natively, reads it, looks the wine
-/// up, and always deletes the copy. Every error is caught here and becomes a
-/// fixed reason; none reaches the global handlers (NFR8.2). "Annulla" and
-/// closing the screen leave the running work to finish in the background,
-/// its result ignored through the read id and its copy deleted.
+/// Runs a reading (BR1.6-BR1.8, BR1.11, BR1.13, BR1.14; label-recognition
+/// F1, BR1.1-BR1.6): waits for the start-up cleanup, prepares the front
+/// natively, asks for the back ("Ora il retro"), prepares and reads both,
+/// merges them and looks the wine up. The prepared copies are held while
+/// the outcome is open (Google Lens needs the front) and deleted when the
+/// screen closes, on cancel and on a replaced reading (BR1.4). Every error
+/// is caught here and becomes a fixed reason; none reaches the global
+/// handlers (NFR8.2). "Annulla" and closing the screen leave the running
+/// work to finish in the background, its result ignored through the read
+/// id and its copies deleted.
 class LabelSessionController extends Notifier<LabelState> {
   LabelSessionController(this.token);
 
@@ -141,6 +180,7 @@ class LabelSessionController extends Notifier<LabelState> {
   final LabelSession _session = LabelSession();
   LabelReader? _reader;
   Future<void> _work = Future<void>.value();
+  _Capture? _capture;
 
   @override
   LabelState build() {
@@ -150,16 +190,24 @@ class LabelSessionController extends Notifier<LabelState> {
     return const LabelIdle();
   }
 
+  /// The prepared front of the open outcome, for Google Lens; `null` when
+  /// there is none (label-recognition BR5.2).
+  String? get frontPath => _capture?.front;
+
   void _emit() {
     if (ref.mounted) state = _session.state;
   }
 
   void _onDispose() {
     _session.cancel();
-    // Closed once the work still running has finished with it; a reader the
-    // work creates after this point is closed the same way.
+    final capture = _capture;
+    _capture = null;
+    // Released and closed once the work still running has finished with
+    // them; a copy or a reader the work creates after this point goes the
+    // same way.
     unawaited(
       _work
+          .then((_) => capture?.release())
           .then((_) => _reader?.close())
           .catchError((Object _) {})
           .whenComplete(() => _reader = null),
@@ -168,7 +216,10 @@ class LabelSessionController extends Notifier<LabelState> {
 
   /// Everything a reading uses, taken while the screen is open: the work
   /// may finish after the screen closed, when `ref` can no longer be read.
-  _ReadingDeps _deps() {
+  /// The image source, Google Lens and the catalog come from [services],
+  /// those of the screen that started the reading, never from this
+  /// provider's own container.
+  _ReadingDeps _deps(LabelServices services) {
     final reporter = ref.read(labelErrorReporterProvider);
     final clock = ref.read(clockProvider);
     final newReader = ref.read(labelReaderFactoryProvider);
@@ -176,21 +227,32 @@ class LabelSessionController extends Notifier<LabelState> {
       reporter: reporter,
       store: ref.read(tempLabelStoreProvider),
       channel: ref.read(sharedImageChannelProvider),
-      network: ref.read(networkStatusProvider),
+      source: services.source,
+      logger: ref.read(catalogEventLoggerProvider),
+      lens: services.lens,
       // Created on first use, once per session, closed in _onDispose.
       reader: () => _reader ??= newReader(),
       flow: LabelLookupFlow(
-        catalog: ref.read(catalogProvider),
+        catalog: services.catalog,
         currentYear: () => clock.now().year,
         onFailure: (error, stack) =>
             unawaited(reporter.report(LabelFailure.lookupFailed, error, stack)),
+        onExtractFailure: (error, stack) => unawaited(
+          reporter.report(LabelFailure.appellationsIndexFailed, error, stack),
+        ),
       ),
     );
   }
 
-  /// Starts the reading of [input]; completes when it has settled. Never
-  /// throws.
-  Future<void> start(LabelInput input, {required CatalogLocale locale}) {
+  /// Starts the reading of [input] with the [services] of the screen that
+  /// started it: the front is prepared, then "Ora il retro" waits for
+  /// [takeBack] or [skipBack], which use the same [services]. Completes when
+  /// the front has settled. Never throws.
+  Future<void> start(
+    LabelInput input, {
+    required CatalogLocale locale,
+    required LabelServices services,
+  }) {
     switch (input) {
       case DeniedLabelInput(:final origin):
         _session.denied(origin);
@@ -204,57 +266,189 @@ class LabelSessionController extends Notifier<LabelState> {
         final id = _session.begin();
         _session.fail(id);
         _emit();
-        return _deps().reporter.report(LabelFailure.pickFailed, error, stack);
+        return _deps(services).reporter
+            .report(LabelFailure.pickFailed, error, stack);
       case PickedLabelInput() || SharedLabelInput():
+        _replaceCapture();
         final id = _session.begin();
         _emit();
-        final work = _read(_deps(), input, id, locale);
+        final work = _prepareFront(_deps(services), input, id, locale);
         _work = work;
         return work;
     }
   }
 
-  /// "Annulla" (BR1.13): immediate, the late result is ignored.
+  /// "Scatta il retro" or "Scegli dalla galleria" (BR1.1): cancelled,
+  /// denied or failed is the same as "Salta" (BR1.6).
+  Future<void> takeBack(PhotoOrigin origin) async {
+    final capture = _capture;
+    if (capture == null || _session.state is! LabelBackPromptState) return;
+    final outcome = await capture.deps.source.pick(origin);
+    if (outcome case PickFailed(:final error, :final stack)) {
+      await capture.deps.reporter.report(LabelFailure.pickFailed, error, stack);
+    }
+    return _continue(
+      capture,
+      outcome is PickedImage ? PickedLabelInput(outcome.path) : null,
+    );
+  }
+
+  /// "Salta" (BR1.1): the outcome with the front only.
+  Future<void> skipBack() async {
+    final capture = _capture;
+    if (capture == null || _session.state is! LabelBackPromptState) return;
+    return _continue(capture, null);
+  }
+
+  /// "Annulla" (BR1.13, BR1.6): immediate, the late result is ignored, the
+  /// copies are deleted when the screen closes.
   void cancel() {
     _session.cancel();
     _emit();
   }
 
-  /// "Riprova quando torna la rete": the barcode lookup again, with the code
-  /// kept in memory only.
-  Future<void> retryBarcode() async {
-    final current = _session.state;
-    if (current is! LabelBarcodeOnlyState) return;
-    final deps = _deps();
-    final id = _session.begin();
+  /// "Non è questo" (BR3.5).
+  void notThis() {
+    _session.notThis();
     _emit();
-    final outcome = await deps.flow.retryBarcode(
-      current.barcode,
-      online: await deps.online(),
-    );
-    if (ref.mounted && _session.complete(id, outcome)) _emit();
   }
 
-  Future<void> _read(
+  /// "Nessuno di questi".
+  void noneOfThese() {
+    _session.noneOfThese();
+    _emit();
+  }
+
+  /// "Apri Google Lens", after the confirmation (BR5.1, BR5.2): only the
+  /// prepared front leaves, to the Google app or the share menu.
+  Future<LensRoute> openLens() async {
+    final capture = _capture;
+    if (capture == null) return LensRoute.failed;
+    final route = await capture.deps.lens.open(capture.front);
+    capture.deps.logger.lensOpened(route);
+    return route;
+  }
+
+  /// A new reading on this screen: the copies of the old one are deleted
+  /// once its work has finished.
+  void _replaceCapture() {
+    final old = _capture;
+    _capture = null;
+    if (old == null) return;
+    unawaited(_work.then((_) => old.release()).catchError((Object _) {}));
+  }
+
+  Future<void> _prepareFront(
     _ReadingDeps deps,
     LabelInput input,
     int id,
     CatalogLocale locale,
   ) async {
-    String? path;
-    LookupOutcome outcome = const LookupUnreadable();
-    try {
-      await deps.store.beforeRead();
-      final prepared = await deps.prepare(input);
-      if (prepared is PreparedImage) {
-        path = prepared.path;
-        outcome = await deps.lookUp(prepared.path, locale);
-      }
-    } finally {
-      await deps.store.release(path);
+    await deps.store.beforeRead();
+    final prepared = await deps.prepare(input);
+    if (prepared is! PreparedImage) {
+      if (ref.mounted && _session.fail(id)) _emit();
+      return;
     }
-    if (ref.mounted && _session.complete(id, outcome)) _emit();
+    deps.store.hold(prepared.path);
+    final capture = _Capture(id, prepared.path, locale, deps);
+    if (!ref.mounted || !_session.isCurrent(id)) {
+      await capture.release();
+      return;
+    }
+    _capture = capture;
+    if (_session.askBack(id)) _emit();
   }
+
+  Future<void> _continue(_Capture capture, LabelInput? back) {
+    var progress = ReadingProgress({
+      ReadingStep.front: StepStatus.running,
+      ReadingStep.back: back == null ? StepStatus.skipped : StepStatus.pending,
+    });
+    if (!_session.resume(capture.id, progress)) return Future<void>.value();
+    _emit();
+    void step(ReadingStep step, StepStatus status) {
+      progress = progress.withStep(step, status);
+      if (ref.mounted && _session.resume(capture.id, progress)) _emit();
+    }
+
+    final work = _read(capture, back, step);
+    _work = work;
+    return work;
+  }
+
+  Future<void> _read(
+    _Capture capture,
+    LabelInput? back,
+    void Function(ReadingStep step, StepStatus status) step,
+  ) async {
+    final deps = capture.deps;
+    final front = await deps.read(capture.front);
+    step(
+      ReadingStep.front,
+      front == null ? StepStatus.failed : StepStatus.done,
+    );
+    LabelReading? backReading;
+    if (back != null) {
+      step(ReadingStep.back, StepStatus.running);
+      final prepared = await deps.prepare(back);
+      if (prepared is PreparedImage) {
+        deps.store.hold(prepared.path);
+        capture.back = prepared.path;
+        backReading = await deps.read(prepared.path);
+      }
+      step(
+        ReadingStep.back,
+        backReading == null ? StepStatus.failed : StepStatus.done,
+      );
+    }
+    final merged = mergeLabelReadings(
+      front: front,
+      back: backReading,
+      backTaken: back != null,
+    );
+    step(
+      ReadingStep.barcode,
+      merged.barcode == null ? StepStatus.skipped : StepStatus.done,
+    );
+    step(ReadingStep.database, StepStatus.running);
+    final outcome = await deps.lookUp(merged, capture.locale);
+    if (ref.mounted &&
+        _session.complete(capture.id, outcome, backStatus: merged.backStatus)) {
+      _emit();
+    }
+    deps.logger.labelOutcome(_kindOf(outcome), _stepOf(outcome));
+  }
+
+  static LabelOutcomeKind _kindOf(LookupOutcome outcome) => switch (outcome) {
+    LookupSure() => LabelOutcomeKind.sure,
+    LookupCandidates() => LabelOutcomeKind.candidates,
+    LookupNotFound(kind: NotFoundKind.unreadable) =>
+      LabelOutcomeKind.unreadable,
+    LookupNotFound(kind: NotFoundKind.barcodeNotFound) =>
+      LabelOutcomeKind.barcodeNotFound,
+    LookupNotFound(kind: NotFoundKind.noMatch) => LabelOutcomeKind.noMatch,
+  };
+
+  static LabelMatchStep _stepOf(LookupOutcome outcome) => switch (outcome) {
+    LookupSure(:final step) || LookupCandidates(:final step) => step,
+    LookupNotFound() => LabelMatchStep.none,
+  };
+}
+
+/// The photos of one reading while its outcome is open (entities.md
+/// `LabelCapture`).
+class _Capture {
+  _Capture(this.id, this.front, this.locale, this.deps);
+
+  final int id;
+  final String front;
+  final CatalogLocale locale;
+  final _ReadingDeps deps;
+  String? back;
+
+  /// Deletes the front and the back (BR1.4).
+  Future<void> release() => deps.store.releaseCapture([front, ?back]);
 }
 
 class _ReadingDeps {
@@ -262,7 +456,9 @@ class _ReadingDeps {
     required this.reporter,
     required this.store,
     required this.channel,
-    required this.network,
+    required this.source,
+    required this.logger,
+    required this.lens,
     required this.reader,
     required this.flow,
   });
@@ -270,7 +466,9 @@ class _ReadingDeps {
   final LabelErrorReporter reporter;
   final TempLabelStore store;
   final SharedImageChannel channel;
-  final NetworkStatus network;
+  final ImageSource source;
+  final CatalogEventLogger logger;
+  final LensLauncher lens;
   final LabelReader Function() reader;
   final LabelLookupFlow flow;
 
@@ -297,27 +495,26 @@ class _ReadingDeps {
     }
   }
 
-  Future<LookupOutcome> lookUp(String path, CatalogLocale locale) async {
-    final LabelReading reading;
+  /// The reading of one prepared photo, or `null` when it failed (reported
+  /// as `label_read_failed`).
+  Future<LabelReading?> read(String path) async {
     try {
-      reading = await reader().read(path);
+      return await reader().read(path);
     } catch (error, stack) {
       await reporter.report(LabelFailure.readFailed, error, stack);
-      return const LookupUnreadable();
-    }
-    try {
-      return await flow.run(reading, online: await online(), locale: locale);
-    } catch (error, stack) {
-      await reporter.report(LabelFailure.lookupFailed, error, stack);
-      return const LookupUnreadable();
+      return null;
     }
   }
 
-  Future<bool> online() async {
+  Future<LookupOutcome> lookUp(
+    MergedReading reading,
+    CatalogLocale locale,
+  ) async {
     try {
-      return await network.hasNetwork();
-    } catch (_) {
-      return false;
+      return await flow.run(reading, locale: locale);
+    } catch (error, stack) {
+      await reporter.report(LabelFailure.lookupFailed, error, stack);
+      return const LookupNotFound(NotFoundKind.unreadable);
     }
   }
 }
@@ -366,9 +563,17 @@ sealed class SharedImageEvent {
 
 /// Open the reading of the shared image now.
 class SharedImageReadNow extends SharedImageEvent {
-  const SharedImageReadNow(super.serial, {required this.multiple});
+  const SharedImageReadNow(
+    super.serial, {
+    required this.multiple,
+    this.isText = false,
+  });
 
   final bool multiple;
+
+  /// A text shared by Google Lens: it fills the add form
+  /// (label-autofill-windows FR2.1, BR2.4).
+  final bool isText;
 }
 
 /// "Non puoi aggiungere vini a questa cantina".
@@ -395,6 +600,7 @@ class SharedImageNotifier extends Notifier<SharedImageEvent?> {
 
   bool _pending = false;
   bool _multiple = false;
+  bool _isText = false;
   ShareAccount _account = ShareAccount.unknown;
   bool _signInAttempted = false;
   bool _cellarReady = false;
@@ -448,6 +654,7 @@ class SharedImageNotifier extends Notifier<SharedImageEvent?> {
     // A new share replaces the old one and starts its waits again.
     _pending = true;
     _multiple = notice.multiple;
+    _isText = notice.isText;
     _canEditWaitOver = false;
     _readWindowOver = false;
     _stopTimers();
@@ -535,7 +742,11 @@ class SharedImageNotifier extends Notifier<SharedImageEvent?> {
       case ShareDecision.read:
         _pending = false;
         _stopTimers();
-        state = SharedImageReadNow(++_serial, multiple: _multiple);
+        state = SharedImageReadNow(
+          ++_serial,
+          multiple: _multiple,
+          isText: _isText,
+        );
       case ShareDecision.notAllowed:
         unawaited(_discard());
         state = SharedImageNotAllowed(++_serial);

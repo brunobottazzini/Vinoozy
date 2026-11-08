@@ -878,10 +878,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get labelConfirm => 'Conferma';
 
   @override
-  String get labelOfflineNotice =>
-      'Senza rete riconosco solo la denominazione: controlla i dati';
-
-  @override
   String get labelUnreadable => 'Non riesco a leggere l\'etichetta';
 
   @override
@@ -910,13 +906,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get labelBarcodeFrontHint => 'Fotografa il fronte dell\'etichetta';
-
-  @override
-  String get labelBarcodeNeedsNetwork =>
-      'Ho letto il codice a barre: serve la rete per cercarlo';
-
-  @override
-  String get labelRetryOnline => 'Riprova quando torna la rete';
 
   @override
   String get labelSharedNotAllowed =>
@@ -1164,4 +1153,829 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get deletionFailed =>
       'Non è stato possibile completare la cancellazione. Riprova';
+
+  @override
+  String get uxCountryLabel => 'Paese';
+
+  @override
+  String get uxCountryOther => 'Altro paese…';
+
+  @override
+  String get uxCountryNone => 'Nessun paese';
+
+  @override
+  String get uxAllCountriesTitle => 'Tutti i paesi e territori';
+
+  @override
+  String get uxAllCountriesSearch => 'Cerca un paese';
+
+  @override
+  String get uxAllCountriesRare => 'Rari per il vino';
+
+  @override
+  String get uxAllCountriesAll => 'Tutti, dalla A alla Z';
+
+  @override
+  String get uxAllCountriesNone => 'Nessun paese trovato';
+
+  @override
+  String get uxRegionLabel => 'Regione';
+
+  @override
+  String uxRegionOf(String country) {
+    return 'Regione · $country';
+  }
+
+  @override
+  String get uxRegionOther => 'Altra regione';
+
+  @override
+  String get uxRegionFieldLabel => 'Scrivi la regione';
+
+  @override
+  String get uxRegionTooLong => 'Al massimo 120 caratteri';
+
+  @override
+  String get uxDrinkAction => 'Ho bevuto';
+
+  @override
+  String uxDrinkActionTooltip(String name) {
+    return 'Ho bevuto una bottiglia di $name';
+  }
+
+  @override
+  String get uxDrinkActionDetail => 'Ho bevuto una bottiglia';
+
+  @override
+  String get uxDrinkSheetLabel => 'Conferma bevuta';
+
+  @override
+  String get uxDrinkSheetBottles => 'Bottiglie';
+
+  @override
+  String uxDrinkSheetBottlesChange(int before, int after) {
+    return 'Bottiglie: da $before a $after';
+  }
+
+  @override
+  String get uxDrinkSheetRating => 'Com\'era? (facoltativo)';
+
+  @override
+  String uxDrinkSheetStars(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count stelle su 5',
+      one: '1 stella su 5',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get uxDrinkSheetConfirm => 'Sì, l\'ho bevuta';
+
+  @override
+  String get uxRemoveBottle => 'Togli una bottiglia senza bevuta';
+
+  @override
+  String get uxRemoveBottleTitle => 'Togliere una bottiglia?';
+
+  @override
+  String uxRemoveBottleBody(String name) {
+    return 'Una bottiglia di $name viene tolta senza registrare una bevuta.';
+  }
+
+  @override
+  String get uxRemoveBottleConfirm => 'Togli';
+
+  @override
+  String get uxIdealTitle => 'Momento ideale';
+
+  @override
+  String uxIdealUntil(String year) {
+    return 'Consigliato fino al $year';
+  }
+
+  @override
+  String uxIdealUntilPast(String year) {
+    return 'Consigliato fino al $year: è passato';
+  }
+
+  @override
+  String uxIdealBest(String start, String end) {
+    return 'Al meglio dal $start al $end';
+  }
+
+  @override
+  String uxIdealBar(String start, String end) {
+    return 'Finestra di consumo dal $start al $end';
+  }
+
+  @override
+  String get uxIdealDisclaimer =>
+      '⚠︎ Indicativo: è una stima basata su tipo, denominazione e annata. Conservazione e singola bottiglia possono cambiarla.';
+
+  @override
+  String get uxIdealUnavailableHint =>
+      'Indica annata e tipo per avere una stima.';
+
+  @override
+  String uxDashboardDrinkNow(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count da bere ora',
+      one: '1 da bere ora',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get uxFamilyRed => 'Rosso';
+
+  @override
+  String get uxFamilyWhite => 'Bianco';
+
+  @override
+  String get uxFamilyRose => 'Rosato';
+
+  @override
+  String get uxFamilySparkling => 'Bollicine';
+
+  @override
+  String get uxFamilySweet => 'Dolce';
+
+  @override
+  String get labelBackTitle => 'Ora il retro';
+
+  @override
+  String get labelBackHint =>
+      'Sul retro di solito ci sono il codice a barre, il produttore e l\'annata: aiutano a trovare il vino.';
+
+  @override
+  String get labelBackTake => 'Scatta il retro';
+
+  @override
+  String get labelBackGallery => 'Scegli dalla galleria';
+
+  @override
+  String get labelBackSkip => 'Salta';
+
+  @override
+  String get labelStepFront => 'Fronte';
+
+  @override
+  String get labelStepBack => 'Retro';
+
+  @override
+  String get labelStepBarcode => 'Codice a barre';
+
+  @override
+  String get labelStepDatabase => 'Base dei vini sul telefono';
+
+  @override
+  String get labelStepPending => 'In attesa';
+
+  @override
+  String get labelStepRunning => 'In corso…';
+
+  @override
+  String get labelStepDone => 'Fatto';
+
+  @override
+  String get labelStepSkipped => 'Saltato';
+
+  @override
+  String get labelStepFailed => 'Non leggibile';
+
+  @override
+  String labelStepStatus(String step, String status) {
+    return '$step: $status';
+  }
+
+  @override
+  String get labelOnPhoneNote =>
+      'Tutto avviene sul telefono: le foto non vengono inviate a nessuno.';
+
+  @override
+  String get labelBackUnreadable => 'Retro non leggibile';
+
+  @override
+  String get labelSourceOffline => 'Dalla base sul telefono · offline';
+
+  @override
+  String get labelSourceCatalog => 'Dal catalogo';
+
+  @override
+  String get labelSourceOnline => 'Da Open Food Facts · online';
+
+  @override
+  String get labelNotThis => 'Non è questo';
+
+  @override
+  String get labelOffAttribution => 'Dati da Open Food Facts, licenza ODbL';
+
+  @override
+  String get labelCandidatesTitle => 'Quale di questi?';
+
+  @override
+  String labelCandidatesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count vini simili',
+      one: '1 vino simile',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get labelCandidatesNone => 'Nessuno di questi';
+
+  @override
+  String get labelChipOffline => 'offline';
+
+  @override
+  String get labelChipOnline => 'online';
+
+  @override
+  String get labelChipCatalog => 'catalogo';
+
+  @override
+  String get labelNoProducer => 'produttore non indicato';
+
+  @override
+  String get labelNoMatch => 'Ho letto l\'etichetta ma non riconosco il vino';
+
+  @override
+  String get labelReadText => 'Testo letto';
+
+  @override
+  String get labelSearchOnline => 'Cerca online';
+
+  @override
+  String get labelOpenLens => 'Apri in Google Lens';
+
+  @override
+  String get labelLensLastResort =>
+      'Google Lens è l\'ultima possibilità: la foto viene passata all\'app Google solo se lo confermi.';
+
+  @override
+  String get labelLensTitle => 'Apri in Google Lens?';
+
+  @override
+  String get labelLensBody =>
+      'La foto del fronte verrà passata all\'app Google sul tuo telefono, o all\'app che scegli, che può conservarne una copia secondo le sue regole. Vinoozy non riceve i risultati: torna qui per scegliere o scrivere il vino.';
+
+  @override
+  String get labelLensConfirm => 'Apri Google Lens';
+
+  @override
+  String get labelLensFailed =>
+      'Non riesco ad aprire Google Lens né il menu Condividi';
+
+  @override
+  String get onlineSearchTitle => 'Cerca online';
+
+  @override
+  String get onlineSearchSubtitle => 'Open Food Facts · solo vini';
+
+  @override
+  String get onlineSearchField => 'Parole da cercare';
+
+  @override
+  String get onlineSearchHint => 'Puoi cambiare le parole prima di cercare.';
+
+  @override
+  String get onlineSearchEmptyField => 'Scrivi almeno una parola';
+
+  @override
+  String get onlineSearchButton => 'Cerca';
+
+  @override
+  String get onlineSearchLoading => 'Cerco…';
+
+  @override
+  String onlineSearchResults(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count risultati',
+      one: '1 risultato',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get onlineSearchEmpty =>
+      'Nessun vino trovato: prova altre parole o \"Scrivi a mano\".';
+
+  @override
+  String get onlineSearchOffline =>
+      'Senza rete: cerco solo nella base sul telefono.';
+
+  @override
+  String get onlineSearchRateLimited =>
+      'Ricerca online non disponibile ora, riprova tra qualche minuto.';
+
+  @override
+  String get onlineSearchUnavailable =>
+      'La ricerca online non è attiva in questa versione dell\'app: cerco solo nella base sul telefono.';
+
+  @override
+  String get aboutTitle => 'Informazioni';
+
+  @override
+  String aboutVersion(String version) {
+    return 'Versione $version';
+  }
+
+  @override
+  String get aboutDbTitle => 'Base dei vini';
+
+  @override
+  String aboutDbCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count vini',
+      one: '1 vino',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String aboutDbDate(String date) {
+    return 'Export di Open Food Facts del $date';
+  }
+
+  @override
+  String get aboutDbSample =>
+      'Base di prova: pochi vini di test scritti a mano, non dati di Open Food Facts.';
+
+  @override
+  String get aboutDbLoading => 'Apro la base dei vini…';
+
+  @override
+  String get aboutDbUnavailable =>
+      'La base dei vini non è disponibile in questa versione';
+
+  @override
+  String aboutDbSource(String url) {
+    return 'La base derivata e lo strumento che la genera sono nel repository pubblico: $url';
+  }
+
+  @override
+  String get aboutLicenseTitle => 'Licenze';
+
+  @override
+  String get aboutLicense =>
+      'Contiene informazioni da Open Food Facts, rese disponibili con la Open Database License (ODbL). I singoli contenuti sono sotto Database Contents License (DbCL).';
+
+  @override
+  String get aboutPrivacyTitle => 'Foto delle etichette';
+
+  @override
+  String get aboutPrivacy =>
+      'Le foto delle etichette vengono lette sul telefono e cancellate quando lasci l\'esito. Lasciano il telefono solo se tocchi \"Apri in Google Lens\" e confermi.';
+
+  @override
+  String get aboutAppellationsTitle => 'Denominazioni';
+
+  @override
+  String get aboutAppellationsSource =>
+      'Denominazioni: registro eAmbrosia (UE) e registri ufficiali nazionali.';
+
+  @override
+  String get aboutAppellationsSample =>
+      'Tabella di prova: un estratto dei registri scritto a mano, finché non si scaricano i registri veri.';
+
+  @override
+  String get denominationLabel => 'Denominazione';
+
+  @override
+  String get denominationTooLong => 'Al massimo 120 caratteri';
+
+  @override
+  String get autofillFilledNotice =>
+      'Compilato dall\'etichetta: controlla e salva';
+
+  @override
+  String get autofillPastedNotice => 'Compilato dal testo: controlla e salva';
+
+  @override
+  String get autofillFromText => '✦ dal testo';
+
+  @override
+  String get autofillFromTextSemantics => 'compilato dall\'etichetta';
+
+  @override
+  String get autofillClear => 'Pulisci';
+
+  @override
+  String get autofillLens => 'Lens';
+
+  @override
+  String get autofillClearTitle => 'Svuotare il modulo?';
+
+  @override
+  String get autofillClearBody =>
+      'Hai scritto anche tu in alcuni campi. «Pulisci» svuota nome, produttore, denominazione, annata, tipo, paese, regione e livello. La quantità resta.';
+
+  @override
+  String get autofillClearConfirm => 'Svuota';
+
+  @override
+  String get autofillCleared => 'Modulo svuotato';
+
+  @override
+  String get autofillPasteTitle => 'Hai il testo da Google Lens?';
+
+  @override
+  String get autofillPasteHint =>
+      'In Lens seleziona il testo dell\'etichetta e tocca «Copia», poi torna qui.';
+
+  @override
+  String get autofillPaste => 'Incolla da Lens';
+
+  @override
+  String get autofillOpenLens => 'Da Google Lens';
+
+  @override
+  String get autofillOpenLensSemantics => 'apre Google Lens';
+
+  @override
+  String get autofillClipboardEmpty => 'Negli appunti non c\'è testo';
+
+  @override
+  String get autofillNoNewFields =>
+      'Nel testo non ho trovato dati da aggiungere';
+
+  @override
+  String get autofillFromLens => 'Modulo compilato dal testo di Lens';
+
+  @override
+  String get autofillShareEmpty => 'Nessun testo ricevuto';
+
+  @override
+  String get autofillShareUseTitle => 'Usare il testo per i campi vuoti?';
+
+  @override
+  String get autofillShareUse => 'Usa';
+
+  @override
+  String get autofillShareIgnore => 'Ignora';
+
+  @override
+  String get addChoiceLens => 'Da Google Lens';
+
+  @override
+  String get addChoicePhotoHint =>
+      'Fronte e retro: Vinoozy legge l\'etichetta.';
+
+  @override
+  String get addChoiceLensHint =>
+      'Apre Lens: inquadra, seleziona il testo e tocca Condividi → Vinoozy.';
+
+  @override
+  String get addChoiceImportHint => 'Una foto dell\'etichetta già scattata.';
+
+  @override
+  String get addChoiceWriteHint => 'Modulo vuoto, con «Incolla da Lens».';
+
+  @override
+  String get lensInstructionsTitle => 'Da qui Google Lens non si apre';
+
+  @override
+  String get lensInstructionsStep1 =>
+      'Apri Google Lens e inquadra l\'etichetta';
+
+  @override
+  String get lensInstructionsStep2 => 'Seleziona il testo dell\'etichetta';
+
+  @override
+  String get lensInstructionsStep3 => 'Tocca Condividi → Vinoozy';
+
+  @override
+  String get lensInstructionsOk => 'Ho capito';
+
+  @override
+  String get levelLabel => 'Livello';
+
+  @override
+  String get levelEveryday => 'Quotidiano (economico)';
+
+  @override
+  String get levelGood => 'Buono';
+
+  @override
+  String get levelAging => 'Da invecchiamento';
+
+  @override
+  String get levelNone => 'Nessuno';
+
+  @override
+  String get levelEverydayShort => 'bere presto';
+
+  @override
+  String get levelGoodShort => 'stima normale';
+
+  @override
+  String get levelAgingShort => 'dura di più';
+
+  @override
+  String get levelSuggested => 'suggerito';
+
+  @override
+  String levelSuggestedReason(String qualifier) {
+    return 'Suggerito perché il nome contiene «$qualifier»: si salva così se non cambi. Scegline un altro o tocca «Nessuno».';
+  }
+
+  @override
+  String levelSuggestedSemantics(String qualifier) {
+    return 'suggerito, perché il nome contiene $qualifier';
+  }
+
+  @override
+  String levelOptionSemantics(String option, int index, int count) {
+    return 'Livello, $option, $index di $count';
+  }
+
+  @override
+  String get levelWhatChanges => 'Cosa cambia';
+
+  @override
+  String get levelEverydayExamples =>
+      'La finestra si accorcia. Es. vino della casa, Lambrusco, Prosecco base, Bardolino, Vinho Verde.';
+
+  @override
+  String get levelGoodExamples =>
+      'La stima normale, ed è il valore se non scegli nulla. Es. Chianti Classico, Barbera d\'Asti Superiore, Rioja Crianza, Côtes du Rhône.';
+
+  @override
+  String get levelAgingExamples =>
+      'La finestra si allunga. Es. Barolo, Brunello, Amarone, Bordeaux Grand Cru, Rioja Gran Reserva, Porto Vintage.';
+
+  @override
+  String levelPreviewBefore(String start, String end) {
+    return 'Prima $start – $end';
+  }
+
+  @override
+  String levelPreviewWith(String level, String start, String end) {
+    return 'Con «$level» $start – $end';
+  }
+
+  @override
+  String levelPreviewNow(String start, String end) {
+    return 'Pronto $start – fino al $end';
+  }
+
+  @override
+  String levelDetail(String level) {
+    return 'Livello: $level';
+  }
+
+  @override
+  String get overrideCorrect => 'Correggi';
+
+  @override
+  String get overrideRestore => 'Ripristina stima';
+
+  @override
+  String get overrideCorrectedByYou => 'corretto da te';
+
+  @override
+  String overrideAppEstimate(String year) {
+    return 'Stima dell\'app: fino al $year';
+  }
+
+  @override
+  String get overrideSheetTitle => 'Consigliato fino al';
+
+  @override
+  String overrideSheetHint(String start) {
+    return 'Scegli l\'anno. Non può essere prima di «Pronto dal $start».';
+  }
+
+  @override
+  String overridePeakNotice(String peak) {
+    return 'Se scegli un anno prima del $peak (al meglio), anche «al meglio» si sposta allo stesso anno.';
+  }
+
+  @override
+  String get overrideMore => 'altro…';
+
+  @override
+  String get overrideSave => 'Salva correzione';
+
+  @override
+  String overrideRestoreTitle(String year) {
+    return 'Tornare alla stima dell\'app (fino al $year)?';
+  }
+
+  @override
+  String get overrideRestoreConfirm => 'Ripristina';
+
+  @override
+  String get overrideSaved => 'Correzione salvata';
+
+  @override
+  String get overrideRestored => 'Stima ripristinata';
+
+  @override
+  String get estimateSourceCorrectedByYou => 'corretta da te';
+
+  @override
+  String estimateFromDenomination(String name) {
+    return 'Stima dalla denominazione $name';
+  }
+
+  @override
+  String estimateFromDenominationQualifier(String name, String qualifier) {
+    return 'Stima dalla denominazione $name, $qualifier';
+  }
+
+  @override
+  String estimateFromGrape(String name) {
+    return 'Stima dal vitigno $name';
+  }
+
+  @override
+  String get estimateFromType => 'Stima dal tipo di vino';
+
+  @override
+  String get autofillReading => 'Leggo il testo…';
+
+  @override
+  String get guideChip => 'Conferma guidata';
+
+  @override
+  String guideProgress(int n, int total) {
+    return 'Domanda $n di $total';
+  }
+
+  @override
+  String get guideClose => 'Chiudi';
+
+  @override
+  String get guideIsDenomination => 'è la denominazione?';
+
+  @override
+  String get guideIsProducer => 'è il produttore?';
+
+  @override
+  String get guideIsName => 'è il nome del vino?';
+
+  @override
+  String get guideIsVintage => 'Annata';
+
+  @override
+  String guideAskDenomination(String value) {
+    return '$value è la denominazione?';
+  }
+
+  @override
+  String guideAskProducer(String value) {
+    return '$value è il produttore?';
+  }
+
+  @override
+  String guideAskName(String value) {
+    return '$value è il nome del vino?';
+  }
+
+  @override
+  String get guideAskVintage => 'Qual è l\'annata?';
+
+  @override
+  String guideQuestionSemantics(int n, int total, String question) {
+    return 'Domanda $n di $total: $question';
+  }
+
+  @override
+  String get guideNoProposal => 'Non l\'ho trovato nel testo';
+
+  @override
+  String get guideYes => 'Sì';
+
+  @override
+  String get guideNo => 'No, un\'altra';
+
+  @override
+  String get guideEdit => 'Modifica';
+
+  @override
+  String get guideSkip => 'Salta';
+
+  @override
+  String get guideConfirm => 'Conferma';
+
+  @override
+  String get guideCancel => 'Annulla';
+
+  @override
+  String guideRejected(String value) {
+    return '\"$value\" no: ti propongo il prossimo';
+  }
+
+  @override
+  String get guideNoMore => 'Nessun\'altra proposta: puoi comporla o saltare';
+
+  @override
+  String guideProposalAnnounce(String value) {
+    return 'Proposta: $value';
+  }
+
+  @override
+  String get guideComposeLabel =>
+      'Oppure componila toccando le parole del testo';
+
+  @override
+  String get guideComposePreview => 'Anteprima';
+
+  @override
+  String get guideComposeEmpty => 'Tocca una o più parole';
+
+  @override
+  String get guideComposeLimit => 'Massimo 8 parole e 80 caratteri';
+
+  @override
+  String guideTableMatchSemantics(String name) {
+    return 'corrisponde a $name';
+  }
+
+  @override
+  String guideLine(int n, int total) {
+    return 'Riga $n di $total';
+  }
+
+  @override
+  String guideWordSelected(String word, int order) {
+    return '$word, selezionata, $order';
+  }
+
+  @override
+  String guideWordUnavailable(String word) {
+    return '$word, non disponibile';
+  }
+
+  @override
+  String guideWordUsedFor(String word, String field) {
+    String _temp0 = intl.Intl.selectLogic(field, {
+      'denomination': 'la denominazione',
+      'producer': 'il produttore',
+      'other': 'il nome',
+    });
+    return '$word, usata per $_temp0';
+  }
+
+  @override
+  String guideUsedMark(String field) {
+    String _temp0 = intl.Intl.selectLogic(field, {
+      'denomination': 'denominazione',
+      'producer': 'produttore',
+      'other': 'nome',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String guideOtherYears(String years) {
+    return 'Nel testo anche: $years';
+  }
+
+  @override
+  String get guideWheelFromText => 'anno trovato nel testo';
+
+  @override
+  String get guideWheelTypeYear => 'Scrivi l\'anno';
+
+  @override
+  String guideWheelConfirm(String year) {
+    return 'Conferma $year';
+  }
+
+  @override
+  String get guideNoVintage => 'Senza annata';
+
+  @override
+  String guideSkippedNotice(String field) {
+    String _temp0 = intl.Intl.selectLogic(field, {
+      'denomination': 'Denominazione saltata',
+      'producer': 'Produttore saltato',
+      'vintage': 'Annata saltata',
+      'other': 'Nome saltato',
+    });
+    return '$_temp0: puoi scriverlo o riprendere la guida';
+  }
+
+  @override
+  String guideSkippedMany(int count) {
+    return '$count campi saltati: puoi scriverli o riprendere la guida';
+  }
+
+  @override
+  String get guideInvalidValue =>
+      'Il testo contiene caratteri che non si possono salvare';
 }

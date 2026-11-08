@@ -104,6 +104,9 @@ Wine cellarWine(
   Pairings? pairings,
   String? matchKey,
   DateTime? createdAt,
+  String? country,
+  WineLevel? level,
+  WindowOverride? windowOverride,
 }) => Wine(
   id: id,
   name: name,
@@ -113,12 +116,15 @@ Wine cellarWine(
   wineType: wineType,
   region: region,
   denomination: denomination,
+  country: country,
   window: window,
   baseWindow: baseWindow,
   windowAdjustment: adjustment,
   pairings: pairings,
   matchKey: matchKey,
   createdAt: createdAt,
+  level: level,
+  windowOverride: windowOverride,
 );
 
 /// A drink built with the real [DrinkingRecord] constructor.
@@ -356,11 +362,33 @@ class FakeWineCatalog implements WineCatalog {
     return profiles[name] ?? profile;
   }
 
+  /// The answer to a label text (label-autofill-windows BR2.2); nothing by
+  /// default.
+  LabelMatchResult labelMatch = const LabelMatchResult.none();
+  final List<String> labelTexts = [];
+
+  /// Holds [matchLabel] until completed: a catalog that never answers in
+  /// time (offline database opening, slow Open Food Facts).
+  Completer<void>? labelGate;
+
   @override
-  Future<LabelMatch> matchLabelText(
+  Future<LabelMatchResult> matchLabel(
     String text, {
+    String? barcode,
     CatalogLocale locale = CatalogLocale.en,
-  }) async => const LabelMatch.none();
+  }) async {
+    labelTexts.add(text);
+    final gate = labelGate;
+    if (gate != null) await gate.future;
+    return labelMatch;
+  }
+
+  @override
+  Future<OnlineSearchResult> searchOnline(
+    String query, {
+    CatalogLocale locale = CatalogLocale.en,
+  }) async =>
+      const OnlineSearchResult(candidates: [], status: OnlineSearchStatus.ok);
 
   @override
   Future<WineCandidate?> lookupBarcode(String code) async => null;
@@ -373,6 +401,7 @@ void registerCellarFallbacks() {
   registerFallbackValue(cellarWine('fallback'));
   registerFallbackValue(drinkRecord('fallback'));
   registerFallbackValue(WineEstimate.none);
+  registerFallbackValue(windowOf(2020, 2024, 2030));
   registerFallbackValue(DrinkCondition.justRight);
   registerFallbackValue(DateTime(2026));
   registerFallbackValue(RecordsSource.serverOrCache);

@@ -3,6 +3,10 @@ import 'package:estimation/estimation.dart';
 import 'firestore_values.dart';
 import 'quantity.dart';
 import 'window_adjuster.dart';
+import 'window_override.dart';
+import 'wine_origins.dart';
+
+export 'window_override.dart';
 
 /// Field names of `cellars/{cellarId}/wines/{wineId}` (C3).
 abstract final class WineFields {
@@ -23,6 +27,15 @@ abstract final class WineFields {
   static const String matchKey = 'matchKey';
   static const String baseWindow = 'baseWindow';
   static const String windowAdjustment = 'windowAdjustment';
+
+  /// Compatible addition of ux-redesign (FR1.5): ISO 3166-1 alpha-2 code,
+  /// optional.
+  static const String country = 'country';
+
+  /// Compatible additions of label-autofill-windows (ENT-001): the level
+  /// (`everyday`, `good`, `aging`) and the manual end of the window.
+  static const String level = 'level';
+  static const String windowOverride = 'windowOverride';
 }
 
 /// Field names of the `window` map of a wine (C3 `DrinkingWindow`).
@@ -34,6 +47,11 @@ abstract final class WindowFields {
   static const String source = 'source';
   static const String basis = 'basis';
   static const String qualifier = 'qualifier';
+
+  /// label-autofill-windows ENT-002: the table row used and the version of
+  /// the tables (BR3.9).
+  static const String denominationKey = 'denominationKey';
+  static const String tablesVersion = 'tablesVersion';
 }
 
 /// Field names of the `pairings` map of a wine (C3 `Pairings`).
@@ -60,6 +78,7 @@ class Wine {
     this.wineType,
     this.region,
     this.denomination,
+    this.country,
     this.window,
     this.baseWindow,
     this.windowAdjustment,
@@ -68,6 +87,8 @@ class Wine {
     this.createdAt,
     this.updatedAt,
     this.updatedBy,
+    this.level,
+    this.windowOverride,
   });
 
   /// Builds a wine from document data. Never throws: a malformed field falls
@@ -83,6 +104,7 @@ class Wine {
     wineType: FirestoreValues.string(data[WineFields.wineType]),
     region: FirestoreValues.string(data[WineFields.region]),
     denomination: FirestoreValues.string(data[WineFields.denomination]),
+    country: _countryFrom(data[WineFields.country]),
     window: windowFrom(data[WineFields.window]),
     baseWindow: windowFrom(data[WineFields.baseWindow]),
     windowAdjustment: WindowAdjustment.fromMap(
@@ -93,6 +115,8 @@ class Wine {
     createdAt: FirestoreValues.dateTime(data[WineFields.createdAt]),
     updatedAt: FirestoreValues.dateTime(data[WineFields.updatedAt]),
     updatedBy: FirestoreValues.string(data[WineFields.updatedBy]),
+    level: WineLevel.tryParse(data[WineFields.level]),
+    windowOverride: WindowOverride.fromMap(data[WineFields.windowOverride]),
   );
 
   /// Converts a stored `window` into a [DrinkingWindow], or `null` ("to
@@ -127,11 +151,19 @@ class Wine {
         _byName(EstimationBasis.values, raw[WindowFields.basis]),
       ),
       qualifier: _byName(Qualifier.values, raw[WindowFields.qualifier]),
+      denominationKey: _key(raw[WindowFields.denominationKey]),
+      tablesVersion: FirestoreValues.integer(raw[WindowFields.tablesVersion]),
     );
   }
 
+  static String? _key(Object? raw) {
+    final key = FirestoreValues.string(raw);
+    return key == null || key.isEmpty || key.length > 60 ? null : key;
+  }
+
   /// The stored form of [window], accepted by `validWindow` of the rules
-  /// (security-design.md §1): `qualifier` only when present.
+  /// (security-design.md §1): `qualifier`, `denominationKey` and
+  /// `tablesVersion` only when present.
   static Map<String, Object> windowToMap(DrinkingWindow window) => {
     WindowFields.startYear: window.startYear,
     WindowFields.peakYear: window.peakYear,
@@ -141,6 +173,10 @@ class Wine {
     WindowFields.basis: window.basis.name,
     if (window.qualifier != null)
       WindowFields.qualifier: window.qualifier!.name,
+    if (window.denominationKey != null)
+      WindowFields.denominationKey: window.denominationKey!,
+    if (window.tablesVersion != null)
+      WindowFields.tablesVersion: window.tablesVersion!,
   };
 
   /// Converts a stored `pairings` map, or `null` when it is not one.
@@ -174,6 +210,12 @@ class Wine {
     PairingsFields.source: pairings.source.name,
   };
 
+  /// A stored `country`, or `null` when it is not an ISO 3166-1 code.
+  static String? _countryFrom(Object? raw) {
+    final code = FirestoreValues.string(raw);
+    return WineOrigins.isCountryCode(code) ? code : null;
+  }
+
   static T? _byName<T extends Enum>(List<T> values, Object? raw) {
     if (raw is! String) return null;
     for (final value in values) {
@@ -198,6 +240,13 @@ class Wine {
   final String? region;
   final String? denomination;
 
+  /// ISO 3166-1 alpha-2 code (FR1.5); `null` for wines saved without one.
+  final String? country;
+
+  /// The country shown for this wine: [country], else Italy when [region]
+  /// is an Italian region (review R-06); the document is not rewritten.
+  String? get displayCountry => WineOrigins.effectiveCountry(country, region);
+
   /// Effective drinking window (base estimate plus the drink feedback,
   /// BR1.12); `null` while the wine is not estimated yet or when the stored
   /// window is malformed. Cellar and Dashboard read this one.
@@ -219,6 +268,12 @@ class Wine {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final String? updatedBy;
+
+  /// The level saved (FR4); `null` is "not chosen", estimated as good.
+  final WineLevel? level;
+
+  /// The owner's "Recommended until" (FR5); `null` without a correction.
+  final WindowOverride? windowOverride;
 
   /// Quantity for display, never below 0 (ADR-004).
   int get quantity => displayQuantity(storedQuantity);

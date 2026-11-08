@@ -30,10 +30,14 @@ class RejectedImage extends PrepareResult {
 
 /// A share waiting to be read ("Condividi -> Vinoozy", BR1.4).
 class SharedImageNotice {
-  const SharedImageNotice({required this.multiple});
+  const SharedImageNotice({required this.multiple, this.isText = false});
 
   /// Several images were shared: only the first one is used.
   final bool multiple;
+
+  /// A text shared by Google Lens (label-autofill-windows FR2.1), read with
+  /// [SharedImageChannel.readSharedText].
+  final bool isText;
 }
 
 /// The label channel with `MainActivity` (logical-components.md).
@@ -83,6 +87,11 @@ class SharedImageChannel {
 
   Future<void> discardShare() => _channel.invokeMethod<void>('discardShare');
 
+  /// The shared text, taken out once (label-autofill-windows FR2.1); `null`
+  /// when the pending share is not a text. Kept in memory only (BR2.3).
+  Future<String?> readSharedText() =>
+      _channel.invokeMethod<String>('readSharedText');
+
   Future<bool> openSettings() async =>
       await _channel.invokeMethod<bool>('openSettings') ?? false;
 
@@ -93,7 +102,10 @@ class SharedImageChannel {
 
   static SharedImageNotice? _noticeOf(Object? value) {
     if (value is! Map) return null;
-    return SharedImageNotice(multiple: value['multiple'] == true);
+    return SharedImageNotice(
+      multiple: value['multiple'] == true,
+      isText: value['kind'] == 'text',
+    );
   }
 
   static PrepareResult _resultOf(Object? value) {

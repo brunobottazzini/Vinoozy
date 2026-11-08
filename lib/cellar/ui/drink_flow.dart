@@ -9,13 +9,17 @@ import '../cellar_providers.dart';
 import '../data/drinking_record_repository.dart';
 import '../domain/drinking_record.dart';
 import '../domain/wine.dart';
+import 'drink_confirm_sheet.dart';
 import 'drink_snack_bar.dart';
 import 'drinking_record_sheet.dart';
 
-/// "Drunk" from a row or from the detail (BR1.10): the drink is saved on the
-/// phone, then the message offers "Undo" and "Add rating and notes". The
-/// services are read before any wait, so the message keeps working after
-/// the screen that started it is closed (a wine at 0 leaves the list).
+/// "I drank one" from a card or from the detail (BR1.10; ux-redesign FR2.2,
+/// FR2.3): the confirmation sheet opens first and nothing is written until
+/// "Yes, I drank it"; then the drink, with the optional rating, is saved on
+/// the phone in one write and the message offers "Undo" and "Add rating and
+/// notes". The services are read before any wait, so the message keeps
+/// working after the screen that started it is closed (a wine at 0 leaves
+/// the list).
 Future<void> drinkWithUndo(
   BuildContext context,
   WidgetRef ref, {
@@ -35,7 +39,15 @@ Future<void> drinkWithUndo(
     cellarId: cellar.cellarId,
     wineIds: [wine.id],
   );
-  final outcome = await actions.drink(cellar: cellar, user: user, wine: wine);
+  final confirmation = await DrinkConfirmSheet.show(context, wine);
+  // "Cancel", back or a tap outside: no write at all (FR2.2).
+  if (confirmation == null) return;
+  final outcome = await actions.drink(
+    cellar: cellar,
+    user: user,
+    wine: wine,
+    rating: confirmation.rating,
+  );
   if (outcome is! DrinkAccepted) {
     messenger.showSnackBar(
       SnackBar(key: const Key('drink-failed'), content: Text(l10n.saveFailed)),
@@ -49,6 +61,7 @@ Future<void> drinkWithUndo(
     wineName: wine.name,
     vintage: wine.vintage,
     drankOn: dateOnly(clock.now()),
+    rating: confirmation.rating,
     recordedBy: user.uid,
   );
   DrinkSnackBar.showWith(

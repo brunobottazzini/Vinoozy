@@ -1,0 +1,175 @@
+{
+  "stage": "nfr-requirements",
+  "upstream_ids": [
+    "NFR1",
+    "NFR2",
+    "NFR3",
+    "NFR4",
+    "NFR5",
+    "NFR6",
+    "NFR1.1",
+    "NFR1.2",
+    "NFR1.3",
+    "NFR1.4",
+    "NFR1.5",
+    "NFR3.1",
+    "NFR3.2",
+    "NFR3.3",
+    "NFR5.1",
+    "NFR5.2",
+    "NFR5.3",
+    "NFR5.4",
+    "NFR5.5",
+    "FR2.8",
+    "FR7.3",
+    "FR7.5",
+    "FR7.6",
+    "FR7.7",
+    "FR7.8",
+    "FR7.9",
+    "NFR5.8",
+    "NFR5.9"
+  ],
+  "coverage": [
+    {
+      "id": "NFR1",
+      "status": "OK",
+      "target": "NFR1.1, NFR1.2, NFR1.3, NFR1.4, NFR1.5, NFR1.6"
+    },
+    {
+      "id": "NFR2",
+      "status": "OK",
+      "target": "NFR2.1, NFR2.2"
+    },
+    {
+      "id": "NFR3",
+      "status": "OK",
+      "target": "NFR3.1, NFR3.2, NFR3.3, NFR3.4, NFR3.5, NFR3.6, NFR3.7"
+    },
+    {
+      "id": "NFR4",
+      "status": "OK",
+      "target": "NFR4.1, NFR4.2, NFR4.3, NFR4.4, NFR4.5, NFR4.6, NFR4.7, NFR4.8, NFR4.8a, NFR4.9, NFR4.10, NFR4.11, NFR4.12, NFR4.13, NFR4.14, NFR4.15, NFR4.16"
+    },
+    {
+      "id": "NFR5",
+      "status": "OK",
+      "target": "NFR5.1, NFR5.2, NFR5.3, NFR5.4, NFR5.5, NFR5.6, NFR5.7"
+    },
+    {
+      "id": "NFR6",
+      "status": "OK",
+      "target": "NFR6.1"
+    },
+    {
+      "id": "NFR1.1",
+      "status": "OK",
+      "target": "NFR1.1"
+    },
+    {
+      "id": "NFR1.2",
+      "status": "OK",
+      "target": "NFR1.2"
+    },
+    {
+      "id": "NFR1.3",
+      "status": "OK",
+      "target": "NFR1.3"
+    },
+    {
+      "id": "NFR1.4",
+      "status": "OK",
+      "target": "NFR1.4"
+    },
+    {
+      "id": "NFR1.5",
+      "status": "OK",
+      "target": "NFR1.5"
+    },
+    {
+      "id": "NFR3.1",
+      "status": "OK",
+      "target": "NFR3.1"
+    },
+    {
+      "id": "NFR3.2",
+      "status": "OK",
+      "target": "NFR3.2"
+    },
+    {
+      "id": "NFR3.3",
+      "status": "OK",
+      "target": "NFR3.3"
+    },
+    {
+      "id": "NFR5.1",
+      "status": "OK",
+      "target": "NFR5.1"
+    },
+    {
+      "id": "NFR5.2",
+      "status": "OK",
+      "target": "NFR5.2"
+    },
+    {
+      "id": "NFR5.3",
+      "status": "OK",
+      "target": "NFR5.3"
+    },
+    {
+      "id": "NFR5.4",
+      "status": "OK",
+      "target": "NFR5.4"
+    },
+    {
+      "id": "NFR5.5",
+      "status": "OK",
+      "target": "NFR5.5"
+    },
+    {
+      "id": "FR2.8",
+      "status": "OK",
+      "target": "NFR4.17, NFR4.18, NFR4.21, NFR4.23, NFR4.24"
+    },
+    {
+      "id": "FR7.3",
+      "status": "OK",
+      "target": "NFR4.19"
+    },
+    {
+      "id": "FR7.5",
+      "status": "OK",
+      "target": "NFR3.9"
+    },
+    {
+      "id": "FR7.6",
+      "status": "OK",
+      "target": "NFR4.20"
+    },
+    {
+      "id": "FR7.7",
+      "status": "OK",
+      "target": "NFR4.22"
+    },
+    {
+      "id": "FR7.8",
+      "status": "OK",
+      "target": "NFR6.2"
+    },
+    {
+      "id": "FR7.9",
+      "status": "OK",
+      "target": "NFR3.8"
+    },
+    {
+      "id": "NFR5.8",
+      "status": "OK",
+      "target": "NFR5.10, NFR4.22"
+    },
+    {
+      "id": "NFR5.9",
+      "status": "OK",
+      "target": "NFR5.10, NFR4.17"
+    }
+  ]
+}

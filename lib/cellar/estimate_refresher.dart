@@ -106,10 +106,13 @@ class EstimateRefresher {
         producer: wine.producer,
         vintage: wine.vintage,
       );
+      // label-autofill-windows BR4.5: the level (in the input) and the
+      // owner's correction survive the refinement.
       final refined = _estimator.refine(
         input,
         profile,
         adjustment: wine.windowAdjustment,
+        override: wine.windowOverride,
       );
       if (refined.window == null || refined == WineEstimate.of(wine)) {
         return false;

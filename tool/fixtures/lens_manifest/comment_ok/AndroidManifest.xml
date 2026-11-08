@@ -1,0 +1,29 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Review R-05: a comment with ">" inside. Before the Lens work the
+         provider was <provider android:name="androidx.core.content.FileProvider"
+         android:exported="true"> and the queries were
+         <queries><package android:name="com.example.commented"/></queries>.
+         None of this is active: the check must pass. -->
+    <application android:label="Fixture">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.labelfiles"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/label_file_paths" />
+        </provider>
+    </application>
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+        <package android:name="com.google.android.googlequicksearchbox"/>
+        <intent>
+            <action android:name="android.intent.action.SEND"/>
+            <data android:mimeType="image/*"/>
+        </intent>
+    </queries>
+</manifest>

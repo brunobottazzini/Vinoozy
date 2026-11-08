@@ -15,6 +15,17 @@ sealed class PendingShare {
 
     /** Refused at reception; Dart shows "unreadable" with label_pick_failed. */
     data class Refused(val code: String, override val multiple: Boolean) : PendingShare()
+
+    /**
+     * Text shared by Google Lens (label-autofill-windows FR2.1, BR2.3): in
+     * memory only, at most [SharedImageReceiver.MAX_TEXT_CHARS] characters,
+     * never written to a file nor logged. Its string form hides it.
+     */
+    class Text(val text: String) : PendingShare() {
+        override val multiple: Boolean get() = false
+
+        override fun toString(): String = "Text(${text.length} chars)"
+    }
 }
 
 /**
@@ -38,6 +49,20 @@ class SharedImageReceiver(
 ) {
     companion object {
         const val COPY_CHUNK_BYTES = 64 * 1024
+
+        /** The longest shared text kept (label-autofill-windows BR2.3). */
+        const val MAX_TEXT_CHARS = 4000
+
+        /** [text] cut to [MAX_TEXT_CHARS], never in the middle of a pair. */
+        fun clampText(text: String): String {
+            if (text.length <= MAX_TEXT_CHARS) return text
+            val end = if (Character.isHighSurrogate(text[MAX_TEXT_CHARS - 1])) {
+                MAX_TEXT_CHARS - 1
+            } else {
+                MAX_TEXT_CHARS
+            }
+            return text.substring(0, end)
+        }
     }
 
     @Volatile
@@ -69,8 +94,21 @@ class SharedImageReceiver(
     fun onNewIntent(intent: Intent?, replaceIntent: (Intent) -> Unit): Boolean =
         take(intent, replaceIntent)
 
-    /** What Dart sees of the pending share: only whether there were several images. */
-    fun pendingInfo(): Map<String, Boolean>? = pending?.let { mapOf("multiple" to it.multiple) }
+    /**
+     * What Dart sees of the pending share: whether there were several images
+     * and, since label-autofill-windows, whether it is a text; never the
+     * text itself, read only by [takeText].
+     */
+    fun pendingInfo(): Map<String, Any>? = pending?.let {
+        mapOf("multiple" to it.multiple, "kind" to if (it is PendingShare.Text) "text" else "image")
+    }
+
+    /** The shared text, taken out once; `null` when the share is not a text. */
+    fun takeText(): String? {
+        val share = pending as? PendingShare.Text ?: return null
+        pending = null
+        return share.text
+    }
 
     /** Drops the reference (no sign-in, no permission, expired, replaced). */
     fun discard() {
@@ -84,15 +122,24 @@ class SharedImageReceiver(
     fun read(share: PendingShare): PrepareResult = when (share) {
         is PendingShare.Refused -> PrepareResult.Rejected(share.code)
         is PendingShare.Image -> copyAndPrepare(share.uri)
+        // A text is read by takeText, never prepared as an image.
+        is PendingShare.Text -> PrepareResult.Rejected(RejectCode.TYPE)
     }
 
     private fun take(intent: Intent?, replaceIntent: (Intent) -> Unit): Boolean {
         if (intent == null || !isShare(intent)) return false
         replaceIntent(Intent())
+        val type = intent.type
+        if (intent.action == Intent.ACTION_SEND && type == "text/plain") {
+            // label-autofill-windows FR2.1: only the text extra, cut at once;
+            // an empty text is kept so Dart can say "No text received".
+            val text = intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString() ?: ""
+            pending = PendingShare.Text(clampText(text))
+            return true
+        }
         val uris = streamsOf(intent)
         val multiple = uris.size > 1
         val first = uris.firstOrNull()
-        val type = intent.type
         pending = when {
             type == null || !type.startsWith("image/") -> PendingShare.Refused(RejectCode.TYPE, multiple)
             first == null || first.scheme != ContentResolver.SCHEME_CONTENT ->

@@ -1,0 +1,271 @@
+<title>Vinoozy etichette</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Serif:opsz,wght@8..144,600;8..144,700&display=swap">
+<style>
+/* Layout: a contact sheet of phone screens, each labelled with the requirement it shows. */
+:root{
+  --page:#efe9e4; --ink:#2a1d20; --muted:#6b5a5d; --rule:#d8ccc6;
+  --bordeaux:#7a1f32; --bordeaux-ink:#ffffff; --oro:#9a6b12; --oro-soft:#f3e3bf;
+  --crema:#fbf6ee; --card:#ffffff; --surface2:#f3ebe1;
+  --red:#8e1b2c; --white:#c9a227; --rose:#d4687c; --spark:#7f8f3a; --sweet:#a8642a;
+  --now:#2f6b3a; --now-bg:#dcefdc; --wait:#7a5a0f; --wait-bg:#f6e7c4; --past:#8e2b2b; --past-bg:#f7dada;
+  --phone-edge:#1b1416;
+  --display:"Roboto Serif",Georgia,serif; --body:Roboto,"Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --page:#151012; --ink:#f2e8e4; --muted:#bfaeae; --rule:#3a2c30;
+  --crema:#1d1517; --card:#2a1f22; --surface2:#33262a; --oro-soft:#4a3a1c;
+  --now-bg:#1f3a24; --now:#a9dcae; --wait-bg:#46391a; --wait:#f0d48a; --past-bg:#4a2223; --past:#f3b2b2;
+  --phone-edge:#000; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --page:#151012; --ink:#f2e8e4; --muted:#bfaeae; --rule:#3a2c30;
+  --crema:#1d1517; --card:#2a1f22; --surface2:#33262a; --oro-soft:#4a3a1c;
+  --now-bg:#1f3a24; --now:#a9dcae; --wait-bg:#46391a; --wait:#f0d48a; --past-bg:#4a2223; --past:#f3b2b2;
+  --phone-edge:#000; color-scheme:dark}
+body{background:var(--page);color:var(--ink);font-family:var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.intro{max-width:880px;margin:0 auto 28px}
+.intro h1{font-family:var(--display);font-size:2rem;margin:0 0 8px;text-wrap:balance}
+.intro p{color:var(--muted);line-height:1.5;margin:0;max-width:65ch}
+.sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:32px;max-width:1240px;margin:0 auto}
+figure{margin:0;display:grid;gap:10px;justify-items:center}
+figcaption{max-width:320px;font-size:.85rem;color:var(--muted);line-height:1.45}
+figcaption b{color:var(--ink);display:block;font-size:.95rem;margin-bottom:2px}
+.phone{width:300px;max-width:100%;height:620px;border:10px solid var(--phone-edge);border-radius:34px;background:var(--crema);overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(40,10,15,.18)}
+.status{height:22px;flex:none}
+.appbar{display:flex;align-items:center;justify-content:space-between;padding:6px 16px 10px;flex:none}
+.appbar h2{font-family:var(--display);font-size:1.35rem;margin:0;color:var(--bordeaux)}
+.appbar .sub{font-size:.75rem;color:var(--muted)}
+.scroll{flex:1;overflow:hidden;padding:0 12px;display:flex;flex-direction:column;gap:10px}
+.nav{flex:none;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule);background:var(--card);padding:6px 0 10px}
+.nav span{display:grid;justify-items:center;font-size:.68rem;color:var(--muted);gap:2px}
+.nav span.on{color:var(--bordeaux);font-weight:700}
+.nav i{font-style:normal;font-size:1.15rem}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:.72rem;padding:5px 10px;border-radius:999px;background:var(--card);border:1px solid var(--rule)}
+.chip.sel{background:var(--bordeaux);color:var(--bordeaux-ink);border-color:var(--bordeaux)}
+.search{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:9px 12px;font-size:.8rem;color:var(--muted)}
+/* wine card */
+.wine{display:grid;grid-template-columns:6px 1fr;background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--rule)}
+.wine .band{background:var(--c)}
+.wine .in{padding:10px 12px;display:grid;gap:6px}
+.row1{display:flex;align-items:flex-start;gap:8px}
+.flag{font-size:1.25rem;line-height:1}
+.name{font-weight:700;font-size:.92rem;line-height:1.2}
+.meta{font-size:.72rem;color:var(--muted)}
+.row2{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.state{font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:999px}
+.now{background:var(--now-bg);color:var(--now)} .wait{background:var(--wait-bg);color:var(--wait)} .past{background:var(--past-bg);color:var(--past)}
+.bottles{font-size:.78rem;font-weight:700;font-variant-numeric:tabular-nums}
+.drink{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;background:var(--oro-soft);color:var(--ink);font-weight:700;font-size:.75rem;border:1px solid var(--oro)}
+.type{display:inline-flex;align-items:center;gap:4px;font-size:.68rem;color:var(--muted)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--c);display:inline-block}
+.fab{position:absolute;right:16px;bottom:74px;background:var(--bordeaux);color:var(--bordeaux-ink);border-radius:16px;padding:12px 16px;font-weight:700;font-size:.85rem;box-shadow:0 6px 16px rgba(122,31,50,.35)}
+.banner{background:#3a2a2e;color:#fff;font-size:.72rem;padding:7px 12px;border-radius:10px}
+/* form */
+label.f{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.field{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:9px 12px;font-size:.85rem}
+.countries{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.country{display:grid;justify-items:center;gap:2px;background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:7px 2px;font-size:.62rem;text-align:center}
+.country b{font-size:1.4rem;line-height:1.1}
+.country.sel{border:2px solid var(--bordeaux);background:var(--surface2)}
+.btn{background:var(--bordeaux);color:var(--bordeaux-ink);border-radius:14px;padding:12px;text-align:center;font-weight:700;font-size:.9rem}
+.btn.ghost{background:transparent;color:var(--bordeaux);border:1px solid var(--bordeaux)}
+/* sheet */
+.dim{position:absolute;inset:0;background:rgba(20,8,10,.45)}
+.bottom{position:absolute;left:0;right:0;bottom:0;background:var(--card);border-radius:22px 22px 0 0;padding:14px 18px 22px;display:grid;gap:12px}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--rule);justify-self:center}
+.stars{font-size:1.6rem;letter-spacing:6px;color:var(--oro)}
+.count{display:flex;align-items:center;gap:10px;font-variant-numeric:tabular-nums}
+.count .big{font-family:var(--display);font-size:1.8rem;font-weight:700}
+/* dashboard */
+.tile{background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:12px;display:grid;gap:8px}
+.tile h3{margin:0;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.hero{background:var(--bordeaux);color:var(--bordeaux-ink);border-radius:16px;padding:14px;display:grid;gap:4px}
+.hero .n{font-family:var(--display);font-size:2.2rem;font-weight:700;line-height:1}
+.bar{display:grid;grid-template-columns:76px 1fr 26px;align-items:center;gap:6px;font-size:.72rem}
+.bar .t{height:10px;border-radius:5px;background:var(--surface2);overflow:hidden}
+.bar .t i{display:block;height:100%;background:var(--c)}
+.bar .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.detail-hero{background:linear-gradient(180deg,var(--c) 0 64px,var(--card) 64px);border-radius:16px;border:1px solid var(--rule);padding:12px;display:grid;gap:6px}
+.detail-hero .flagbig{font-size:2rem;background:var(--card);border-radius:12px;width:48px;height:48px;display:grid;place-items:center;border:1px solid var(--rule)}
+.window{height:14px;border-radius:7px;background:linear-gradient(90deg,var(--wait-bg) 0 30%,var(--now-bg) 30% 75%,var(--past-bg) 75%);position:relative}
+.window::after{content:"";position:absolute;left:52%;top:-3px;width:3px;height:20px;background:var(--ink);border-radius:2px}
+.legend{display:flex;justify-content:space-between;font-size:.62rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.notes{max-width:880px;margin:36px auto 0;display:grid;gap:10px;line-height:1.5}
+.notes h2{font-family:var(--display);margin:0;font-size:1.3rem}
+.notes ul{margin:0;padding-left:1.1rem;color:var(--muted)}
+.dark{--crema:#1d1517;--card:#2a1f22;--surface2:#33262a;--ink:#f2e8e4;--muted:#bfaeae;--rule:#3a2c30;--oro-soft:#4a3a1c;--now-bg:#1f3a24;--now:#a9dcae;--wait-bg:#46391a;--wait:#f0d48a;--past-bg:#4a2223;--past:#f3b2b2;--bordeaux:#d9768a;--bordeaux-ink:#2a1015;color:var(--ink)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<header class="intro">
+  <h1>Vinoozy, riconoscimento etichette</h1>
+  <p>Mockup del nuovo riconoscimento: fronte e retro, base dei vini sul telefono, candidati da scegliere, ricerca online e Google Lens come ultima possibilità. I vini sono esempi. Stile e colori sono quelli della nuova UX già approvata.</p>
+</header>
+
+<main class="sheet">
+
+<!-- 1 Ora il retro -->
+<figure>
+<div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Etichetta</h2><div class="sub">Fronte letto ✓</div></div><span aria-hidden="true">✕</span></div>
+  <div class="scroll">
+    <div class="tile" style="text-align:center">
+      <div style="font-size:3rem" aria-hidden="true">🍾</div>
+      <div class="name" style="font-size:1.1rem">Ora il retro</div>
+      <div class="meta">Sul retro di solito ci sono il codice a barre, il produttore e l'annata: aiutano a trovare il vino.</div>
+    </div>
+    <div class="btn">📷 Scatta il retro</div>
+    <div class="btn ghost">🖼 Scegli dalla galleria</div>
+    <div class="btn ghost" style="border-color:var(--rule);color:var(--muted)">Salta</div>
+  </div>
+</div>
+<figcaption><b>"Ora il retro"</b>FR1.1. Dopo il fronte l'app chiede subito il retro. "Salta" è sempre visibile e porta all'esito con il solo fronte. Vale anche per le foto prese dalla galleria o arrivate con "Condividi → Vinoozy".</figcaption>
+</figure>
+
+<!-- 2 Lettura -->
+<figure>
+<div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Etichetta</h2><div class="sub">Lettura in corso</div></div></div>
+  <div class="scroll">
+    <div class="tile">
+      <div class="row2"><span>Fronte</span><span class="state now">Letto ✓</span></div>
+      <div class="row2"><span>Retro</span><span class="state now">Letto ✓</span></div>
+      <div class="row2"><span>Codice a barre</span><span class="state now">Trovato sul retro</span></div>
+      <div class="row2"><span>Base dei vini sul telefono</span><span class="state wait">Cerco…</span></div>
+    </div>
+    <div class="meta">Tutto avviene sul telefono: le foto non vengono inviate a nessuno.</div>
+  </div>
+</div>
+<figcaption><b>Lettura di fronte e retro</b>FR1.2, FR2.4. Le due foto vengono lette sul telefono e il testo viene unito. Il codice a barre può trovarsi su una delle due. Prima si cerca nella base dei vini sul telefono, che funziona anche senza rete.</figcaption>
+</figure>
+
+<!-- 3 Proposta sicura -->
+<figure>
+<div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Trovato</h2><div class="sub">Dalla base sul telefono · offline</div></div></div>
+  <div class="scroll">
+    <article class="wine" style="--c:var(--red)"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag" role="img" aria-label="Italia">🇮🇹</span><div><div class="name">Barolo DOCG Ravera 2016</div><div class="meta">Elvio Cogno · Piemonte</div></div></div>
+      <div class="row2"><span class="type"><span class="dot"></span>Rosso</span><span class="meta">Codice 8 012345 678905</span></div>
+    </div></article>
+    <div class="btn">Conferma e aggiungi</div>
+    <div class="btn ghost">Non è questo</div>
+    <div class="meta" style="font-size:.66rem">Dati da Open Food Facts, licenza ODbL</div>
+  </div>
+</div>
+<figcaption><b>Proposta sicura</b>FR2.3, FR2.5. Quando il codice a barre o il testo corrispondono con certezza a un solo vino, l'app lo propone. "Non è questo" porta alla lista dei candidati e alle altre strade. L'attribuzione di Open Food Facts è sempre visibile.</figcaption>
+</figure>
+
+<!-- 4 Candidati -->
+<figure>
+<div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Quale di questi?</h2><div class="sub">3 vini simili</div></div></div>
+  <div class="scroll">
+    <article class="wine" style="--c:var(--red)"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag">🇮🇹</span><div><div class="name">Barbaresco DOCG 2019</div><div class="meta">Produttori del Barbaresco · Piemonte</div></div></div>
+      <div class="row2"><span class="chip">offline</span><span class="meta">annata 2019</span></div>
+    </div></article>
+    <article class="wine" style="--c:var(--red)"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag">🇮🇹</span><div><div class="name">Barbaresco Riserva Asili</div><div class="meta">Produttori del Barbaresco</div></div></div>
+      <div class="row2"><span class="chip">online</span><span class="meta">senza annata</span></div>
+    </div></article>
+    <article class="wine" style="--c:var(--red)"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag">🇮🇹</span><div><div class="name">Barbaresco</div><div class="meta">produttore non indicato</div></div></div>
+      <div class="row2"><span class="chip">online</span><span class="meta">solo il nome</span></div>
+    </div></article>
+    <div class="btn ghost">Nessuno di questi</div>
+    <div class="meta" style="font-size:.66rem">Dati da Open Food Facts, licenza ODbL</div>
+  </div>
+</div>
+<figcaption><b>Candidati da scegliere</b>FR3.2, FR3.3. Quando più vini sono simili, l'app non sceglie più da sola: mostra fino a 10 candidati, segnati "offline" (base sul telefono) o "online" (Open Food Facts). Toccandone uno il modulo si compila con quello che c'è, anche se è solo il nome.</figcaption>
+</figure>
+
+<!-- 5 Non trovato -->
+<figure>
+<div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Non trovato</h2><div class="sub">Ho letto l'etichetta ma non riconosco il vino</div></div></div>
+  <div class="scroll">
+    <div class="tile"><h3>Testo letto</h3><div class="meta">CHÂTEAU MUSAR · 2015 · BEKAA VALLEY · LEBANON</div></div>
+    <div class="btn">🔎 Cerca online</div>
+    <div class="btn ghost">✍️ Scrivi a mano</div>
+    <div class="btn ghost" style="border-color:var(--rule);color:var(--muted)">Apri in Google Lens</div>
+    <div class="meta">Google Lens è l'ultima possibilità: la foto viene passata all'app Google solo se lo confermi.</div>
+  </div>
+</div>
+<figcaption><b>Quando non si trova nulla</b>FR3.1, FR4.1. Tre strade in ordine: "Cerca online" (Open Food Facts con i candidati), "Scrivi a mano" con il testo letto già pronto, e per ultima "Apri in Google Lens".</figcaption>
+</figure>
+
+<!-- 6 Ricerca online -->
+<figure>
+<div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Cerca online</h2><div class="sub">Open Food Facts · solo vini</div></div></div>
+  <div class="scroll">
+    <div class="search">🔎 Château Musar 2015</div>
+    <div class="row2"><span class="meta">Puoi cambiare le parole prima di cercare.</span><span class="drink">Cerca</span></div>
+    <div class="meta">2 risultati · online</div>
+    <article class="wine" style="--c:var(--red)"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag">🇱🇧</span><div><div class="name">Château Musar Rouge 2015</div><div class="meta">Château Musar · Bekaa Valley</div></div></div>
+      <div class="row2"><span class="chip">online</span><span class="meta">annata 2015</span></div>
+    </div></article>
+    <article class="wine" style="--c:var(--white)"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag">🇱🇧</span><div><div class="name">Château Musar Blanc</div><div class="meta">Château Musar</div></div></div>
+      <div class="row2"><span class="chip">online</span><span class="meta">senza annata</span></div>
+    </div></article>
+    <div class="meta" style="font-size:.66rem">Dati da Open Food Facts, licenza ODbL</div>
+    <div class="tile"><h3>Altri stati</h3>
+      <div class="meta">⏳ Cerco… (caricamento)</div>
+      <div class="meta">Nessun vino trovato: prova altre parole o "Scrivi a mano".</div>
+      <div class="banner" style="background:var(--wait-bg);color:var(--wait)">Senza rete: cerco solo nella base sul telefono.</div>
+      <div class="banner" style="background:var(--wait-bg);color:var(--wait)">Troppe ricerche: riprova tra qualche minuto.</div>
+    </div>
+  </div>
+</div>
+<figcaption><b>Ricerca online</b>FR3.2, FR3.4. Le parole più utili lette su fronte e retro sono già scritte e si possono cambiare. Senza rete la ricerca usa solo la base sul telefono e lo dice. Se si superano i limiti di Open Food Facts, un messaggio chiede di riprovare tra poco.</figcaption>
+</figure>
+
+<!-- 7 Conferma Lens -->
+<figure>
+<div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Non trovato</h2></div></div>
+  <div class="scroll"></div>
+  <div class="dim"></div>
+  <section class="bottom" aria-label="Apri in Google Lens">
+    <div class="grab"></div>
+    <div class="name" style="font-size:1.05rem">Apri in Google Lens?</div>
+    <div class="meta">La foto del fronte verrà passata all'app Google sul tuo telefono, che può conservarne una copia secondo le regole di Google. Vinoozy non riceve i risultati: torna qui per scegliere o scrivere il vino.</div>
+    <div class="btn">Apri Google Lens</div>
+    <div class="btn ghost">Annulla</div>
+  </section>
+</div>
+<figcaption><b>Conferma prima di Google Lens</b>FR4.2, FR4.3, NFR3. Ogni volta che si tocca "Apri in Google Lens" l'app chiede conferma, perché è l'unico caso in cui una foto lascia Vinoozy. Se l'app Google non c'è, si apre il menu "Condividi" del telefono.</figcaption>
+</figure>
+
+<!-- 8 Informazioni -->
+<figure>
+<div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Informazioni</h2></div></div>
+  <div class="scroll">
+    <div class="tile"><h3>Vinoozy</h3><div class="meta">Versione 0.1.0</div></div>
+    <div class="tile"><h3>Base dei vini sul telefono</h3>
+      <div class="row2"><span>Vini</span><span class="bottles">≈ 140.000</span></div>
+      <div class="row2"><span>Aggiornata al</span><span class="bottles">01/11/2026</span></div>
+      <div class="meta">Dati da Open Food Facts, licenza Open Database License (ODbL). I dati dei singoli prodotti sono sotto Database Contents License.</div>
+    </div>
+    <div class="tile"><h3>Privacy</h3><div class="meta">Le foto delle etichette restano sul telefono e si cancellano appena chiudi la schermata del risultato. Escono dal telefono solo se scegli e confermi "Apri in Google Lens": in quel caso la foto passa all'app Google, che può conservarne una copia.</div></div>
+  </div>
+</div>
+<figcaption><b>Schermata Informazioni</b>FR2.2, FR2.5. Nuova schermata raggiungibile dal menu del profilo. Mostra la data dei dati, la licenza e la nota sulla privacy delle foto. Il numero di vini è una stima d'esempio: quello vero si conosce dopo aver costruito la base.</figcaption>
+</figure>
+
+</main>

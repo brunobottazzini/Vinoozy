@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../account/app_user.dart';
+import '../../app/providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../sharing/sharing_providers.dart';
 import '../cellar_providers.dart';
+import '../domain/wine.dart';
 import 'drinking_record_sheet.dart';
 import 'wine_detail_screen.dart';
 
@@ -20,6 +22,23 @@ class HistoryScreen extends ConsumerWidget {
 
   static const int prefetchRows = 5;
 
+  /// The wines this phone already holds for [cellarId], by id (ux-redesign
+  /// plan, review Major 3): the shared listener of the wines still in the
+  /// cellar and, when the archive was opened, the finished ones. No new
+  /// Firestore read (NFR3): a drink whose wine is not here shows as before.
+  static Map<String, Wine> _winesById(WidgetRef ref, String cellarId) {
+    final archived = archivedWinesProvider(cellarId);
+    return {
+      if (ref.exists(archived))
+        for (final wine in ref.read(archived).value ?? const <Wine>[])
+          wine.id: wine,
+      for (final wine
+          in ref.watch(winesStreamProvider(cellarId)).value?.wines ??
+              const <Wine>[])
+        wine.id: wine,
+    };
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
@@ -27,6 +46,7 @@ class HistoryScreen extends ConsumerWidget {
     final provider = historyPagerProvider(cellar.cellarId);
     final history = ref.watch(provider);
     final pager = ref.read(provider.notifier);
+    final wines = _winesById(ref, cellar.cellarId);
     Widget body;
     if (history.records.isEmpty && history.loading) {
       body = const Center(
@@ -68,6 +88,7 @@ class HistoryScreen extends ConsumerWidget {
           return DrinkRecordTile(
             key: Key('history-tile-${record.id}'),
             record: record,
+            wine: wines[record.wineId],
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => WineDetailScreen(

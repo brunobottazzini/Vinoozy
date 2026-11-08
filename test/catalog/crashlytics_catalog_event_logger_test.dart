@@ -93,4 +93,85 @@ void main() {
     expect(lines.last, startsWith('catalog: off_suspended (network)'));
     verifyNever(() => crashlytics.log(any()));
   });
+
+  group('label-recognition events', () {
+    test('NFR4.13 the informative events stay on the console, never on '
+        'Crashlytics', () async {
+      final lines = <String>[];
+      final logger = CrashlyticsCatalogEventLogger(
+        crashlytics,
+        debugLogging: true,
+        sink: lines.add,
+      );
+      logger
+        ..wineDbOpened(17000, 840)
+        ..labelOutcome(LabelOutcomeKind.candidates, LabelMatchStep.offlineText)
+        ..onlineSearch(3, 7, limited: false)
+        ..lensOpened(LensRoute.chooser);
+      await settle();
+      expect(lines, [
+        'catalog: wine_db_opened (17000 wines, 840 ms)',
+        'catalog: label_outcome (candidates, offlineText)',
+        'catalog: online_search (3 offline, 7 online, limited: false)',
+        'catalog: lens_opened (chooser)',
+      ]);
+      verifyNever(() => crashlytics.setCustomKey(any(), any()));
+      verifyNever(
+        () => crashlytics.recordError(
+          any(),
+          any(),
+          reason: any(named: 'reason'),
+          fatal: any(named: 'fatal'),
+        ),
+      );
+    });
+
+    test('NFR4.15 wine_db_unavailable is one non-fatal error with the '
+        'reason and the skipped rows only', () async {
+      final logger = CrashlyticsCatalogEventLogger(
+        crashlytics,
+        debugLogging: false,
+      );
+      logger.wineDbUnavailable(WineDbFailure.corruptGzip, 4);
+      await settle();
+      verify(() => crashlytics.setCustomKey('wine_db_reason', 'corrupt_gzip'));
+      verify(() => crashlytics.setCustomKey('wine_db_skipped_rows', 4));
+      final captured = verify(
+        () => crashlytics.recordError(
+          captureAny(),
+          null,
+          reason: 'wine_db_unavailable',
+          fatal: false,
+        ),
+      ).captured;
+      expect(captured.single, isA<WineDbUnavailableEvent>());
+      expect(captured.single.toString(), 'wine_db_unavailable');
+      verifyNoMoreInteractions(crashlytics);
+    });
+
+    test(
+      'NFR4.15 a failing Crashlytics never throws for the database',
+      () async {
+        when(() => crashlytics.setCustomKey(any(), any()))
+            .thenAnswer((_) async => throw Exception('down'));
+        final logger = CrashlyticsCatalogEventLogger(
+          crashlytics,
+          debugLogging: false,
+        );
+        logger.wineDbUnavailable(WineDbFailure.missing, 0);
+        await settle();
+      },
+    );
+
+    test('NFR4.14 a console without debug logging prints nothing', () {
+      final lines = <String>[];
+      ConsoleCatalogEventLogger(debugLogging: false, sink: lines.add)
+        ..wineDbOpened(1, 1)
+        ..wineDbUnavailable(WineDbFailure.unexpected, 0)
+        ..labelOutcome(LabelOutcomeKind.noMatch, LabelMatchStep.none)
+        ..onlineSearch(0, 0, limited: true)
+        ..lensOpened(LensRoute.failed);
+      expect(lines, isEmpty);
+    });
+  });
 }

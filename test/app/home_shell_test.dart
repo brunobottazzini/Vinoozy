@@ -71,6 +71,22 @@ void main() {
     await tester.pumpAndSettle();
     expect(onScreen(CellarScreen), findsOneWidget);
     expect(find.byKey(const Key('cellar-wine-list')), findsOneWidget);
+    // ux-redesign R-11: the Cellar tab is the bottle, distinct icons for the
+    // three tabs; "Ho bevuto" keeps the glasses.
+    expect(
+      find.descendant(
+        of: find.byType(NavigationBar),
+        matching: find.byIcon(Icons.liquor),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(NavigationBar),
+        matching: find.byIcon(Icons.wine_bar),
+      ),
+      findsNothing,
+    );
 
     await tester.tap(find.byKey(const Key('home-nav-dashboard')));
     await tester.pumpAndSettle();

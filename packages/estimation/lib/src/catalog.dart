@@ -203,7 +203,7 @@ String normalizeWineText(String text) => tokenizeAll(text).join(' ');
 /// first and, on a tie, the first one in the text; `null` when none.
 /// Works on any length of text, such as the text read on a label.
 RecognizedDenomination? recognizeDenomination(String text) {
-  final recognized = recognizeWords(tokenizeAll(text));
+  final recognized = recognizeWords(tokenizeAll(text), catalogAliasIndex);
   if (recognized == null) return null;
   final label = denominationLabels[recognized.denominationKey];
   if (label == null) return null;

@@ -4,17 +4,26 @@
 // and barcode. No type here carries personal data, and the only exception the
 // module throws is [CatalogArgumentError], which carries a code and a fixed
 // message, never the rejected value (NFR4.5, NFR8.3).
+//
+// label-recognition (2026-11-07): the offline wine database is a new source,
+// candidates carry a country, matchLabelText became matchLabel (sure
+// proposal, candidates or nothing, BR3.1-BR3.4) and searchOnline serves
+// "Cerca online" (BR4.1-BR4.3).
 
 /// C1 `wineType` values.
 enum CatalogWineType { red, white, rose, sparkling, sweet }
 
-/// Where a proposal comes from (BR1.4 priority: cellar, internal, OFF).
+/// Where a proposal comes from (BR1.4 priority: cellar, offline database,
+/// internal, OFF; label-recognition BR3.3: the offline database wins over
+/// Open Food Facts).
 ///
-/// `openFoodFacts` proposals must be shown with the ODbL attribution (BR5.2).
+/// `offline` and `openFoodFacts` proposals must be shown with the ODbL
+/// attribution (BR5.2, label-recognition BR6.2).
 enum CandidateSource {
   cellar(0),
-  internal(1),
-  openFoodFacts(2);
+  internal(2),
+  openFoodFacts(3),
+  offline(1);
 
   const CandidateSource(this.rank);
 
@@ -56,6 +65,7 @@ class WineCandidate {
     this.region,
     this.denomination,
     this.barcode,
+    this.country,
   });
 
   /// 1 to 120 characters.
@@ -69,8 +79,13 @@ class WineCandidate {
   final String? denomination;
   final CandidateSource source;
 
-  /// 8 or 13 digits; only for [CandidateSource.openFoodFacts].
+  /// 8 or 13 digits; only for [CandidateSource.openFoodFacts] and
+  /// [CandidateSource.offline].
   final String? barcode;
+
+  /// ISO 3166-1 alpha-2 code of the country, when the source knows it
+  /// (offline database, label-recognition FR2.1).
+  final String? country;
 
   WineCandidate copyWith({int? vintage}) => WineCandidate(
     name: name,
@@ -81,6 +96,7 @@ class WineCandidate {
     region: region,
     denomination: denomination,
     barcode: barcode,
+    country: country,
   );
 
   /// Compact form stored in the catalog cache (short keys keep the worst
@@ -94,6 +110,7 @@ class WineCandidate {
     'r': ?region,
     'd': ?denomination,
     'b': ?barcode,
+    'c': ?country,
   };
 
   /// Reads the form written by [toJson]; `null` when [json] is not one,
@@ -113,6 +130,7 @@ class WineCandidate {
       region: _stringOrNull(json['r']),
       denomination: _stringOrNull(json['d']),
       barcode: _stringOrNull(json['b']),
+      country: _stringOrNull(json['c']),
     );
   }
 
@@ -126,7 +144,8 @@ class WineCandidate {
       other.region == region &&
       other.denomination == denomination &&
       other.source == source &&
-      other.barcode == barcode;
+      other.barcode == barcode &&
+      other.country == country;
 
   @override
   int get hashCode => Object.hash(
@@ -138,6 +157,7 @@ class WineCandidate {
     denomination,
     source,
     barcode,
+    country,
   );
 
   @override
@@ -207,29 +227,112 @@ class SuggestResult {
       'SuggestResult(${suggestions.length}, external: $externalIncluded)';
 }
 
-/// Answer of [WineCatalog.matchLabelText].
-class LabelMatch {
-  const LabelMatch.matched(WineCandidate this.candidate) : matched = true;
+/// The step of the lookup order that decided a label outcome
+/// (label-recognition BR3.1): `offlineBarcode` (1), `offlineText` (2),
+/// `internalDenomination` (3), `onlineBarcode` and `onlineText` (4), `none`
+/// (5, nothing found).
+enum LabelMatchStep {
+  offlineBarcode,
+  offlineText,
+  internalDenomination,
+  onlineBarcode,
+  onlineText,
+  none,
+}
 
-  const LabelMatch.none() : matched = false, candidate = null;
+/// Kind of a [LabelMatchResult] (label-recognition BR3.2).
+enum LabelMatchKind { sure, candidates, none }
 
-  final bool matched;
+/// Answer of [WineCatalog.matchLabel] (label-recognition BR3.1-BR3.3):
+/// - [LabelMatchKind.sure]: one wine is certain ([candidate]); the other
+///   candidates, if any, are kept in [candidates] for "Non è questo" (BR3.5);
+/// - [LabelMatchKind.candidates]: up to 10 similar wines, best first;
+/// - [LabelMatchKind.none]: nothing similar.
+///
+/// Nothing is ever saved without the user's confirmation.
+class LabelMatchResult {
+  const LabelMatchResult.sure(
+    WineCandidate this.candidate, {
+    required this.step,
+    this.candidates = const [],
+  }) : kind = LabelMatchKind.sure;
 
-  /// Present when [matched] is true. Never saved without the user's
-  /// confirmation (FR2.3, U6).
+  const LabelMatchResult.candidates(this.candidates, {required this.step})
+    : kind = LabelMatchKind.candidates,
+      candidate = null;
+
+  const LabelMatchResult.none()
+    : kind = LabelMatchKind.none,
+      candidate = null,
+      candidates = const [],
+      step = LabelMatchStep.none;
+
+  final LabelMatchKind kind;
+
+  /// The certain wine; only for [LabelMatchKind.sure].
   final WineCandidate? candidate;
+
+  /// The candidates, best first, without duplicates; for a sure result the
+  /// other candidates (the certain one excluded).
+  final List<WineCandidate> candidates;
+  final LabelMatchStep step;
 
   @override
   bool operator ==(Object other) =>
-      other is LabelMatch &&
-      other.matched == matched &&
-      other.candidate == candidate;
+      other is LabelMatchResult &&
+      other.kind == kind &&
+      other.candidate == candidate &&
+      other.step == step &&
+      _listEquals(other.candidates, candidates);
 
   @override
-  int get hashCode => Object.hash(matched, candidate);
+  int get hashCode =>
+      Object.hash(kind, candidate, step, Object.hashAll(candidates));
 
   @override
-  String toString() => 'LabelMatch(matched: $matched)';
+  String toString() =>
+      'LabelMatchResult(${kind.name}, ${candidates.length}, ${step.name})';
+}
+
+/// What "Cerca online" could do (label-recognition BR4.2, BR4.3).
+enum OnlineSearchStatus {
+  /// Offline and online results were asked.
+  ok,
+
+  /// No network: only the offline database was searched.
+  offline,
+
+  /// Open Food Facts is suspended, over its budget or it failed: only the
+  /// offline database was searched, and trying again later may work.
+  rateLimited,
+
+  /// Open Food Facts is off in this build (no contact, BR5.1): only the
+  /// offline database was searched, and trying again later will not help
+  /// (code-generation review R-03).
+  unavailable,
+}
+
+/// Answer of [WineCatalog.searchOnline].
+class OnlineSearchResult {
+  const OnlineSearchResult({required this.candidates, required this.status});
+
+  /// Offline results first, then online ones; at most 10, without
+  /// duplicates (BR3.3).
+  final List<WineCandidate> candidates;
+  final OnlineSearchStatus status;
+
+  @override
+  bool operator ==(Object other) =>
+      other is OnlineSearchResult &&
+      other.status == status &&
+      _listEquals(other.candidates, candidates);
+
+  @override
+  int get hashCode => Object.hash(status, Object.hashAll(candidates));
+
+  @override
+  String toString() =>
+      'OnlineSearchResult(${candidates.length}, ${status.name})';
 }
 
 /// C1 confidence of an external window.
@@ -327,7 +430,7 @@ class CatalogArgumentError extends ArgumentError {
     CatalogErrorCode.queryTooShort:
         'query shorter than 2 characters after normalisation',
     CatalogErrorCode.queryTooLong: 'query longer than 120 characters',
-    CatalogErrorCode.textTooLong: 'label text longer than 2000 characters',
+    CatalogErrorCode.textTooLong: 'label text longer than 4000 characters',
     CatalogErrorCode.invalidBarcode: 'barcode must have 8, 12 or 13 digits',
   };
 
@@ -356,9 +459,22 @@ abstract interface class WineCatalog {
     CatalogLocale locale = CatalogLocale.en,
   });
 
-  /// The wine matching the text read on a label (BR1.3).
-  Future<LabelMatch> matchLabelText(
+  /// The wine of a label (label-recognition BR3.1-BR3.4): the merged text
+  /// of front and back (at most 4000 characters) and the barcode read, if
+  /// any, through the lookup order offline barcode, offline text, internal
+  /// denomination and, only with a network and Open Food Facts on, online
+  /// barcode then text.
+  Future<LabelMatchResult> matchLabel(
     String text, {
+    String? barcode,
+    CatalogLocale locale = CatalogLocale.en,
+  });
+
+  /// "Cerca online" (label-recognition BR4.2, BR4.3): [query] is 1 to 120
+  /// characters of words or a barcode. Offline results first, then Open
+  /// Food Facts ones when possible.
+  Future<OnlineSearchResult> searchOnline(
+    String query, {
     CatalogLocale locale = CatalogLocale.en,
   });
 
