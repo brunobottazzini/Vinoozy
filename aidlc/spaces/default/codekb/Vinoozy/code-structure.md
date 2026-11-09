@@ -205,3 +205,74 @@ Working tree attuale, verificato in questa scansione.
 | `assets/wine_db/` | nuovo | `wines.jsonl.gz`, `manifest.json` (45 vini, `source: sample`), `LICENSE`, `README.md` |
 | `tool/build_wine_db.dart`, `tool/check_wine_db_release.sh`, `tool/check_lens_manifest.sh` | nuovi | Costruzione e controlli della base e del manifest (non letti) |
 
+Nota storica: le due tabelle precedenti riportano righe e contenuti di allora (per esempio `tables.dart` con 47 righe soltanto, `models.dart` con 3 qualificativi, base offline di 45 vini). Lo stato attuale è nella sezione seguente.
+
+## File di tipo, livello, stile e finestra (intent 261108-wine-style-profiles)
+
+Commit `baba947` più il working tree, verificato in questa scansione.
+
+### `packages/estimation/lib/src/`
+
+| File | Righe | Classificazione | Ruolo per tipo, livello e finestra |
+|---|---|---|---|
+| `models.dart` | 396 | Modello | `WineType` (8) con `tryParse` e `_catalogWineTypes`, `Qualifier` (14), `EstimationBasis` (con `grape`), `WineFacts` (con `level`), `DrinkingWindow` (con `denominationKey`, `tablesVersion`) |
+| `wine_level.dart` | 56 | Modello + regola | `WineLevel` con le percentuali e `apply` |
+| `tables.dart` | 843 | Dati `const` | `estimationTablesVersion = 2`, `YearOffsets`, `DenominationProfile` (tipo principale, `otherTypes`, `qualifierOffsets`, `weakAliases`, `templateKey`), `italianDenominationTable` (47), `typeTable` (8), `genericTypeProfile` (1/3/6), `denominationTable` (tabella unita) |
+| `italy_tables.dart` | 854 | Dati `const` | 149 righe italiane scritte a mano oltre alle 47 |
+| `france_tables.dart` | 849 | Dati `const` | 209 righe francesi |
+| `europe_tables.dart` | 832 | Dati `const` | 173 righe di Spagna, Portogallo, Germania, Austria, Svizzera e altri paesi europei, con i qualificativi di Rioja, Ribera, Mosel, Nahe, Pfalz |
+| `new_world_tables.dart` | 778 | Dati `const` | 146 righe del Nuovo Mondo |
+| `world_tables.dart` | 144 | Dati `const` | `worldDenominations`, `TemplateKeys`, `appellationTemplates` (9 modelli), `defaultGeneratedTypes` (`redLight`, `white`, `rose`) |
+| `generated/appellations.g.dart` | 1714 | Dati generati | 1700 righe in testo `key\|name\|country\|region\|model\|types\|aliases\|weak` |
+| `generated/appellations_manifest.json` | 11 | Metadati | 724 dedicate, 1700 generate, 2424 in tutto, 756 escluse, 1 senza tipo |
+| `appellations.dart` | 206 | Servizio | `parseGeneratedRow`, `buildDenominationTable` (italiane, poi mondo, poi generate senza conflitti di chiave o forma), `AppellationInfo`, `appellations`, `findAppellation`, `grapeForms` |
+| `grapes.dart` | 109 | Dati `const` | `GrapeProfile(name, wineType, offsets, aliases)`, `grapeTable` (46 vitigni, un tipo ciascuno) |
+| `recognizer.dart` | 557 | Dominio | Normalizzazione, indici degli alias e dei vitigni, `resolveWine`, `ResolvedWine` (offsets, `effectiveType`, `isDedicatedDenomination`), `qualifierFor` |
+| `qualifiers.dart` | 118 | Dati + dominio | `qualifierPhrases`, `qualifierPriority`, `agingQualifiers`, `qualifierMaskOf` |
+| `window.dart` | 80 | Servizio puro | `estimateWindow`, `needsRefinement`, `_baseYear` |
+| `effective_window.dart` | 45 | Servizio puro | `effectiveWindow`, `overrideYearRange`, `isValidOverrideYear` |
+| `status.dart` | 32 | Servizio puro | `statusOf` (invariato) |
+| `label_fields.dart` | 690 | Servizio puro | `LabelFields`, `extractLabelFields`, `_Reader` (`_type`, `_qualifier`, `suggestedLevel`), `agingQualifierIn` |
+| `label_candidates.dart` | 2220 | Servizio puro (part) | Candidati del controllo guidato; `_Evidence.typeFor` (stessa regola del tipo con la riga) |
+| `label_lines.dart`, `label_words.dart`, `label_scoring.dart`, `label_line_picker.dart` | 620, 230, 91, 100 | Servizio puro | Righe, parole e pesi dell'analisi dell'etichetta; parole di tipo e di stile |
+| `catalog.dart` | 238 | Dati + servizio | `denominationLabels` delle 47 italiane, `recognizeDenomination` (solo queste) |
+
+### App (`lib/`)
+
+| File | Righe | Ruolo per tipo, livello e finestra |
+|---|---|---|
+| `cellar/domain/wine.dart` | 305 | `WineFields` (18 campi, con `level` e `windowOverride`), `WindowFields` (con `denominationKey`, `tablesVersion`), `Wine.fromMap`, `windowFrom`/`windowToMap` |
+| `cellar/domain/wine_draft.dart` | 172 | `WineDraft.withDetails(wineType, ..., level)`: testi vuoti → `null` |
+| `cellar/domain/wine_validator.dart` | 184 | `WineInput{..., wineType, level}`; tipo non validato |
+| `cellar/domain/window_adjuster.dart` | 217 | `WindowAdjustment`, `WindowAdjuster.effectiveOf(base, adjustment, override)` |
+| `cellar/domain/window_override.dart` | 46 | `OverrideFields`, `WindowOverride{endYear, setAt}` |
+| `cellar/wine_estimator.dart` | 178 | `WineFactsInput` (con `level`, `wineType` grezzo), `WineEstimator.estimate`/`refine`/`displayed`/`withAdjustment` |
+| `cellar/estimates_migration.dart` | 219 | `EstimatesMigration`, `MigrationAttemptStore` (memoria o preferenze `estimates.migration.v<n>`), `needsMigration` |
+| `cellar/estimate_refresher.dart` | 151 | `EstimateRefresher` (catalogo, ≤ 20 vini per ritorno in rete) |
+| `cellar/cellar_actions.dart` | 534 | Salvataggi, ricalcolo dopo bevuta, `ensureEstimates` che chiama anche la migrazione |
+| `cellar/data/wine_repository.dart` | 910 | `addWine`, `updateWine`, `setEstimate`, `setOverride`, `clearOverride` |
+| `cellar/ui/add_wine_screen.dart` | 1571 | `wineFamilyOf`, `AddWineInitialValues`, `WineTypeField` (8 tipi con icona e colore della famiglia), preselezione dal testo e dal candidato, `LevelSection` |
+| `cellar/ui/edit_wine_screen.dart` | 302 | `WineTypeField`, `LevelSection` con il livello salvato |
+| `cellar/ui/level_section.dart` | 142 | `LevelChoice` (scelto, toccato, suggerimento), `LevelSection` (anteprima con e senza livello) |
+| `cellar/ui/wine_level_selector.dart` | 310 | `WineLevelSelector` (3 livelli più "Nessuno", suggerito con bordo tratteggiato), `LevelPreview` |
+| `cellar/ui/ideal_moment_card.dart` | 351 | "Momento ideale": livello, origine della stima, correzione |
+| `cellar/ui/window_override_widgets.dart` | 251 | `CorrectedBadge`, foglio degli anni di "Consigliato fino al", `EstimateSourceLine` |
+| `cellar/ui/wine_labels.dart` | 183 | `wineTypeLabel`, `levelLabel`, `qualifierDisplayName`, `estimateOriginText` |
+| `cellar/ui/wine_badges.dart` | 169 | `WineTypeFamily` (5 famiglie), colori e icone, `WineTypeBadge` |
+| `cellar/ui/wine_card.dart`, `cellar_screen.dart`, `wine_detail_screen.dart` | 220, 575, 615 | Badge della famiglia, stato del giorno, dettaglio |
+| `cellar/domain/cellar_filter.dart` | 148 | `TypeFilter.of` (5 famiglie più "non specificato") |
+| `dashboard/domain/dashboard_calculator.dart` | 332 | `DashboardCalculator.familyOf`, stato, picchi, "da bere presto" |
+| `catalog/core/offline/wine_db_record.dart` | 244 | `WineDbRecord`, `toCandidate` (riduce il tipo a 5 famiglie) |
+| `catalog/core/offline/wine_db_index.dart`, `text_score.dart` | 155, 168 | Indice e punteggio della base offline |
+| `catalog/platform/wine_db_loader.dart` | 163 | Caricamento in un isolate |
+| `label/core/text_autofill.dart`, `label_merge.dart` | 141, 116 | Testo incollato o letto → analisi; nessuna logica di tipo o livello propria |
+
+### Strumenti e dati
+
+| File | Ruolo |
+|---|---|
+| `tool/build_appellations.dart` (862 righe) | Genera `appellations.g.dart` e il manifest dai registri (eAmbrosia, CSV di `tool/data/appellations/`); modello per paese e protezione (`templateOf`); tipi dal CSV (codici `rL`, `rS`, `B`, `Ro`, `SpC`, `SpT`, `D`, `F`), altrimenti da `typesFromName`, altrimenti `redLight,white,rose`; tiene solo i tipi del modello |
+| `tool/data/appellations/` | `us_ava.csv`, `au_nz_gi.csv`, `za_wo.csv`, `south_america.csv`, `ch_aoc.csv`, `README.md` |
+| `tool/build_wine_db.dart` | Costruisce `assets/wine_db/` dall'export CSV di Open Food Facts: `wineTypeOfTags`, `denominationOf`, `countryOfTags`, `vintageOf` |
+| `assets/wine_db/` | `wines.jsonl.gz` (15.616 vini, 339.982 byte), `manifest.json` (export 2026-11-07, `source: Open Food Facts`, ODbL), `README.md`, `LICENSE` |
+

@@ -1,5 +1,6 @@
 import 'package:estimation/estimation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../dashboard/ui/status_icons.dart';
 import '../../l10n/app_localizations.dart';
@@ -89,12 +90,141 @@ String qualifierDisplayName(Qualifier qualifier) => switch (qualifier) {
   Qualifier.vintage => 'Vintage',
   Qualifier.lbv => 'LBV',
   Qualifier.colheita => 'Colheita',
+  Qualifier.beerenauslese => 'Beerenauslese',
+  Qualifier.trockenbeerenauslese => 'Trockenbeerenauslese',
+  Qualifier.eiswein => 'Eiswein',
 };
+
+/// The chip text of a style (wine-style-profiles BR5.2).
+String styleLabel(AppLocalizations l10n, WineStyle style) => switch (style) {
+  WineStyle.redFresh => l10n.styleRedFresh,
+  WineStyle.redMedium => l10n.styleRedMedium,
+  WineStyle.redAge => l10n.styleRedAge,
+  WineStyle.redLong => l10n.styleRedLong,
+  WineStyle.whiteFresh => l10n.styleWhiteFresh,
+  WineStyle.whiteMedium => l10n.styleWhiteMedium,
+  WineStyle.whiteAge => l10n.styleWhiteAge,
+  WineStyle.roseFresh => l10n.styleRoseFresh,
+  WineStyle.tankFresh => l10n.styleTankFresh,
+  WineStyle.lambrusco => l10n.styleLambrusco,
+  WineStyle.classicFresh => l10n.styleClassicFresh,
+  WineStyle.classicAge => l10n.styleClassicAge,
+  WineStyle.sweetAromatic => l10n.styleSweetAromatic,
+  WineStyle.sweetPassito => l10n.styleSweetPassito,
+  WineStyle.sweetBotrytis => l10n.styleSweetBotrytis,
+  WineStyle.portVintage => l10n.stylePortVintage,
+  WineStyle.portLbv => l10n.stylePortLbv,
+  WineStyle.portTawny => l10n.stylePortTawny,
+  WineStyle.sherryFino => l10n.styleSherryFino,
+  WineStyle.sherryAmontillado => l10n.styleSherryAmontillado,
+  WineStyle.sherryOloroso => l10n.styleSherryOloroso,
+  WineStyle.sherryPx => l10n.styleSherryPx,
+  WineStyle.madeira => l10n.styleMadeira,
+  WineStyle.fortifiedOther => l10n.styleFortifiedOther,
+};
+
+/// The name of a profile (wine-style-profiles BR5.5).
+String profileName(AppLocalizations l10n, StyleProfile profile) =>
+    switch (profile) {
+      StyleProfile.rFresh => l10n.profileNameRFresh,
+      StyleProfile.rMedium => l10n.profileNameRMedium,
+      StyleProfile.rAge => l10n.profileNameRAge,
+      StyleProfile.rLong => l10n.profileNameRLong,
+      StyleProfile.wFresh => l10n.profileNameWFresh,
+      StyleProfile.wMedium => l10n.profileNameWMedium,
+      StyleProfile.wAge => l10n.profileNameWAge,
+      StyleProfile.roseFresh => l10n.profileNameRoseFresh,
+      StyleProfile.spTank => l10n.profileNameSpTank,
+      StyleProfile.lamFresh => l10n.profileNameLamFresh,
+      StyleProfile.spClassic => l10n.profileNameSpClassic,
+      StyleProfile.spClassicAge => l10n.profileNameSpClassicAge,
+      StyleProfile.swAromatic => l10n.profileNameSwAromatic,
+      StyleProfile.swPassito => l10n.profileNameSwPassito,
+      StyleProfile.swBotrytis => l10n.profileNameSwBotrytis,
+      StyleProfile.portVintage => l10n.profileNamePortVintage,
+      StyleProfile.portLbv => l10n.profileNamePortLbv,
+      StyleProfile.portOx => l10n.profileNamePortOx,
+      StyleProfile.shFino => l10n.profileNameShFino,
+      StyleProfile.shAmont => l10n.profileNameShAmont,
+      StyleProfile.shOloroso => l10n.profileNameShOloroso,
+      StyleProfile.shPx => l10n.profileNameShPx,
+      StyleProfile.fortUnknown => l10n.profileNameFortUnknown,
+      StyleProfile.unknown => l10n.profileNameUnknown,
+    };
+
+/// The label of the disgorgement or bottling date of [style] (BR8.1), or
+/// `null` when its profile counts in years.
+String? agingStartLabel(AppLocalizations l10n, WineStyle? style) =>
+    switch (style?.agingStartLabel) {
+      AgingAnchor.disgorgement => l10n.agingStartDisgorgement,
+      AgingAnchor.bottling => l10n.agingStartBottling,
+      _ => null,
+    };
+
+/// The language of [context] in the form intl expects ("pt_BR").
+String intlLocaleOf(BuildContext context) =>
+    Localizations.localeOf(context).toString();
+
+/// "marzo 2027" / "March 2027" / "março de 2027" (BR6.6).
+String formatMonthLong(BuildContext context, int year, int month) =>
+    DateFormat.yMMMM(intlLocaleOf(context)).format(DateTime(year, month));
+
+/// "mar 2027" / "Mar 2027" / "mar. de 2027" (BR6.6).
+String formatMonthShort(BuildContext context, int year, int month) =>
+    DateFormat.yMMM(intlLocaleOf(context)).format(DateTime(year, month));
+
+/// The dates of a window as shown (BR6.6): the year for a window in years,
+/// the month for a window in months, long or [short].
+({String start, String? peak, String? end}) windowDates(
+  BuildContext context,
+  DrinkingWindow window, {
+  bool short = false,
+}) {
+  String at(int year, int? month) {
+    if (!window.inMonths || month == null) return '$year';
+    return short
+        ? formatMonthShort(context, year, month)
+        : formatMonthLong(context, year, month);
+  }
+
+  return (
+    start: at(window.startYear, window.startMonth),
+    peak: window.peakYear == null
+        ? null
+        : at(window.peakYear!, window.peakMonth),
+    end: window.endYear == null ? null : at(window.endYear!, window.endMonth),
+  );
+}
+
+/// True when the level changes [window] (BR4.1): a window in years with a
+/// peak and an end.
+bool levelChangesWindow(DrinkingWindow window) =>
+    !window.inMonths && window.peakYear != null && window.endYear != null;
 
 /// The origin of the estimate in one line (interaction-spec "Origine della
 /// stima"): the appellation with its qualifier, the grape, or the type;
 /// `null` for a catalog window, whose source line stays.
 String? estimateOriginText(AppLocalizations l10n, DrinkingWindow window) {
+  // wine-style-profiles BR5.5: a window with its profile names it.
+  final profile = window.profile;
+  if (profile != null && window.source == WindowSource.internalRules) {
+    final name = profileName(l10n, profile);
+    switch (window.basis) {
+      case EstimationBasis.denomination:
+        final info = appellationOf(window.denominationKey);
+        if (info != null) {
+          return l10n.estimateFromProfile(name, info.displayName);
+        }
+      case EstimationBasis.grape:
+        final grape = grapeNameOf(window.denominationKey);
+        if (grape != null) return l10n.estimateFromProfileGrape(name, grape);
+      case EstimationBasis.wineType ||
+          EstimationBasis.generic ||
+          EstimationBasis.catalog:
+        break;
+    }
+    return l10n.estimateFromProfileType(name);
+  }
   switch (window.basis) {
     case EstimationBasis.denomination:
       final info = appellationOf(window.denominationKey);

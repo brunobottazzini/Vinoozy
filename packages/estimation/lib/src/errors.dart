@@ -9,6 +9,13 @@ enum EstimationErrorCode {
   referenceYearOutOfRange,
   missingReferenceYear,
   invalidWindow,
+
+  /// wine-style-profiles (BR8.2, BR6.10): a month outside 1-12.
+  monthOutOfRange,
+
+  /// wine-style-profiles (BR8.2): a disgorgement or bottling date without
+  /// both its year and its month, or with a year out of range.
+  invalidAgingStart,
 }
 
 /// Invalid argument passed to a C2 function.

@@ -144,6 +144,28 @@ class WineCard extends StatelessWidget {
                             ),
                           ),
                         ),
+                      // wine-style-profiles BR6.5, BR6.6: "by Mar 2027" for a
+                      // window in months, "no end estimated" without an end.
+                      if (window != null &&
+                          (window.inMonths || window.endYear == null))
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Text(
+                            window.endYear == null
+                                ? l10n.windowNoEndShort
+                                : l10n.windowDrinkWithin(
+                                    windowDates(
+                                      context,
+                                      window,
+                                      short: true,
+                                    ).end!,
+                                  ),
+                            key: const Key('wine-card-month'),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: scheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
                       if (family != null || drink != null)
                         Padding(
                           padding: const EdgeInsets.only(top: 4),

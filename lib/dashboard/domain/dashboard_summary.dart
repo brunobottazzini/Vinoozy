@@ -47,6 +47,7 @@ class DrinkSoonRow {
     this.vintage,
     this.producer,
     this.country,
+    this.endMonth,
   });
 
   final String wineId;
@@ -61,6 +62,13 @@ class DrinkSoonRow {
   final int quantity;
   final int endYear;
 
+  /// wine-style-profiles BR6.7: the end month of a window in months, shown
+  /// as "by Mar 2027"; `null` for a window in years.
+  final int? endMonth;
+
+  /// Month index of the end, to order the list (BR6.1).
+  int get endIndex => endYear * 12 + (endMonth ?? 12) - 1;
+
   @override
   bool operator ==(Object other) =>
       other is DrinkSoonRow &&
@@ -70,14 +78,46 @@ class DrinkSoonRow {
       other.producer == producer &&
       other.country == country &&
       other.quantity == quantity &&
-      other.endYear == endYear;
+      other.endYear == endYear &&
+      other.endMonth == endMonth;
 
   @override
-  int get hashCode =>
-      Object.hash(wineId, name, vintage, producer, country, quantity, endYear);
+  int get hashCode => Object.hash(
+    wineId,
+    name,
+    vintage,
+    producer,
+    country,
+    quantity,
+    endYear,
+    endMonth,
+  );
 
   @override
   String toString() => 'DrinkSoonRow($wineId, end $endYear, x$quantity)';
+}
+
+/// One wine of "To confirm" (wine-style-profiles BR6.7): its style is a
+/// hypothesis, its estimate indicative, or it waits for its style.
+class ToConfirmRow {
+  const ToConfirmRow({required this.wineId, required this.name, this.vintage});
+
+  final String wineId;
+  final String name;
+  final int? vintage;
+
+  @override
+  bool operator ==(Object other) =>
+      other is ToConfirmRow &&
+      other.wineId == wineId &&
+      other.name == name &&
+      other.vintage == vintage;
+
+  @override
+  int get hashCode => Object.hash(wineId, name, vintage);
+
+  @override
+  String toString() => 'ToConfirmRow($wineId)';
 }
 
 /// One column of the peak chart (BR1.5).
@@ -161,6 +201,7 @@ class DashboardSummary {
     required this.byType,
     required this.byRegion,
     required this.invalidWindowCount,
+    this.toConfirm = const [],
   });
 
   /// Maximum rows of "Drink soon"; more show "See all (N)" (BR1.3).
@@ -199,6 +240,10 @@ class DashboardSummary {
   /// it once per process; the summary itself never logs.
   final int invalidWindowCount;
 
+  /// wine-style-profiles BR6.7: the wines with "Style to confirm" or "To
+  /// estimate" for lack of a style, by name.
+  final List<ToConfirmRow> toConfirm;
+
   /// Bottles of the status chart bar of [status] (BR1.4).
   int bottlesWith(WineStatus status) => switch (status) {
     WineStatus.waiting => waitingBottles,
@@ -221,7 +266,8 @@ class DashboardSummary {
       _listEquals(other.peakYears, peakYears) &&
       _listEquals(other.byType, byType) &&
       _listEquals(other.byRegion, byRegion) &&
-      other.invalidWindowCount == invalidWindowCount;
+      other.invalidWindowCount == invalidWindowCount &&
+      _listEquals(other.toConfirm, toConfirm);
 
   @override
   int get hashCode => Object.hash(
@@ -237,6 +283,7 @@ class DashboardSummary {
     Object.hashAll(byType),
     Object.hashAll(byRegion),
     invalidWindowCount,
+    Object.hashAll(toConfirm),
   );
 
   @override

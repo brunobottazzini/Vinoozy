@@ -177,3 +177,60 @@ Descritte alla scansione pending-banner-fix e ux-redesign; i file sono cambiati 
 - `LabelCaptureFlow.openForm(context, target, {initialValues})` e `openCandidateForm(context, target, candidate)`; "Scrivi a mano" da "Non trovato" passa `AddWineInitialValues(name, vintage, notice)`.
 - `LensLauncher.open(path)` restituisce `LensRoute`; canale `vinoozy/lens`, metodo `open({path})` con risposta `direct`, `chooser` o `failed`. Nessun metodo restituisce testo all'app.
 - Ingressi di testo dall'esterno: nessuno (niente lettura degli appunti in `lib/`, nessun intent filter `text/plain`; il manifest dichiara `<queries>` per `PROCESS_TEXT` solo per il motore Flutter).
+
+Nota storica: le tabelle e gli elenchi qui sopra precedono il commit `baba947`. Dove contraddicono la sezione seguente (per esempio "nessun campo livello", `basis` senza `grape`, qualificativi solo italiani, nessuna `tablesVersion`), vale la sezione seguente.
+
+## Aggiornamento dell'intent 261108-wine-style-profiles
+
+### `estimation` (contratto C2 come esportato oggi, `packages/estimation/lib/estimation.dart`)
+
+| Funzione o tipo | Firma | Comportamento |
+|---|---|---|
+| `estimateWindow` | `DrinkingWindow estimateWindow(WineFacts wine, [ExternalProfile? external])` | Finestra del catalogo se usabile (il livello non la cambia); altrimenti `resolveWine` → scarti della riga (o del qualificativo) → `WineLevel.apply` → anno base + scarti. Fiducia `medium` solo per una riga dedicata con annata, altrimenti `low`. Imposta `denominationKey` (chiave della riga o del vitigno) e `tablesVersion` = `estimationTablesVersion` |
+| `needsRefinement` | `bool needsRefinement(DrinkingWindow)` | `true` per ogni finestra `internalRules` |
+| `statusOf` | `WineStatus statusOf(DrinkingWindow, DateTime today)` | Invariato: anni interi, "da bere presto" = 25% della durata in mesi, tra 3 e 12 |
+| `effectiveWindow` | `DrinkingWindow effectiveWindow(DrinkingWindow adjusted, {int? overrideEndYear})` | La fine diventa l'anno manuale; inizio e picco si fermano lì se lo superavano |
+| `overrideYearRange` / `isValidOverrideYear` / `maxOverrideSpan` | `({int first, int last})`, `bool`, `60` | Anni ammessi per "Consigliato fino al": dall'inizio a inizio + 60 |
+| `WineType` | enum di 8 valori | `tryParse` accetta i nomi dell'enum e i valori C1 `red` → `redStructured`, `white`, `rose`, `sparkling` → `sparklingClassic`, `sweet`; qualsiasi altro valore è `null` |
+| `WineLevel` | `everyday(50,60,60)`, `good(100,100,100)`, `aging(125,130,140)` | Percentuali di inizio, picco e fine; `apply(offsets, {qualifierUsed})` arrotonda, riordina e garantisce fine ≥ inizio + 1; `aging` non moltiplica gli scarti di un qualificativo; `tryParse` restituisce `null` per valori sconosciuti |
+| `Qualifier` | 14 valori | I 3 italiani prima, poi `crianza`, `reserva`, `granReserva`, `premierCru`, `grandCru`, `kabinett`, `spatlese`, `auslese`, `vintage`, `lbv`, `colheita` |
+| `agingQualifiers` | `Set<Qualifier>` | Qualificativi che suggeriscono "Da invecchiamento": gran selezione, gran reserva, grand cru, premier cru, riserva, reserva, auslese, spätlese, vintage, colheita (non crianza, superiore, kabinett, lbv) |
+| `EstimationBasis` | `catalog`, `denomination`, `grape`, `wineType`, `generic` | `generic` espone l'avviso `GENERIC_ESTIMATE` |
+| `estimationTablesVersion` | `const int = 2` | Va alzata a ogni cambio dei valori delle tabelle: fa partire la migrazione una tantum |
+| `appellations` / `appellationOf` / `findAppellation` | `List<AppellationInfo>`, `AppellationInfo?` | Vista di sola lettura della tabella unita: `key`, `displayName`, `country`, `region`, `types` (il principale per primo), `dedicated`, `templateKey`, `forms`, `weakForms` |
+| `appellationTemplates` / `TemplateKeys` | `Map<String, Map<WineType, YearOffsets>>` | 9 modelli per paese e livello di classificazione (`IT-DOC`, `IT-IGT`, `FR-AOC`, `FR-IGP`, `ES-PT`, `DE-AT`, `EU`, `NEW-WORLD`, `CH`); un tipo assente in un modello è un tipo che la zona non fa |
+| `parseGeneratedRow` | `DenominationProfile? parseGeneratedRow(String row)` | Riga `key\|name\|country\|region\|model\|types\|aliases\|weak`; tiene solo i tipi del modello; il primo tipo è il principale |
+| `extractLabelFields` / `analyzeLabelText` | `LabelFields` / `LabelAnalysis` | Dal testo: nome, produttore, denominazione (e `denominationKey`), annata, `wineType`, paese, regione, `suggestedLevel` (solo `aging`), `qualifier` |
+| `agingQualifierIn` | `Qualifier? agingQualifierIn(String text)` | Il qualificativo da invecchiamento di un nome o di una denominazione scritti a mano |
+
+- `WineFacts{name, producer, vintage, wineType, region, denomination, referenceYear, level}`: `producer`, `region` e il paese non entrano nel calcolo.
+- `DrinkingWindow{startYear, peakYear, endYear, confidence, source, basis, qualifier, denominationKey, tablesVersion}`; `withYears` per cambiare solo gli anni.
+- Precedenze di `resolveWine` (oggi): (1) denominazione dell'utente se la riga fa il tipo scelto (o qualsiasi tipo senza scelta); (2) denominazione del catalogo, poi del nome, alla stessa condizione (nel nome scritto a mano un alias debole conta sempre, decisione del proprietario 0b738ea2); (3) un vitigno del nome o della denominazione con lo stesso tipo; (4) la riga del tipo; (5) la riga generica. Senza tipo scelto una zona con più tipi prende il tipo del vitigno nominato accanto, altrimenti il tipo principale.
+- Nessuna funzione restituisce "nessuna stima" per uno stile incerto: l'unico modo di ottenere "da stimare" è un input non valido (`EstimationArgumentError`).
+
+### Documento del vino (C3) per tipo, livello e finestra
+
+| Campo | Tipo Firestore | Validazione delle regole | Lettura (`Wine.fromMap`) |
+|---|---|---|---|
+| `wineType` | stringa | **nessuna** (solo ammesso in `wineFields()`) | stringa grezza; i consumatori usano `WineType.tryParse` |
+| `level` | stringa | `validLevel`: `null` o `everyday`, `good`, `aging` (solo quando cambia) | `WineLevel.tryParse`, sconosciuto → `null` |
+| `baseWindow`, `window` | mappa | `validWindow`: chiavi `startYear`, `peakYear`, `endYear`, `confidence`, `source`, `basis`, `qualifier`, `denominationKey` (1-60), `tablesVersion` (1-1000); anni interi 1900-2200 ordinati | `Wine.windowFrom`; mappa malformata → `null` ("da stimare") |
+| `windowAdjustment` | mappa | `kind`, `year`, `recordId` | `WindowAdjustment.fromMap` |
+| `windowOverride` | mappa | `endYear` intero 1900-2200, `setAt == request.time` | `WindowOverride.fromMap` |
+
+- `wineFields()` usa `hasOnly`: un campo nuovo (per esempio stile, sottostile, data di sboccatura o di imbottigliamento, finestra in mesi) viene rifiutato dalle regole in produzione finché le regole aggiornate non sono distribuite. La migrazione conta i rifiuti (`permissionDenied`) e si ferma.
+
+### `WineRepository` (scritture di tipo, livello e finestra)
+
+| Metodo | Campi scritti |
+|---|---|
+| `addWine({cellarId, user, draft, estimate})` | `wineType`, `level` solo se presenti; i campi di `estimate.toFields()` non nulli |
+| `updateWine({cellarId, user, before, draft, targetQuantity, estimate})` | `wineType` sempre (anche `null`); `level` se scelto, cancellato se tolto, assente se mai avuto; tutta la stima |
+| `setEstimate({cellarId, user, wine, estimate, reason, quiet, onFailure})` | solo la stima (`baseWindow`, `window`, `windowAdjustment`, `pairings`): usato da aggiornamento col catalogo e migrazione |
+| `setOverride({..., endYear, window})` / `clearOverride({..., window})` | `windowOverride` e `window` insieme |
+
+### Base dei vini sul telefono (`lib/catalog/core/offline/`)
+
+- `WineDbRecord{code, name, producer?, wineType?, denomination?, country?, vintage?}`; riga JSON con chiavi brevi `b`, `n`, `p`, `t`, `d`, `c`, `v`. `t` è il nome di un `WineType` a 8 valori. Nessun campo per regione, vitigni, livello, stile o finestra.
+- `WineDbRecord.toCandidate()` riduce il tipo a `CatalogWineType` (5 famiglie) con `catalogTypeOf`; nel form `wineFamilyOf` lo riporta a 8 valori con `WineType.tryParse`.
+- `OfflineWineDb`/`WineDbIndex`: ricerca per codice a barre e per testo (`text_score.dart`); caricata una volta in un isolate da `WineDbLoader`.

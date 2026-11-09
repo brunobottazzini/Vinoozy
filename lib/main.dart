@@ -21,7 +21,7 @@ Future<void> runVinoozy({FirebaseEnvConfig? config}) async {
     runApp(
       UncontrolledProviderScope(
         container: services.container,
-        child: const VinoozyApp(),
+        child: const VinoozyApp(showBrandSplash: !kIsE2EBuild),
       ),
     );
   } catch (error, stack) {

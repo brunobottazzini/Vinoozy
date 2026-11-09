@@ -38,5 +38,13 @@
     "scope": "refactor",
     "status": "complete",
     "request": "27d80019"
+  },
+  {
+    "uuid": "01a1bcde-cef2-7f93-b929-64d4df0aea6b",
+    "slug": "wine-style-profiles",
+    "dirName": "261108-wine-style-profiles",
+    "scope": "refactor",
+    "status": "complete",
+    "request": "e8b55e4b"
   }
 ]

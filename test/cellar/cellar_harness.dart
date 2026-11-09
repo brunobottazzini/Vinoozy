@@ -107,6 +107,13 @@ Wine cellarWine(
   String? country,
   WineLevel? level,
   WindowOverride? windowOverride,
+  DateTime? updatedAt,
+  WineStyle? style,
+  FieldSource? typeSource,
+  FieldSource? levelSource,
+  FieldSource? styleSource,
+  AgingStart? agingStart,
+  int? migrationVersion,
 }) => Wine(
   id: id,
   name: name,
@@ -125,6 +132,13 @@ Wine cellarWine(
   createdAt: createdAt,
   level: level,
   windowOverride: windowOverride,
+  updatedAt: updatedAt,
+  style: style,
+  typeSource: typeSource,
+  levelSource: levelSource,
+  styleSource: styleSource,
+  agingStart: agingStart,
+  migrationVersion: migrationVersion,
 );
 
 /// A drink built with the real [DrinkingRecord] constructor.

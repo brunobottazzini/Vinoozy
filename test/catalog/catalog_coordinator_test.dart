@@ -4,6 +4,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:estimation/estimation.dart' show WineType;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -280,6 +281,8 @@ void main() {
           wineType: CatalogWineType.white,
           region: 'Veneto',
           denomination: 'Soave DOC',
+          // wine-style-profiles BR3.5: the Type is no longer reduced.
+          exactType: WineType.white,
         ),
       );
     });

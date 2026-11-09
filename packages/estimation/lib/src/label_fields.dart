@@ -46,10 +46,9 @@ Qualifier? agingQualifierIn(String text) {
   final words = tokenizeAll(sanitizeLabelText(text));
   if (words.isEmpty) return null;
   final match = findAlias(words);
-  final row = match == null ? null : denominationTable[match.denominationKey];
   for (final qualifier in qualifiersOf(qualifierMaskOf(words))) {
-    if (qualifier == Qualifier.vintage &&
-        !(row?.qualifierOffsets.containsKey(Qualifier.vintage) ?? false)) {
+    // wine-style-profiles BR4.4: "vintage" suggests "aging" only with Porto.
+    if (qualifier == Qualifier.vintage && match?.denominationKey != 'porto') {
       continue;
     }
     return agingQualifiers.contains(qualifier) ? qualifier : null;
@@ -221,7 +220,7 @@ class _Reader {
         wineType: type,
         country: origin.$1,
         region: origin.$2,
-        suggestedLevel: qualifier != null && agingQualifiers.contains(qualifier)
+        suggestedLevel: suggestsAgingLevel(qualifier, denomination?.info.key)
             ? WineLevel.aging
             : null,
         qualifier: qualifier,
@@ -337,7 +336,7 @@ class _Reader {
     if (words.any(_roseWords.contains)) return WineType.rose;
     if (words.any(_whiteWords.contains)) return WineType.white;
     if (words.any(_redWords.contains)) {
-      if (qualifier != null && agingQualifiers.contains(qualifier)) {
+      if (qualifier != null && selectionQualifiers.contains(qualifier)) {
         return WineType.redStructured;
       }
       final reds = [

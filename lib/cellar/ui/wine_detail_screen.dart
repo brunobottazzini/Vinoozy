@@ -1,7 +1,9 @@
 import 'dart:async';
 
-import 'package:estimation/estimation.dart' show DrinkingWindow, statusOf;
+import 'package:estimation/estimation.dart'
+    show DrinkingWindow, WineStyle, WineType, statusOf;
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../account/app_user.dart';
@@ -15,6 +17,7 @@ import '../cellar_providers.dart';
 import '../domain/cellar_filter.dart';
 import '../domain/drinking_record.dart';
 import '../domain/quantity_delta.dart';
+import '../domain/style_notice.dart';
 import '../domain/window_adjuster.dart';
 import '../domain/wine.dart';
 import '../domain/wine_estimate.dart';
@@ -27,6 +30,7 @@ import 'drinking_record_sheet.dart';
 import 'duplicate_banner.dart';
 import 'edit_wine_screen.dart';
 import 'ideal_moment_card.dart';
+import 'style_widgets.dart';
 import 'window_card.dart';
 import 'window_override_widgets.dart';
 import 'wine_badges.dart';
@@ -138,6 +142,16 @@ class _WineDetailScreenState extends ConsumerState<WineDetailScreen> {
               if (kept.id != wine.id && mounted) Navigator.of(context).pop();
             },
           ),
+          if (styleToConfirmOf(
+                wine,
+                window: estimate.window,
+                fallbackYear: today.year,
+              ) ||
+              needsStyleToEstimate(wine)) ...[
+            const StyleToConfirmBanner(),
+            if (cellar.canEdit) _styleChooser(context, wine),
+            const SizedBox(height: 8),
+          ],
           IdealMomentCard(
             estimate: estimate,
             today: today,
@@ -172,6 +186,73 @@ class _WineDetailScreenState extends ConsumerState<WineDetailScreen> {
     );
   }
 
+  /// S4 (F5): the type when it is missing, else the style chips; a tap
+  /// saves at once and the new estimate is announced (R-08).
+  Widget _styleChooser(BuildContext context, Wine wine) {
+    final l10n = AppLocalizations.of(context);
+    final type = WineType.tryParse(wine.wineType);
+    if (type == null) {
+      return Padding(
+        key: const Key('detail-type-chooser'),
+        padding: const EdgeInsets.only(top: 8),
+        child: DropdownButtonFormField<WineType>(
+          isExpanded: true,
+          decoration: InputDecoration(labelText: l10n.chooseTypePrompt),
+          items: [
+            for (final value in WineType.values)
+              DropdownMenuItem(
+                value: value,
+                child: Text(wineTypeLabel(l10n, value)),
+              ),
+          ],
+          onChanged: (value) {
+            if (value != null) _saveStyle(wine, wineType: value);
+          },
+        ),
+      );
+    }
+    return StyleField(
+      wineType: type,
+      selected: wine.style,
+      suggested: wine.styleSource == FieldSource.auto,
+      onChanged: (style) => _saveStyle(wine, style: style),
+    );
+  }
+
+  Future<void> _saveStyle(
+    Wine wine, {
+    WineType? wineType,
+    WineStyle? style,
+  }) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final view = View.of(context);
+    final direction = Directionality.of(context);
+    final saved = await ref
+        .read(cellarActionsProvider)
+        .chooseStyle(
+          cellar: widget.cellar,
+          user: widget.user,
+          wine: wine,
+          wineType: wineType,
+          style: style,
+        );
+    if (!mounted) return;
+    if (!saved) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+      return;
+    }
+    SemanticsService.sendAnnouncement(
+      view,
+      l10n.estimateUpdatedAnnouncement(
+        style == null
+            ? wineTypeLabel(l10n, wineType!)
+            : styleLabel(l10n, style),
+      ),
+      direction,
+    );
+  }
+
   static StatusFilter _statusOf(WineEstimate estimate, DateTime today) {
     final window = estimate.window;
     if (window == null) return StatusFilter.toEstimate;
@@ -194,13 +275,16 @@ class _WineDetailScreenState extends ConsumerState<WineDetailScreen> {
     final window = estimate.window;
     final estimated = _estimatedOf(estimate) ?? window;
     if (window == null || estimated == null) return;
-    final year = await CorrectEndYearSheet.show(
+    final picked = await CorrectEndYearSheet.show(
       context,
       startYear: estimated.startYear,
       peakYear: estimated.peakYear,
       currentEnd: window.endYear,
+      inMonths: estimated.inMonths,
+      startMonth: estimated.startMonth,
+      currentEndMonth: window.endMonth,
     );
-    if (year == null || !mounted) return;
+    if (picked == null || !mounted) return;
     final l10n = AppLocalizations.of(context);
     final messenger = ScaffoldMessenger.of(context);
     final saved = await ref
@@ -209,7 +293,8 @@ class _WineDetailScreenState extends ConsumerState<WineDetailScreen> {
           cellar: widget.cellar,
           user: widget.user,
           wine: wine,
-          endYear: year,
+          endYear: picked.year,
+          endMonth: picked.month,
         );
     messenger.showSnackBar(
       SnackBar(content: Text(saved ? l10n.overrideSaved : l10n.saveFailed)),
@@ -220,7 +305,10 @@ class _WineDetailScreenState extends ConsumerState<WineDetailScreen> {
   Future<void> _restore(Wine wine, WineEstimate estimate) async {
     final estimated = _estimatedOf(estimate);
     if (estimated == null) return;
-    if (!await RestoreEstimateDialog.show(context, estimated.endYear)) return;
+    final l10nBefore = AppLocalizations.of(context);
+    final end =
+        windowDates(context, estimated).end ?? l10nBefore.windowNoEndShort;
+    if (!await RestoreEstimateDialog.show(context, end)) return;
     if (!mounted) return;
     final l10n = AppLocalizations.of(context);
     final messenger = ScaffoldMessenger.of(context);

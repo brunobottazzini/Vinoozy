@@ -1,11 +1,13 @@
-// The one-off estimate with the new tables (label-autofill-windows BR3.9,
-// NFR4.4, NFR4.7, NFR4.8, NFR4.8a, NFR4.16) on the real WineRepository with a
-// recorded Firestore: online, offline (writes that never reach the server),
-// refused by old rules in production, two people, 1000 wines, interrupted.
-import 'dart:async';
-
+// The one-off migration to the style profiles (wine-style-profiles BR7.4-
+// BR7.7, D4, NFR4.4, NFR4.6, NFR4.9), which replaced the re-estimate of
+// label-autofill-windows BR3.9: candidates by `migrationVersion`, one
+// transaction per wine, skipped when changed meanwhile, offline not started,
+// refusals counted over 3 starts. The repository is a test double of
+// `migrateWine`; the transaction itself is tested in
+// data/wine_repository_style_test.dart.
 import 'package:estimation/estimation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vinoozy/app/app_event_logger.dart';
 import 'package:vinoozy/cellar/cellar_actions.dart';
@@ -14,12 +16,9 @@ import 'package:vinoozy/cellar/data/wine_repository.dart';
 import 'package:vinoozy/cellar/domain/wine.dart';
 import 'package:vinoozy/cellar/estimate_refresher.dart';
 import 'package:vinoozy/cellar/estimates_migration.dart';
-import 'package:vinoozy/cellar/wine_estimator.dart';
-import 'package:vinoozy/sync/ledger/local_ledger.dart';
 import 'package:vinoozy/sync/sync_error_bus.dart';
 
 import '../helpers/fakes.dart';
-import '../helpers/firestore_mocks.dart';
 import 'cellar_harness.dart';
 
 class _Logger implements AppEventLogger {
@@ -36,376 +35,280 @@ class _Logger implements AppEventLogger {
       migrated.add((wineCount, durationMs));
 }
 
-/// A window of the u2 tables: internal, no version.
-final _old = windowOf(2024, 2031, 2046);
+class _Repo extends Mock implements WineRepository {}
 
-Wine _oldWine(String id, {WineLevel? level, WindowOverride? override}) =>
-    cellarWine(
-      id,
-      name: 'Pauillac',
-      vintage: 2016,
-      wineType: 'redStructured',
-      window: _old,
-      baseWindow: _old,
-      level: level,
-      windowOverride: override,
-    );
+final _seen = DateTime.utc(2026, 11, 1, 10);
+
+/// A wine of today's app: estimated with the tables of version 2.
+Wine _oldWine(String id, {String name = 'Barolo', WineLevel? level}) {
+  final old = windowOf(2024, 2031, 2046);
+  return cellarWine(
+    id,
+    name: name,
+    window: old,
+    baseWindow: old,
+    level: level,
+    updatedAt: _seen,
+  );
+}
 
 void main() {
-  setUpAll(registerFirestoreFallbacks);
+  setUpAll(() {
+    registerCellarFallbacks();
+    registerFallbackValue(<String, Object?>{});
+  });
 
-  late MockFirestore db;
-  late BatchRecorder batches;
+  late _Repo repo;
   late RecordingErrorSink sink;
-  late SyncErrorBus bus;
-  late List<SyncEvent> events;
-  late WineRepository repository;
   late MemoryMigrationAttemptStore store;
   late _Logger logger;
   late FakeClock clock;
+  late List<(String, Map<String, Object?>)> writes;
+  late MigrationWrite answer;
+  late bool online;
 
   setUp(() {
-    db = MockFirestore();
-    batches = BatchRecorder(db);
+    repo = _Repo();
     sink = RecordingErrorSink();
-    bus = SyncErrorBus();
-    events = [];
-    bus.events.listen(events.add);
-    repository = WineRepository(
-      db: db,
-      ledger: LocalLedger(
-        store: InMemoryKeyValueStore(),
-        reporter: recordingReporter(sink),
-      ),
-      bus: bus,
-      reporter: recordingReporter(sink),
-    );
     store = MemoryMigrationAttemptStore();
     logger = _Logger();
-    clock = FakeClock(DateTime(2026, 11, 8));
+    clock = FakeClock(DateTime(2026, 11, 9));
+    writes = [];
+    answer = MigrationWrite.written;
+    online = true;
+    when(
+      () => repo.migrateWine(
+        cellarId: any(named: 'cellarId'),
+        user: any(named: 'user'),
+        wineId: any(named: 'wineId'),
+        seenUpdatedAt: any(named: 'seenUpdatedAt'),
+        fields: any(named: 'fields'),
+      ),
+    ).thenAnswer((invocation) async {
+      writes.add((
+        invocation.namedArguments[#wineId]! as String,
+        invocation.namedArguments[#fields]! as Map<String, Object?>,
+      ));
+      return answer;
+    });
   });
 
-  EstimatesMigration newStart() => EstimatesMigration(
-    wines: repository,
-    reporter: recordingReporter(sink),
-    clock: clock,
-    store: store,
-    logger: logger,
-  );
+  EstimatesMigration newStart({int version = estimationTablesVersion}) =>
+      EstimatesMigration(
+        wines: repo,
+        reporter: recordingReporter(sink),
+        clock: clock,
+        store: store,
+        logger: logger,
+        tablesVersion: version,
+        isOnline: () async => online,
+      );
 
-  Map<String, Object?> written(int i) => batches.batches[i].ops.single.data!;
-
-  group('needsMigration', () {
-    test('internal windows of older tables only', () {
+  group('BR7.6 candidates', () {
+    test('migrationVersion missing or below 3 only', () {
       expect(EstimatesMigration.needsMigration(_oldWine('w1')), isTrue);
-      final current = estimateWindow(
-        const WineFacts(name: 'Pauillac', vintage: 2016),
+      expect(
+        EstimatesMigration.needsMigration(
+          cellarWine('w2', migrationVersion: 2),
+        ),
+        isTrue,
       );
       expect(
         EstimatesMigration.needsMigration(
-          cellarWine('w2', window: current, baseWindow: current),
+          cellarWine('w3', migrationVersion: 3),
         ),
         isFalse,
       );
-      final catalog = windowOf(2020, 2025, 2035, source: WindowSource.catalog);
       expect(
         EstimatesMigration.needsMigration(
-          cellarWine('w3', window: catalog, baseWindow: catalog),
+          cellarWine('w4', migrationVersion: 3),
+          version: 4,
         ),
-        isFalse,
-      );
-      expect(EstimatesMigration.needsMigration(cellarWine('w4')), isFalse);
-      expect(
-        EstimatesMigration.needsMigration(_oldWine('w5'), version: 1),
         isTrue,
       );
     });
   });
 
-  group('NFR4.8a online', () {
-    test('BR3.9 each old wine is written once, with the new version, its '
-        'level and its correction (BR3.8, BR4.4)', () async {
-      final migration = newStart();
-      final wines = [
-        _oldWine('w1'),
-        _oldWine('w2', level: WineLevel.aging),
-        _oldWine('w3', override: const WindowOverride(endYear: 2035)),
-      ];
-
-      final count = await migration.run(ownerCellar, cellarOwner, wines);
-      await pumpEventQueue();
-
-      expect(count, 3);
-      expect(batches.batches, hasLength(3));
-      final first = written(0);
-      expect(
-        (first[WineFields.window]! as Map)[WindowFields.tablesVersion],
-        estimationTablesVersion,
-      );
-      expect(
-        (first[WineFields.window]! as Map)[WindowFields.denominationKey],
-        'pauillac',
-      );
-      // aging on Pauillac 8/15/30 from 2016: 10/20/42.
-      final aging = written(1)[WineFields.baseWindow]! as Map;
-      expect(aging[WindowFields.endYear], 2058);
-      final corrected = written(2);
-      expect(
-        (corrected[WineFields.window]! as Map)[WindowFields.endYear],
-        2035,
-      );
-      expect(
-        (corrected[WineFields.baseWindow]! as Map)[WindowFields.endYear],
-        2046,
-      );
-      expect(corrected.containsKey(WineFields.windowOverride), isFalse);
-      expect(logger.migrated.single.$1, 3);
-      expect(sink.reasons, isEmpty);
-    });
-
-    test('a wine already on the new tables, a catalog window and a reader '
-        'write nothing', () async {
-      final migration = newStart();
-      final current = estimateWindow(
-        const WineFacts(name: 'Pauillac', vintage: 2016),
-      );
-      final catalog = windowOf(2020, 2025, 2035, source: WindowSource.catalog);
-
-      expect(
-        await migration.run(ownerCellar, cellarOwner, [
-          cellarWine('w1', window: current, baseWindow: current),
-          cellarWine('w2', window: catalog, baseWindow: catalog),
-        ]),
-        0,
-      );
-      expect(
-        await migration.run(readCellar, cellarEditor, [_oldWine('w3')]),
-        0,
-      );
-      expect(batches.batches, isEmpty);
-    });
-
+  group('NFR4.4 online', () {
     test(
-      'catalog pairings are kept, internal ones follow the tables',
+      'each wine is written once with the version and the seen time',
       () async {
         final migration = newStart();
-        const catalogPairings = Pairings(
-          items: ['Arrosto'],
-          categoryKeys: [],
-          source: WindowSource.catalog,
-        );
-        await migration.run(ownerCellar, cellarOwner, [
-          cellarWine(
-            'w1',
-            name: 'Pauillac',
-            window: _old,
-            baseWindow: _old,
-            pairings: catalogPairings,
-          ),
+        final count = await migration.run(ownerCellar, cellarOwner, [
+          _oldWine('w1'),
+          _oldWine('w2', level: WineLevel.aging),
+          cellarWine('w3', migrationVersion: 3, updatedAt: _seen),
         ]);
-        final pairings = written(0)[WineFields.pairings]! as Map;
-        expect(pairings[PairingsFields.items], ['Arrosto']);
+
+        expect(count, 2);
+        expect(writes.map((w) => w.$1), ['w1', 'w2']);
+        expect(writes.first.$2[WineFields.migrationVersion], 3);
+        verify(
+          () => repo.migrateWine(
+            cellarId: ownerCellar.cellarId,
+            user: cellarOwner,
+            wineId: 'w1',
+            seenUpdatedAt: _seen,
+            fields: any(named: 'fields'),
+          ),
+        ).called(1);
+        expect(logger.migrated.single.$1, 2);
+        expect(sink.reasons, isEmpty);
       },
     );
-  });
-
-  group('NFR4.8a offline', () {
-    test('the writes wait in the queue: the run does not wait for the server '
-        'and counts them', () async {
-      batches.commitWith = (_, result) {}; // never confirmed
-      final migration = newStart();
-
-      final count = await migration.run(ownerCellar, cellarOwner, [
-        _oldWine('w1'),
-        _oldWine('w2'),
-      ]);
-
-      expect(count, 2);
-      expect(batches.batches.every((b) => b.committed), isTrue);
-      expect(sink.reasons, isEmpty);
-    });
-
-    test('NFR4.8 an interrupted run continues at the next start with the '
-        'wines still on old tables', () async {
-      final first = newStart();
-      await first.run(ownerCellar, cellarOwner, [_oldWine('w1')]);
-      // The app closed: w1 is now on the new tables, w2 not yet.
-      final migrated = estimateWindow(
-        const WineFacts(name: 'Pauillac', vintage: 2016),
-      );
-      final next = newStart();
-
-      final count = await next.run(ownerCellar, cellarOwner, [
-        cellarWine('w1', window: migrated, baseWindow: migrated),
-        _oldWine('w2'),
-      ]);
-
-      expect(count, 1);
-      expect(batches.batches.last.ops.single.path, 'cellars/user-a/wines/w2');
-    });
-  });
-
-  group('NFR4.8a old rules in production: permission denied', () {
-    setUp(() {
-      batches.commitWith = (_, result) => scheduleMicrotask(
-        () => result.completeError(firestoreError('permission-denied')),
-      );
-    });
 
     test(
-      'one estimates_migration_failed, no notice, stopped for the start',
+      'a reader, a pending write or a migrated cellar write nothing',
       () async {
         final migration = newStart();
-
-        await migration.run(ownerCellar, cellarOwner, [
-          _oldWine('w1'),
-          _oldWine('w2'),
-        ]);
-        await pumpEventQueue();
-
-        expect(sink.reasons, ['estimates_migration_failed']);
         expect(
-          sink.recorded.single.error.message,
-          contains('permissionDenied'),
-        );
-        expect(events, isEmpty);
-        expect(await store.attempts(estimationTablesVersion), 1);
-        final before = batches.batches.length;
-        expect(
-          await migration.run(ownerCellar, cellarOwner, [_oldWine('w3')]),
+          await migration.run(readCellar, cellarEditor, [_oldWine('w1')]),
           0,
         );
-        expect(batches.batches, hasLength(before));
+        expect(
+          await migration.run(ownerCellar, cellarOwner, [
+            cellarWine('w2'), // no updatedAt yet: pending
+            cellarWine('w3', migrationVersion: 3),
+          ]),
+          0,
+        );
+        expect(writes, isEmpty);
       },
     );
 
-    test('at most 3 attempts in 3 different starts, then it waits', () async {
-      for (var start = 1; start <= 3; start++) {
-        await newStart().run(ownerCellar, cellarOwner, [_oldWine('w1')]);
-        await pumpEventQueue();
-        expect(await store.attempts(estimationTablesVersion), start);
-      }
-      final before = batches.batches.length;
-
-      expect(
-        await newStart().run(ownerCellar, cellarOwner, [_oldWine('w1')]),
-        0,
-      );
-      expect(batches.batches, hasLength(before));
-      expect(sink.reasons, hasLength(3));
-    });
-
-    test('a new table version starts counting again', () async {
-      await store.record(estimationTablesVersion, 3);
-      final next = EstimatesMigration(
-        wines: repository,
-        reporter: recordingReporter(sink),
-        clock: clock,
-        store: store,
-        tablesVersion: estimationTablesVersion + 1,
-      );
-
+    test('BR7.4 a wine changed by someone else is skipped and kept for the '
+        'next start', () async {
+      answer = MigrationWrite.skipped;
+      final first = newStart();
+      expect(await first.run(ownerCellar, cellarOwner, [_oldWine('w1')]), 0);
+      expect(sink.reasons, isEmpty);
+      answer = MigrationWrite.written;
+      final next = newStart();
       expect(await next.run(ownerCellar, cellarOwner, [_oldWine('w1')]), 1);
     });
   });
 
-  test(
-    'a transient failure leaves the wine for the next start, no report',
-    () async {
-      batches.commitWith = (_, result) => scheduleMicrotask(
-        () => result.completeError(firestoreError('unavailable')),
-      );
+  group('NFR4.9 offline', () {
+    test('without network the migration does not start', () async {
+      online = false;
       final migration = newStart();
+      expect(
+        await migration.run(ownerCellar, cellarOwner, [_oldWine('w1')]),
+        0,
+      );
+      expect(writes, isEmpty);
+      online = true;
+      expect(
+        await migration.run(ownerCellar, cellarOwner, [_oldWine('w1')]),
+        1,
+      );
+    });
 
-      await migration.run(ownerCellar, cellarOwner, [_oldWine('w1')]);
-      await pumpEventQueue();
-
-      expect(sink.reasons, isEmpty);
-      expect(events, isEmpty);
-      expect(await store.attempts(estimationTablesVersion), 0);
-    },
-  );
-
-  test('a local save failure stops with localWriteFailed', () async {
-    final broken = WineRepository(
-      db: db,
-      ledger: LocalLedger(
-        store: InMemoryKeyValueStore()
-          ..failReads = StateError('disk')
-          ..failNextWrite = StateError('disk'),
-        reporter: recordingReporter(sink),
-      ),
-      bus: bus,
-      reporter: recordingReporter(sink),
-    );
-    final migration = EstimatesMigration(
-      wines: broken,
-      reporter: recordingReporter(sink),
-      clock: clock,
-      store: store,
-    );
-
-    expect(
-      await migration.run(ownerCellar, cellarOwner, [
+    test('a network failure stops this start without counting', () async {
+      answer = MigrationWrite.failed;
+      final migration = newStart();
+      final count = await migration.run(ownerCellar, cellarOwner, [
         _oldWine('w1'),
         _oldWine('w2'),
-      ]),
-      0,
-    );
-    expect(sink.reasons, contains('estimates_migration_failed'));
-    expect(sink.recorded.last.error.message, contains('localWriteFailed'));
+      ]);
+      expect(count, 0);
+      expect(writes, hasLength(1));
+      expect(await store.attempts(estimationTablesVersion), 0);
+      expect(sink.reasons, isEmpty);
+    });
+
+    test('NFR4.6 an interrupted run continues with the wines left', () async {
+      final first = newStart();
+      await first.run(ownerCellar, cellarOwner, [_oldWine('w1')]);
+      final next = newStart();
+      final count = await next.run(ownerCellar, cellarOwner, [
+        cellarWine('w1', migrationVersion: 3, updatedAt: _seen),
+        _oldWine('w2'),
+      ]);
+      expect(count, 1);
+      expect(writes.map((w) => w.$1), ['w1', 'w2']);
+    });
   });
 
-  test('NFR4.8a two people: owner and editor write the same result', () async {
-    final owner = newStart();
-    // The editor's phone: its own ledger, the same cellar.
-    final editorPhone = WineRepository(
-      db: db,
-      ledger: LocalLedger(
-        store: InMemoryKeyValueStore(),
-        reporter: recordingReporter(sink),
-      ),
-      bus: bus,
-      reporter: recordingReporter(sink),
-    );
-    final editor = EstimatesMigration(
-      wines: editorPhone,
-      reporter: recordingReporter(sink),
-      clock: clock,
-    );
-    final wine = _oldWine('w1', level: WineLevel.everyday);
-
-    await owner.run(ownerCellar, cellarOwner, [wine]);
-    await editor.run(editCellar, cellarEditor, [wine]);
-
-    expect(batches.batches, hasLength(2));
-    expect(written(0)[WineFields.window], written(1)[WineFields.window]);
-    expect(written(1)[WineFields.updatedBy], cellarEditor.uid);
-  });
-
-  test('NFR4.7 1000 wines: one write each, computed in under 1 s', () async {
-    final wines = [for (var i = 0; i < 1000; i++) _oldWine('w$i')];
-    final watch = Stopwatch()..start();
-    for (final wine in wines) {
-      const WineEstimator().estimate(
-        WineFactsInput.ofWine(wine, fallbackYear: 2026),
+  group('BR7.6 rules not deployed: permission denied', () {
+    test('one estimates_migration_failed, stopped for the start', () async {
+      answer = MigrationWrite.rejected;
+      final migration = newStart();
+      final count = await migration.run(ownerCellar, cellarOwner, [
+        _oldWine('w1'),
+        _oldWine('w2'),
+      ]);
+      expect(count, 0);
+      expect(writes, hasLength(1));
+      expect(sink.reasons, ['estimates_migration_failed']);
+      expect(
+        await migration.run(ownerCellar, cellarOwner, [_oldWine('w3')]),
+        0,
       );
-    }
-    watch.stop();
-    expect(watch.elapsedMilliseconds, lessThan(1000));
+      expect(await store.attempts(estimationTablesVersion), 1);
+    });
 
+    test('at most 3 attempts in 3 different starts, then it waits', () async {
+      answer = MigrationWrite.rejected;
+      for (var start = 0; start < 3; start++) {
+        await newStart().run(ownerCellar, cellarOwner, [_oldWine('w1')]);
+      }
+      expect(await store.attempts(estimationTablesVersion), 3);
+      writes.clear();
+      await newStart().run(ownerCellar, cellarOwner, [_oldWine('w1')]);
+      expect(writes, isEmpty);
+      // A new version starts counting again.
+      await newStart(version: 4)
+          .run(ownerCellar, cellarOwner, [_oldWine('w1')]);
+      expect(writes, hasLength(1));
+    });
+  });
+
+  test('NFR3.4 200 wines are computed in under 1 s', () async {
+    final wines = [
+      for (var i = 0; i < 200; i++)
+        _oldWine('w$i', name: i.isEven ? 'Barolo Riserva' : 'Prosecco'),
+    ];
+    final watch = Stopwatch()..start();
     final count = await newStart().run(ownerCellar, cellarOwner, wines);
+    watch.stop();
+    expect(count, 200);
+    expect(watch.elapsedMilliseconds, lessThan(1000));
+  });
 
-    expect(count, 1000);
-    expect(batches.batches, hasLength(1000));
-    expect(batches.batches.every((b) => b.ops.length == 1), isTrue);
+  test('NFR3.7 500 wines are computed in under 2.5 s', () async {
+    const names = [
+      'Barolo Riserva',
+      'Prosecco',
+      'Champagne Brut',
+      'Rosso della casa',
+      'Porto Tawny',
+    ];
+    final wines = [
+      for (var i = 0; i < 500; i++)
+        _oldWine('w$i', name: names[i % names.length]),
+    ];
+    final watch = Stopwatch()..start();
+    final count = await newStart().run(ownerCellar, cellarOwner, wines);
+    watch.stop();
+    expect(count, 500);
+    expect(writes, hasLength(500));
+    expect(watch.elapsedMilliseconds, lessThan(2500));
   });
 
   test('CellarActions.ensureEstimates runs the migration after the missing '
       'estimates', () async {
     SharedPreferences.setMockInitialValues({});
+    when(
+      () => repo.setEstimate(
+        cellarId: any(named: 'cellarId'),
+        user: any(named: 'user'),
+        wine: any(named: 'wine'),
+        estimate: any(named: 'estimate'),
+      ),
+    ).thenAnswer((_) async => const SaveAccepted());
     final actions = CellarActions(
-      wines: repository,
+      wines: repo,
       records: MockDrinkingRecordRepository(),
       reconciler: RecordReconciler(
         preferences: SharedPreferences.getInstance,
@@ -413,13 +316,13 @@ void main() {
         reporter: recordingReporter(sink),
       ),
       refresher: EstimateRefresher(
-        wines: repository,
+        wines: repo,
         catalog: FakeWineCatalog(),
         network: FakeCellarNetwork(online: false),
         reporter: recordingReporter(sink),
         clock: clock,
       ),
-      bus: bus,
+      bus: SyncErrorBus(),
       reporter: recordingReporter(sink),
       clock: clock,
       migration: newStart(),
@@ -429,7 +332,7 @@ void main() {
       cellar: ownerCellar,
       user: cellarOwner,
       wines: [
-        cellarWine('w0', wineType: 'white'),
+        cellarWine('w0', wineType: 'white', migrationVersion: 3),
         _oldWine('w1'),
       ],
     );

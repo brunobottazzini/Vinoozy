@@ -66,6 +66,7 @@ final estimatesMigrationProvider = Provider<EstimatesMigration>(
     clock: ref.watch(clockProvider),
     store: PreferencesMigrationAttemptStore(SharedPreferences.getInstance),
     logger: ref.watch(appEventLoggerProvider),
+    isOnline: ref.watch(networkStatusProvider).hasNetwork,
   ),
 );
 

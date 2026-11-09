@@ -11,6 +11,7 @@
 
 import 'package:estimation/estimation.dart';
 
+import '../../cellar/domain/style_notice.dart';
 import '../../cellar/domain/wine.dart';
 import '../../cellar/domain/wine_origins.dart';
 import 'dashboard_summary.dart';
@@ -54,7 +55,7 @@ class _DrinkSoonCandidate {
   final String sortName;
 
   static int compare(_DrinkSoonCandidate a, _DrinkSoonCandidate b) {
-    final byEnd = a.row.endYear.compareTo(b.row.endYear);
+    final byEnd = a.row.endIndex.compareTo(b.row.endIndex);
     if (byEnd != 0) return byEnd;
     final byName = a.sortName.compareTo(b.sortName);
     if (byName != 0) return byName;
@@ -122,6 +123,7 @@ class _Tally {
   int toEstimate = 0;
   int invalid = 0;
   final List<_DrinkSoonCandidate> drinkSoon = [];
+  final List<(String, ToConfirmRow)> toConfirm = [];
 
   int pastPeak = 0;
   final List<int> peakYears = List.filled(
@@ -148,6 +150,7 @@ class _Tally {
     if (bottles <= 0) return;
     total += bottles;
     _addStatus(wine, bottles);
+    _addToConfirm(wine);
     _addType(wine, bottles);
     _addRegion(wine, bottles);
   }
@@ -185,7 +188,9 @@ class _Tally {
               producer: _textOrNull(wine.producer),
               country: wine.displayCountry,
               quantity: bottles,
-              endYear: window.endYear,
+              // drinkSoon always has an end (BR6.3).
+              endYear: window.endYear!,
+              endMonth: window.inMonths ? window.endMonth : null,
             ),
             normalizeWineText(wine.name),
           ),
@@ -196,7 +201,22 @@ class _Tally {
     _addPeak(window.peakYear, bottles);
   }
 
-  void _addPeak(int peakYear, int bottles) {
+  /// BR6.7: "To confirm" lists the wines with the notice of BR5.4 and those
+  /// "to estimate" for lack of a style.
+  void _addToConfirm(Wine wine) {
+    if (!styleToConfirmOf(wine, fallbackYear: year) &&
+        !needsStyleToEstimate(wine)) {
+      return;
+    }
+    toConfirm.add((
+      normalizeWineText(wine.name),
+      ToConfirmRow(wineId: wine.id, name: wine.name, vintage: wine.vintage),
+    ));
+  }
+
+  /// BR6.4: a window without a peak is not in the chart of the peaks.
+  void _addPeak(int? peakYear, int bottles) {
+    if (peakYear == null) return;
     if (peakYear < year) {
       pastPeak += bottles;
     } else if (peakYear > year + DashboardCalculator.peakYearsAhead) {
@@ -273,6 +293,14 @@ class _Tally {
       byType: List.unmodifiable(_typeBars()),
       byRegion: List.unmodifiable(_regionBars()),
       invalidWindowCount: invalid,
+      toConfirm: List.unmodifiable([
+        for (final entry
+            in toConfirm..sort((a, b) {
+              final byName = a.$1.compareTo(b.$1);
+              return byName != 0 ? byName : a.$2.wineId.compareTo(b.$2.wineId);
+            }))
+          entry.$2,
+      ]),
     );
   }
 

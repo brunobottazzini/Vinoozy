@@ -493,12 +493,12 @@ void main() {
         await pumpScreen(
           tester,
           _Opener((context) async {
-            picked = await CorrectEndYearSheet.show(
+            picked = (await CorrectEndYearSheet.show(
               context,
               startYear: start,
               peakYear: peak,
               currentEnd: end,
-            );
+            ))?.year;
             done = true;
           }),
         );
@@ -513,12 +513,12 @@ void main() {
       await pumpScreen(
         tester,
         _Opener((context) async {
-          picked = await CorrectEndYearSheet.show(
+          picked = (await CorrectEndYearSheet.show(
             context,
             startYear: 2024,
             peakYear: 2030,
             currentEnd: 2040,
-          );
+          ))?.year;
         }),
       );
       await tapOpen(tester);
@@ -537,12 +537,12 @@ void main() {
       await pumpScreen(
         tester,
         _Opener((context) async {
-          picked = await CorrectEndYearSheet.show(
+          picked = (await CorrectEndYearSheet.show(
             context,
             startYear: 2024,
             peakYear: 2030,
             currentEnd: 2040,
-          );
+          ))?.year;
         }),
       );
       await tapOpen(tester);
@@ -589,12 +589,12 @@ void main() {
       await pumpScreen(
         tester,
         _Opener((context) async {
-          picked = await CorrectEndYearSheet.show(
+          picked = (await CorrectEndYearSheet.show(
             context,
             startYear: 2024,
             peakYear: 2030,
             currentEnd: 2040,
-          );
+          ))?.year;
         }),
       );
       await tapOpen(tester);
@@ -636,12 +636,12 @@ void main() {
       await pumpScreen(
         tester,
         _Opener((context) async {
-          picked = await CorrectEndYearSheet.show(
+          picked = (await CorrectEndYearSheet.show(
             context,
             startYear: 2024,
             peakYear: 2030,
             currentEnd: 2040,
-          );
+          ))?.year;
         }),
       );
       await tapOpen(tester);
@@ -662,7 +662,7 @@ void main() {
         await pumpScreen(
           tester,
           _Opener((context) async {
-            result = await RestoreEstimateDialog.show(context, 2040);
+            result = await RestoreEstimateDialog.show(context, '2040');
           }),
         );
         await tapOpen(tester);
@@ -852,7 +852,7 @@ void main() {
   );
   accessibilityMatrix(
     'RestoreEstimateDialog',
-    () => _Opener((context) => RestoreEstimateDialog.show(context, 2040)),
+    () => _Opener((context) => RestoreEstimateDialog.show(context, '2040')),
     afterPump: tapOpen,
   );
   accessibilityMatrix(

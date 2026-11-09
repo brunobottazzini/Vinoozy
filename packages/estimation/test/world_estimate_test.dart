@@ -6,7 +6,11 @@ import 'package:estimation/src/grapes.dart';
 import 'package:estimation/src/tables.dart';
 import 'package:test/test.dart';
 
-List<int> years(DrinkingWindow window) => [
+/// [estimateWindow] for a wine that has a window (every wine of this file).
+DrinkingWindow estimated(WineFacts wine, [ExternalProfile? external]) =>
+    estimateWindow(wine, external)!;
+
+List<int?> years(DrinkingWindow window) => [
   window.startYear,
   window.peakYear,
   window.endYear,
@@ -19,7 +23,7 @@ DrinkingWindow estimate(
   String? denomination,
   WineLevel? level,
   ExternalProfile? external,
-}) => estimateWindow(
+}) => estimated(
   WineFacts(
     name: name,
     vintage: vintage,
@@ -44,7 +48,9 @@ void main() {
       final window = estimate('Chardonnay Napa Valley', vintage: 2021);
       expect(window.basis, EstimationBasis.denomination);
       expect(window.denominationKey, 'napaValley');
-      expect(years(window), [2022, 2024, 2028]);
+      // wine-style-profiles: Napa white is W_MEDIUM 1/3/6 (profile-map.json
+      // napaValley:otherType:white, BR2.2), was today's row 1/3/7.
+      expect(years(window), [2022, 2024, 2027]);
     });
 
     test('a weak alias alone in a hand-typed name is a denomination (owner '
@@ -150,12 +156,10 @@ void main() {
 
   group('BR3.3 the chosen country is never used', () {
     test('a Spanish denomination estimates the same with any region', () {
-      final a = estimateWindow(
+      final a = estimated(
         const WineFacts(name: 'Rioja DOCa', vintage: 2018, region: 'Toscana'),
       );
-      final b = estimateWindow(
-        const WineFacts(name: 'Rioja DOCa', vintage: 2018),
-      );
+      final b = estimated(const WineFacts(name: 'Rioja DOCa', vintage: 2018));
       expect(a, b);
     });
   });
@@ -252,14 +256,16 @@ void main() {
 
   group('BR4.2 level and qualifier', () {
     test('Rioja Gran Reserva: aging adds nothing, everyday shortens', () {
-      expect(years(estimate('Rioja DOCa Gran Reserva')), [2026, 2032, 2045]);
+      // wine-style-profiles: rioja:qualifier:granReserva is R_LONG 8/15/30
+      // in profile-map.json (BR2.2, step 4), was today's 6/12/25.
+      expect(years(estimate('Rioja DOCa Gran Reserva')), [2028, 2035, 2050]);
       expect(
         years(estimate('Rioja DOCa Gran Reserva', level: WineLevel.aging)),
-        [2026, 2032, 2045],
+        [2028, 2035, 2050],
       );
       expect(
         years(estimate('Rioja DOCa Gran Reserva', level: WineLevel.everyday)),
-        [2023, 2027, 2035],
+        [2024, 2029, 2038],
       );
     });
 

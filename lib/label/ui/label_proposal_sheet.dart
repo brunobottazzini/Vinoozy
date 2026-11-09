@@ -175,7 +175,8 @@ class _Origin extends StatelessWidget {
     final origin = guessOrigin(candidate);
     final country = WineOrigins.country(origin.country);
     final region = origin.region;
-    final wineType = wineFamilyOf(candidate.wineType);
+    final wineType =
+        candidate.exactType?.name ?? wineFamilyOf(candidate.wineType);
     return Column(
       key: const Key('label-proposal-origin'),
       crossAxisAlignment: CrossAxisAlignment.start,

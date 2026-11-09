@@ -12,6 +12,12 @@
 /// manual correction (`effectiveWindow`), the read-only view of the world
 /// appellations (`appellations`, `findAppellation`) and the country names
 /// of the labels (`countryCodeOfName`).
+///
+/// wine-style-profiles adds compatibly: the style profiles and keys
+/// (`StyleProfile`, `WineStyle`), the months of a window (`monthIndex`,
+/// `monthOfIndex`), the style resolution (`resolveStyle`) and the
+/// classification (`classifyWine`). `estimateWindow` may now return `null`
+/// ("To estimate", BR2.9).
 library;
 
 export 'src/appellations.dart'
@@ -26,6 +32,13 @@ export 'src/appellations.dart'
         grapeForms,
         grapeNameOf,
         parseGeneratedRow;
+export 'src/classifier.dart'
+    show
+        Preselection,
+        PreselectionReason,
+        classifyWine,
+        extraGrapeTypes,
+        suggestedLevel;
 export 'src/catalog.dart'
     show
         DenominationInfo,
@@ -38,7 +51,9 @@ export 'src/effective_window.dart'
     show
         effectiveWindow,
         isValidOverrideYear,
+        maxOverrideMonths,
         maxOverrideSpan,
+        overrideMonthRange,
         overrideYearRange;
 export 'src/errors.dart' show EstimationArgumentError, EstimationErrorCode;
 export 'src/label_fields.dart'
@@ -82,11 +97,24 @@ export 'src/models.dart'
         WineLevel,
         WineStatus,
         WineType,
-        genericEstimateWarningCode;
+        genericEstimateWarningCode,
+        monthIndex,
+        monthOfIndex;
+export 'src/profiles.dart'
+    show AgingAnchor, ProfileEvidence, StyleProfile, WindowUnit, WineStyle;
+export 'src/style_resolver.dart'
+    show
+        ResolutionSource,
+        StyleResolution,
+        hasSeveralStyles,
+        resolveStyle,
+        typeDefaultProfiles;
 export 'src/pairings.dart' show pairingsFor;
-export 'src/qualifiers.dart' show agingQualifiers;
+export 'src/qualifiers.dart'
+    show agingQualifiers, selectionQualifiers, suggestsAgingLevel;
 export 'src/status.dart' show statusOf;
 export 'src/tables.dart' show estimationTablesVersion;
 export 'src/vintage_parser.dart' show VintageParser;
-export 'src/window.dart' show estimateWindow, needsRefinement;
+export 'src/window.dart'
+    show estimateWindow, needsRefinement, windowOfResolution;
 export 'src/world_tables.dart' show TemplateKeys, appellationTemplates;

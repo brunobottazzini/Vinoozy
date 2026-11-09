@@ -39,30 +39,54 @@ class CorrectedBadge extends StatelessWidget {
 /// the start is shown struck through and is not selectable, for the
 /// screen reader too (A4). The estimated end is preselected without a
 /// correction (interaction-spec). Returns the year saved, or `null`.
+///
+/// wine-style-profiles (BR6.8): for a window in months ([inMonths]) the sheet
+/// also asks the month, and the years go to the start plus 120 months; a
+/// window without a peak or an end preselects two years after the start.
 abstract final class CorrectEndYearSheet {
-  static Future<int?> show(
+  static Future<({int year, int? month})?> show(
     BuildContext context, {
     required int startYear,
-    required int peakYear,
-    required int currentEnd,
-  }) => showModalBottomSheet<int>(
+    required int? peakYear,
+    required int? currentEnd,
+    bool inMonths = false,
+    int? startMonth,
+    int? currentEndMonth,
+  }) => showModalBottomSheet<({int year, int? month})>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
     builder: (context) => _YearSheet(
       startYear: startYear,
       peakYear: peakYear,
-      currentEnd: currentEnd,
+      currentEnd: currentEnd ?? startYear + 2,
+      inMonths: inMonths,
+      startMonth: startMonth ?? 1,
+      currentEndMonth: currentEndMonth ?? 12,
     ),
   );
 
+  /// The last year that may be chosen (BR4.6, BR6.8).
+  static int lastYear(
+    int startYear, {
+    bool inMonths = false,
+    int startMonth = 1,
+  }) => inMonths
+      ? monthOfIndex(monthIndex(startYear, startMonth) + maxOverrideMonths).year
+      : startYear + maxOverrideSpan;
+
   /// The years of the grid: the start, the peak, the end and four years
-  /// around it, every one within start..start+60.
-  static List<int> gridYears(int startYear, int peakYear, int currentEnd) {
-    final last = startYear + maxOverrideSpan;
+  /// around it, every one within start..start+60 (start+120 months).
+  static List<int> gridYears(
+    int startYear,
+    int? peakYear,
+    int currentEnd, {
+    bool inMonths = false,
+  }) {
+    final last = lastYear(startYear, inMonths: inMonths);
     return {
       startYear,
-      peakYear,
+      ?peakYear,
       for (final step in const [-8, -4, 0, 4, 8, 12]) currentEnd + step,
     }.where((year) => year >= startYear && year <= last).toList()..sort();
   }
@@ -73,31 +97,50 @@ class _YearSheet extends StatefulWidget {
     required this.startYear,
     required this.peakYear,
     required this.currentEnd,
+    required this.inMonths,
+    required this.startMonth,
+    required this.currentEndMonth,
   });
 
   final int startYear;
-  final int peakYear;
+  final int? peakYear;
   final int currentEnd;
+  final bool inMonths;
+  final int startMonth;
+  final int currentEndMonth;
 
   @override
   State<_YearSheet> createState() => _YearSheetState();
 }
 
 class _YearSheetState extends State<_YearSheet> {
+  late final int _last = CorrectEndYearSheet.lastYear(
+    widget.startYear,
+    inMonths: widget.inMonths,
+    startMonth: widget.startMonth,
+  );
   late int _year = math.min(
     math.max(widget.currentEnd, widget.startYear),
-    widget.startYear + maxOverrideSpan,
+    _last,
   );
+  late int _month = widget.currentEndMonth;
+
+  /// The month of a window in months stays within start..start+120.
+  int get _validMonth {
+    if (_year == widget.startYear && _month < widget.startMonth) {
+      return widget.startMonth;
+    }
+    if (_year == _last) {
+      final lastMonth = monthOfIndex(
+        monthIndex(widget.startYear, widget.startMonth) + maxOverrideMonths,
+      ).month;
+      if (_month > lastMonth) return lastMonth;
+    }
+    return _month;
+  }
 
   Future<void> _more() async {
-    final years = [
-      for (
-        var y = widget.startYear;
-        y <= widget.startYear + maxOverrideSpan;
-        y++
-      )
-        y,
-    ];
+    final years = [for (var y = widget.startYear; y <= _last; y++) y];
     final picked = await showDialog<int>(
       context: context,
       builder: (context) => SimpleDialog(
@@ -123,6 +166,7 @@ class _YearSheetState extends State<_YearSheet> {
       widget.startYear,
       widget.peakYear,
       widget.currentEnd,
+      inMonths: widget.inMonths,
     );
     final grid = {...years, _year}.toList()..sort();
     return SafeArea(
@@ -174,12 +218,28 @@ class _YearSheetState extends State<_YearSheet> {
                 ),
               ],
             ),
-            if (_year < widget.peakYear) ...[
+            if (widget.inMonths) ...[
+              const SizedBox(height: 12),
+              DropdownButtonFormField<int>(
+                key: const Key('override-month'),
+                initialValue: _validMonth,
+                decoration: InputDecoration(labelText: l10n.agingStartMonth),
+                items: [
+                  for (var m = 1; m <= 12; m++)
+                    DropdownMenuItem(
+                      value: m,
+                      child: Text(formatMonthLong(context, _year, m)),
+                    ),
+                ],
+                onChanged: (m) => setState(() => _month = m ?? _month),
+              ),
+            ],
+            if (widget.peakYear != null && _year < widget.peakYear!) ...[
               const SizedBox(height: 8),
               Semantics(
                 liveRegion: true,
                 child: Text(
-                  l10n.overridePeakNotice('${widget.peakYear}'),
+                  l10n.overridePeakNotice('${widget.peakYear!}'),
                   key: const Key('override-peak-notice'),
                   style: theme.textTheme.bodySmall,
                 ),
@@ -188,7 +248,9 @@ class _YearSheetState extends State<_YearSheet> {
             const SizedBox(height: 16),
             FilledButton(
               key: const Key('override-save'),
-              onPressed: () => Navigator.of(context).pop(_year),
+              onPressed: () => Navigator.of(
+                context,
+              ).pop((year: _year, month: widget.inMonths ? _validMonth : null)),
               child: Text(l10n.overrideSave),
             ),
           ],
@@ -201,13 +263,13 @@ class _YearSheetState extends State<_YearSheet> {
 /// "Go back to the app estimate (until …)?" (FR5.4): true with "Restore".
 /// No timed "Undo", so one write only.
 abstract final class RestoreEstimateDialog {
-  static Future<bool> show(BuildContext context, int estimatedEnd) async {
+  static Future<bool> show(BuildContext context, String estimatedEnd) async {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         key: const Key('restore-estimate-dialog'),
-        title: Text(l10n.overrideRestoreTitle('$estimatedEnd')),
+        title: Text(l10n.overrideRestoreTitle(estimatedEnd)),
         actions: [
           TextButton(
             key: const Key('restore-estimate-cancel'),

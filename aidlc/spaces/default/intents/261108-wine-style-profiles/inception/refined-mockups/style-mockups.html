@@ -1,0 +1,263 @@
+<title>Vinoozy profili di stile</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Serif:opsz,wght@8..144,600;8..144,700&display=swap">
+<style>
+/* Layout: a contact sheet of phone screens, each labelled with the requirement it shows. */
+:root{
+  --page:#efe9e4; --ink:#2a1d20; --muted:#6b5a5d; --rule:#d8ccc6;
+  --bordeaux:#7a1f32; --bordeaux-ink:#ffffff; --oro:#9a6b12; --oro-soft:#f3e3bf;
+  --crema:#fbf6ee; --card:#ffffff; --surface2:#f3ebe1;
+  --red:#8e1b2c; --white:#c9a227; --rose:#d4687c; --spark:#7f8f3a; --sweet:#a8642a;
+  --now:#2f6b3a; --now-bg:#dcefdc; --wait:#7a5a0f; --wait-bg:#f6e7c4; --past:#8e2b2b; --past-bg:#f7dada;
+  --phone-edge:#1b1416;
+  --display:"Roboto Serif",Georgia,serif; --body:Roboto,"Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --page:#151012; --ink:#f2e8e4; --muted:#bfaeae; --rule:#3a2c30;
+  --crema:#1d1517; --card:#2a1f22; --surface2:#33262a; --oro-soft:#4a3a1c;
+  --now-bg:#1f3a24; --now:#a9dcae; --wait-bg:#46391a; --wait:#f0d48a; --past-bg:#4a2223; --past:#f3b2b2;
+  --phone-edge:#000; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --page:#151012; --ink:#f2e8e4; --muted:#bfaeae; --rule:#3a2c30;
+  --crema:#1d1517; --card:#2a1f22; --surface2:#33262a; --oro-soft:#4a3a1c;
+  --now-bg:#1f3a24; --now:#a9dcae; --wait-bg:#46391a; --wait:#f0d48a; --past-bg:#4a2223; --past:#f3b2b2;
+  --phone-edge:#000; color-scheme:dark}
+body{background:var(--page);color:var(--ink);font-family:var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.intro{max-width:880px;margin:0 auto 28px}
+.intro h1{font-family:var(--display);font-size:2rem;margin:0 0 8px;text-wrap:balance}
+.intro p{color:var(--muted);line-height:1.5;margin:0;max-width:65ch}
+.sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:32px;max-width:1240px;margin:0 auto}
+figure{margin:0;display:grid;gap:10px;justify-items:center}
+figcaption{max-width:320px;font-size:.85rem;color:var(--muted);line-height:1.45}
+figcaption b{color:var(--ink);display:block;font-size:.95rem;margin-bottom:2px}
+.phone{width:300px;max-width:100%;height:620px;border:10px solid var(--phone-edge);border-radius:34px;background:var(--crema);overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(40,10,15,.18)}
+.status{height:22px;flex:none}
+.appbar{display:flex;align-items:center;justify-content:space-between;padding:6px 16px 10px;flex:none}
+.appbar h2{font-family:var(--display);font-size:1.35rem;margin:0;color:var(--bordeaux)}
+.appbar .sub{font-size:.75rem;color:var(--muted)}
+.scroll{flex:1;overflow:hidden;padding:0 12px;display:flex;flex-direction:column;gap:10px}
+.nav{flex:none;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule);background:var(--card);padding:6px 0 10px}
+.nav span{display:grid;justify-items:center;font-size:.68rem;color:var(--muted);gap:2px}
+.nav span.on{color:var(--bordeaux);font-weight:700}
+.nav i{font-style:normal;font-size:1.15rem}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:.72rem;padding:5px 10px;border-radius:999px;background:var(--card);border:1px solid var(--rule)}
+.chip.sel{background:var(--bordeaux);color:var(--bordeaux-ink);border-color:var(--bordeaux)}
+.search{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:9px 12px;font-size:.8rem;color:var(--muted)}
+/* wine card */
+.wine{display:grid;grid-template-columns:6px 1fr;background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--rule)}
+.wine .band{background:var(--c)}
+.wine .in{padding:10px 12px;display:grid;gap:6px}
+.row1{display:flex;align-items:flex-start;gap:8px}
+.flag{font-size:1.25rem;line-height:1}
+.name{font-weight:700;font-size:.92rem;line-height:1.2}
+.meta{font-size:.72rem;color:var(--muted)}
+.row2{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.state{font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:999px}
+.now{background:var(--now-bg);color:var(--now)} .wait{background:var(--wait-bg);color:var(--wait)} .past{background:var(--past-bg);color:var(--past)}
+.bottles{font-size:.78rem;font-weight:700;font-variant-numeric:tabular-nums}
+.drink{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;background:var(--oro-soft);color:var(--ink);font-weight:700;font-size:.75rem;border:1px solid var(--oro)}
+.type{display:inline-flex;align-items:center;gap:4px;font-size:.68rem;color:var(--muted)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--c);display:inline-block}
+.fab{position:absolute;right:16px;bottom:74px;background:var(--bordeaux);color:var(--bordeaux-ink);border-radius:16px;padding:12px 16px;font-weight:700;font-size:.85rem;box-shadow:0 6px 16px rgba(122,31,50,.35)}
+.banner{background:#3a2a2e;color:#fff;font-size:.72rem;padding:7px 12px;border-radius:10px}
+/* form */
+label.f{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.field{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:9px 12px;font-size:.85rem}
+.countries{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.country{display:grid;justify-items:center;gap:2px;background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:7px 2px;font-size:.62rem;text-align:center}
+.country b{font-size:1.4rem;line-height:1.1}
+.country.sel{border:2px solid var(--bordeaux);background:var(--surface2)}
+.btn{background:var(--bordeaux);color:var(--bordeaux-ink);border-radius:14px;padding:12px;text-align:center;font-weight:700;font-size:.9rem}
+.btn.ghost{background:transparent;color:var(--bordeaux);border:1px solid var(--bordeaux)}
+/* sheet */
+.dim{position:absolute;inset:0;background:rgba(20,8,10,.45)}
+.bottom{position:absolute;left:0;right:0;bottom:0;background:var(--card);border-radius:22px 22px 0 0;padding:14px 18px 22px;display:grid;gap:12px}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--rule);justify-self:center}
+.stars{font-size:1.6rem;letter-spacing:6px;color:var(--oro)}
+.count{display:flex;align-items:center;gap:10px;font-variant-numeric:tabular-nums}
+.count .big{font-family:var(--display);font-size:1.8rem;font-weight:700}
+/* dashboard */
+.tile{background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:12px;display:grid;gap:8px}
+.tile h3{margin:0;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.hero{background:var(--bordeaux);color:var(--bordeaux-ink);border-radius:16px;padding:14px;display:grid;gap:4px}
+.hero .n{font-family:var(--display);font-size:2.2rem;font-weight:700;line-height:1}
+.bar{display:grid;grid-template-columns:76px 1fr 26px;align-items:center;gap:6px;font-size:.72rem}
+.bar .t{height:10px;border-radius:5px;background:var(--surface2);overflow:hidden}
+.bar .t i{display:block;height:100%;background:var(--c)}
+.bar .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.detail-hero{background:linear-gradient(180deg,var(--c) 0 64px,var(--card) 64px);border-radius:16px;border:1px solid var(--rule);padding:12px;display:grid;gap:6px}
+.detail-hero .flagbig{font-size:2rem;background:var(--card);border-radius:12px;width:48px;height:48px;display:grid;place-items:center;border:1px solid var(--rule)}
+.window{height:14px;border-radius:7px;background:linear-gradient(90deg,var(--wait-bg) 0 30%,var(--now-bg) 30% 75%,var(--past-bg) 75%);position:relative}
+.window::after{content:"";position:absolute;left:52%;top:-3px;width:3px;height:20px;background:var(--ink);border-radius:2px}
+.legend{display:flex;justify-content:space-between;font-size:.62rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.notes{max-width:880px;margin:36px auto 0;display:grid;gap:10px;line-height:1.5}
+.notes h2{font-family:var(--display);margin:0;font-size:1.3rem}
+.notes ul{margin:0;padding-left:1.1rem;color:var(--muted)}
+.dark{--crema:#1d1517;--card:#2a1f22;--surface2:#33262a;--ink:#f2e8e4;--muted:#bfaeae;--rule:#3a2c30;--oro-soft:#4a3a1c;--now-bg:#1f3a24;--now:#a9dcae;--wait-bg:#46391a;--wait:#f0d48a;--past-bg:#4a2223;--past:#f3b2b2;--bordeaux:#d9768a;--bordeaux-ink:#2a1015;color:var(--ink)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+<style>
+.filled{position:relative}
+.filled{margin-bottom:22px}.filled::after{content:"✦ dal testo";position:absolute;left:0;top:calc(100% + 4px);font-size:.75rem;font-weight:700;color:#3b2a00;background:#f1dfae;border-radius:999px;padding:2px 8px}.dark .filled::after{color:#f6e3b0;background:#4a3a1c}
+.hint{font-size:.68rem;color:var(--muted);line-height:1.35}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.level{min-height:48px;background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:8px 6px;font-size:.66rem;text-align:center;display:grid;gap:2px}
+.level b{font-size:.74rem}
+.level.sel{border:2px solid var(--bordeaux);background:var(--surface2)}
+.level.sug{border:2px dashed var(--oro)}
+.toolbar{display:flex;gap:6px;flex-wrap:wrap}
+.tb{display:inline-flex;align-items:center;gap:4px;min-height:48px;padding:0 10px;border-radius:999px;border:1px solid var(--rule);background:var(--card);font-size:.7rem;font-weight:700}
+.tb.primary{background:var(--oro-soft);border-color:var(--oro)}
+.snack{position:absolute;left:12px;right:12px;bottom:16px;background:#3a2a2e;color:#fff;border-radius:10px;padding:10px 12px;font-size:.72rem;display:flex;justify-content:space-between;gap:8px}
+.dialog{position:absolute;left:22px;right:22px;top:34%;background:var(--card);border-radius:20px;padding:16px;display:grid;gap:10px}
+.dialog h3{margin:0;font-size:1rem}
+.acts{display:flex;justify-content:flex-end;gap:14px;font-weight:700;font-size:.8rem;color:var(--bordeaux)}
+.years{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.yr{min-height:48px;display:grid;place-items:center;background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:8px 0;text-align:center;font-size:.8rem;font-variant-numeric:tabular-nums}
+.yr.sel{background:var(--bordeaux);color:var(--bordeaux-ink);border-color:var(--bordeaux)}
+.yr.off{opacity:.35;text-decoration:line-through}
+.share{position:absolute;left:0;right:0;bottom:0;background:var(--card);border-radius:22px 22px 0 0;padding:14px 16px 20px;display:grid;gap:12px}
+.apps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;font-size:.62rem}
+.apps b{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:var(--surface2);margin:0 auto 4px;font-size:1.3rem}
+.apps .me b{background:var(--bordeaux);color:#fff}
+.lenstext{background:#202124;color:#e8eaed;border-radius:12px;padding:10px;font-size:.72rem;line-height:1.4}
+.lenstext mark{background:#8ab4f8;color:#202124}
+.corr{font-size:.75rem;font-weight:700;color:#3b2a00;background:#f1dfae;border-radius:999px;padding:2px 8px}
+</style>
+
+<style>
+/* guided confirmation (FR7) */
+.guide{position:absolute;left:0;right:0;bottom:0;background:var(--card);border-radius:22px 22px 0 0;padding:12px 16px 18px;display:grid;gap:10px;box-shadow:0 -8px 24px rgba(40,10,15,.18)}
+.ghead{display:flex;justify-content:space-between;align-items:center;font-size:.7rem;color:var(--muted);font-weight:700}
+.prog{display:flex;gap:4px}.prog i{width:22px;height:4px;border-radius:2px;background:var(--rule)}.prog i.on{background:var(--bordeaux)}
+.q{font-size:.95rem;line-height:1.3}.q b{font-family:var(--display);font-size:1.1rem;color:var(--bordeaux)}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ans{min-height:48px;display:grid;place-items:center;border-radius:12px;font-weight:700;font-size:.8rem;border:1px solid var(--rule);background:var(--card)}
+.ans.yes{background:var(--bordeaux);color:var(--bordeaux-ink);border-color:var(--bordeaux)}
+.ans.link{border:none;background:transparent;color:var(--bordeaux)}
+.words{display:grid;gap:5px;max-height:132px;overflow:hidden;padding:8px;background:var(--surface2);border-radius:12px}
+.wl{display:flex;flex-wrap:wrap;gap:5px}
+.w{min-height:32px;display:inline-flex;align-items:center;padding:0 9px;border-radius:999px;border:1px solid var(--rule);background:var(--card);font-size:.72rem}
+.w.sel{background:var(--bordeaux);color:var(--bordeaux-ink);border-color:var(--bordeaux)}
+.w.sel::before{content:attr(data-n);font-size:.6rem;margin-right:4px;opacity:.8}
+.w.used{opacity:.35;text-decoration:line-through}
+.preview{display:flex;justify-content:space-between;align-items:center;gap:8px;border:2px solid var(--oro);border-radius:12px;padding:8px 10px;font-size:.82rem}
+.preview small{display:block;font-size:.62rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--oro);border-right-color:transparent;border-radius:50%}
+.wlabel{font-size:.66rem;color:var(--muted)}
+.wheel{display:grid;justify-items:center;gap:2px;padding:6px 0;background:var(--surface2);border-radius:12px;font-variant-numeric:tabular-nums;font-size:.8rem;color:var(--muted);-webkit-mask-image:linear-gradient(transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(transparent,#000 30%,#000 70%,transparent)}
+.wheel .cur{font-family:var(--display);font-size:1.4rem;font-weight:700;color:var(--ink);border-block:1px solid var(--rule);width:60%;text-align:center;padding:2px 0}
+</style>
+<style>
+.styles{display:flex;flex-wrap:wrap;gap:6px}
+.st{min-height:48px;display:inline-flex;align-items:center;padding:0 10px;border-radius:999px;border:1px solid var(--rule);background:var(--card);font-size:.7rem}
+.st.sel{border:2px solid var(--bordeaux);background:var(--surface2);font-weight:700}
+.st.sug::after{content:" ✦";color:var(--oro)}
+.sug-tag{font-size:.62rem;font-weight:700;color:#3b2a00;background:#f1dfae;border-radius:999px;padding:1px 7px;margin-left:6px}
+.dark .sug-tag{color:#f6e3b0;background:#4a3a1c}
+.warn{background:var(--wait-bg);color:var(--wait);border-radius:10px;padding:8px 10px;font-size:.72rem;font-weight:700}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:.78rem}
+.kv b{font-variant-numeric:tabular-nums}
+.monthsel{display:flex;gap:6px}.monthsel .field{flex:1}
+</style>
+<header class="intro">
+  <h1>Vinoozy, profili di stile e classificazione automatica</h1>
+  <p>Mockup del lavoro "wine-style-profiles": Tipologia, Stile e Livello già preselezionati (✦ suggerito), data di sboccatura o imbottigliamento per i vini che contano da lì, stime in mesi, "Stile da confermare", Porto e Sherry senza fine inventata. Vini ed esempi sono indicativi; lo stile grafico è quello approvato.</p>
+</header>
+<main class="sheet">
+
+<!-- S1 modulo dalla base, Barolo -->
+<figure><div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Nuovo vino</h2><div class="sub">Dalla base dei vini</div></div><span aria-hidden="true">✕</span></div>
+  <div class="scroll">
+    <label class="f">Nome</label><div class="field">Barolo Ravera 2016</div>
+    <label class="f">Tipologia <span class="sug-tag">✦ suggerito</span></label>
+    <div class="styles"><span class="st">Rosso leggero</span><span class="st sel">Rosso strutturato</span><span class="st">Bianco</span><span class="st">…</span></div>
+    <label class="f">Livello <span class="sug-tag">✦ suggerito</span></label>
+    <div class="levels"><span class="level"><b>Quotidiano (economico)</b></span><span class="level"><b>Buono</b></span><span class="level sel"><b>Da invecchiamento</b></span></div>
+    <div class="tile"><h3>Stima</h3><div class="kv"><span>Pronto da</span><b>2024</b><span>Al meglio</span><b>2031</b><span>Consigliato fino al</span><b>2046</b></div><div class="hint">Profilo: Rosso di lunga evoluzione (Barolo) · valori di oggi conservati dallo studio</div></div>
+  </div>
+</div><figcaption><b>Preselezione automatica</b>FR2.1–FR2.4. Dalla denominazione: Tipologia "Rosso strutturato" e Livello "Da invecchiamento", segnati ✦ suggerito e modificabili. Nessuno stile da chiedere: il Barolo ha uno stile solo.</figcaption></figure>
+
+<!-- S2 spumante con Stile e sboccatura -->
+<figure><div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Nuovo vino</h2><div class="sub">Champagne</div></div><span aria-hidden="true">✕</span></div>
+  <div class="scroll">
+    <label class="f">Nome</label><div class="field">Champagne Brut Réserve</div>
+    <label class="f">Tipologia <span class="sug-tag">✦ suggerito</span></label>
+    <div class="styles"><span class="st sel">Spumante metodo classico</span><span class="st">Charmat</span></div>
+    <label class="f">Stile <span class="sug-tag">✦ suggerito</span></label>
+    <div class="styles"><span class="st sel">Fresco</span><span class="st">Da evoluzione</span></div>
+    <label class="f">Sboccatura (facoltativa)</label>
+    <div class="monthsel"><div class="field">Marzo</div><div class="field">2026</div></div>
+    <div class="hint">Lo Champagne si stima dalla sboccatura, non dalla vendemmia. Di solito è sull'etichetta posteriore.</div>
+  </div>
+</div><figcaption><b>Stile e sboccatura</b>FR3.2, FR3.3. "Stile" compare solo per i vini che ne hanno più d'uno, già scelto. La data di sboccatura è facoltativa: se manca si usa la data di inserimento.</figcaption></figure>
+
+<!-- S3 dettaglio in mesi -->
+<figure><div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Champagne Brut Réserve</h2><div class="sub">Metodo classico · fresco</div></div></div>
+  <div class="scroll">
+    <div class="tile"><h3>Momento ideale</h3>
+      <div class="window"></div>
+      <div class="legend"><span>mar 2026</span><span>mar 2027</span><span>mar 2029</span></div>
+      <div class="kv"><span>Pronto da</span><b>marzo 2026</b><span>Al meglio</span><b>marzo 2027</b><span>Consigliato fino al</span><b>marzo 2029</b></div>
+      <div class="hint">Profilo: Metodo classico fresco · 0/12/36 mesi dalla sboccatura</div>
+    </div>
+    <span class="state now" style="justify-self:start">Da bere</span>
+  </div>
+</div><figcaption><b>Finestra in mesi</b>FR3.4, FR1.1. Per i profili in mesi si mostrano mese e anno; lo stato si calcola sul mese. Senza sboccatura il dettaglio dice "dalla data di inserimento" e l'affidabilità è bassa.</figcaption></figure>
+
+<!-- S4 stile da confermare -->
+<figure><div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Château X 2019</h2><div class="sub">Bordeaux</div></div></div>
+  <div class="scroll">
+    <div class="warn">⚠︎ Stile da confermare: la stima è indicativa</div>
+    <div class="tile"><h3>Momento ideale</h3><div class="kv"><span>Pronto da</span><b>2021</b><span>Al meglio</span><b>2024</b><span>Consigliato fino al</span><b>2029</b></div><div class="hint">Bordeaux fa vini molto diversi: scegli lo stile per una stima più precisa.</div></div>
+    <label class="f">Stile</label>
+    <div class="styles"><span class="st">Rosso fresco</span><span class="st">Rosso medio</span><span class="st">Rosso da evoluzione</span><span class="st">Rosso di lunga evoluzione</span></div>
+  </div>
+</div><figcaption><b>Stile non chiaro</b>FR1.4 (scelta Q1 = B). Stima indicativa con l'avviso; un tocco su uno stile la rende precisa. Il bianco generato senza tipo non diventa mai "rosso leggero".</figcaption></figure>
+
+<!-- S5 Porto LBV e Sherry -->
+<figure><div class="phone">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Cantina</h2><div class="sub">Liquorosi</div></div></div>
+  <div class="scroll">
+    <div class="wine" style="--c:var(--sweet)"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag">🇵🇹</span><div><div class="name">Porto LBV 2018</div><div class="meta">Liquoroso · LBV</div></div></div>
+      <div class="row2"><span class="state now">Da bere</span><span class="meta">pronto, nessuna fine stimata</span></div></div></div>
+    <div class="wine" style="--c:var(--white)"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag">🇪🇸</span><div><div class="name">Fino En Rama</div><div class="meta">Liquoroso · Fino</div></div></div>
+      <div class="row2"><span class="state wait" style="background:var(--past-bg);color:var(--past)">Bevi presto</span><span class="meta">entro feb 2027</span></div>
+      <div class="hint">12 mesi dall'imbottigliamento (feb 2026)</div></div></div>
+    <div class="wine" style="--c:var(--red)"><div class="band"></div><div class="in">
+      <div class="row1"><span class="flag">🇵🇹</span><div><div class="name">Madeira 10 anni</div><div class="meta">Liquoroso</div></div></div>
+      <div class="row2"><span class="state" style="background:var(--surface2)">Da stimare</span><span class="meta">scegli lo stile</span></div></div></div>
+  </div>
+</div><figcaption><b>Nessuna fine inventata</b>FR1.3, FR1.4. Porto LBV e Tawny: "pronto, nessuna fine stimata", sempre "Da bere". Sherry: solo la data entro cui berlo. Madeira: "Da stimare" finché non scegli lo stile.</figcaption></figure>
+
+<!-- S6 dashboard scuro -->
+<figure><div class="phone dark">
+  <div class="status"></div>
+  <div class="appbar"><div><h2>Cruscotto</h2><div class="sub">Tema scuro</div></div></div>
+  <div class="scroll">
+    <div class="hero"><span>Bottiglie</span><span class="n">128</span><span style="font-size:.72rem">2 da confermare</span></div>
+    <div class="tile"><h3>Bevi presto</h3><div class="meta">Fino En Rama · entro feb 2027</div><div class="meta">Prosecco Superiore · entro gen 2027</div></div>
+    <div class="tile"><h3>Da confermare</h3><div class="meta">Château X 2019 · Stile da confermare</div><div class="meta">Madeira 10 anni · Da stimare</div></div>
+  </div>
+</div><figcaption><b>Cruscotto</b>FR3.4, FR1.4. "Bevi presto" mostra il mese per i vini in mesi; i vini con stile da confermare sono contati e raggiungibili con un tocco.</figcaption></figure>
+
+</main>
+<section class="notes"><h2>Note</h2><ul>
+<li>Vini già in cantina (FR4): Tipologia e Livello presenti restano tuoi; si compilano solo i campi vuoti e lo stile.</li>
+<li>Prosecco resta "Charmat" e il Porto resta "liquoroso": niente più famiglie ridotte (FR2.3).</li>
+<li>"Consigliato fino al" è in mese e anno per i vini in mesi (FR3.5).</li>
+</ul></section>

@@ -269,8 +269,13 @@ class LevelPreview extends StatelessWidget {
     final changed =
         previous != null &&
         chosen != null &&
-        (previous.startYear != window.startYear ||
-            previous.endYear != window.endYear);
+        (previous.startIndex != window.startIndex ||
+            previous.endIndex != window.endIndex);
+    // wine-style-profiles BR6.6: months for a window in months, and no end
+    // estimated for an open window.
+    String end(DrinkingWindow w) =>
+        windowDates(context, w).end ?? l10n.windowNoEndShort;
+    String start(DrinkingWindow w) => windowDates(context, w).start;
     return Semantics(
       container: true,
       liveRegion: true,
@@ -280,27 +285,21 @@ class LevelPreview extends StatelessWidget {
         children: changed
             ? [
                 Text(
-                  l10n.levelPreviewBefore(
-                    '${previous.startYear}',
-                    '${previous.endYear}',
-                  ),
+                  l10n.levelPreviewBefore(start(previous), end(previous)),
                   style: style,
                 ),
                 Text(
                   l10n.levelPreviewWith(
                     levelLabel(l10n, chosen),
-                    '${window.startYear}',
-                    '${window.endYear}',
+                    start(window),
+                    end(window),
                   ),
                   style: style?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ]
             : [
                 Text(
-                  l10n.levelPreviewNow(
-                    '${window.startYear}',
-                    '${window.endYear}',
-                  ),
+                  l10n.levelPreviewNow(start(window), end(window)),
                   style: style,
                 ),
               ],

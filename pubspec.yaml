@@ -74,3 +74,4 @@ flutter:
   # tool/build_wine_db.dart; LICENSE (ODbL) and README.md travel with it.
   assets:
     - assets/wine_db/
+    - assets/branding/

@@ -256,6 +256,9 @@ void main() {
             'd',
             'c',
             'v',
+            // wine-style-profiles BR9.2: Level and Style, public too.
+            'l',
+            's',
           }),
           isEmpty,
         );

@@ -97,4 +97,11 @@ Firebase: Auth, Firestore, App Check, Crashlytics; Firebase Emulator Suite (`dem
 - **Lettura del testo incollato**: nessuna dipendenza in uso; `flutter/services.dart` (`Clipboard`) è usato solo in scrittura dal profilo (`Clipboard.setData`).
 - **Localizzazione**: le chiavi dell'etichetta attuale comprendono `labelBack*`, `labelStep*`, `labelSource*`, `labelNotThis`, `labelCandidates*`, `labelNoMatch`, `labelReadText`, `labelSearchOnline`, `labelOpenLens`, `labelLens*`; la finestra usa `uxIdealUntil` ("Consigliato fino al {year}"), `uxIdealUntilPast`, `uxIdealBest`, `windowStartLabel`, `windowPeakLabel`, `windowEndLabel`, `estimateSource*`, `drinkSoonUntil`. Nessuna chiave per "Incolla", "Livello" o correzione manuale della fine.
 
+## Aggiornamento dell'intent 261108-wine-style-profiles
+
+- **Dati inclusi nell'app**: `assets/wine_db/wines.jsonl.gz` (15.616 vini da Open Food Facts, export 2026-11-07, ODbL, 339.982 byte compressi, 1.254.545 non compressi) al posto del campione di 45; tabelle delle denominazioni come costanti Dart nel pacchetto `estimation` (2424 denominazioni, di cui 1700 generate in `appellations.g.dart`, più 46 vitigni).
+- **Generatori offline**: `tool/build_wine_db.dart` (export CSV di Open Food Facts, circa 1 GB, scaricato a mano, mai in CI) e `tool/build_appellations.dart` (eAmbrosia e CSV di `tool/data/appellations/`); entrambi importano il pacchetto `estimation` e il codice dell'app (`package:vinoozy/...`). Controlli di rilascio: `tool/check_wine_db_release.sh`, `tool/check_appellations_release.sh` (rifiutano `source: sample`).
+- **Persistenza locale**: `shared_preferences` conserva i tentativi della migrazione delle stime (`estimates.migration.v<n>`).
+- **Localizzazione**: le chiavi di tipo (`typeRedLight` … `typeFortified`), famiglia (`uxFamily*`, `family*`), livello (`levelLabel`, `levelEveryday`, `levelGood`, `levelAging`, `levelNone`, `levelSuggested*`), origine della stima (`estimateFrom*`) e correzione (`overrideCorrectedByYou`, …) esistono in it, en e pt-BR. Un nuovo stile o un nuovo tipo richiede chiavi nuove nei tre file ARB.
+
 Dipendenze dettagliate e relazioni in [dependencies.md](dependencies.md).

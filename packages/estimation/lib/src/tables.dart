@@ -23,8 +23,9 @@ import 'models.dart';
 /// Version of the internal tables, stored in every internal window
 /// (`DrinkingWindow.tablesVersion`). Raise it whenever a table value
 /// changes: the app then estimates every cellar wine again once (BR3.9).
-/// Version 1 is the table of u2-estimation, saved without a version.
-const int estimationTablesVersion = 2;
+/// Version 1 is the table of u2-estimation, saved without a version;
+/// version 3 is the style profiles of wine-style-profiles (BR2.17).
+const int estimationTablesVersion = 3;
 
 /// Start, peak and end offsets in years.
 class YearOffsets {

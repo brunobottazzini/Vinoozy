@@ -390,3 +390,96 @@ flowchart TD
 
 Testo: dal testo letto l'app ricava da sé solo l'annata e la riga più significativa; tutti gli altri campi del form vengono da un candidato di una base dati (base offline, denominazione interna, Open Food Facts). Senza candidati il form si apre con nome e annata e l'avviso "Non ho trovato il vino: controlla i dati". Google Lens riceve la foto del fronte ma nulla torna all'app, e l'app non legge gli appunti né accetta testo condiviso.
 
+Nota storica: i due diagrammi qui sopra precedono il commit `baba947`. Oggi la stima applica il livello e la correzione manuale, e il testo dell'etichetta viene analizzato da `extractLabelFields` (vedi le sezioni seguenti).
+
+## Aggiornamento dell'intent 261108-wine-style-profiles
+
+### Dove si decidono, si salvano e si mostrano tipo, livello e finestra
+
+| Dato | Dove si decide | Dove si salva | Dove si mostra |
+|---|---|---|---|
+| Tipo (`wineType`) | A mano in `WineTypeField` (form di aggiunta e modifica); preselezionato da `extractLabelFields`/`analyzeLabelText` (`_Reader._type` in `label_fields.dart`, `_Evidence.typeFor` in `label_candidates.dart`) e da un candidato del catalogo (`wineFamilyOf`, 5 famiglie → 8 tipi) | `wines/{id}.wineType`, stringa non controllata dalle regole | `WineTypeBadge`/`WineTypeFamily` (scheda e dettaglio), filtro `TypeFilter`, `DashboardCalculator.familyOf`, selettore del form |
+| Tipo usato dalla stima | `resolveWine` in `recognizer.dart`: tipo scelto, poi tipo del catalogo, poi tipo principale della riga della denominazione o tipo del vitigno | Solo implicito: `window.basis` e `window.denominationKey`, il tipo dedotto non si salva | Riga "Origine della stima" (`estimateOriginText`) |
+| Livello (`level`) | A mano in `WineLevelSelector`; suggerito "Da invecchiamento" da `LevelChoice.suggestionFor` (qualificativo del nome o della denominazione, `agingQualifierIn`) o dal testo dell'etichetta (`LabelFields.suggestedLevel`) | `wines/{id}.level` (`everyday`, `good`, `aging`), solo se scelto o accettato | `LevelSection`/`LevelPreview` nel form, `IdealMomentCard` nel dettaglio |
+| Finestra base (`baseWindow`) | `estimateWindow` (denominazione → vitigno → tipo → generica; livello applicato agli scarti in anni) o finestra del catalogo | `wines/{id}.baseWindow` con `tablesVersion` e `denominationKey` | Sotto la correzione in `IdealMomentCard` |
+| Finestra effettiva (`window`) | `WindowAdjuster.effectiveOf`: base + riscontro dell'ultima bevuta + "Consigliato fino al" manuale (`effectiveWindow`) | `wines/{id}.window`, `windowAdjustment`, `windowOverride` | `IdealMomentCard`, `WindowCard`, stato nella scheda (`statusOf`), cruscotto (da bere presto, picchi) |
+
+### Flusso di classificazione e stima attuale
+
+```mermaid
+flowchart TD
+  T[Testo etichetta / Lens] --> LF[extractLabelFields: tipo, qualificativo, suggestedLevel]
+  C[Candidato catalogo: offline, interno, OFF] --> WF[wineFamilyOf: CatalogWineType 5 famiglie]
+  WF --> TP[WineType.tryParse: red diventa redStructured, sparkling diventa sparklingClassic, sweet resta sweet]
+  LF --> FORM[AddWineScreen / EditWineScreen]
+  TP --> FORM
+  H[Scelta a mano] --> FORM
+  FORM --> LC[LevelChoice: suggerisce solo aging]
+  FORM --> CA[CellarActions]
+  CA --> WE[WineEstimator]
+  WE --> EW[estimateWindow]
+  EW --> RW[resolveWine]
+  RW --> DT[denominationTable: 47 IT + 677 mondo + 1700 generate]
+  RW --> GT[grapeTable: 46 vitigni]
+  RW --> TT[typeTable: 8 tipi]
+  RW --> GEN[genericTypeProfile 1/3/6]
+  EW --> LV[WineLevel.apply: x0,5-0,6 o x1,25-1,4]
+  CA --> WR[WineRepository: wineType, level, baseWindow, window]
+  MIG[EstimatesMigration: tablesVersion diverso] --> WE
+  MIG --> WR
+```
+
+Testo: il tipo salvato e il tipo usato dalla stima sono due cose distinte. Il form salva solo il tipo scelto, preselezionato dall'etichetta o dal catalogo; la stima, se il tipo manca, lo deduce dalla denominazione o dal vitigno ma non lo scrive. Il livello moltiplica gli scarti in anni prima di aggiungere l'anno base; con un qualificativo che ha scarti propri, "Da invecchiamento" non moltiplica di nuovo. La migrazione rifà la stima con i fatti salvati e scrive solo i campi della stima.
+
+### Granularità e unità
+
+- Gli scarti delle tabelle sono anni interi (`YearOffsets(start, peak, end)`), l'anno base è l'annata, oppure l'anno di ingresso in cantina (stessi anni per spumanti e stima generica, un anno prima per i vini fermi).
+- `statusOf` ragiona in mesi, ma solo a partire da anni interi: "da bere presto" è il 25% della finestra, tra 3 e 12 mesi.
+- Le regole Firestore accettano solo anni interi tra 1900 e 2200 e i campi elencati in `wineFields()`. Una finestra in mesi, o una data di sboccatura o di imbottigliamento, richiede campi nuovi nel modello, nelle regole e nel codec.
+
+## Interaction Diagrams (aggiornamento dell'intent 261108-wine-style-profiles)
+
+### Migrazione una tantum delle stime (comportamento attuale)
+
+```mermaid
+sequenceDiagram
+  participant M as CellarMaintenance / CellarActions
+  participant EM as EstimatesMigration
+  participant S as PreferencesMigrationAttemptStore
+  participant WE as WineEstimator
+  participant WR as WineRepository
+  M->>EM: run(cellar, user, wines) all'apertura o al ritorno in rete
+  EM->>EM: candidati: base internalRules con tablesVersion diverso da estimationTablesVersion
+  EM->>S: attempts(v) e stop se almeno 3
+  loop un vino alla volta
+    EM->>WE: estimate(WineFactsInput.ofWine, adjustment, override)
+    WE-->>EM: baseWindow, window, pairings (abbinamenti del catalogo conservati)
+    EM->>WR: setEstimate(quiet) solo campi della stima
+    alt rifiuto del server
+      WR-->>EM: WriteErrorKind.rejected
+      EM->>S: record(v, tentativi + 1) e report estimates_migration_failed
+    end
+  end
+```
+
+Testo: la migrazione parte solo se `estimationTablesVersion` cambia. Riscrive `baseWindow`, `window`, `windowAdjustment` e gli abbinamenti interni; `wineType`, `level` e `windowOverride` restano come sono. Le finestre del catalogo non sono candidate. Un rifiuto delle regole ferma la migrazione per quell'avvio; dopo 3 avvii con un rifiuto aspetta la versione successiva delle tabelle.
+
+### Preselezione di tipo e livello dal testo dell'etichetta (comportamento attuale)
+
+```mermaid
+flowchart TD
+  TXT[Testo ≤ 4000] --> RD[_Reader.read]
+  RD --> DEN[_denomination: riga della tabella]
+  RD --> Q[_qualifier: Riserva, Reserva, Grand Cru, Vintage...]
+  RD --> TY[_type]
+  TY --> W1[parole fortificato: fortified]
+  TY --> W2[parole dolce: sweet, o fortified se la riga lo fa]
+  TY --> W3[parole spumante: tipo spumante della riga, altrimenti classico o Charmat]
+  TY --> W4[rosato, bianco]
+  TY --> W5[rosso: redStructured con qualificativo da invecchiamento, altrimenti il rosso della riga o del vitigno, altrimenti redLight]
+  TY --> W6[nessuna parola: tipo unico della riga, altrimenti tipo del vitigno]
+  Q --> SL[suggestedLevel = aging se il qualificativo è in agingQualifiers]
+```
+
+Testo: il tipo si ricava solo da parole del testo e dai tipi della riga della denominazione; una riga con più tipi e senza parole di colore resta senza tipo, a meno che non ci sia un vitigno. Il livello suggerito è soltanto "Da invecchiamento".
+

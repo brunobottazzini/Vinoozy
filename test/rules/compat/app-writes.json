@@ -20,7 +20,10 @@
           "label": "profile refreshed on later sign-ins",
           "op": "update",
           "path": "users/$uid",
-          "data": { "displayName": "User A", "email": "user-a@example.com" }
+          "data": {
+            "displayName": "User A",
+            "email": "user-a@example.com"
+          }
         },
         {
           "label": "personal cellar created (CellarRepository.ensurePersonalCellar)",
@@ -90,7 +93,10 @@
           "label": "profile refreshed on later sign-ins",
           "op": "update",
           "path": "users/$uid",
-          "data": { "displayName": "User A", "email": "user-a@example.com" }
+          "data": {
+            "displayName": "User A",
+            "email": "user-a@example.com"
+          }
         },
         {
           "label": "personal cellar created (CellarRepository.ensurePersonalCellar)",
@@ -160,7 +166,10 @@
             {
               "op": "update",
               "path": "cellars/$uid",
-              "data": { "memberSlots": "$increment:1", "memberOpKey": "$inviteeEmail" }
+              "data": {
+                "memberSlots": "$increment:1",
+                "memberOpKey": "$inviteeEmail"
+              }
             }
           ]
         },
@@ -185,7 +194,10 @@
             {
               "op": "update",
               "path": "cellars/$uid/members/$inviteeEmail",
-              "data": { "permission": "edit", "updatedAt": "$serverTimestamp" }
+              "data": {
+                "permission": "edit",
+                "updatedAt": "$serverTimestamp"
+              }
             }
           ]
         },
@@ -234,7 +246,10 @@
             {
               "op": "update",
               "path": "cellars/$uid",
-              "data": { "memberSlots": "$increment:-1", "memberOpKey": "$inviteeEmail" }
+              "data": {
+                "memberSlots": "$increment:-1",
+                "memberOpKey": "$inviteeEmail"
+              }
             }
           ]
         },
@@ -257,7 +272,10 @@
             {
               "op": "update",
               "path": "cellars/$uid",
-              "data": { "memberSlots": "$increment:1", "memberOpKey": "$inviteeEmail" }
+              "data": {
+                "memberSlots": "$increment:1",
+                "memberOpKey": "$inviteeEmail"
+              }
             }
           ]
         },
@@ -278,7 +296,10 @@
             {
               "op": "update",
               "path": "cellars/$uid",
-              "data": { "memberSlots": "$increment:-1", "memberOpKey": "$inviteeEmail" }
+              "data": {
+                "memberSlots": "$increment:-1",
+                "memberOpKey": "$inviteeEmail"
+              }
             }
           ]
         },
@@ -286,7 +307,12 @@
           "label": "a closed access deleted for good (SharingRepository.deleteClosed)",
           "requiresRules": "sharing",
           "op": "batch",
-          "writes": [{ "op": "delete", "path": "cellars/$uid/members/$inviteeEmail" }]
+          "writes": [
+            {
+              "op": "delete",
+              "path": "cellars/$uid/members/$inviteeEmail"
+            }
+          ]
         },
         {
           "label": "wine deleted by the owner (opened by u7-sharing for u4-cellar)",
@@ -353,14 +379,29 @@
                 "denomination": "Barbaresco DOCG",
                 "matchKey": "barbaresco|cantina esempio|2019",
                 "baseWindow": {
-                  "startYear": 2023, "peakYear": 2027, "endYear": 2034,
-                  "confidence": "medium", "source": "internalRules", "basis": "denomination"
+                  "startYear": 2023,
+                  "peakYear": 2027,
+                  "endYear": 2034,
+                  "confidence": "medium",
+                  "source": "internalRules",
+                  "basis": "denomination"
                 },
                 "window": {
-                  "startYear": 2023, "peakYear": 2027, "endYear": 2034,
-                  "confidence": "medium", "source": "internalRules", "basis": "denomination"
+                  "startYear": 2023,
+                  "peakYear": 2027,
+                  "endYear": 2034,
+                  "confidence": "medium",
+                  "source": "internalRules",
+                  "basis": "denomination"
                 },
-                "pairings": { "items": [], "categoryKeys": ["braisedRedMeat", "game"], "source": "internalRules" },
+                "pairings": {
+                  "items": [],
+                  "categoryKeys": [
+                    "braisedRedMeat",
+                    "game"
+                  ],
+                  "source": "internalRules"
+                },
                 "createdAt": "$serverTimestamp",
                 "updatedAt": "$serverTimestamp"
               }
@@ -372,7 +413,13 @@
           "requiresRules": "cellar",
           "op": "batch",
           "writes": [
-            { "op": "update", "path": "cellars/$uid/wines/compat-w0", "data": { "matchKey": "barolo||2016" } }
+            {
+              "op": "update",
+              "path": "cellars/$uid/wines/compat-w0",
+              "data": {
+                "matchKey": "barolo||2016"
+              }
+            }
           ]
         },
         {
@@ -380,7 +427,9 @@
           "requiresRules": "cellar",
           "op": "update",
           "path": "cellars/$uid",
-          "data": { "matchKeyBackfill": true }
+          "data": {
+            "matchKeyBackfill": true
+          }
         },
         {
           "label": "bottles added to a duplicate (WineRepository.addBottles)",
@@ -390,7 +439,11 @@
             {
               "op": "update",
               "path": "cellars/$uid/wines/compat-w1",
-              "data": { "quantity": "$increment:2", "updatedAt": "$serverTimestamp", "updatedBy": "$uid" }
+              "data": {
+                "quantity": "$increment:2",
+                "updatedAt": "$serverTimestamp",
+                "updatedBy": "$uid"
+              }
             }
           ]
         },
@@ -411,17 +464,31 @@
                 "denomination": "Barbaresco DOCG",
                 "matchKey": "barbaresco riserva|cantina esempio|2019",
                 "baseWindow": {
-                  "startYear": 2024, "peakYear": 2029, "endYear": 2037,
-                  "confidence": "medium", "source": "internalRules", "basis": "denomination",
+                  "startYear": 2024,
+                  "peakYear": 2029,
+                  "endYear": 2037,
+                  "confidence": "medium",
+                  "source": "internalRules",
+                  "basis": "denomination",
                   "qualifier": "riserva"
                 },
                 "window": {
-                  "startYear": 2024, "peakYear": 2029, "endYear": 2037,
-                  "confidence": "medium", "source": "internalRules", "basis": "denomination",
+                  "startYear": 2024,
+                  "peakYear": 2029,
+                  "endYear": 2037,
+                  "confidence": "medium",
+                  "source": "internalRules",
+                  "basis": "denomination",
                   "qualifier": "riserva"
                 },
                 "windowAdjustment": null,
-                "pairings": { "items": [], "categoryKeys": ["game"], "source": "internalRules" },
+                "pairings": {
+                  "items": [],
+                  "categoryKeys": [
+                    "game"
+                  ],
+                  "source": "internalRules"
+                },
                 "quantity": "$increment:-1",
                 "updatedAt": "$serverTimestamp",
                 "updatedBy": "$uid"
@@ -437,7 +504,11 @@
             {
               "op": "update",
               "path": "cellars/$uid/wines/compat-w1",
-              "data": { "quantity": "$increment:-1", "updatedAt": "$serverTimestamp", "updatedBy": "$uid" }
+              "data": {
+                "quantity": "$increment:-1",
+                "updatedAt": "$serverTimestamp",
+                "updatedBy": "$uid"
+              }
             },
             {
               "op": "set",
@@ -481,17 +552,35 @@
               "path": "cellars/$uid/wines/compat-w1",
               "data": {
                 "baseWindow": {
-                  "startYear": 2024, "peakYear": 2029, "endYear": 2037,
-                  "confidence": "medium", "source": "internalRules", "basis": "denomination",
+                  "startYear": 2024,
+                  "peakYear": 2029,
+                  "endYear": 2037,
+                  "confidence": "medium",
+                  "source": "internalRules",
+                  "basis": "denomination",
                   "qualifier": "riserva"
                 },
                 "window": {
-                  "startYear": 2027, "peakYear": 2032, "endYear": 2040,
-                  "confidence": "low", "source": "internalRules", "basis": "denomination",
+                  "startYear": 2027,
+                  "peakYear": 2032,
+                  "endYear": 2040,
+                  "confidence": "low",
+                  "source": "internalRules",
+                  "basis": "denomination",
                   "qualifier": "riserva"
                 },
-                "windowAdjustment": { "kind": "tooYoung", "year": 2026, "recordId": "compat-r1" },
-                "pairings": { "items": [], "categoryKeys": ["game"], "source": "internalRules" },
+                "windowAdjustment": {
+                  "kind": "tooYoung",
+                  "year": 2026,
+                  "recordId": "compat-r1"
+                },
+                "pairings": {
+                  "items": [],
+                  "categoryKeys": [
+                    "game"
+                  ],
+                  "source": "internalRules"
+                },
                 "updatedAt": "$serverTimestamp",
                 "updatedBy": "$uid"
               }
@@ -503,11 +592,18 @@
           "requiresRules": "cellar",
           "op": "batch",
           "writes": [
-            { "op": "delete", "path": "cellars/$uid/drinkingRecords/compat-r1" },
+            {
+              "op": "delete",
+              "path": "cellars/$uid/drinkingRecords/compat-r1"
+            },
             {
               "op": "update",
               "path": "cellars/$uid/wines/compat-w1",
-              "data": { "quantity": "$increment:1", "updatedAt": "$serverTimestamp", "updatedBy": "$uid" }
+              "data": {
+                "quantity": "$increment:1",
+                "updatedAt": "$serverTimestamp",
+                "updatedBy": "$uid"
+              }
             }
           ]
         },
@@ -519,7 +615,11 @@
             {
               "op": "update",
               "path": "cellars/$uid/wines/compat-w1",
-              "data": { "quantity": "$increment:-1", "updatedAt": "$serverTimestamp", "updatedBy": "$uid" }
+              "data": {
+                "quantity": "$increment:-1",
+                "updatedAt": "$serverTimestamp",
+                "updatedBy": "$uid"
+              }
             },
             {
               "op": "set",
@@ -563,9 +663,16 @@
             {
               "op": "update",
               "path": "cellars/$uid/wines/compat-w0",
-              "data": { "quantity": "$increment:1", "updatedAt": "$serverTimestamp", "updatedBy": "$uid" }
+              "data": {
+                "quantity": "$increment:1",
+                "updatedAt": "$serverTimestamp",
+                "updatedBy": "$uid"
+              }
             },
-            { "op": "delete", "path": "cellars/$uid/wines/compat-w2" }
+            {
+              "op": "delete",
+              "path": "cellars/$uid/wines/compat-w2"
+            }
           ]
         },
         {
@@ -573,8 +680,14 @@
           "requiresRules": "cellar",
           "op": "batch",
           "writes": [
-            { "op": "delete", "path": "cellars/$uid/drinkingRecords/compat-r2" },
-            { "op": "delete", "path": "cellars/$uid/wines/compat-w1" }
+            {
+              "op": "delete",
+              "path": "cellars/$uid/drinkingRecords/compat-r2"
+            },
+            {
+              "op": "delete",
+              "path": "cellars/$uid/wines/compat-w1"
+            }
           ]
         }
       ]
@@ -639,7 +752,10 @@
             {
               "op": "update",
               "path": "cellars/$uid",
-              "data": { "memberSlots": "$increment:1", "memberOpKey": "$inviteeEmail" }
+              "data": {
+                "memberSlots": "$increment:1",
+                "memberOpKey": "$inviteeEmail"
+              }
             }
           ]
         },
@@ -648,7 +764,9 @@
           "requiresRules": "account",
           "op": "update",
           "path": "users/$uid",
-          "data": { "deletionStartedAt": "$serverTimestamp" }
+          "data": {
+            "deletionStartedAt": "$serverTimestamp"
+          }
         },
         {
           "label": "own invitation revoked (FirestoreDeletionBackend.revoke)",
@@ -658,12 +776,19 @@
             {
               "op": "update",
               "path": "cellars/$uid/members/$inviteeEmail",
-              "data": { "status": "revoked", "closedBy": "owner", "updatedAt": "$serverTimestamp" }
+              "data": {
+                "status": "revoked",
+                "closedBy": "owner",
+                "updatedAt": "$serverTimestamp"
+              }
             },
             {
               "op": "update",
               "path": "cellars/$uid",
-              "data": { "memberSlots": "$increment:-1", "memberOpKey": "$inviteeEmail" }
+              "data": {
+                "memberSlots": "$increment:-1",
+                "memberOpKey": "$inviteeEmail"
+              }
             }
           ]
         },
@@ -677,7 +802,12 @@
           "label": "wines deleted in a batch of 400 (FirestoreDeletionBackend.deletePage)",
           "requiresRules": "sharing",
           "op": "batch",
-          "writes": [{ "op": "delete", "path": "cellars/$uid/wines/compat-w1" }]
+          "writes": [
+            {
+              "op": "delete",
+              "path": "cellars/$uid/wines/compat-w1"
+            }
+          ]
         },
         {
           "label": "own cellar deleted (FirestoreDeletionBackend.deleteCellar)",
@@ -908,7 +1038,12 @@
                 },
                 "pairings": {
                   "items": [],
-                  "categoryKeys": ["braisedRedMeat", "grilledRedMeat", "game", "agedCheese"],
+                  "categoryKeys": [
+                    "braisedRedMeat",
+                    "grilledRedMeat",
+                    "game",
+                    "agedCheese"
+                  ],
                   "source": "internalRules"
                 },
                 "createdAt": "$serverTimestamp",
@@ -923,7 +1058,10 @@
           "op": "update",
           "path": "cellars/$uid/wines/compat-w1",
           "data": {
-            "windowOverride": { "endYear": 2035, "setAt": "$serverTimestamp" },
+            "windowOverride": {
+              "endYear": 2035,
+              "setAt": "$serverTimestamp"
+            },
             "window": {
               "startYear": 2021,
               "peakYear": 2027,
@@ -1005,6 +1143,146 @@
             "level": "$deleteField",
             "updatedAt": "$serverTimestamp",
             "updatedBy": "$uid"
+          }
+        }
+      ]
+    },
+    {
+      "app": "wine-style-profiles",
+      "writes": [
+        {
+          "label": "profile created on first sign-in (UserRepository.ensureProfile)",
+          "op": "set",
+          "path": "users/$uid",
+          "data": {
+            "displayName": "User A",
+            "email": "user-a@example.com",
+            "onboardingSeen": false,
+            "createdAt": "$serverTimestamp",
+            "schemaVersion": 1
+          }
+        },
+        {
+          "label": "personal cellar created (CellarRepository.ensurePersonalCellar)",
+          "op": "set",
+          "path": "cellars/$uid",
+          "data": {
+            "ownerId": "$uid",
+            "name": "La mia cantina",
+            "schemaVersion": 1,
+            "createdAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "wine created with style, sources, bottling date and a window in months (WineRepository.addWine)",
+          "requiresRules": "style-profiles",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "set",
+              "path": "cellars/$uid/wines/compat-s1",
+              "data": {
+                "name": "Prosecco Superiore",
+                "quantity": 2,
+                "updatedBy": "$uid",
+                "wineType": "sparklingTank",
+                "level": "everyday",
+                "style": "tankFresh",
+                "typeSource": "auto",
+                "levelSource": "auto",
+                "styleSource": "auto",
+                "agingStartMonth": {
+                  "year": 2025,
+                  "month": 3
+                },
+                "migrationVersion": 3,
+                "matchKey": "prosecco superiore||",
+                "baseWindow": {
+                  "startYear": 2025,
+                  "startMonth": 3,
+                  "peakYear": 2025,
+                  "peakMonth": 9,
+                  "endYear": 2026,
+                  "endMonth": 9,
+                  "unit": "months",
+                  "confidence": "medium",
+                  "source": "internalRules",
+                  "basis": "denomination",
+                  "denominationKey": "prosecco",
+                  "tablesVersion": 3,
+                  "profile": "SP_TANK",
+                  "anchor": "bottling"
+                },
+                "window": {
+                  "startYear": 2025,
+                  "startMonth": 3,
+                  "peakYear": 2025,
+                  "peakMonth": 9,
+                  "endYear": 2026,
+                  "endMonth": 9,
+                  "unit": "months",
+                  "confidence": "medium",
+                  "source": "internalRules",
+                  "basis": "denomination",
+                  "denominationKey": "prosecco",
+                  "tablesVersion": 3,
+                  "profile": "SP_TANK",
+                  "anchor": "bottling"
+                },
+                "pairings": {
+                  "items": [],
+                  "categoryKeys": [
+                    "aperitif"
+                  ],
+                  "source": "internalRules"
+                },
+                "createdAt": "$serverTimestamp",
+                "updatedAt": "$serverTimestamp"
+              }
+            }
+          ]
+        },
+        {
+          "label": "style chosen in the detail (WineRepository.updateClassification)",
+          "requiresRules": "style-profiles",
+          "op": "update",
+          "path": "cellars/$uid/wines/compat-s1",
+          "data": {
+            "style": "lambrusco",
+            "styleSource": "user",
+            "updatedBy": "$uid",
+            "updatedAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "Recommended until in months (WineRepository.setOverride)",
+          "requiresRules": "style-profiles",
+          "op": "update",
+          "path": "cellars/$uid/wines/compat-s1",
+          "data": {
+            "windowOverride": {
+              "endYear": 2026,
+              "endMonth": 12,
+              "setAt": "$serverTimestamp"
+            },
+            "window": {
+              "startYear": 2025,
+              "startMonth": 3,
+              "peakYear": 2025,
+              "peakMonth": 9,
+              "endYear": 2026,
+              "endMonth": 12,
+              "unit": "months",
+              "confidence": "medium",
+              "source": "internalRules",
+              "basis": "denomination",
+              "denominationKey": "prosecco",
+              "tablesVersion": 3,
+              "profile": "SP_TANK",
+              "anchor": "bottling"
+            },
+            "updatedBy": "$uid",
+            "updatedAt": "$serverTimestamp"
           }
         }
       ]

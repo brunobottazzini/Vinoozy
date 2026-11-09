@@ -153,8 +153,8 @@ Map<String, Object?> restWineFields(Wine wine) {
         'mapValue': {
           'fields': {
             WindowFields.startYear: integer(window.startYear),
-            WindowFields.peakYear: integer(window.peakYear),
-            WindowFields.endYear: integer(window.endYear),
+            WindowFields.peakYear: integer(window.peakYear!),
+            WindowFields.endYear: integer(window.endYear!),
             WindowFields.confidence: text(window.confidence.name),
             WindowFields.source: text(window.source.name),
             WindowFields.basis: text(window.basis.name),

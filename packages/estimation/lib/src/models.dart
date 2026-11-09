@@ -2,8 +2,11 @@
 // Every type is immutable and compares by value (NFR4.4), and none of them has
 // a field for personal data such as email, uid, location or device (NFR8.1).
 
+import 'profiles.dart';
 import 'wine_level.dart';
 
+export 'profiles.dart'
+    show AgingAnchor, ProfileEvidence, StyleProfile, WindowUnit, WineStyle;
 export 'wine_level.dart' show WineLevel;
 
 /// Warning code exposed when an estimate has `basis == generic` (BR4.3).
@@ -68,6 +71,12 @@ enum Qualifier {
   vintage,
   lbv,
   colheita,
+
+  /// wine-style-profiles (ENT-104, BR2.6): the higher Prädikat and the ice
+  /// wine, added at the end so the indexes of the masks above never change.
+  beerenauslese,
+  trockenbeerenauslese,
+  eiswein,
 }
 
 /// Confidence level of an estimate (BR3.1).
@@ -144,6 +153,11 @@ class WineFacts {
     this.denomination,
     this.referenceYear,
     this.level,
+    this.referenceMonth,
+    this.style,
+    this.styleChosen = false,
+    this.agingStartYear,
+    this.agingStartMonth,
   });
 
   /// Wine name as typed by the user (1-60 characters after trimming, C3).
@@ -171,6 +185,22 @@ class WineFacts {
   /// with named ones.
   final WineLevel? level;
 
+  /// Month (1-12) the wine entered the cellar, with [referenceYear]: the
+  /// start of a months profile without a disgorgement or bottling date
+  /// (wine-style-profiles BR8.3).
+  final int? referenceMonth;
+
+  /// Style saved on the wine (ENT-107, BR1.4); `null` when none.
+  final WineStyle? style;
+
+  /// True when the user chose [style] (`styleSource == user`): its profile
+  /// then decides the window (BR2.15).
+  final bool styleChosen;
+
+  /// Disgorgement or bottling date (BR8.1): year and month, both or none.
+  final int? agingStartYear;
+  final int? agingStartMonth;
+
   @override
   bool operator ==(Object other) =>
       other is WineFacts &&
@@ -181,7 +211,12 @@ class WineFacts {
       other.region == region &&
       other.denomination == denomination &&
       other.referenceYear == referenceYear &&
-      other.level == level;
+      other.level == level &&
+      other.referenceMonth == referenceMonth &&
+      other.style == style &&
+      other.styleChosen == styleChosen &&
+      other.agingStartYear == agingStartYear &&
+      other.agingStartMonth == agingStartMonth;
 
   @override
   int get hashCode => Object.hash(
@@ -193,6 +228,11 @@ class WineFacts {
     denomination,
     referenceYear,
     level,
+    referenceMonth,
+    style,
+    styleChosen,
+    agingStartYear,
+    agingStartMonth,
   );
 
   @override
@@ -200,7 +240,12 @@ class WineFacts {
       'WineFacts(name: $name, producer: $producer, vintage: $vintage, '
       'wineType: ${wineType?.name}, region: $region, '
       'denomination: $denomination, referenceYear: $referenceYear, '
-      'level: ${level?.name})';
+      'level: ${level?.name}'
+      '${referenceMonth == null ? '' : ', referenceMonth: $referenceMonth'}'
+      '${style == null ? '' : ', style: ${style!.name}'}'
+      '${styleChosen ? ', styleChosen' : ''}'
+      '${agingStartYear == null ? '' : ', agingStart: $agingStartYear-$agingStartMonth'}'
+      ')';
 }
 
 /// Catalog profile from C1 `v1-getWineProfile` with `found = true`.
@@ -267,22 +312,42 @@ class ExternalProfile {
 }
 
 /// Estimated drinking window (C2 `DrinkingWindow`).
+///
+/// wine-style-profiles (D2, ENT-106) adds optional fields: the [unit], the
+/// months of a window in months, the [profile] and [anchor] used, whether the
+/// anchor date was missing ([anchorFallback]) and whether the estimate is
+/// only indicative ([indicative]). [peakYear] and [endYear] may be `null`:
+/// a peak or an end the study does not estimate (BR1.2). Every comparison
+/// goes through the month indexes ([startIndex], [peakIndex], [endIndex],
+/// BR6.1), which give today's result for the windows in years.
 class DrinkingWindow {
   const DrinkingWindow({
     required this.startYear,
-    required this.peakYear,
-    required this.endYear,
+    this.peakYear,
+    this.endYear,
     required this.confidence,
     required this.source,
     required this.basis,
     this.qualifier,
     this.denominationKey,
     this.tablesVersion,
+    this.unit = WindowUnit.years,
+    this.startMonth,
+    this.peakMonth,
+    this.endMonth,
+    this.profile,
+    this.anchor,
+    this.anchorFallback = false,
+    this.indicative = false,
   });
 
   final int startYear;
-  final int peakYear;
-  final int endYear;
+
+  /// `null` when the peak is not estimated (BR6.4).
+  final int? peakYear;
+
+  /// `null` when no end is estimated (BR6.5).
+  final int? endYear;
   final Confidence confidence;
   final WindowSource source;
   final EstimationBasis basis;
@@ -300,21 +365,107 @@ class DrinkingWindow {
   /// A different version makes the app estimate the wine again once (BR3.9).
   final int? tablesVersion;
 
+  /// Unit of the window; windows saved before wine-style-profiles are years.
+  final WindowUnit unit;
+
+  /// Months (1-12) of a window in months; `null` for a window in years.
+  final int? startMonth;
+  final int? peakMonth;
+  final int? endMonth;
+
+  /// Profile used (BR2.1); `null` for catalog windows and older windows.
+  final StyleProfile? profile;
+
+  /// What the window counts from; `null` for catalog and older windows.
+  final AgingAnchor? anchor;
+
+  /// True when the vintage or the disgorgement/bottling date was missing and
+  /// the date the wine entered the cellar was used (BR6.2, BR8.3).
+  final bool anchorFallback;
+
+  /// True when the style is not clear and the estimate is only indicative
+  /// (BR2.14).
+  final bool indicative;
+
+  /// True for a window in months.
+  bool get inMonths => unit == WindowUnit.months;
+
+  /// Month index of the start (BR6.1): year * 12 + month - 1; January of
+  /// [startYear] for a window in years.
+  int get startIndex => monthIndex(startYear, inMonths ? startMonth ?? 1 : 1);
+
+  /// Month index of the peak, `null` without a peak; January of [peakYear]
+  /// for a window in years (used only to order).
+  int? get peakIndex {
+    final year = peakYear;
+    if (year == null) return null;
+    return monthIndex(year, inMonths ? peakMonth ?? 1 : 1);
+  }
+
+  /// Month index of the end, `null` without an end; December of [endYear]
+  /// for a window in years.
+  int? get endIndex {
+    final year = endYear;
+    if (year == null) return null;
+    return monthIndex(year, inMonths ? endMonth ?? 12 : 12);
+  }
+
   /// [genericEstimateWarningCode] when the estimate is generic, else `null`.
   String? get warningCode =>
       basis == EstimationBasis.generic ? genericEstimateWarningCode : null;
 
-  /// This window with other years, everything else kept.
-  DrinkingWindow withYears(int start, int peak, int end) => DrinkingWindow(
+  /// This window with other years, everything else kept. The months stay
+  /// as they are: use [withIndexes] for a window in months.
+  DrinkingWindow withYears(int start, int? peak, int? end) => _copy(
     startYear: start,
     peakYear: peak,
     endYear: end,
+    startMonth: startMonth,
+    peakMonth: peak == null ? null : peakMonth,
+    endMonth: end == null ? null : endMonth,
+  );
+
+  /// This window with other month indexes (BR6.1), everything else kept. A
+  /// window in years keeps only the years of the indexes.
+  DrinkingWindow withIndexes(int start, int? peak, int? end) {
+    final s = monthOfIndex(start);
+    final p = peak == null ? null : monthOfIndex(peak);
+    final e = end == null ? null : monthOfIndex(end);
+    return _copy(
+      startYear: s.year,
+      peakYear: p?.year,
+      endYear: e?.year,
+      startMonth: inMonths ? s.month : null,
+      peakMonth: inMonths ? p?.month : null,
+      endMonth: inMonths ? e?.month : null,
+    );
+  }
+
+  DrinkingWindow _copy({
+    required int startYear,
+    required int? peakYear,
+    required int? endYear,
+    required int? startMonth,
+    required int? peakMonth,
+    required int? endMonth,
+  }) => DrinkingWindow(
+    startYear: startYear,
+    peakYear: peakYear,
+    endYear: endYear,
     confidence: confidence,
     source: source,
     basis: basis,
     qualifier: qualifier,
     denominationKey: denominationKey,
     tablesVersion: tablesVersion,
+    unit: unit,
+    startMonth: startMonth,
+    peakMonth: peakMonth,
+    endMonth: endMonth,
+    profile: profile,
+    anchor: anchor,
+    anchorFallback: anchorFallback,
+    indicative: indicative,
   );
 
   @override
@@ -328,7 +479,15 @@ class DrinkingWindow {
       other.basis == basis &&
       other.qualifier == qualifier &&
       other.denominationKey == denominationKey &&
-      other.tablesVersion == tablesVersion;
+      other.tablesVersion == tablesVersion &&
+      other.unit == unit &&
+      other.startMonth == startMonth &&
+      other.peakMonth == peakMonth &&
+      other.endMonth == endMonth &&
+      other.profile == profile &&
+      other.anchor == anchor &&
+      other.anchorFallback == anchorFallback &&
+      other.indicative == indicative;
 
   @override
   int get hashCode => Object.hash(
@@ -341,16 +500,38 @@ class DrinkingWindow {
     qualifier,
     denominationKey,
     tablesVersion,
+    unit,
+    startMonth,
+    peakMonth,
+    endMonth,
+    profile,
+    anchor,
+    anchorFallback,
+    indicative,
   );
 
   @override
-  String toString() =>
-      'DrinkingWindow($startYear/$peakYear/$endYear, '
-      'confidence: ${confidence.name}, source: ${source.name}, '
-      'basis: ${basis.name}, qualifier: ${qualifier?.name}'
-      '${denominationKey == null ? '' : ', denominationKey: $denominationKey'}'
-      '${tablesVersion == null ? '' : ', tablesVersion: $tablesVersion'})';
+  String toString() {
+    String at(int? year, int? month) =>
+        year == null ? '-' : (inMonths ? '$year-$month' : '$year');
+    return 'DrinkingWindow(${at(startYear, startMonth)}/'
+        '${at(peakYear, peakMonth)}/${at(endYear, endMonth)}, '
+        'confidence: ${confidence.name}, source: ${source.name}, '
+        'basis: ${basis.name}, qualifier: ${qualifier?.name}'
+        '${denominationKey == null ? '' : ', denominationKey: $denominationKey'}'
+        '${tablesVersion == null ? '' : ', tablesVersion: $tablesVersion'}'
+        '${profile == null ? '' : ', profile: ${profile!.id}'}'
+        '${anchorFallback ? ', anchorFallback' : ''}'
+        '${indicative ? ', indicative' : ''})';
+  }
 }
+
+/// Absolute month index of [month] (1-12) of [year] (BR6.1).
+int monthIndex(int year, int month) => year * 12 + month - 1;
+
+/// The year and month (1-12) of a month [index] (BR6.1).
+({int year, int month}) monthOfIndex(int index) =>
+    (year: index ~/ 12, month: index % 12 + 1);
 
 /// Pairings (C2 `Pairings`): catalog texts in [items], or internal category
 /// keys in [categoryKeys].

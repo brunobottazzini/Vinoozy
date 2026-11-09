@@ -3291,6 +3291,474 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This text contains characters that cannot be saved'**
   String get guideInvalidValue;
+
+  /// Name of the studio that makes the app, shown in the splash and at the bottom of the Dashboard. Not translated.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottazzini Softworks'**
+  String get brandStudio;
+
+  /// wine-style-profiles BR7.7: mark of a field filled by the preselection.
+  ///
+  /// In en, this message translates to:
+  /// **'✦ suggested'**
+  String get suggestedMark;
+
+  /// wine-style-profiles: screen reader label of a suggested field.
+  ///
+  /// In en, this message translates to:
+  /// **'{field}, {value}, suggested'**
+  String suggestedSemantics(String field, String value);
+
+  /// wine-style-profiles BR7.3.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore suggestion'**
+  String get restoreSuggestion;
+
+  /// wine-style-profiles BR7.3: announcement.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestion restored'**
+  String get restoreSuggestionDone;
+
+  /// wine-style-profiles BR5.1: style field.
+  ///
+  /// In en, this message translates to:
+  /// **'Style'**
+  String get styleLabel;
+
+  /// wine-style-profiles: screen reader label of a style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Style, {value}, {index} of {count}'**
+  String styleGroupSemantics(String value, int index, int count);
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh'**
+  String get styleRedFresh;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get styleRedMedium;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'For ageing'**
+  String get styleRedAge;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Long ageing'**
+  String get styleRedLong;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh'**
+  String get styleWhiteFresh;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get styleWhiteMedium;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'For ageing'**
+  String get styleWhiteAge;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh'**
+  String get styleRoseFresh;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh'**
+  String get styleClassicFresh;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'For ageing'**
+  String get styleClassicAge;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh'**
+  String get styleTankFresh;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Lambrusco'**
+  String get styleLambrusco;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Aromatic'**
+  String get styleSweetAromatic;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Dried-grape'**
+  String get styleSweetPassito;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Botrytised'**
+  String get styleSweetBotrytis;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Vintage Port'**
+  String get stylePortVintage;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'LBV/Ruby Port'**
+  String get stylePortLbv;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Tawny/Colheita Port'**
+  String get stylePortTawny;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Fino/Manzanilla'**
+  String get styleSherryFino;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Amontillado'**
+  String get styleSherryAmontillado;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Oloroso/Cream'**
+  String get styleSherryOloroso;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Pedro Ximénez'**
+  String get styleSherryPx;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Madeira'**
+  String get styleMadeira;
+
+  /// BR5.2 style chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get styleFortifiedOther;
+
+  /// Profile name (R_FRESH).
+  ///
+  /// In en, this message translates to:
+  /// **'Fruit-forward red'**
+  String get profileNameRFresh;
+
+  /// Profile name (R_MEDIUM).
+  ///
+  /// In en, this message translates to:
+  /// **'Medium-bodied red'**
+  String get profileNameRMedium;
+
+  /// Profile name (R_AGE).
+  ///
+  /// In en, this message translates to:
+  /// **'Red for ageing'**
+  String get profileNameRAge;
+
+  /// Profile name (R_LONG).
+  ///
+  /// In en, this message translates to:
+  /// **'Long-ageing red'**
+  String get profileNameRLong;
+
+  /// Profile name (W_FRESH).
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh aromatic white'**
+  String get profileNameWFresh;
+
+  /// Profile name (W_MEDIUM).
+  ///
+  /// In en, this message translates to:
+  /// **'Medium-bodied white'**
+  String get profileNameWMedium;
+
+  /// Profile name (W_AGE).
+  ///
+  /// In en, this message translates to:
+  /// **'White for ageing'**
+  String get profileNameWAge;
+
+  /// Profile name (ROSE_FRESH).
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh rosé'**
+  String get profileNameRoseFresh;
+
+  /// Profile name (SP_TANK).
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh tank-method sparkling'**
+  String get profileNameSpTank;
+
+  /// Profile name (LAM_FRESH).
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh Lambrusco'**
+  String get profileNameLamFresh;
+
+  /// Profile name (SP_CLASSIC).
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh traditional-method sparkling'**
+  String get profileNameSpClassic;
+
+  /// Profile name (SP_CLASSIC_AGE).
+  ///
+  /// In en, this message translates to:
+  /// **'Traditional-method sparkling for ageing'**
+  String get profileNameSpClassicAge;
+
+  /// Profile name (SW_AROMATIC).
+  ///
+  /// In en, this message translates to:
+  /// **'Young aromatic sweet wine'**
+  String get profileNameSwAromatic;
+
+  /// Profile name (SW_PASSITO).
+  ///
+  /// In en, this message translates to:
+  /// **'Dried-grape sweet wine'**
+  String get profileNameSwPassito;
+
+  /// Profile name (SW_BOTRYTIS).
+  ///
+  /// In en, this message translates to:
+  /// **'Botrytised sweet wine'**
+  String get profileNameSwBotrytis;
+
+  /// Profile name (PORT_VINTAGE).
+  ///
+  /// In en, this message translates to:
+  /// **'Vintage Port'**
+  String get profileNamePortVintage;
+
+  /// Profile name (PORT_LBV).
+  ///
+  /// In en, this message translates to:
+  /// **'LBV/Ruby Port'**
+  String get profileNamePortLbv;
+
+  /// Profile name (PORT_OX).
+  ///
+  /// In en, this message translates to:
+  /// **'Tawny/Colheita Port'**
+  String get profileNamePortOx;
+
+  /// Profile name (SH_FINO).
+  ///
+  /// In en, this message translates to:
+  /// **'Fino/Manzanilla'**
+  String get profileNameShFino;
+
+  /// Profile name (SH_AMONT).
+  ///
+  /// In en, this message translates to:
+  /// **'Amontillado/Medium'**
+  String get profileNameShAmont;
+
+  /// Profile name (SH_OLOROSO).
+  ///
+  /// In en, this message translates to:
+  /// **'Oloroso/Cream'**
+  String get profileNameShOloroso;
+
+  /// Profile name (SH_PX).
+  ///
+  /// In en, this message translates to:
+  /// **'Pedro Ximénez Sherry'**
+  String get profileNameShPx;
+
+  /// Profile name (FORT_UNKNOWN).
+  ///
+  /// In en, this message translates to:
+  /// **'Fortified, style unknown'**
+  String get profileNameFortUnknown;
+
+  /// Profile name (UNKNOWN).
+  ///
+  /// In en, this message translates to:
+  /// **'Style not identified'**
+  String get profileNameUnknown;
+
+  /// wine-style-profiles BR5.5.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate from the {profile} profile ({denomination})'**
+  String estimateFromProfile(String profile, String denomination);
+
+  /// wine-style-profiles BR5.5.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate from the {profile} profile, by type'**
+  String estimateFromProfileType(String profile);
+
+  /// wine-style-profiles BR5.5.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate from the {profile} profile, by the grape {grape}'**
+  String estimateFromProfileGrape(String profile, String grape);
+
+  /// wine-style-profiles BR5.5, BR8.3.
+  ///
+  /// In en, this message translates to:
+  /// **'From the date added: add the disgorgement date for a better estimate'**
+  String get estimateFromEntryDateDisgorgement;
+
+  /// wine-style-profiles BR5.5, BR8.3.
+  ///
+  /// In en, this message translates to:
+  /// **'From the date added: add the bottling date for a better estimate'**
+  String get estimateFromEntryDateBottling;
+
+  /// wine-style-profiles BR5.4.
+  ///
+  /// In en, this message translates to:
+  /// **'⚠︎ Style to confirm: the estimate is indicative'**
+  String get styleToConfirmBanner;
+
+  /// wine-style-profiles S4.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the type'**
+  String get chooseTypePrompt;
+
+  /// wine-style-profiles R-08: screen reader announcement.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimate updated: {summary}'**
+  String estimateUpdatedAnnouncement(String summary);
+
+  /// wine-style-profiles BR8.1.
+  ///
+  /// In en, this message translates to:
+  /// **'Disgorgement'**
+  String get agingStartDisgorgement;
+
+  /// wine-style-profiles BR8.1.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottling'**
+  String get agingStartBottling;
+
+  /// wine-style-profiles BR8.1.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get agingStartMonth;
+
+  /// wine-style-profiles BR8.1.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get agingStartYear;
+
+  /// wine-style-profiles BR8.1.
+  ///
+  /// In en, this message translates to:
+  /// **'It is usually on the back label.'**
+  String get agingStartHint;
+
+  /// wine-style-profiles BR8.2.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter month and year'**
+  String get agingStartIncomplete;
+
+  /// wine-style-profiles BR8.2.
+  ///
+  /// In en, this message translates to:
+  /// **'The date cannot be in the future'**
+  String get agingStartFuture;
+
+  /// wine-style-profiles BR8.2.
+  ///
+  /// In en, this message translates to:
+  /// **'It cannot be before the vintage'**
+  String get agingStartBeforeVintage;
+
+  /// wine-style-profiles BR6.5.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready, no end estimated'**
+  String get windowNoEnd;
+
+  /// wine-style-profiles BR6.5.
+  ///
+  /// In en, this message translates to:
+  /// **'no end estimated'**
+  String get windowNoEndShort;
+
+  /// wine-style-profiles BR6.7.
+  ///
+  /// In en, this message translates to:
+  /// **'by {date}'**
+  String windowDrinkWithin(String date);
+
+  /// wine-style-profiles BR4.1.
+  ///
+  /// In en, this message translates to:
+  /// **'The level does not change this estimate'**
+  String get levelNoEffect;
+
+  /// wine-style-profiles BR6.7.
+  ///
+  /// In en, this message translates to:
+  /// **'To confirm'**
+  String get dashboardToConfirmTitle;
+
+  /// wine-style-profiles BR6.7.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 wine} other{{count} wines}}'**
+  String dashboardToConfirmCount(int count);
+
+  /// wine-style-profiles NFR6.1: share of the offline wines with a Type.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% of the wines with a recognised type'**
+  String aboutDbClassified(String percent);
 }
 
 class _AppLocalizationsDelegate

@@ -143,7 +143,16 @@ void main() {
         ),
       ]);
 
-      expect(picked, feedbackOf('new', DrinkCondition.pastPeak, 2026));
+      // wine-style-profiles BR6.9: the month of the drink is kept too.
+      expect(
+        picked,
+        WindowAdjustment(
+          kind: DrinkCondition.pastPeak,
+          year: 2026,
+          month: 1,
+          recordId: 'new',
+        ),
+      );
     });
 
     test('same day: the latest createdAt, a pending one first', () {

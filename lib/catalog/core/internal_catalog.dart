@@ -61,6 +61,7 @@ class CatalogEntry {
     required this.searchTerms,
     required this.wineType,
     required this.region,
+    this.exactType,
   }) : words = {for (final term in searchTerms) ...term.split(' ')}
            .toList(growable: false);
 
@@ -71,6 +72,9 @@ class CatalogEntry {
   final List<String> searchTerms;
   final CatalogWineType wineType;
   final String? region;
+
+  /// wine-style-profiles BR3.5: the Type of the 8 values.
+  final WineType? exactType;
 
   /// Every word of [searchTerms], prepared once.
   final List<String> words;
@@ -107,6 +111,7 @@ class InternalCatalog {
             for (final alias in info.aliases) normalizeWineText(alias),
           }),
           wineType: catalogTypeOf(info.wineType),
+          exactType: info.wineType,
           region: info.region,
         ),
     ]),
@@ -157,6 +162,7 @@ class InternalCatalog {
             wineType: entry.wineType,
             region: entry.region,
             denomination: entry.displayName,
+            exactType: entry.exactType,
           ),
           full,
         ),

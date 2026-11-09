@@ -203,3 +203,70 @@ Altri test interessati (solo nomi): `test/cellar/domain/window_adjuster_test.dar
 - `CatalogWineType` a 5 valori: `red` diventa sempre `redStructured`, `sweet` e `fortified` coincidono; con un tipo `redStructured` una denominazione leggera riconosciuta nel nome (per esempio un Dolcetto) viene scartata da `_hasType` e vale la riga del tipo.
 - `WineFacts.region` e il paese non entrano nella stima, anche se sono già nel documento del vino.
 - La base offline è un campione di 45 vini: la compilazione dal testo resterà spesso senza candidati finché la base non cresce.
+
+Nota storica: questa sezione descrive il codice prima del commit `baba947`. Oggi livello, correzione manuale, tabelle del mondo, vitigni e compilazione dal testo esistono, e la base offline ha 15.616 vini reali. Lo stato attuale è nella sezione seguente.
+
+## Intent 261108-wine-style-profiles: punti di attenzione
+
+Verificato sul commit `baba947` più il working tree.
+
+### Tipi che si deformano lungo il percorso
+
+- **Catalogo a 5 famiglie**: `WineDbRecord.toCandidate` e `InternalCatalog` riducono il tipo con `catalogTypeOf` (`redLight`/`redStructured` → `red`, spumanti → `sparkling`, `sweet`/`fortified` → `sweet`). Nel form `wineFamilyOf` lo riporta a 8 valori con `WineType.tryParse`: `red` → `redStructured`, `sparkling` → `sparklingClassic`, `sweet` → `sweet`. Un Prosecco scelto dalla base offline (`t: sparklingTank`) arriva nel form come metodo classico, un Porto (`fortified`) come dolce, un rosso leggero come strutturato.
+- **Default del rosso opposti**: `WineType.tryParse('red')` dà `redStructured`; `build_wine_db.dart` dà `redStructured` salvo parole "light/young/nouveau/primeur" (nella base: 3009 strutturati, 11 leggeri); `build_appellations.dart` (`typesFromName`) dà `redLight` a "rosso/rouge/tinto"; il ripiego delle righe generate è `redLight`; nell'analisi dell'etichetta un rosso senza riga e senza vitigno è `redLight`, con un qualificativo da invecchiamento è `redStructured`.
+- **Righe generate senza informazione**: 1582 righe su 1700 di `appellations.g.dart` hanno i tipi di ripiego `redLight,white,rose` (registro e nome non dicono nulla). Il primo tipo diventa il tipo principale: senza tipo scelto, una di queste denominazioni stima come rosso leggero anche se la zona fa soprattutto bianchi. Per tipo: 46 solo `redStructured`, 33 solo `white`, 17 solo `redLight`, 12 `redLight,white`, 3 `fortified`, 2 `sparklingClassic`, 2 `rose`, 1 `sparklingTank`, 2 `white,redLight`.
+- **Vitigno a tipo unico**: ogni vitigno di `grapeTable` (46) ha un solo tipo (per esempio Merlot e Pinot Noir `redLight`, Cabernet Sauvignon e Syrah `redStructured`); un Merlot strutturato o un Pinot Noir da invecchiamento si distinguono solo con il livello.
+- **Tipo scelto contro denominazione**: con un tipo scelto che la riga non fa, `_hasType` scarta la denominazione e vale il vitigno o la riga del tipo (per esempio un Dolcetto salvato `redStructured`).
+- **Tipo non salvato**: scrivendo a mano una denominazione nel form, il paese e la regione si deducono (`WineOrigins.guess`), il tipo no. La stima usa comunque il tipo della riga, ma `wineType` resta `null`: filtro "non specificato", nessun badge, il cruscotto lo conta tra i "non specificati".
+
+### Livello
+
+- Suggerito solo "Da invecchiamento" (`LevelChoice.suggestionFor`, `LabelFields.suggestedLevel`), e solo con un qualificativo di `agingQualifiers`. "Quotidiano" non ha nessuna regola di suggerimento; "Buono" coincide con "nessuno" nella stima.
+- Il livello è un moltiplicatore degli scarti in anni (`WineLevel.apply`), non un profilo: per una riga di tipo leggero (scarti 1/2/4) "Quotidiano" dà 1/1/2 (arrotondamento con la regola fine ≥ inizio + 1).
+- I widget del livello (`WineLevelSelector`, `LevelSection`, `LevelPreview`) leggono la stima con e senza livello chiamando `WineEstimator` a ogni build.
+
+### Finestra e unità
+
+- Tutto è in anni interi: scarti delle tabelle, `DrinkingWindow`, regole (`validWindow`), "Consigliato fino al" (`windowOverride.endYear`). Non esistono mesi, né data di sboccatura o imbottigliamento, né un campo "età alla data di acquisto".
+- Per un vino senza annata l'anno base è l'anno di ingresso in cantina (`createdAt`), un anno prima per i vini fermi: è l'unico surrogato della data di imbottigliamento.
+- "Nessuna stima se lo stile non è chiaro" non esiste: `resolveWine` arriva sempre almeno alla riga generica (1/3/6, fiducia bassa, avviso). Lo stato "da stimare" (`window == null`) è già gestito da cantina (`StatusFilter.toEstimate`), dettaglio ("Stima non disponibile") e cruscotto (contato a parte), quindi è riusabile.
+
+### Migrazione dei vini salvati
+
+- `EstimatesMigration` parte solo quando `estimationTablesVersion` (oggi 2) è diversa dalla `tablesVersion` salvata, e solo per finestre `internalRules`. Riscrive la stima con `setEstimate`; non tocca `wineType`, `level` né `windowOverride`. Una correzione dei tipi salvati richiede un'altra scrittura (per esempio `updateWine`, o un nuovo metodo del repository) e le regole che la ammettono.
+- I vini con `windowAdjustment` ma senza `baseWindow` (salvati prima di u4) non sono candidati.
+- Tre avvii con un rifiuto delle regole fermano la migrazione fino alla versione successiva delle tabelle (`estimates.migration.v<n>` nelle preferenze).
+- `EstimateRefresher` rifà la stima di ogni finestra interna una volta per sessione con la rete: anche un vino migrato verrà ricalcolato lì, con lo stesso risultato se nulla cambia.
+
+### Base dei vini sul telefono
+
+- 15.616 vini (Open Food Facts, export 2026-11-07, ODbL). Campi presenti: codice e nome sempre, paese 15.562, produttore 8848, **tipo 7402** (47%), annata 1917, **denominazione 1242** (8%). Nessun vitigno, livello, regione, stile o finestra.
+- Distribuzione del tipo: `redStructured` 3009, `white` 1530, `rose` 878, `sparklingClassic` 814, `sparklingTank` 749, `fortified` 327, `sweet` 84, `redLight` 11, nessuno 8214.
+- Il tipo viene dai tag di categoria (`wineTypeOfTags`, stile prima del colore); la denominazione da `recognizeDenomination` (solo le 47 italiane del catalogo) o da un tag che finisce con un marcatore (`fr:pomerol-aoc` → "Pomerol AOC"). Per classificare tutti i vini della base servirebbe ricostruirla con `tool/build_wine_db.dart` dall'export completo (circa 1 GB, scaricato a mano) oppure classificarli nell'app al momento della proposta.
+
+### Duplicazioni
+
+- La mappatura tipo → famiglia è scritta tre volte (`TypeFilter.of`, `DashboardCalculator.familyOf`, `WineTypeFamily.of`) più `catalogTypeOf`; un nuovo valore di `WineType` o un nuovo stile va aggiunto in tutti e quattro gli `switch` (il compilatore segnala quelli esaustivi).
+- Le parole di tipo sono definite tre volte con contenuti diversi: `typesFromName` (generatore), `wineTypeOfTags` (base offline), `_fortifiedWords`/`_sweetWords`/`_sparklingWords`/`_roseWords`/`_whiteWords`/`_redWords` (etichetta).
+
+### Test attuali vicini all'intent (numero di `test`/`testWidgets`)
+
+| File | Test |
+|---|---|
+| `packages/estimation/test/world_estimate_test.dart` | 33 |
+| `packages/estimation/test/label_fields_test.dart` | 32 |
+| `packages/estimation/test/window_test.dart` | 28 |
+| `packages/estimation/test/recognizer_test.dart` | 25 |
+| `packages/estimation/test/tables_test.dart` | 19 (più i test per riga) |
+| `packages/estimation/test/models_test.dart` | 19 |
+| `packages/estimation/test/appellations_test.dart` | 11 |
+| `test/cellar/estimates_migration_test.dart` | 17 |
+| `test/cellar/level_override_test.dart` | 15 |
+| `test/cellar/ui/level_override_screens_test.dart` | 14 |
+| `test/cellar/data/wine_repository_level_test.dart` | 7 |
+| `test/cellar/ui/level_choice_test.dart` | 6 |
+| `test/cellar/estimate_refresher_test.dart` | 6 |
+| `test/tool/build_wine_db_test.dart` | 17 |
+| `test/catalog/offline/wine_db_record_test.dart` | 12 |
+
+Altri test interessati (solo nomi): `test/tool/build_appellations_test.dart`, `packages/estimation/test/label_analysis_test.dart`, `packages/estimation/test/effective_window_test.dart`, `test/catalog/offline/wine_db_index_test.dart`, `test/catalog/wine_db_loader_test.dart`.

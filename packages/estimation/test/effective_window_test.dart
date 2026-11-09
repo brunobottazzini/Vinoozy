@@ -3,6 +3,10 @@
 import 'package:estimation/estimation.dart';
 import 'package:test/test.dart';
 
+/// [estimateWindow] for a wine that has a window (every wine of this file).
+DrinkingWindow estimated(WineFacts wine, [ExternalProfile? external]) =>
+    estimateWindow(wine, external)!;
+
 const _window = DrinkingWindow(
   startYear: 2024,
   peakYear: 2031,
@@ -14,7 +18,7 @@ const _window = DrinkingWindow(
   tablesVersion: 2,
 );
 
-List<int> years(DrinkingWindow window) => [
+List<int?> years(DrinkingWindow window) => [
   window.startYear,
   window.peakYear,
   window.endYear,

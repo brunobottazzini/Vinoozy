@@ -16,19 +16,35 @@ class WineFactsInput {
     this.denomination,
     required this.referenceYear,
     this.level,
+    this.referenceMonth,
+    this.style,
+    this.styleChosen = false,
+    this.agingStart,
   });
 
-  factory WineFactsInput.ofWine(Wine wine, {required int fallbackYear}) =>
-      WineFactsInput(
-        name: wine.name,
-        producer: wine.producer,
-        vintage: wine.vintage,
-        wineType: wine.wineType,
-        region: wine.region,
-        denomination: wine.denomination,
-        referenceYear: wine.createdAt?.toLocal().year ?? fallbackYear,
-        level: wine.level,
-      );
+  /// [fallbackMonth] is the month of [fallbackYear] used while `createdAt`
+  /// is pending (wine-style-profiles BR8.3).
+  factory WineFactsInput.ofWine(
+    Wine wine, {
+    required int fallbackYear,
+    int? fallbackMonth,
+  }) {
+    final created = wine.createdAt?.toLocal();
+    return WineFactsInput(
+      name: wine.name,
+      producer: wine.producer,
+      vintage: wine.vintage,
+      wineType: wine.wineType,
+      region: wine.region,
+      denomination: wine.denomination,
+      referenceYear: created?.year ?? fallbackYear,
+      referenceMonth: created?.month ?? fallbackMonth,
+      level: wine.level,
+      style: wine.style,
+      styleChosen: wine.styleSource == FieldSource.user,
+      agingStart: wine.agingStart,
+    );
+  }
 
   final String name;
   final String? producer;
@@ -46,6 +62,17 @@ class WineFactsInput {
   /// the estimate, so the base window already holds it.
   final WineLevel? level;
 
+  /// Month the wine entered the cellar (BR8.3): the start of a months
+  /// profile without a date.
+  final int? referenceMonth;
+
+  /// The style saved and whether the user chose it (BR2.15).
+  final WineStyle? style;
+  final bool styleChosen;
+
+  /// Disgorgement or bottling date (BR8.1).
+  final AgingStart? agingStart;
+
   WineFacts toFacts() => WineFacts(
     name: name,
     producer: producer,
@@ -55,6 +82,11 @@ class WineFactsInput {
     denomination: denomination,
     referenceYear: referenceYear,
     level: level,
+    referenceMonth: referenceMonth,
+    style: style,
+    styleChosen: styleChosen,
+    agingStartYear: agingStart?.year,
+    agingStartMonth: agingStart?.month,
   );
 }
 
@@ -119,6 +151,11 @@ class WineEstimator {
       denomination: facts.denomination ?? profile.denomination,
       referenceYear: facts.referenceYear,
       level: facts.level,
+      referenceMonth: facts.referenceMonth,
+      style: facts.style,
+      styleChosen: facts.styleChosen,
+      agingStartYear: facts.agingStartYear,
+      agingStartMonth: facts.agingStartMonth,
     );
     return _estimate(filled, null, adjustment, override);
   }
@@ -163,6 +200,14 @@ class WineEstimator {
   ) {
     try {
       final base = estimateWindow(facts, external);
+      if (base == null) {
+        // "To estimate" (wine-style-profiles BR2.9): no window until the
+        // style is chosen; the pairings still help.
+        return WineEstimate(
+          adjustment: adjustment,
+          pairings: pairingsFor(facts, external),
+        );
+      }
       return withAdjustment(
         base,
         adjustment,

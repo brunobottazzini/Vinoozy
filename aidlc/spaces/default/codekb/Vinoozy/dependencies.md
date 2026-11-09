@@ -127,6 +127,34 @@ Conseguenze per l'intent:
 - Estendere le tabelle al mondo intero tocca solo `packages/estimation` (puro, senza dipendenze), ma `WineOrigins._denominations` in `lib/cellar/domain/` ha già un secondo elenco di denominazioni estere (solo origine) che potrebbe divergere.
 - Un analizzatore del testo dell'etichetta o incollato può restare in `lib/label/core/` (Dart puro; `tool/check_label_imports.sh` vieta Firestore nel modulo) riusando `recognizeDenomination`, `VintageParser`, `LabelLinePicker` e `WineOrigins`; la lettura degli appunti richiede `flutter/services.dart` in `ui/` o `platform/`.
 
+## Dipendenze di tipo, livello, stile e finestra (intent 261108-wine-style-profiles)
+
+| Da | A | Tipo |
+|---|---|---|
+| `estimateWindow` | `resolveWine`, `WineLevel.apply`, `estimationTablesVersion` | interno al pacchetto |
+| `resolveWine` | `denominationTable` (← `italianDenominationTable`, `worldDenominations`, `generatedAppellationRows` via `buildDenominationTable`/`parseGeneratedRow` e `appellationTemplates`), `grapeTable`, `typeTable`, `genericTypeProfile`, `qualifierFor` | interno al pacchetto |
+| `extractLabelFields` / `analyzeLabelText` | `denominationTable`, `appellations`, `grapeTable`, `agingQualifiers`, `VintageParser`, `LabelLinePicker` | interno al pacchetto |
+| `AddWineScreen` | `analyzeLabelText`/`fieldsForDenomination` (tipo, paese, regione, qualificativo), `wineFamilyOf` (← `WineCandidate.wineType` a 5 famiglie), `WineTypeField`, `LevelSection` | UI |
+| `EditWineScreen` | `WineTypeField` (da `add_wine_screen.dart`), `LevelSection`, `LevelChoice(saved)` | UI |
+| `LevelSection` / `LevelChoice` | `agingQualifierIn`, `agingQualifiers`, `WineEstimator.estimate` | UI → servizio |
+| `WineRepository.addWine` / `updateWine` | `WineDraft.wineType`, `WineDraft.level`, `WineEstimate.toFields` | serializzazione |
+| `EstimatesMigration` | `WineEstimator.estimate`, `WineRepository.setEstimate`, `MigrationAttemptStore` (`shared_preferences`), `estimationTablesVersion` | chiamata |
+| `CellarActions` | `EstimatesMigration.run` (provider `estimatesMigrationProvider`) | iniezione |
+| `IdealMomentCard`, `wine_labels.dart` | `appellationOf`, `grapeNameOf` (nome della riga o del vitigno da `window.denominationKey`) | import |
+| `WineTypeFamily.of`, `TypeFilter.of`, `DashboardCalculator.familyOf` | `WineType.tryParse(wine.wineType)` | lettura |
+| `WineDbRecord.toCandidate`, `InternalCatalog` | `catalogTypeOf` (8 tipi → 5 famiglie) | conversione |
+| `tool/build_wine_db.dart` | `recognizeDenomination` (pacchetto), `WineDbRecord`, `normalizeBarcode`, `WineOrigins.countryNamed` (app) | strumento |
+| `tool/build_appellations.dart` | `appellations`, `appellationTemplates`, `TemplateKeys`, `normalizeWineText`, `grapeForms` (pacchetto), `WineOrigins.findRegion` (app) | strumento |
+| Regole `wineFields()` | ogni campo che l'app scrive nel vino | vincolo di distribuzione |
+
+Conseguenze per l'intent:
+
+- Cambiare i valori delle tabelle richiede di alzare `estimationTablesVersion`: è il solo innesco della migrazione dei vini salvati.
+- Un profilo di stile o una finestra in mesi tocca `YearOffsets`, `DrinkingWindow`, `WineLevel.apply`, `statusOf`, `effectiveWindow`, `WindowAdjuster`, `Wine.windowFrom`/`windowToMap`, `validWindow` delle regole, `IdealMomentCard`, `WindowBar` e il cruscotto, perché oggi tutti ragionano in anni interi.
+- Una data di sboccatura o di imbottigliamento è un campo nuovo: `WineFields`, `WineDraft`, `WineInput`, `WineFactsInput`, `WineFacts`, form, `wineFields()` e validatori delle regole, test di compatibilità delle regole.
+- Classificare tutti i vini della base offline può avvenire in due punti: in `tool/build_wine_db.dart` (dati ricostruiti e ridistribuiti con l'app) o al momento della proposta (`WineDbRecord.toCandidate`, `wineFamilyOf`). In entrambi i casi la riduzione a `CatalogWineType` va tolta o aggirata per non perdere il tipo.
+- Il generatore delle denominazioni dipende dal codice dell'app (`WineOrigins`), quindi un cambio delle regioni dell'app può cambiare il file generato.
+
 ## Dipendenze Node
 
 Solo sviluppo (`package.json`): emulatori, test delle regole (`test/rules/`), test e bundle della pagina web. `package-lock.json` versionato.

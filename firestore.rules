@@ -260,7 +260,24 @@ service cloud.firestore {
         return ['name', 'producer', 'vintage', 'wineType', 'region', 'denomination',
                 'quantity', 'window', 'pairings', 'createdAt', 'updatedAt', 'updatedBy',
                 'matchKey', 'baseWindow', 'windowAdjustment', 'country',
-                'level', 'windowOverride'];
+                'level', 'windowOverride',
+                // wine-style-profiles BR10.1: all optional.
+                'style', 'typeSource', 'levelSource', 'styleSource',
+                'agingStartMonth', 'migrationVersion'];
+      }
+
+      // wine-style-profiles BR10.2: disgorgement or bottling month and year.
+      function validAgingStart(a) {
+        return a == null || (a is map
+          && a.keys().hasOnly(['year', 'month'])
+          && a.keys().hasAll(['year', 'month'])
+          && a.year is int && a.year >= 1900 && a.year <= 2200
+          && a.month is int && a.month >= 1 && a.month <= 12);
+      }
+
+      // wine-style-profiles BR10.2: version of the one-off migration.
+      function validMigrationVersion(v) {
+        return v == null || (v is int && v >= 1 && v <= 1000);
       }
 
       // label-autofill-windows BR5.1: the level is one of three names.
@@ -273,7 +290,10 @@ service cloud.firestore {
       // unrelated edit of a corrected wine keeps passing (review R-09).
       function validOverride(o) {
         return o == null || (o is map
-          && o.keys().hasOnly(['endYear', 'setAt'])
+          // wine-style-profiles BR6.8: optional end month.
+          && o.keys().hasOnly(['endYear', 'setAt', 'endMonth'])
+          && (!('endMonth' in o)
+            || (o.endMonth is int && o.endMonth >= 1 && o.endMonth <= 12))
           && o.keys().hasAll(['endYear', 'setAt'])
           && o.endYear is int && o.endYear >= 1900 && o.endYear <= 2200
           && o.setAt == request.time);
@@ -290,22 +310,41 @@ service cloud.firestore {
       // label-autofill-windows BR5.1: basis `grape`, the foreign qualifiers,
       // and the optional `denominationKey` (1-60 characters) and
       // `tablesVersion` (an integer, BR3.9).
+      // wine-style-profiles BR10.2: `peakYear` and `endYear` optional (not
+      // estimated), `unit` with the months, the profile, the anchor and the
+      // flags; the order is checked on the values present, as one integer
+      // per date: year * 12 + month for a window in months, the year for a
+      // window in years (unit absent included). The optional fields are read
+      // with `get` and a default that passes, so a window costs few
+      // expressions: the rules evaluate at most 1000 per request and a wine
+      // write may carry two windows.
       function validWindow(w) {
         return w == null || (w is map
           && w.keys().hasOnly(['startYear', 'peakYear', 'endYear', 'confidence', 'source',
-                               'basis', 'qualifier', 'denominationKey', 'tablesVersion'])
-          && w.keys().hasAll(['startYear', 'peakYear', 'endYear', 'confidence', 'source'])
-          && w.startYear is int && w.peakYear is int && w.endYear is int
-          && w.startYear >= 1900 && w.endYear <= 2200
-          && w.startYear <= w.peakYear && w.peakYear <= w.endYear
-          && w.confidence in ['high', 'medium', 'low']
-          && w.source in ['catalog', 'internalRules']
-          && (!('basis' in w)
-            || w.basis in ['catalog', 'denomination', 'grape', 'wineType', 'generic'])
-          && (!('qualifier' in w)
-            || w.qualifier in ['riserva', 'superiore', 'granSelezione', 'crianza', 'reserva',
-                               'granReserva', 'premierCru', 'grandCru', 'kabinett',
-                               'spatlese', 'auslese', 'vintage', 'lbv', 'colheita'])
+                               'basis', 'qualifier', 'denominationKey', 'tablesVersion',
+                               'unit', 'startMonth', 'peakMonth', 'endMonth', 'profile',
+                               'anchor', 'anchorFallback', 'indicative'])
+          && w.startYear is int && w.startYear >= 1900
+          // confidence and source (required: reading a missing one fails),
+          // then the optional descriptions with a default that passes, joined
+          // and matched by one regular expression; a value that is not a
+          // string or a bool makes the expression fail.
+          && (w.confidence + '|' + w.source + '|' + w.get('basis', 'catalog') + '|'
+              + w.get('anchor', 'vintage') + '|' + w.get('profile', 'UNKNOWN') + '|'
+              + w.get('qualifier', 'riserva') + '|'
+              + string(w.get('anchorFallback', false)) + '|'
+              + string(w.get('indicative', false))).matches(
+            '^(high|medium|low)[|](catalog|internalRules)[|]'
+            + '(catalog|denomination|grape|wineType|generic)[|]'
+            + '(vintage|bottling|disgorgement)[|]'
+            + '(R_FRESH|R_MEDIUM|R_AGE|R_LONG|W_FRESH|W_MEDIUM|W_AGE|ROSE_FRESH|'
+            + 'SP_TANK|LAM_FRESH|SP_CLASSIC|SP_CLASSIC_AGE|SW_AROMATIC|SW_PASSITO|'
+            + 'SW_BOTRYTIS|PORT_VINTAGE|PORT_LBV|PORT_OX|SH_FINO|SH_AMONT|'
+            + 'SH_OLOROSO|SH_PX|FORT_UNKNOWN|UNKNOWN)[|]'
+            + '(riserva|superiore|granSelezione|crianza|reserva|granReserva|'
+            + 'premierCru|grandCru|kabinett|spatlese|auslese|vintage|lbv|colheita|'
+            + 'beerenauslese|trockenbeerenauslese|eiswein)[|](true|false)[|](true|false)$')
+          && (w.get('unit', 'years') == 'years' ? validYearWindow(w) : validMonthWindow(w))
           && (!('denominationKey' in w)
             || (w.denominationKey is string
               && w.denominationKey.size() >= 1 && w.denominationKey.size() <= 60))
@@ -313,9 +352,59 @@ service cloud.firestore {
             || (w.tablesVersion is int && w.tablesVersion >= 1 && w.tablesVersion <= 1000)));
       }
 
+      // wine-style-profiles: the base window (the estimate before the drink
+      // feedback and the owner's correction). Equal to the window (checked in
+      // full in the same request): nothing more. Different only in its dates
+      // and confidence (a drink feedback or a correction): every other field
+      // must be equal to the window's, so its descriptions are the checked
+      // ones, and its start, confidence and dates (integers, months 1..12,
+      // order) are checked here. Otherwise it is checked in full. This keeps
+      // a wine write within the 1000 expressions a request may evaluate
+      // (test/rules/style_profiles.rules.test.mjs, "expression budget").
+      function validBaseWindow(b, w) {
+        return b == w
+          || (b is map && w is map
+            && b.diff(w).affectedKeys().hasOnly(['startYear', 'peakYear', 'endYear',
+                 'startMonth', 'peakMonth', 'endMonth', 'confidence'])
+            && b.startYear is int && b.startYear >= 1900
+            && b.confidence in ['high', 'medium', 'low']
+            && (b.get('unit', 'years') == 'years' ? validYearWindow(b) : validMonthWindow(b)))
+          || validWindow(b);
+      }
+
+      // A window in years: the years present ordered, at most 2200.
+      function validYearWindow(w) {
+        let peak = w.get('peakYear', w.startYear);
+        let end = w.get('endYear', w.get('peakYear', w.startYear));
+        return !w.keys().hasAny(['startMonth', 'peakMonth', 'endMonth'])
+          && peak is int && end is int && end <= 2200
+          && w.startYear <= peak && peak <= end;
+      }
+
+      // A window in months: every date present has its month 1..12 (one
+      // regular expression on the months; the arithmetic refuses a value that
+      // is not a number), and year * 12 + month grows (BR10.2: March to
+      // September of the same year passes, September to March does not). A
+      // missing peak or end reads as a value that passes the order.
+      function validMonthWindow(w) {
+        let s = w.startYear * 12 + w.startMonth;
+        let p = w.get('peakYear', w.startYear) * 12 + w.get('peakMonth', w.startMonth);
+        let e = w.get('endYear', 2200) * 12 + w.get('endMonth', 12);
+        return w.unit == 'months'
+          && (string(w.startMonth) + '|' + string(w.get('peakMonth', 1)) + '|'
+            + string(w.get('endMonth', 1))).matches(
+            '^([1-9]|1[0-2])[|]([1-9]|1[0-2])[|]([1-9]|1[0-2])$')
+          && ('peakYear' in w) == ('peakMonth' in w)
+          && ('endYear' in w) == ('endMonth' in w)
+          && p is int && e is int
+          && s <= p && p <= e && e <= 26412;
+      }
+
       function validAdjustment(a) {
         return a == null || (a is map
-          && a.keys().hasOnly(['kind', 'year', 'recordId'])
+          // wine-style-profiles BR6.9: optional month of the drink.
+          && a.keys().hasOnly(['kind', 'year', 'recordId', 'month'])
+          && (!('month' in a) || (a.month is int && a.month >= 1 && a.month <= 12))
           && a.kind in ['tooYoung', 'justRight', 'pastPeak']
           && a.year is int && a.year >= 1900 && a.year <= 2200
           && a.recordId is string && a.recordId.size() >= 1 && a.recordId.size() <= 128);
@@ -343,8 +432,10 @@ service cloud.firestore {
 
       // The u4-cellar fields of a wine, each optional (read with get).
       function validWineExtras(data) {
+        // wine-style-profiles: a base window equal to the window (no
+        // feedback, no correction) is checked once.
         return validWindow(data.get('window', null))
-          && validWindow(data.get('baseWindow', null))
+          && validBaseWindow(data.get('baseWindow', null), data.get('window', null))
           && validAdjustment(data.get('windowAdjustment', null))
           && validMatchKey(data.get('matchKey', null))
           && validOptionalText(data.get('producer', null))
@@ -352,8 +443,26 @@ service cloud.firestore {
           && validOptionalText(data.get('denomination', null))
           && validPairings(data.get('pairings', null))
           && validCountry(data.get('country', null))
-          && validLevel(data.get('level', null))
-          && validOverride(data.get('windowOverride', null));
+          // (the level is checked with the classification)
+          && validOverride(data.get('windowOverride', null))
+          && validClassification(data);
+      }
+
+      // wine-style-profiles BR10.2: style and the three sources joined and
+      // matched by one regular expression (a missing field reads as a valid
+      // default; a value that is not a string makes it fail), then the date
+      // and the migration version.
+      function validClassification(data) {
+        return (data.get('level', 'good') + '|'
+            + data.get('style', 'redFresh') + '|' + data.get('typeSource', 'user') + '|'
+            + data.get('levelSource', 'user') + '|' + data.get('styleSource', 'user')).matches(
+            '^(everyday|good|aging)[|](redFresh|redMedium|redAge|redLong|whiteFresh|whiteMedium|whiteAge|'
+            + 'roseFresh|tankFresh|lambrusco|classicFresh|classicAge|sweetAromatic|'
+            + 'sweetPassito|sweetBotrytis|portVintage|portLbv|portTawny|sherryFino|'
+            + 'sherryAmontillado|sherryOloroso|sherryPx|madeira|fortifiedOther)'
+            + '[|](user|auto)[|](user|auto)[|](user|auto)$')
+          && validAgingStart(data.get('agingStartMonth', null))
+          && validMigrationVersion(data.get('migrationVersion', null));
       }
 
       function validWineName(name) {
@@ -391,26 +500,36 @@ service cloud.firestore {
           && data.updatedBy == uid()
           && data.updatedAt == request.time
           && data.quantity is int
-          && (!changed.hasAny(['name']) || validWineName(data.name))
-          && (!changed.hasAny(['vintage']) || validVintage(data.get('vintage', null)))
+          // wine-style-profiles: fields checked in groups when one of them
+          // changes (one test per group, for the expression budget).
+          && (!changed.hasAny(['name', 'vintage', 'matchKey'])
+            || (validWineName(data.name)
+              && validVintage(data.get('vintage', null))
+              && validMatchKey(data.get('matchKey', null))))
           && (!changed.hasAny(['window']) || validWindow(data.get('window', null)))
-          && (!changed.hasAny(['baseWindow']) || validWindow(data.get('baseWindow', null)))
+          && (!changed.hasAny(['baseWindow'])
+            || validBaseWindow(data.get('baseWindow', null), data.get('window', null)))
           && (!changed.hasAny(['windowAdjustment'])
             || validAdjustment(data.get('windowAdjustment', null)))
-          && (!changed.hasAny(['matchKey']) || validMatchKey(data.get('matchKey', null)))
           // 99-bottle cap of BR1.3 when the quantity changes; no lower bound,
           // a negative value from concurrent decrements stays valid (ADR-004).
           && (!changed.hasAny(['quantity']) || data.quantity <= 99)
-          && (!changed.hasAny(['producer']) || validOptionalText(data.get('producer', null)))
-          && (!changed.hasAny(['region']) || validOptionalText(data.get('region', null)))
-          && (!changed.hasAny(['denomination'])
-            || validOptionalText(data.get('denomination', null)))
+          // wine-style-profiles: the three optional texts checked together
+          // when one of them changes (expression budget).
+          && (!changed.hasAny(['producer', 'region', 'denomination', 'country'])
+            || (validOptionalText(data.get('producer', null))
+              && validOptionalText(data.get('region', null))
+              && validOptionalText(data.get('denomination', null))
+              && validCountry(data.get('country', null))))
           && (!changed.hasAny(['pairings']) || validPairings(data.get('pairings', null)))
-          && (!changed.hasAny(['country']) || validCountry(data.get('country', null)))
           // label-autofill-windows BR5.1: checked only when they change.
-          && (!changed.hasAny(['level']) || validLevel(data.get('level', null)))
           && (!changed.hasAny(['windowOverride'])
-            || validOverride(data.get('windowOverride', null)));
+            || validOverride(data.get('windowOverride', null)))
+          // wine-style-profiles BR10.2: checked together when one of them
+          // changes (one test instead of six, for the expression budget).
+          && (!changed.hasAny(['level', 'style', 'typeSource', 'levelSource',
+                               'styleSource', 'agingStartMonth', 'migrationVersion'])
+            || validClassification(data));
       }
 
       // u4-cellar NFR4.2: the one-off backfill writes only matchKey, without

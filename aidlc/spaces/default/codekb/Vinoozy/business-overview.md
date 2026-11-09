@@ -57,3 +57,21 @@ Stato attuale del codice (working tree non committato, verificato in questa scan
 5. **"Livello"**: non esiste né nel modello né nelle regole Firestore.
 6. **"Consigliato fino al" manuale**: oggi è l'anno di fine della finestra calcolata (`window.endYear`), corretta solo dalle bevute (`WindowAdjuster`). Non si può modificare a mano e verrebbe ricalcolata da modifica, aggiornamento col catalogo e bevute. Dettagli in [code-quality-assessment.md](code-quality-assessment.md#intent-261108-label-autofill-windows-punti-di-attenzione).
 
+Nota storica: l'elenco qui sopra descrive il codice prima dell'intent 261108-label-autofill-windows. Quell'intent è stato poi realizzato (commit `baba947`): "Livello", correzione manuale, tabelle del mondo, vitigni e compilazione dal testo esistono ora nel codice. Lo stato attuale è nella sezione seguente.
+
+## Contesto dell'intent 261108-wine-style-profiles
+
+Richiesta (testo originale del proprietario):
+
+> Applicare lo studio enologico in ~/Downloads/vinoozy-handoff-valutazione-vini.xlsx (profili di stile, finestre in mesi da sboccatura o imbottigliamento, nessuna stima se lo stile non è chiaro, correzione dei tipi sbagliati, migrazione dei vini salvati). Inoltre automatizzare la nostra classificazione su tutti i vini della base: Tipologia (Rosso leggero, Bianco ecc.) e Livello (Quotidiano, Da invecchiamento) devono essere preselezionati per ogni tipo di vino.
+
+Stato attuale del codice (commit `baba947` più il working tree, verificato in questa scansione):
+
+1. **Tipologia**: 8 valori (`WineType`: rosso leggero, rosso strutturato, bianco, rosato, spumante metodo classico, spumante Charmat, dolce, fortificato), salvati come stringa libera `wineType` nel documento del vino. Nel form si sceglie a mano; viene preselezionata solo dall'analisi del testo dell'etichetta e dalla proposta di un catalogo, mai da una denominazione scritta a mano.
+2. **Livello**: 3 valori (`everyday` Quotidiano, `good` Buono, `aging` Da invecchiamento) più "nessuno". Viene suggerito solo "Da invecchiamento", e solo quando il nome o la denominazione contiene un qualificativo (Riserva, Gran Reserva, Grand Cru…). "Quotidiano" non viene mai suggerito.
+3. **Finestra di consumo**: in **anni interi** contati dall'annata (o dall'anno di ingresso in cantina). Non esistono mesi, data di sboccatura o data di imbottigliamento, né nel modello né nelle regole Firestore.
+4. **Nessuna stima se lo stile non è chiaro**: oggi una finestra c'è sempre. Senza denominazione, vitigno o tipo vale la riga generica (1/3/6 anni, avviso "Indicativa"). Lo stato "da stimare" esiste già nell'interfaccia, ma si raggiunge solo con dati non validi (per esempio senza annata e senza anno di riferimento).
+5. **Tipi sbagliati**: ci sono più punti in cui un tipo si deforma (catalogo a 5 famiglie, default opposti per il rosso, righe generate con tipi di ripiego). Dettagli in [code-quality-assessment.md](code-quality-assessment.md#intent-261108-wine-style-profiles-punti-di-attenzione).
+6. **Migrazione dei vini salvati**: esiste un meccanismo una tantum (`EstimatesMigration`), che parte quando sale la versione delle tabelle (`estimationTablesVersion`, oggi 2). Ricalcola solo la finestra delle stime interne; non tocca mai tipo né livello.
+7. **Base dei vini sul telefono**: 15.616 vini da Open Food Facts (export reale del 2026-11-07, non più il campione di 45). Ogni vino ha codice, nome, eventuale produttore, tipo, denominazione, paese e annata. Non ha vitigni, livello né regione. Il tipo c'è nel 47% dei vini, la denominazione nell'8%.
+

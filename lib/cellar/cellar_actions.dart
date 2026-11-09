@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:estimation/estimation.dart'
-    show DrinkingWindow, isValidOverrideYear;
+import 'package:estimation/estimation.dart';
 
 import '../account/app_user.dart';
 import '../app/error_reporter.dart';
@@ -16,6 +15,7 @@ import 'domain/drinking_record.dart';
 import 'domain/match_key.dart';
 import 'domain/window_adjuster.dart';
 import 'domain/wine.dart';
+import 'domain/wine_classification.dart';
 import 'domain/wine_draft.dart';
 import 'domain/wine_estimate.dart';
 import 'estimate_refresher.dart';
@@ -142,6 +142,11 @@ class CellarActions {
         denomination: draft.denomination,
         referenceYear: _year,
         level: draft.level,
+        // wine-style-profiles F1: the style, the date and the month added.
+        referenceMonth: _clock.now().month,
+        style: draft.style,
+        styleChosen: draft.styleSource == FieldSource.user,
+        agingStart: draft.agingStart,
       ),
     );
     final outcome = await _wines.addWine(
@@ -214,6 +219,10 @@ class CellarActions {
         denomination: draft.denomination,
         referenceYear: before.createdAt?.toLocal().year ?? _year,
         level: draft.level,
+        referenceMonth: (before.createdAt?.toLocal() ?? _clock.now()).month,
+        style: draft.style,
+        styleChosen: draft.styleSource == FieldSource.user,
+        agingStart: draft.agingStart,
       ),
       adjustment: before.windowAdjustment,
       // FR5.3: an edit never removes the owner's correction.
@@ -394,23 +403,105 @@ class CellarActions {
     required AppUser user,
     required Wine wine,
     required int endYear,
+    int? endMonth,
   }) async {
     if (!cellar.canEdit) return false;
     final base = _baseOf(wine);
     if (base == null) return false;
     final adjusted = WindowAdjuster.effective(base, wine.windowAdjustment);
-    if (!isValidOverrideYear(adjusted, endYear)) return false;
+    // wine-style-profiles BR6.8: the month only for a window in months.
+    final month = adjusted.inMonths ? endMonth : null;
+    if (!isValidOverrideYear(adjusted, endYear, month)) return false;
     final window = WindowAdjuster.effectiveOf(
       base,
       wine.windowAdjustment,
-      WindowOverride(endYear: endYear),
+      WindowOverride(endYear: endYear, endMonth: month),
     );
     final outcome = await _wines.setOverride(
       cellarId: cellar.cellarId,
       user: user,
       wine: wine,
       endYear: endYear,
+      endMonth: month,
       window: window,
+    );
+    return outcome is SaveAccepted;
+  }
+
+  /// The style (or the type) chosen in the detail (wine-style-profiles F5,
+  /// BR4.6, BR2.15): the user's choice, a new automatic level when the
+  /// level is automatic, and the estimate again with the profile chosen, in
+  /// one update. `false` for a reader or a failed save.
+  Future<bool> chooseStyle({
+    required AccessibleCellar cellar,
+    required AppUser user,
+    required Wine wine,
+    WineType? wineType,
+    WineStyle? style,
+  }) async {
+    if (!cellar.canEdit) return false;
+    final current = WineClassification.of(wine);
+    final type = wineType ?? current.wineType ?? style?.wineTypes.first;
+    final keepStyle =
+        style ??
+        (current.style != null && current.style!.wineTypes.contains(type)
+            ? current.style
+            : null);
+    final levelIsAuto =
+        wine.level == null || wine.levelSource == FieldSource.auto;
+    final level = levelIsAuto
+        ? suggestedLevel(
+            wine.name,
+            producer: wine.producer,
+            denomination: wine.denomination,
+            type: type,
+            profile: keepStyle?.profile,
+          )
+        : wine.level;
+    final classification = WineClassification(
+      wineType: type,
+      typeSource: wineType != null
+          ? FieldSource.user
+          : (type == null ? null : current.typeSource ?? FieldSource.user),
+      level: level,
+      levelSource: level == null
+          ? null
+          : (levelIsAuto ? FieldSource.auto : FieldSource.user),
+      style: keepStyle,
+      styleSource: keepStyle == null
+          ? null
+          : (style != null ? FieldSource.user : current.styleSource),
+    );
+    final created = wine.createdAt?.toLocal();
+    final estimate = _estimator.estimate(
+      WineFactsInput(
+        name: wine.name,
+        producer: wine.producer,
+        vintage: wine.vintage,
+        wineType: type?.name,
+        region: wine.region,
+        denomination: wine.denomination,
+        referenceYear: created?.year ?? _year,
+        referenceMonth: (created ?? _clock.now()).month,
+        level: level,
+        style: keepStyle,
+        styleChosen: classification.styleSource == FieldSource.user,
+        agingStart: wine.agingStart,
+      ),
+      adjustment: wine.windowAdjustment,
+      override: wine.windowOverride,
+    );
+    final outcome = await _wines.updateClassification(
+      cellarId: cellar.cellarId,
+      user: user,
+      wine: wine,
+      classification: classification,
+      estimate: WineEstimate(
+        baseWindow: estimate.baseWindow,
+        window: estimate.window,
+        adjustment: estimate.adjustment,
+        pairings: wine.pairings ?? estimate.pairings,
+      ),
     );
     return outcome is SaveAccepted;
   }

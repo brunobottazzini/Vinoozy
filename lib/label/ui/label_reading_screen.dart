@@ -277,7 +277,7 @@ class _LabelReadingScreenState extends ConsumerState<LabelReadingScreen> {
         vintage: candidate.vintage?.toString() ?? '',
         noVintage: candidate.vintage == null,
         quantity: quantity,
-        wineType: wineFamilyOf(candidate.wineType),
+        wineType: candidate.exactType?.name ?? wineFamilyOf(candidate.wineType),
         region: origin.region,
         denomination: candidate.denomination,
         country: origin.country,

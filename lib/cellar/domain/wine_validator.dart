@@ -1,4 +1,6 @@
-import 'package:estimation/estimation.dart' show WineLevel;
+import 'package:estimation/estimation.dart' show WineLevel, WineStyle;
+
+import 'wine.dart';
 
 import 'quantity.dart';
 import 'wine_draft.dart';
@@ -20,6 +22,11 @@ enum CountryError { unknown }
 /// of the form; the rules accept at most 120 characters).
 enum DenominationError { tooLong }
 
+/// Why a disgorgement or bottling date is refused (wine-style-profiles
+/// BR8.2): half a date, a date in the future, a year before the vintage, or
+/// a year out of 1950..now.
+enum AgingStartError { incomplete, future, beforeVintage, outOfRange }
+
 /// Raw input of the add and edit forms.
 class WineInput {
   const WineInput({
@@ -34,6 +41,12 @@ class WineInput {
     this.denomination,
     this.country,
     this.level,
+    this.style,
+    this.typeSource,
+    this.levelSource,
+    this.styleSource,
+    this.agingStartYear,
+    this.agingStartMonth,
   });
 
   final String id;
@@ -53,6 +66,16 @@ class WineInput {
 
   /// The level chosen or accepted (BR4.3), `null` when not chosen.
   final WineLevel? level;
+
+  /// wine-style-profiles (BR7.1, BR8.1): the style, where Type, Level and
+  /// Style come from, and the disgorgement or bottling month and year, only
+  /// when the form shows the field.
+  final WineStyle? style;
+  final FieldSource? typeSource;
+  final FieldSource? levelSource;
+  final FieldSource? styleSource;
+  final int? agingStartYear;
+  final int? agingStartMonth;
 }
 
 /// Result of [WineValidator.validate]: a draft, or one error per field.
@@ -66,6 +89,7 @@ class WineValidation {
     this.regionError,
     this.countryError,
     this.denominationError,
+    this.agingStartError,
   });
 
   final WineDraft? draft;
@@ -76,6 +100,7 @@ class WineValidation {
   final RegionError? regionError;
   final CountryError? countryError;
   final DenominationError? denominationError;
+  final AgingStartError? agingStartError;
 
   bool get isValid => draft != null;
 }
@@ -106,6 +131,7 @@ abstract final class WineValidator {
     WineInput input, {
     required int currentYear,
     int minQuantity = QuantityLimits.min,
+    int? currentMonth,
   }) {
     final nameError = WineRules.validateName(input.name);
     final vintageError = WineRules.validateVintage(
@@ -122,6 +148,12 @@ abstract final class WineValidator {
         : null;
     final regionError = validateRegion(input.region);
     final countryError = validateCountry(input.country);
+    final agingStartError = validateAgingStart(
+      input.agingStartYear,
+      input.agingStartMonth,
+      vintage: input.noVintage ? null : int.tryParse(input.vintage.trim()),
+      now: DateTime(currentYear, currentMonth ?? 12),
+    );
     final denominationError =
         (input.denomination?.trim().runes.length ?? 0) > maxDenominationLength
         ? DenominationError.tooLong
@@ -132,7 +164,8 @@ abstract final class WineValidator {
         quantityError != null ||
         regionError != null ||
         countryError != null ||
-        denominationError != null) {
+        denominationError != null ||
+        agingStartError != null) {
       return WineValidation(
         nameError: nameError,
         producerError: producerError,
@@ -141,6 +174,7 @@ abstract final class WineValidator {
         regionError: regionError,
         countryError: countryError,
         denominationError: denominationError,
+        agingStartError: agingStartError,
       );
     }
     // WineDraft keeps the U1 range 1-99; an edit to 0 bottles is a valid
@@ -155,19 +189,52 @@ abstract final class WineValidator {
     ).draft!;
     final region = WineOrigins.canonicalRegion(input.country, input.region);
     return WineValidation(
-      draft: draft.withDetails(
-        producer: input.producer,
-        wineType: input.wineType,
-        region: region,
-        denomination: input.denomination,
-        country: WineOrigins.effectiveCountry(input.country, region),
-        level: input.level,
-      ),
+      draft: draft
+          .withDetails(
+            producer: input.producer,
+            wineType: input.wineType,
+            region: region,
+            denomination: input.denomination,
+            country: WineOrigins.effectiveCountry(input.country, region),
+            level: input.level,
+          )
+          .withClassification(
+            style: input.style,
+            typeSource: input.typeSource,
+            levelSource: input.levelSource,
+            styleSource: input.styleSource,
+            agingStart: input.agingStartYear == null
+                ? null
+                : AgingStart(input.agingStartYear!, input.agingStartMonth!),
+          ),
     );
   }
 
   /// Same limit as the security rules (`validOptionalText`).
   static const int maxDenominationLength = 120;
+
+  /// The first year accepted for a disgorgement or bottling date (BR8.2).
+  static const int minAgingStartYear = 1950;
+
+  /// BR8.2: both or none; year 1950..now; month 1..12; not after [now]'s
+  /// month; not before the [vintage] year.
+  static AgingStartError? validateAgingStart(
+    int? year,
+    int? month, {
+    int? vintage,
+    required DateTime now,
+  }) {
+    if (year == null && month == null) return null;
+    if (year == null || month == null) return AgingStartError.incomplete;
+    if (year < minAgingStartYear || month < 1 || month > 12) {
+      return AgingStartError.outOfRange;
+    }
+    if (year * 12 + month > now.year * 12 + now.month) {
+      return AgingStartError.future;
+    }
+    if (vintage != null && year < vintage) return AgingStartError.beforeVintage;
+    return null;
+  }
 
   /// At most [maxRegionLength] characters after trimming, counted as
   /// Unicode code points like the rules; blank is no region.

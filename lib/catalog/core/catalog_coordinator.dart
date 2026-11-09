@@ -374,6 +374,8 @@ class CatalogCoordinator implements WineCatalog {
                   denomination: denomination.displayName,
                   barcode: candidate.barcode,
                   country: candidate.country,
+                  // wine-style-profiles BR3.5: the Type is not reduced.
+                  exactType: denomination.wineType,
                 ),
           match,
           LabelMatchStep.onlineText,
@@ -395,6 +397,7 @@ class CatalogCoordinator implements WineCatalog {
       wineType: catalogTypeOf(denomination.wineType),
       region: denomination.region,
       denomination: denomination.displayName,
+      exactType: denomination.wineType,
     ),
     const TextMatch(LabelMatchThresholds.internalDenomination, 1),
     LabelMatchStep.internalDenomination,

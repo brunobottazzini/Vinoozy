@@ -1,4 +1,4 @@
-import 'package:estimation/estimation.dart' show WineLevel;
+import 'package:estimation/estimation.dart' show WineLevel, WineStyle;
 
 import 'quantity.dart';
 import 'wine.dart';
@@ -67,6 +67,11 @@ class WineDraft {
     this.denomination,
     this.country,
     this.level,
+    this.style,
+    this.typeSource,
+    this.levelSource,
+    this.styleSource,
+    this.agingStart,
   });
 
   /// Validates raw form input. [currentYear] comes from the injected clock.
@@ -132,6 +137,14 @@ class WineDraft {
   /// BR4.3); `null` is "not chosen" and is never written.
   final WineLevel? level;
 
+  /// wine-style-profiles (ENT-108, BR7.1, BR8.1): the style, where Type,
+  /// Level and Style come from, and the disgorgement or bottling date.
+  final WineStyle? style;
+  final FieldSource? typeSource;
+  final FieldSource? levelSource;
+  final FieldSource? styleSource;
+  final AgingStart? agingStart;
+
   /// This draft with the u4-cellar details, the ux-redesign country and the
   /// label-autofill-windows level; blank texts become `null` and the others
   /// are trimmed.
@@ -153,7 +166,47 @@ class WineDraft {
     denomination: _blankToNull(denomination),
     country: _blankToNull(country),
     level: level,
+    style: style,
+    typeSource: typeSource,
+    levelSource: levelSource,
+    styleSource: styleSource,
+    agingStart: agingStart,
   );
+
+  /// This draft with the classification of the form (wine-style-profiles
+  /// BR7.1): a source is kept only with its value (ENT-108 constraint).
+  WineDraft withClassification({
+    WineStyle? style,
+    FieldSource? typeSource,
+    FieldSource? levelSource,
+    FieldSource? styleSource,
+    AgingStart? agingStart,
+  }) => WineDraft._(
+    id: id,
+    name: name,
+    vintage: vintage,
+    quantity: quantity,
+    producer: producer,
+    wineType: wineType,
+    region: region,
+    denomination: denomination,
+    country: country,
+    level: level,
+    style: style,
+    typeSource: wineType == null ? null : typeSource,
+    levelSource: level == null ? null : levelSource,
+    styleSource: style == null ? null : styleSource,
+    agingStart: agingStart,
+  );
+
+  /// The classification fields of a create: only those with a value.
+  Map<String, Object> classificationFields() => {
+    if (style != null) WineFields.style: style!.name,
+    if (typeSource != null) WineFields.typeSource: typeSource!.name,
+    if (levelSource != null) WineFields.levelSource: levelSource!.name,
+    if (styleSource != null) WineFields.styleSource: styleSource!.name,
+    if (agingStart != null) WineFields.agingStartMonth: agingStart!.toMap(),
+  };
 
   static String? _blankToNull(String? value) {
     final trimmed = value?.trim();

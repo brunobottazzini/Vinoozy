@@ -45,11 +45,51 @@ void validateWineFacts(WineFacts wine) {
       'wine.referenceYear',
     );
   }
+  _checkMonth(wine.referenceMonth, 'wine.referenceMonth');
+  final agingYear = wine.agingStartYear;
+  final agingMonth = wine.agingStartMonth;
+  if ((agingYear == null) != (agingMonth == null) ||
+      (agingYear != null && !isSupportedYear(agingYear))) {
+    throw EstimationArgumentError(
+      EstimationErrorCode.invalidAgingStart,
+      'wine.agingStartYear',
+      '$agingYear-$agingMonth',
+    );
+  }
+  _checkMonth(agingMonth, 'wine.agingStartMonth');
 }
 
-/// Throws [EstimationArgumentError] when [window] is not ordered (NFR4.2).
+void _checkMonth(int? month, String name) {
+  if (month != null && (month < 1 || month > 12)) {
+    throw EstimationArgumentError(
+      EstimationErrorCode.monthOutOfRange,
+      name,
+      month,
+    );
+  }
+}
+
+/// Throws [EstimationArgumentError] when [window] is not ordered (NFR4.2,
+/// BR6.10): start <= peak <= end on the month indexes of the values present,
+/// and the months of a window in months within 1-12.
 void validateWindow(DrinkingWindow window) {
-  if (window.startYear > window.peakYear || window.peakYear > window.endYear) {
+  final start = window.startIndex;
+  final peak = window.peakIndex;
+  final end = window.endIndex;
+  final monthsValid =
+      !window.inMonths ||
+      [
+        window.startMonth,
+        if (window.peakYear != null) window.peakMonth,
+        if (window.endYear != null) window.endMonth,
+      ].every((m) => m == null || (m >= 1 && m <= 12));
+  final ordered =
+      (peak == null || start <= peak) &&
+      (end == null || (peak ?? start) <= end) &&
+      (window.peakYear == null ||
+          window.endYear == null ||
+          window.peakYear! <= window.endYear!);
+  if (!ordered || !monthsValid) {
     throw EstimationArgumentError(
       EstimationErrorCode.invalidWindow,
       'window',

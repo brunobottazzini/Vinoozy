@@ -10,6 +10,8 @@
 // proposal, candidates or nothing, BR3.1-BR3.4) and searchOnline serves
 // "Cerca online" (BR4.1-BR4.3).
 
+import 'package:estimation/estimation.dart' show WineLevel, WineStyle, WineType;
+
 /// C1 `wineType` values.
 enum CatalogWineType { red, white, rose, sparkling, sweet }
 
@@ -66,6 +68,9 @@ class WineCandidate {
     this.denomination,
     this.barcode,
     this.country,
+    this.exactType,
+    this.level,
+    this.style,
   });
 
   /// 1 to 120 characters.
@@ -87,6 +92,14 @@ class WineCandidate {
   /// (offline database, label-recognition FR2.1).
   final String? country;
 
+  /// wine-style-profiles (BR3.5, BR9.2): the Type of the 8 values when the
+  /// source knows it (offline database, internal catalog), never reduced to
+  /// the 5 families of [wineType]; and the Level and Style the offline
+  /// database preselected.
+  final WineType? exactType;
+  final WineLevel? level;
+  final WineStyle? style;
+
   WineCandidate copyWith({int? vintage}) => WineCandidate(
     name: name,
     source: source,
@@ -97,6 +110,9 @@ class WineCandidate {
     denomination: denomination,
     barcode: barcode,
     country: country,
+    exactType: exactType,
+    level: level,
+    style: style,
   );
 
   /// Compact form stored in the catalog cache (short keys keep the worst
@@ -111,6 +127,9 @@ class WineCandidate {
     'd': ?denomination,
     'b': ?barcode,
     'c': ?country,
+    'x': ?exactType?.name,
+    'l': ?level?.name,
+    'y': ?style?.name,
   };
 
   /// Reads the form written by [toJson]; `null` when [json] is not one,
@@ -131,6 +150,9 @@ class WineCandidate {
       denomination: _stringOrNull(json['d']),
       barcode: _stringOrNull(json['b']),
       country: _stringOrNull(json['c']),
+      exactType: WineType.tryParse(_stringOrNull(json['x'])),
+      level: WineLevel.tryParse(json['l']),
+      style: WineStyle.tryParse(json['y']),
     );
   }
 
@@ -145,7 +167,10 @@ class WineCandidate {
       other.denomination == denomination &&
       other.source == source &&
       other.barcode == barcode &&
-      other.country == country;
+      other.country == country &&
+      other.exactType == exactType &&
+      other.level == level &&
+      other.style == style;
 
   @override
   int get hashCode => Object.hash(
@@ -158,6 +183,9 @@ class WineCandidate {
     source,
     barcode,
     country,
+    exactType,
+    level,
+    style,
   );
 
   @override

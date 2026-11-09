@@ -8,12 +8,14 @@ import 'dart:io';
 import 'package:estimation/estimation.dart';
 import 'package:estimation/src/appellations.dart';
 import 'package:estimation/src/catalog.dart';
+import 'package:estimation/src/classifier.dart';
 import 'package:estimation/src/country_names.dart';
 import 'package:estimation/src/effective_window.dart';
 import 'package:estimation/src/errors.dart';
 import 'package:estimation/src/europe_tables.dart';
 import 'package:estimation/src/france_tables.dart';
 import 'package:estimation/src/generated/appellations.g.dart';
+import 'package:estimation/src/generated/profile_map.g.dart';
 import 'package:estimation/src/grapes.dart';
 import 'package:estimation/src/italy_tables.dart';
 import 'package:estimation/src/label_fields.dart';
@@ -21,9 +23,13 @@ import 'package:estimation/src/label_line_picker.dart';
 import 'package:estimation/src/models.dart';
 import 'package:estimation/src/new_world_tables.dart';
 import 'package:estimation/src/pairings.dart';
+import 'package:estimation/src/profile_map.dart';
+import 'package:estimation/src/profiles.dart';
 import 'package:estimation/src/qualifiers.dart';
 import 'package:estimation/src/recognizer.dart';
 import 'package:estimation/src/status.dart';
+import 'package:estimation/src/style_resolver.dart';
+import 'package:estimation/src/style_words.dart';
 import 'package:estimation/src/tables.dart';
 import 'package:estimation/src/validation.dart';
 import 'package:estimation/src/vintage_parser.dart';
@@ -36,12 +42,14 @@ const importedLibFiles = [
   'estimation.dart',
   'src/appellations.dart',
   'src/catalog.dart',
+  'src/classifier.dart',
   'src/country_names.dart',
   'src/effective_window.dart',
   'src/errors.dart',
   'src/europe_tables.dart',
   'src/france_tables.dart',
   'src/generated/appellations.g.dart',
+  'src/generated/profile_map.g.dart',
   'src/grapes.dart',
   'src/italy_tables.dart',
   'src/label_fields.dart',
@@ -49,9 +57,13 @@ const importedLibFiles = [
   'src/models.dart',
   'src/new_world_tables.dart',
   'src/pairings.dart',
+  'src/profile_map.dart',
+  'src/profiles.dart',
   'src/qualifiers.dart',
   'src/recognizer.dart',
   'src/status.dart',
+  'src/style_resolver.dart',
+  'src/style_words.dart',
   'src/tables.dart',
   'src/validation.dart',
   'src/vintage_parser.dart',

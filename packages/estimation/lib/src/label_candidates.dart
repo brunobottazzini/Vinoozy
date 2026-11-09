@@ -223,7 +223,7 @@ class _TypeEvidence {
     if (rose) return WineType.rose;
     if (white) return WineType.white;
     if (red) {
-      if (qualifier != null && agingQualifiers.contains(qualifier)) {
+      if (qualifier != null && selectionQualifiers.contains(qualifier)) {
         return WineType.redStructured;
       }
       final reds = [
@@ -340,7 +340,7 @@ class LabelAnalysis {
       country: info.country,
       region: info.region,
       qualifier: qualifier,
-      suggestedLevel: qualifier != null && agingQualifiers.contains(qualifier)
+      suggestedLevel: suggestsAgingLevel(qualifier, info.key)
           ? WineLevel.aging
           : null,
     );
@@ -904,7 +904,7 @@ class _Analyzer {
         country: certainInfo?.country ?? evidence.productOfCountry,
         region: certainInfo?.region,
         qualifier: qualifier,
-        suggestedLevel: qualifier != null && agingQualifiers.contains(qualifier)
+        suggestedLevel: suggestsAgingLevel(qualifier, certainInfo?.key)
             ? WineLevel.aging
             : null,
       ),

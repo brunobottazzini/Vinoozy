@@ -34,6 +34,8 @@ import '../domain/wine_validator.dart';
 import '../../app/theme.dart';
 import '../domain/wine_origins.dart';
 import 'cellar_dialogs.dart';
+import 'classification_state.dart';
+import 'style_widgets.dart';
 import 'origin_pickers.dart';
 import 'quantity_stepper.dart';
 import 'wine_badges.dart';
@@ -123,7 +125,7 @@ class AddWineInitialValues {
       vintage: candidate.vintage,
       noVintage: candidate.vintage == null,
       quantity: quantity,
-      wineType: wineFamilyOf(candidate.wineType),
+      wineType: candidate.exactType?.name ?? wineFamilyOf(candidate.wineType),
       region: origin.region,
       denomination: candidate.denomination,
       country: origin.country,
@@ -295,6 +297,11 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
   /// A wine certain in the catalog for a pasted or shared text (FR2.5).
   WineCandidate? _sureMatch;
   final LevelChoice _level = LevelChoice();
+
+  /// wine-style-profiles (F2): Type, Style, date and their sources.
+  ClassificationState _class = ClassificationState();
+  final TextEditingController _agingYear = TextEditingController();
+  AgingStartError? _agingError;
   bool _autoPasting = false;
   StreamSubscription<void>? _focusEvents;
   late final OpenAutofillForm _openForms;
@@ -355,6 +362,8 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
       _vintage.text = prefill.vintage?.toString() ?? '';
       _noVintage = prefill.vintage == null;
       _wineType = WineType.tryParse(prefill.wineType)?.name;
+      _class = ClassificationState.ofWine(prefill);
+      _agingYear.text = prefill.agingStart?.year.toString() ?? '';
       _origin = OriginSelection(
         country: prefill.displayCountry,
         region: prefill.region,
@@ -443,6 +452,7 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
     _producer.dispose();
     _vintage.dispose();
     _denomination.dispose();
+    _agingYear.dispose();
     _nameFocus.dispose();
     _producerFocus.dispose();
     _vintageFocus.dispose();
@@ -482,7 +492,11 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
         _vintage.text = '$vintage';
         _noVintage = false;
       }
-      _wineType = wineFamilyOf(candidate.wineType) ?? _wineType;
+      // wine-style-profiles BR3.5: the Type of the 8 values when known.
+      _wineType =
+          candidate.exactType?.name ??
+          wineFamilyOf(candidate.wineType) ??
+          _wineType;
       // FR1.3: country and region filled in, still editable.
       final origin = guessOrigin(candidate);
       if (origin.country != null) {
@@ -872,6 +886,9 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
       _vintage.clear();
       _noVintage = false;
       _wineType = null;
+      _class = ClassificationState();
+      _agingYear.clear();
+      _agingError = null;
       _origin = const OriginSelection();
       _level.reset();
       _filled.clear();
@@ -916,15 +933,62 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
     final name = _name.text.trim();
     if (name.isEmpty) return null;
     final denomination = _denomination.text.trim();
+    final now = ref.read(clockProvider).now();
     return WineFactsInput(
       name: name,
       producer: _producer.text.trim().isEmpty ? null : _producer.text.trim(),
       vintage: _noVintage ? null : int.tryParse(_vintage.text),
-      wineType: _wineType,
+      wineType: _class.type?.name,
       region: _origin.region,
       denomination: denomination.isEmpty ? null : denomination,
       referenceYear: _currentYear,
+      referenceMonth: now.month,
+      style: _class.style,
+      styleChosen: _class.styleIsUser,
+      agingStart: _validAgingStart,
     );
+  }
+
+  /// The date when it is valid now (the estimate preview uses it).
+  AgingStart? get _validAgingStart {
+    final start = _class.agingStart;
+    if (start == null) return null;
+    final now = ref.read(clockProvider).now();
+    return WineValidator.validateAgingStart(
+              start.year,
+              start.month,
+              vintage: _noVintage ? null : int.tryParse(_vintage.text.trim()),
+              now: now,
+            ) ==
+            null
+        ? start
+        : null;
+  }
+
+  /// wine-style-profiles (F2, BR7.2, BR4.6): the preselection of the fields
+  /// still automatic, recomputed from the form at every build.
+  void _refreshClassification() {
+    final denomination = _denomination.text.trim();
+    final producer = _producer.text.trim();
+    _class.refresh(
+      name: _name.text,
+      producer: producer.isEmpty ? null : producer,
+      denomination: denomination.isEmpty ? null : denomination,
+      vintage: _noVintage ? null : int.tryParse(_vintage.text.trim()),
+      country: _origin.country,
+      dbType: WineType.tryParse(_wineType),
+      referenceYear: _currentYear,
+    );
+    _level.preselected = _name.text.trim().isEmpty
+        ? null
+        : suggestedLevel(
+            _name.text,
+            producer: producer.isEmpty ? null : producer,
+            denomination: denomination.isEmpty ? null : denomination,
+            type: _class.type,
+            profile: _class.style?.profile ?? _class.resolution?.profile,
+            styleToConfirm: _class.styleToConfirm,
+          );
   }
 
   Future<void> _save() async {
@@ -937,17 +1001,26 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
         vintage: _vintage.text,
         noVintage: _noVintage,
         quantity: _quantity,
-        wineType: _wineType,
+        wineType: _class.type?.name,
         region: _origin.region,
         denomination: _denomination.text,
         country: _origin.country,
         // BR4.3: the level chosen, or the suggestion visible (accepted).
         level: _level.effective(_suggestion),
+        // wine-style-profiles BR7.1, BR8.1.
+        typeSource: _class.typeSource,
+        levelSource: _level.sourceFor(_suggestion),
+        style: _class.style,
+        styleSource: _class.styleSource,
+        agingStartYear: _class.agingStartVisible ? _class.agingYear : null,
+        agingStartMonth: _class.agingStartVisible ? _class.agingMonth : null,
       ),
       currentYear: _currentYear,
+      currentMonth: ref.read(clockProvider).now().month,
     );
     final draft = validation.draft;
     setState(() {
+      _agingError = validation.agingStartError;
       _nameError = validation.nameError;
       _producerError = validation.producerError;
       _vintageError = validation.vintageError;
@@ -1021,6 +1094,7 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
 
   @override
   Widget build(BuildContext context) {
+    _refreshClassification();
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final suggestions = ref.watch(wineSuggestionsProvider).suggestions;
@@ -1305,12 +1379,13 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
               }),
             ),
             WineTypeField(
-              // A new key when the type is filled from a text: the field
-              // shows its initial value only.
-              key: ValueKey('add-wine-type-$_wineType'),
-              value: _wineType,
+              // A new key when the type changes: the field shows its
+              // initial value only.
+              key: ValueKey('add-wine-type-${_class.type?.name}'),
+              value: _class.type?.name,
               onChanged: (value) => setState(() {
                 _wineType = value;
+                _class.chooseType(WineType.tryParse(value));
                 _edited(LabelFieldKeys.wineType);
               }),
             ),
@@ -1318,12 +1393,25 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
               key: const Key('filled-wineType'),
               visible: _filled.contains(LabelFieldKeys.wineType),
             ),
+            SuggestedMark(
+              key: const Key('type-suggested'),
+              visible:
+                  _class.typeSource == FieldSource.auto &&
+                  !_filled.contains(LabelFieldKeys.wineType),
+            ),
+            RestoreSuggestionLink(
+              key: const Key('type-restore'),
+              visible: _class.canRestoreType,
+              onRestore: () => setState(_class.restoreType),
+            ),
+            ..._styleParts(),
             const SizedBox(height: 16),
             LevelSection(
               choice: _level,
               suggestion: _suggestion,
               facts: _facts,
               onChanged: (level) => setState(() => _level.choose(level)),
+              onRestore: () => setState(_level.restore),
             ),
             const SizedBox(height: 8),
             Text(l10n.quantityLabel, style: theme.textTheme.titleSmall),
@@ -1338,6 +1426,44 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
         ),
       ),
     );
+  }
+
+  /// wine-style-profiles (BR5.1, BR8.1): the Style chips and the date.
+  List<Widget> _styleParts() {
+    final type = _class.type;
+    return [
+      if (type != null && _class.styleVisible) ...[
+        StyleField(
+          wineType: type,
+          selected: _class.style,
+          suggested: _class.styleSource == FieldSource.auto,
+          onChanged: (style) => setState(() {
+            _class.chooseStyle(style);
+            _manual = true;
+          }),
+        ),
+        RestoreSuggestionLink(
+          key: const Key('style-restore'),
+          visible: _class.canRestoreStyle,
+          onRestore: () => setState(_class.restoreStyle),
+        ),
+      ],
+      if (_class.agingStartAnchor case final anchor?)
+        AgingStartField(
+          anchor: anchor,
+          month: _class.agingMonth,
+          yearController: _agingYear,
+          error: _agingError,
+          onMonthChanged: (month) => setState(() {
+            _class.agingMonth = month;
+            _agingError = null;
+          }),
+          onYearChanged: (text) => setState(() {
+            _class.agingYear = int.tryParse(text);
+            _agingError = null;
+          }),
+        ),
+    ];
   }
 
   /// ux-redesign mockups 2 and 3: "Save" stays at the bottom, outside the

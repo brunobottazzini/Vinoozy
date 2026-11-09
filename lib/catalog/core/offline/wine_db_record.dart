@@ -6,7 +6,7 @@
 
 import 'dart:convert';
 
-import 'package:estimation/estimation.dart' show WineType;
+import 'package:estimation/estimation.dart' show WineLevel, WineStyle, WineType;
 
 import '../internal_catalog.dart' show catalogTypeOf;
 import '../off/open_food_facts_source.dart' show normalizeBarcode;
@@ -14,7 +14,10 @@ import '../wine_catalog.dart';
 
 /// Version of the line format written by the build tool and read by the
 /// app; a manifest with another version is refused.
-const int wineDbFormatVersion = 1;
+// wine-style-profiles (BR9.2): format 2 adds the level `l` and the style
+// `s`, and `t` is the Type preselected by `classifyWine`. The loader reads
+// format 1 too, without them.
+const int wineDbFormatVersion = 2;
 
 /// One wine of the offline database. Only public product data: barcode,
 /// name, producer, type, denomination, country and vintage (NFR3.7).
@@ -27,6 +30,8 @@ class WineDbRecord {
     this.denomination,
     this.country,
     this.vintage,
+    this.level,
+    this.style,
   });
 
   /// Shortest and longest name kept (BR2.1).
@@ -51,6 +56,10 @@ class WineDbRecord {
   final String? country;
   final int? vintage;
 
+  /// Level and Style preselected by the tool (BR9.2); `null` in format 1.
+  final WineLevel? level;
+  final WineStyle? style;
+
   /// The compact form of one line (short keys keep the file small, D1);
   /// absent fields are left out.
   Map<String, Object> toJson() => {
@@ -61,6 +70,9 @@ class WineDbRecord {
     'd': ?denomination,
     'c': ?country,
     'v': ?vintage,
+    'l': ?level?.name,
+    // BR9.2: a style only with a Type.
+    if (wineType != null) 's': ?style?.name,
   };
 
   /// One line of `wines.jsonl`.
@@ -87,6 +99,8 @@ class WineDbRecord {
       vintage: vintage is int && vintage >= minVintage && vintage <= maxVintage
           ? vintage
           : null,
+      level: WineLevel.tryParse(json['l']),
+      style: WineStyle.tryParse(json['s']),
     );
   }
 
@@ -111,6 +125,10 @@ class WineDbRecord {
     denomination: denomination,
     barcode: code,
     country: country,
+    // wine-style-profiles BR3.5: the Type as it is, never reduced.
+    exactType: wineType,
+    level: level,
+    style: style,
   );
 
   static String? _text(Object? value, int maxLength) {
@@ -132,7 +150,9 @@ class WineDbRecord {
       other.wineType == wineType &&
       other.denomination == denomination &&
       other.country == country &&
-      other.vintage == vintage;
+      other.vintage == vintage &&
+      other.level == level &&
+      other.style == style;
 
   @override
   int get hashCode => Object.hash(
@@ -143,6 +163,8 @@ class WineDbRecord {
     denomination,
     country,
     vintage,
+    level,
+    style,
   );
 
   // No name in the string form: it may end up in a log.
@@ -181,6 +203,7 @@ class WineDbManifest {
     required this.wineCount,
     this.formatVersion = wineDbFormatVersion,
     this.source = WineDbSource.openFoodFacts,
+    this.classifiedTypeShare,
   });
 
   /// Date of the Open Food Facts export the database was built from.
@@ -188,6 +211,10 @@ class WineDbManifest {
   final int wineCount;
   final int formatVersion;
   final WineDbSource source;
+
+  /// Share of the wines with a Type, measured by the tool (BR9.3, BR9.5);
+  /// `null` in format 1.
+  final double? classifiedTypeShare;
 
   /// Whether the database is the hand-written sample (R-02).
   bool get isSample => source == WineDbSource.sample;
@@ -197,6 +224,7 @@ class WineDbManifest {
     'exportDate': _date(exportDate),
     'wineCount': wineCount,
     'source': source.wireName,
+    'classifiedTypeShare': ?classifiedTypeShare,
     // The sample is invented: no Open Food Facts licence applies to it.
     if (!isSample) 'license': 'ODbL-1.0',
   };
@@ -215,6 +243,10 @@ class WineDbManifest {
       wineCount: count,
       formatVersion: version,
       source: WineDbSource.fromWire(json['source']),
+      classifiedTypeShare: switch (json['classifiedTypeShare']) {
+        final num share when share >= 0 && share <= 1 => share.toDouble(),
+        _ => null,
+      },
     );
   }
 

@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:estimation/estimation.dart' show DrinkingWindow;
+import 'package:estimation/estimation.dart'
+    show DrinkingWindow, estimationTablesVersion;
 
 import '../../account/app_user.dart';
 import '../../app/error_reporter.dart';
@@ -9,15 +10,34 @@ import '../../sync/ledger/local_ledger.dart';
 import '../../sync/snapshot_meta.dart';
 import '../../sync/sync_error_bus.dart';
 import '../domain/drinking_record.dart';
+import '../domain/firestore_values.dart';
 import '../domain/match_key.dart';
 import '../domain/quantity.dart';
 import '../domain/quantity_delta.dart';
 import '../domain/wine.dart';
+import '../domain/wine_classification.dart';
 import '../domain/wine_draft.dart';
 import '../domain/wine_estimate.dart';
 import 'cellar_errors.dart';
 import 'firestore_codec.dart';
 import 'server_or_cache.dart';
+
+/// Outcome of the transaction of one migrated wine (wine-style-profiles
+/// BR7.4, BR7.6).
+enum MigrationWrite {
+  /// Written with `migrationVersion` 3.
+  written,
+
+  /// Changed by someone else since it was read, or gone: retried at the
+  /// next start.
+  skipped,
+
+  /// Refused by the rules: the migration stops for this start.
+  rejected,
+
+  /// Another error (network, server): the migration stops for this start.
+  failed,
+}
 
 /// Result of a save attempt as seen by the form.
 sealed class SaveOutcome {
@@ -357,6 +377,10 @@ class WineRepository {
       WineFields.country: ?draft.country,
       // label-autofill-windows BR4.3: only a level chosen or accepted.
       WineFields.level: ?draft.level?.name,
+      // wine-style-profiles BR7.1: style, sources and date when known; a new
+      // wine needs no migration (BR7.6).
+      ...draft.classificationFields(),
+      WineFields.migrationVersion: estimationTablesVersion,
       WineFields.matchKey: matchKeyOf(
         draft.name,
         draft.producer,
@@ -443,38 +467,152 @@ class WineRepository {
     required WineDraft draft,
     required int targetQuantity,
     required WineEstimate estimate,
-  }) {
+  }) async {
     final delta = QuantityDelta.forEdit(before.storedQuantity, targetQuantity);
+    final details = <String, Object?>{
+      WineFields.name: draft.name,
+      WineFields.producer: draft.producer,
+      WineFields.vintage: draft.vintage,
+      WineFields.wineType: draft.wineType,
+      WineFields.region: draft.region,
+      WineFields.denomination: draft.denomination,
+      if (draft.country != null || before.country != null)
+        WineFields.country: draft.country,
+      // label-autofill-windows BR4.3: a level chosen is written; "None"
+      // removes a saved one; a wine that never had one stays without.
+      if (draft.level != null)
+        WineFields.level: draft.level!.name
+      else if (before.level != null)
+        WineFields.level: FieldValue.delete(),
+      // wine-style-profiles BR7.1, BR8.1: the same rule for the new fields.
+      ..._classificationUpdate(before, draft),
+      WineFields.matchKey: matchKeyOf(
+        draft.name,
+        draft.producer,
+        draft.vintage,
+      ),
+      if (delta != 0) WineFields.quantity: FieldValue.increment(delta),
+    };
+    final sensitive = [draft.name, ?draft.producer, ?draft.denomination];
+    // wine-style-profiles: with a drink feedback the window differs from
+    // the base window and the rules check both; with the texts and the
+    // classification in the same update the request would pass the 1000
+    // expressions Firestore evaluates. The edit is then written in two
+    // updates, in order: details, then the estimate.
+    final base = estimate.baseWindow;
+    final split =
+        base != null && estimate.window != null && estimate.window != base;
+    if (!split) {
+      return _updateWine(
+        cellarId,
+        user,
+        before,
+        CellarErrorReasons.saveFailed,
+        {...details, ...estimate.toFields()},
+        sensitive: sensitive,
+      );
+    }
+    final first = await _updateWine(
+      cellarId,
+      user,
+      before,
+      CellarErrorReasons.saveFailed,
+      details,
+      sensitive: sensitive,
+    );
+    if (first is! SaveAccepted) return first;
     return _updateWine(
       cellarId,
       user,
       before,
       CellarErrorReasons.saveFailed,
-      {
-        WineFields.name: draft.name,
-        WineFields.producer: draft.producer,
-        WineFields.vintage: draft.vintage,
-        WineFields.wineType: draft.wineType,
-        WineFields.region: draft.region,
-        WineFields.denomination: draft.denomination,
-        if (draft.country != null || before.country != null)
-          WineFields.country: draft.country,
-        // label-autofill-windows BR4.3: a level chosen is written; "None"
-        // removes a saved one; a wine that never had one stays without.
-        if (draft.level != null)
-          WineFields.level: draft.level!.name
-        else if (before.level != null)
-          WineFields.level: FieldValue.delete(),
-        WineFields.matchKey: matchKeyOf(
-          draft.name,
-          draft.producer,
-          draft.vintage,
-        ),
-        ...estimate.toFields(),
-        if (delta != 0) WineFields.quantity: FieldValue.increment(delta),
-      },
-      sensitive: [draft.name, ?draft.producer, ?draft.denomination],
+      estimate.toFields(),
+      sensitive: sensitive,
     );
+  }
+
+  /// The classification fields of an edit (wine-style-profiles BR7.1): a
+  /// value written, or deleted when [before] had one and the draft has
+  /// none; a wine that never had a field stays without it.
+  static Map<String, Object?> _classificationUpdate(
+    Wine before,
+    WineDraft draft,
+  ) {
+    Object? value(Object? now, Object? was) =>
+        now ?? (was != null ? FieldValue.delete() : null);
+    final fields = <String, Object?>{
+      WineFields.style: value(draft.style?.name, before.style),
+      WineFields.typeSource: value(draft.typeSource?.name, before.typeSource),
+      WineFields.levelSource: value(
+        draft.levelSource?.name,
+        before.levelSource,
+      ),
+      WineFields.styleSource: value(
+        draft.styleSource?.name,
+        before.styleSource,
+      ),
+      WineFields.agingStartMonth: value(
+        draft.agingStart?.toMap(),
+        before.agingStart,
+      ),
+    };
+    fields.removeWhere((_, v) => v == null);
+    return fields;
+  }
+
+  /// Writes the classification chosen in the detail (wine-style-profiles
+  /// F5): Type, Level, Style with their sources and the new estimate, in
+  /// one update.
+  Future<SaveOutcome> updateClassification({
+    required String cellarId,
+    required AppUser user,
+    required Wine wine,
+    required WineClassification classification,
+    required WineEstimate estimate,
+  }) => _updateWine(cellarId, user, wine, CellarErrorReasons.saveFailed, {
+    ...classification.toFields(),
+    ...estimate.toFields(),
+  });
+
+  /// The one-off migration of a wine (wine-style-profiles BR7.4, D4): in a
+  /// transaction the document is read again; when its `updatedAt` differs
+  /// from [seenUpdatedAt] (another member changed it) the wine is skipped
+  /// and stays to migrate; otherwise the classification, the estimate and
+  /// `migrationVersion` are updated with `updatedAt` and `updatedBy`, so the
+  /// write passes `validWineUpdate`. A transaction needs the server: the
+  /// caller runs it online only.
+  Future<MigrationWrite> migrateWine({
+    required String cellarId,
+    required AppUser user,
+    required String wineId,
+    required DateTime? seenUpdatedAt,
+    required Map<String, Object?> fields,
+  }) async {
+    final ref = _db.doc(winePath(cellarId, wineId));
+    try {
+      return await _db.runTransaction((transaction) async {
+        final snapshot = await transaction.get(ref);
+        final data = snapshot.data();
+        if (!snapshot.exists || data == null) return MigrationWrite.skipped;
+        final now = FirestoreValues.dateTime(
+          decodeDocument(data)[WineFields.updatedAt],
+        );
+        final unchanged = now == null || seenUpdatedAt == null
+            ? now == seenUpdatedAt
+            : now.isAtSameMomentAs(seenUpdatedAt);
+        if (!unchanged) return MigrationWrite.skipped;
+        transaction.update(ref, {
+          ...fields,
+          WineFields.updatedAt: FieldValue.serverTimestamp(),
+          WineFields.updatedBy: user.uid,
+        });
+        return MigrationWrite.written;
+      });
+    } on FirebaseException catch (error) {
+      return error.code == 'permission-denied'
+          ? MigrationWrite.rejected
+          : MigrationWrite.failed;
+    }
   }
 
   /// Writes the estimate of [wine] (BR1.5, BR1.6, BR1.12). Callers write
@@ -508,9 +646,12 @@ class WineRepository {
     required Wine wine,
     required int endYear,
     required DrinkingWindow window,
+    int? endMonth,
   }) => _updateWine(cellarId, user, wine, CellarErrorReasons.saveFailed, {
     WineFields.windowOverride: {
       OverrideFields.endYear: endYear,
+      // wine-style-profiles BR6.8: the month of a window in months.
+      OverrideFields.endMonth: ?endMonth,
       OverrideFields.setAt: FieldValue.serverTimestamp(),
     },
     WineFields.window: Wine.windowToMap(window),

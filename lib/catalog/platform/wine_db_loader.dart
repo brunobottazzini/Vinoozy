@@ -140,7 +140,11 @@ WineDbLoadResult decodeWineDb(Uint8List compressed, Uint8List manifestBytes) {
   } on FormatException {
     return const WineDbUnavailable(WineDbFailure.unexpected);
   }
-  if (manifest == null || manifest.formatVersion != wineDbFormatVersion) {
+  // wine-style-profiles (ENT-109): format 1 (without Level and Style) is
+  // still read; the form classifies its wines when they are proposed.
+  if (manifest == null ||
+      manifest.formatVersion < 1 ||
+      manifest.formatVersion > wineDbFormatVersion) {
     return const WineDbUnavailable(WineDbFailure.unexpected);
   }
   final List<int> plain;

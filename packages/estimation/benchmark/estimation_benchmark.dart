@@ -70,7 +70,10 @@ class FullEstimateBenchmark extends BenchmarkBase {
   @override
   void run() {
     for (final wine in _wines) {
-      statusOf(estimateWindow(wine), _today);
+      // wine-style-profiles BR2.9: a fortified wine without a style has no
+      // window ("To estimate"), so no status.
+      final window = estimateWindow(wine);
+      if (window != null) statusOf(window, _today);
       pairingsFor(wine);
     }
   }
@@ -84,6 +87,36 @@ class EstimateBlockBenchmark extends BenchmarkBase {
   void run() {
     for (final wine in _wines) {
       estimateWindow(wine);
+    }
+  }
+}
+
+/// 1000 classifications of wine names (wine-style-profiles NFR3.1).
+const _classifyCount = 1000;
+
+class ClassifyBenchmark extends BenchmarkBase {
+  ClassifyBenchmark() : super('classifyWine x$_classifyCount');
+
+  static final List<String> _classifyNames = [
+    for (var i = 0; i < _classifyCount; i++)
+      '${_classifyBase[i % _classifyBase.length]} $i',
+  ];
+
+  static const _classifyBase = [
+    'Barolo Riserva',
+    'Château Lagrange',
+    "Lambrusco dell'Emilia Dolce",
+    'Vin rouge',
+    'Fetzer Sundial Chardonnay',
+    'Porto Ruby',
+    'Cuvée Mario',
+    'Mosel Riesling Kabinett',
+  ];
+
+  @override
+  void run() {
+    for (final name in _classifyNames) {
+      classifyWine(name, producer: 'Cantina', dbType: WineType.white);
     }
   }
 }
@@ -257,6 +290,14 @@ class Measure {
   return (_ms(micros), micros <= 150000);
 }
 
+(String, bool) _classify() {
+  final perWine = medianMicros(ClassifyBenchmark()) / _classifyCount;
+  return (
+    '${(perWine / 1000).toStringAsFixed(3)} ms per wine',
+    perWine <= 5000,
+  );
+}
+
 String _ms(double micros) => '${(micros / 1000).toStringAsFixed(3)} ms';
 
 final List<Measure> measures = [
@@ -279,6 +320,12 @@ final List<Measure> measures = [
     'one estimate vs one buildAliasIndex',
     '<= 1/10',
     _estimateVersusBuild,
+  ),
+  // wine-style-profiles NFR3.1: the preselection of one wine.
+  const Measure(
+    'classifyWine, mean of $_classifyCount wines',
+    '<= 5 ms',
+    _classify,
   ),
   // label-autofill-windows (performance-requirements.md): CI pass criteria.
   const Measure('extractLabelFields on 4000 characters', '<= 200 ms', _extract),

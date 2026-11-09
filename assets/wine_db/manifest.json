@@ -1,7 +1,8 @@
 {
-  "formatVersion": 1,
+  "formatVersion": 2,
   "exportDate": "2026-11-07",
-  "wineCount": 15616,
+  "wineCount": 15490,
   "source": "Open Food Facts",
+  "classifiedTypeShare": 0.8422,
   "license": "ODbL-1.0"
 }

@@ -36,6 +36,71 @@ abstract final class WineFields {
   /// (`everyday`, `good`, `aging`) and the manual end of the window.
   static const String level = 'level';
   static const String windowOverride = 'windowOverride';
+
+  /// Compatible additions of wine-style-profiles (ENT-108): the style, where
+  /// Type, Level and Style come from, the disgorgement or bottling date and
+  /// the version of the one-off migration.
+  static const String style = 'style';
+  static const String typeSource = 'typeSource';
+  static const String levelSource = 'levelSource';
+  static const String styleSource = 'styleSource';
+  static const String agingStartMonth = 'agingStartMonth';
+  static const String migrationVersion = 'migrationVersion';
+}
+
+/// Where a Type, Level or Style comes from (wine-style-profiles BR7.1):
+/// chosen by the user, or filled by the preselection.
+enum FieldSource {
+  user,
+  auto;
+
+  /// The source stored as [raw], or `null` for anything else.
+  static FieldSource? tryParse(Object? raw) {
+    for (final source in values) {
+      if (source.name == raw) return source;
+    }
+    return null;
+  }
+}
+
+/// Field names of the `agingStartMonth` map of a wine (BR8.1).
+abstract final class AgingStartFields {
+  static const String year = 'year';
+  static const String month = 'month';
+}
+
+/// The disgorgement or bottling date of a wine (BR8.1): month and year.
+class AgingStart {
+  const AgingStart(this.year, this.month);
+
+  /// Reads a stored `agingStartMonth`, or `null` when it is not a map with
+  /// an integer year in 1900-2200 and a month in 1-12.
+  static AgingStart? fromMap(Object? raw) {
+    if (raw is! Map) return null;
+    final year = FirestoreValues.integer(raw[AgingStartFields.year]);
+    final month = FirestoreValues.integer(raw[AgingStartFields.month]);
+    if (year == null || month == null) return null;
+    if (year < 1900 || year > 2200 || month < 1 || month > 12) return null;
+    return AgingStart(year, month);
+  }
+
+  final int year;
+  final int month;
+
+  Map<String, Object> toMap() => {
+    AgingStartFields.year: year,
+    AgingStartFields.month: month,
+  };
+
+  @override
+  bool operator ==(Object other) =>
+      other is AgingStart && other.year == year && other.month == month;
+
+  @override
+  int get hashCode => Object.hash(year, month);
+
+  @override
+  String toString() => 'AgingStart($year-$month)';
 }
 
 /// Field names of the `window` map of a wine (C3 `DrinkingWindow`).
@@ -52,6 +117,16 @@ abstract final class WindowFields {
   /// the tables (BR3.9).
   static const String denominationKey = 'denominationKey';
   static const String tablesVersion = 'tablesVersion';
+
+  /// wine-style-profiles ENT-106: unit, months, profile and anchor.
+  static const String unit = 'unit';
+  static const String startMonth = 'startMonth';
+  static const String peakMonth = 'peakMonth';
+  static const String endMonth = 'endMonth';
+  static const String profile = 'profile';
+  static const String anchor = 'anchor';
+  static const String anchorFallback = 'anchorFallback';
+  static const String indicative = 'indicative';
 }
 
 /// Field names of the `pairings` map of a wine (C3 `Pairings`).
@@ -89,6 +164,12 @@ class Wine {
     this.updatedBy,
     this.level,
     this.windowOverride,
+    this.style,
+    this.typeSource,
+    this.levelSource,
+    this.styleSource,
+    this.agingStart,
+    this.migrationVersion,
   });
 
   /// Builds a wine from document data. Never throws: a malformed field falls
@@ -117,11 +198,21 @@ class Wine {
     updatedBy: FirestoreValues.string(data[WineFields.updatedBy]),
     level: WineLevel.tryParse(data[WineFields.level]),
     windowOverride: WindowOverride.fromMap(data[WineFields.windowOverride]),
+    style: WineStyle.tryParse(data[WineFields.style]),
+    typeSource: FieldSource.tryParse(data[WineFields.typeSource]),
+    levelSource: FieldSource.tryParse(data[WineFields.levelSource]),
+    styleSource: FieldSource.tryParse(data[WineFields.styleSource]),
+    agingStart: AgingStart.fromMap(data[WineFields.agingStartMonth]),
+    migrationVersion: FirestoreValues.integer(
+      data[WineFields.migrationVersion],
+    ),
   );
 
   /// Converts a stored `window` into a [DrinkingWindow], or `null` ("to
-  /// estimate") when it is not a map or when `startYear`, `peakYear` or
-  /// `endYear` is missing or not an integer.
+  /// estimate") when it is not a map or when `startYear` is missing or not
+  /// an integer. wine-style-profiles (D2, NFR2.1): `peakYear` and `endYear`
+  /// may be missing (not estimated); `unit` missing is years; the months,
+  /// profile and anchor are read when present.
   ///
   /// `confidence`, `source` and `qualifier` are read by name; a missing or
   /// unknown value falls back to `low`, `internalRules` and no qualifier.
@@ -134,7 +225,16 @@ class Wine {
     final startYear = FirestoreValues.integer(raw[WindowFields.startYear]);
     final peakYear = FirestoreValues.integer(raw[WindowFields.peakYear]);
     final endYear = FirestoreValues.integer(raw[WindowFields.endYear]);
-    if (startYear == null || peakYear == null || endYear == null) return null;
+    if (startYear == null) return null;
+    final unit =
+        _byName(WindowUnit.values, raw[WindowFields.unit]) ?? WindowUnit.years;
+    final months = unit == WindowUnit.months;
+    int? month(String key) {
+      if (!months) return null;
+      final value = FirestoreValues.integer(raw[key]);
+      return value != null && value >= 1 && value <= 12 ? value : null;
+    }
+
     final source =
         _byName(WindowSource.values, raw[WindowFields.source]) ??
         WindowSource.internalRules;
@@ -153,6 +253,14 @@ class Wine {
       qualifier: _byName(Qualifier.values, raw[WindowFields.qualifier]),
       denominationKey: _key(raw[WindowFields.denominationKey]),
       tablesVersion: FirestoreValues.integer(raw[WindowFields.tablesVersion]),
+      unit: unit,
+      startMonth: month(WindowFields.startMonth),
+      peakMonth: peakYear == null ? null : month(WindowFields.peakMonth),
+      endMonth: endYear == null ? null : month(WindowFields.endMonth),
+      profile: StyleProfile.tryParse(raw[WindowFields.profile]),
+      anchor: _byName(AgingAnchor.values, raw[WindowFields.anchor]),
+      anchorFallback: raw[WindowFields.anchorFallback] == true,
+      indicative: raw[WindowFields.indicative] == true,
     );
   }
 
@@ -166,8 +274,8 @@ class Wine {
   /// `tablesVersion` only when present.
   static Map<String, Object> windowToMap(DrinkingWindow window) => {
     WindowFields.startYear: window.startYear,
-    WindowFields.peakYear: window.peakYear,
-    WindowFields.endYear: window.endYear,
+    if (window.peakYear != null) WindowFields.peakYear: window.peakYear!,
+    if (window.endYear != null) WindowFields.endYear: window.endYear!,
     WindowFields.confidence: window.confidence.name,
     WindowFields.source: window.source.name,
     WindowFields.basis: window.basis.name,
@@ -177,6 +285,21 @@ class Wine {
       WindowFields.denominationKey: window.denominationKey!,
     if (window.tablesVersion != null)
       WindowFields.tablesVersion: window.tablesVersion!,
+    // wine-style-profiles: only the new fields that carry information, so a
+    // window in years written by this app keeps the shape of before.
+    if (window.inMonths) ...{
+      WindowFields.unit: window.unit.name,
+      if (window.startMonth != null)
+        WindowFields.startMonth: window.startMonth!,
+      if (window.peakMonth != null && window.peakYear != null)
+        WindowFields.peakMonth: window.peakMonth!,
+      if (window.endMonth != null && window.endYear != null)
+        WindowFields.endMonth: window.endMonth!,
+    },
+    if (window.profile != null) WindowFields.profile: window.profile!.id,
+    if (window.anchor != null) WindowFields.anchor: window.anchor!.name,
+    if (window.anchorFallback) WindowFields.anchorFallback: true,
+    if (window.indicative) WindowFields.indicative: true,
   };
 
   /// Converts a stored `pairings` map, or `null` when it is not one.
@@ -274,6 +397,22 @@ class Wine {
 
   /// The owner's "Recommended until" (FR5); `null` without a correction.
   final WindowOverride? windowOverride;
+
+  /// The style saved (wine-style-profiles BR1.4); `null` when none.
+  final WineStyle? style;
+
+  /// Where Type, Level and Style come from (BR7.1); `null` for a wine saved
+  /// before wine-style-profiles or a field left empty.
+  final FieldSource? typeSource;
+  final FieldSource? levelSource;
+  final FieldSource? styleSource;
+
+  /// Disgorgement or bottling date (BR8.1); `null` when not given.
+  final AgingStart? agingStart;
+
+  /// Version of the one-off migration done on this wine (BR7.6); `null` or
+  /// below 3 means "to migrate".
+  final int? migrationVersion;
 
   /// Quantity for display, never below 0 (ADR-004).
   int get quantity => displayQuantity(storedQuantity);

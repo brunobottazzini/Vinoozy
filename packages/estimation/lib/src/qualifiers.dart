@@ -28,8 +28,13 @@ const List<QualifierPhrase> qualifierPhrases = [
   QualifierPhrase(['reserve'], Qualifier.reserva),
   QualifierPhrase(['crianza'], Qualifier.crianza),
   QualifierPhrase(['superiore'], Qualifier.superiore),
-  QualifierPhrase(['trockenbeerenauslese'], Qualifier.auslese),
-  QualifierPhrase(['beerenauslese'], Qualifier.auslese),
+  // wine-style-profiles BR2.6: BA and TBA are their own categories, never
+  // an Auslese; the ice wine is a dried-grape sweet wine.
+  QualifierPhrase(['trockenbeerenauslese'], Qualifier.trockenbeerenauslese),
+  QualifierPhrase(['beerenauslese'], Qualifier.beerenauslese),
+  QualifierPhrase(['eiswein'], Qualifier.eiswein),
+  QualifierPhrase(['icewine'], Qualifier.eiswein),
+  QualifierPhrase(['ice', 'wine'], Qualifier.eiswein),
   QualifierPhrase(['auslese'], Qualifier.auslese),
   QualifierPhrase(['spatlese'], Qualifier.spatlese),
   QualifierPhrase(['kabinett'], Qualifier.kabinett),
@@ -48,6 +53,9 @@ const List<Qualifier> qualifierPriority = [
   Qualifier.reserva,
   Qualifier.crianza,
   Qualifier.superiore,
+  Qualifier.trockenbeerenauslese,
+  Qualifier.beerenauslese,
+  Qualifier.eiswein,
   Qualifier.auslese,
   Qualifier.spatlese,
   Qualifier.kabinett,
@@ -56,8 +64,28 @@ const List<Qualifier> qualifierPriority = [
   Qualifier.vintage,
 ];
 
-/// The qualifiers that suggest the "aging" level (BR1.8, FR4.3).
+/// The qualifiers that suggest the "aging" level (wine-style-profiles
+/// BR4.4, replacing the list of label-autofill-windows BR1.8): "vintage"
+/// only with Porto, checked by the callers. Reserva, Premier Cru, Spätlese
+/// and Colheita no longer suggest it: their own offsets already lengthen
+/// the window and the level is absolute (BR4.1).
 const Set<Qualifier> agingQualifiers = {
+  Qualifier.granSelezione,
+  Qualifier.granReserva,
+  Qualifier.grandCru,
+  Qualifier.riserva,
+  Qualifier.auslese,
+  Qualifier.beerenauslese,
+  Qualifier.trockenbeerenauslese,
+  Qualifier.eiswein,
+  Qualifier.vintage,
+};
+
+/// The qualifiers that mark a selection or a long ageing on a label:
+/// they make a red "structured" and close a composed appellation
+/// (label-autofill-windows BR1.8, BR7.16). Unchanged by wine-style-profiles,
+/// which narrows only the level suggestion ([agingQualifiers]).
+const Set<Qualifier> selectionQualifiers = {
   Qualifier.granSelezione,
   Qualifier.granReserva,
   Qualifier.grandCru,
@@ -65,10 +93,20 @@ const Set<Qualifier> agingQualifiers = {
   Qualifier.riserva,
   Qualifier.reserva,
   Qualifier.auslese,
+  Qualifier.beerenauslese,
+  Qualifier.trockenbeerenauslese,
+  Qualifier.eiswein,
   Qualifier.spatlese,
   Qualifier.vintage,
   Qualifier.colheita,
 };
+
+/// Whether [qualifier] suggests the "aging" level (BR4.4): one of
+/// [agingQualifiers], "vintage" only for Porto ([denominationKey]).
+bool suggestsAgingLevel(Qualifier? qualifier, String? denominationKey) {
+  if (qualifier == null || !agingQualifiers.contains(qualifier)) return false;
+  return qualifier != Qualifier.vintage || denominationKey == 'porto';
+}
 
 /// Bit mask (bit = [Qualifier.index]) of the qualifier phrases in [words],
 /// skipping the [skipCount] words from [skipStart] (an alias).

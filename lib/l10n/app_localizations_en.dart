@@ -1966,4 +1966,266 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get guideInvalidValue =>
       'This text contains characters that cannot be saved';
+
+  @override
+  String get brandStudio => 'Bottazzini Softworks';
+
+  @override
+  String get suggestedMark => '✦ suggested';
+
+  @override
+  String suggestedSemantics(String field, String value) {
+    return '$field, $value, suggested';
+  }
+
+  @override
+  String get restoreSuggestion => 'Restore suggestion';
+
+  @override
+  String get restoreSuggestionDone => 'Suggestion restored';
+
+  @override
+  String get styleLabel => 'Style';
+
+  @override
+  String styleGroupSemantics(String value, int index, int count) {
+    return 'Style, $value, $index of $count';
+  }
+
+  @override
+  String get styleRedFresh => 'Fresh';
+
+  @override
+  String get styleRedMedium => 'Medium';
+
+  @override
+  String get styleRedAge => 'For ageing';
+
+  @override
+  String get styleRedLong => 'Long ageing';
+
+  @override
+  String get styleWhiteFresh => 'Fresh';
+
+  @override
+  String get styleWhiteMedium => 'Medium';
+
+  @override
+  String get styleWhiteAge => 'For ageing';
+
+  @override
+  String get styleRoseFresh => 'Fresh';
+
+  @override
+  String get styleClassicFresh => 'Fresh';
+
+  @override
+  String get styleClassicAge => 'For ageing';
+
+  @override
+  String get styleTankFresh => 'Fresh';
+
+  @override
+  String get styleLambrusco => 'Lambrusco';
+
+  @override
+  String get styleSweetAromatic => 'Aromatic';
+
+  @override
+  String get styleSweetPassito => 'Dried-grape';
+
+  @override
+  String get styleSweetBotrytis => 'Botrytised';
+
+  @override
+  String get stylePortVintage => 'Vintage Port';
+
+  @override
+  String get stylePortLbv => 'LBV/Ruby Port';
+
+  @override
+  String get stylePortTawny => 'Tawny/Colheita Port';
+
+  @override
+  String get styleSherryFino => 'Fino/Manzanilla';
+
+  @override
+  String get styleSherryAmontillado => 'Amontillado';
+
+  @override
+  String get styleSherryOloroso => 'Oloroso/Cream';
+
+  @override
+  String get styleSherryPx => 'Pedro Ximénez';
+
+  @override
+  String get styleMadeira => 'Madeira';
+
+  @override
+  String get styleFortifiedOther => 'Other';
+
+  @override
+  String get profileNameRFresh => 'Fruit-forward red';
+
+  @override
+  String get profileNameRMedium => 'Medium-bodied red';
+
+  @override
+  String get profileNameRAge => 'Red for ageing';
+
+  @override
+  String get profileNameRLong => 'Long-ageing red';
+
+  @override
+  String get profileNameWFresh => 'Fresh aromatic white';
+
+  @override
+  String get profileNameWMedium => 'Medium-bodied white';
+
+  @override
+  String get profileNameWAge => 'White for ageing';
+
+  @override
+  String get profileNameRoseFresh => 'Fresh rosé';
+
+  @override
+  String get profileNameSpTank => 'Fresh tank-method sparkling';
+
+  @override
+  String get profileNameLamFresh => 'Fresh Lambrusco';
+
+  @override
+  String get profileNameSpClassic => 'Fresh traditional-method sparkling';
+
+  @override
+  String get profileNameSpClassicAge =>
+      'Traditional-method sparkling for ageing';
+
+  @override
+  String get profileNameSwAromatic => 'Young aromatic sweet wine';
+
+  @override
+  String get profileNameSwPassito => 'Dried-grape sweet wine';
+
+  @override
+  String get profileNameSwBotrytis => 'Botrytised sweet wine';
+
+  @override
+  String get profileNamePortVintage => 'Vintage Port';
+
+  @override
+  String get profileNamePortLbv => 'LBV/Ruby Port';
+
+  @override
+  String get profileNamePortOx => 'Tawny/Colheita Port';
+
+  @override
+  String get profileNameShFino => 'Fino/Manzanilla';
+
+  @override
+  String get profileNameShAmont => 'Amontillado/Medium';
+
+  @override
+  String get profileNameShOloroso => 'Oloroso/Cream';
+
+  @override
+  String get profileNameShPx => 'Pedro Ximénez Sherry';
+
+  @override
+  String get profileNameFortUnknown => 'Fortified, style unknown';
+
+  @override
+  String get profileNameUnknown => 'Style not identified';
+
+  @override
+  String estimateFromProfile(String profile, String denomination) {
+    return 'Estimate from the $profile profile ($denomination)';
+  }
+
+  @override
+  String estimateFromProfileType(String profile) {
+    return 'Estimate from the $profile profile, by type';
+  }
+
+  @override
+  String estimateFromProfileGrape(String profile, String grape) {
+    return 'Estimate from the $profile profile, by the grape $grape';
+  }
+
+  @override
+  String get estimateFromEntryDateDisgorgement =>
+      'From the date added: add the disgorgement date for a better estimate';
+
+  @override
+  String get estimateFromEntryDateBottling =>
+      'From the date added: add the bottling date for a better estimate';
+
+  @override
+  String get styleToConfirmBanner =>
+      '⚠︎ Style to confirm: the estimate is indicative';
+
+  @override
+  String get chooseTypePrompt => 'Choose the type';
+
+  @override
+  String estimateUpdatedAnnouncement(String summary) {
+    return 'Estimate updated: $summary';
+  }
+
+  @override
+  String get agingStartDisgorgement => 'Disgorgement';
+
+  @override
+  String get agingStartBottling => 'Bottling';
+
+  @override
+  String get agingStartMonth => 'Month';
+
+  @override
+  String get agingStartYear => 'Year';
+
+  @override
+  String get agingStartHint => 'It is usually on the back label.';
+
+  @override
+  String get agingStartIncomplete => 'Enter month and year';
+
+  @override
+  String get agingStartFuture => 'The date cannot be in the future';
+
+  @override
+  String get agingStartBeforeVintage => 'It cannot be before the vintage';
+
+  @override
+  String get windowNoEnd => 'Ready, no end estimated';
+
+  @override
+  String get windowNoEndShort => 'no end estimated';
+
+  @override
+  String windowDrinkWithin(String date) {
+    return 'by $date';
+  }
+
+  @override
+  String get levelNoEffect => 'The level does not change this estimate';
+
+  @override
+  String get dashboardToConfirmTitle => 'To confirm';
+
+  @override
+  String dashboardToConfirmCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count wines',
+      one: '1 wine',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String aboutDbClassified(String percent) {
+    return '$percent% of the wines with a recognised type';
+  }
 }

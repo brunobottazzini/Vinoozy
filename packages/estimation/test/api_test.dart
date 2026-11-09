@@ -6,6 +6,10 @@ import 'dart:math';
 import 'package:estimation/estimation.dart';
 import 'package:test/test.dart';
 
+/// [estimateWindow] for a wine that has a window (every wine of this file).
+DrinkingWindow estimated(WineFacts wine, [ExternalProfile? external]) =>
+    estimateWindow(wine, external)!;
+
 const _cases = 1000;
 
 const _names = [
@@ -107,10 +111,10 @@ Object? _outcome(Object? Function() call) {
 void main() {
   group('needsRefinement (BR1.5)', () {
     test('true for internal estimates, false for catalog ones', () {
-      final internal = estimateWindow(
+      final internal = estimated(
         const WineFacts(name: 'Barolo', vintage: 2016),
       );
-      final catalog = estimateWindow(
+      final catalog = estimated(
         const WineFacts(name: 'Barolo', vintage: 2016),
         const ExternalProfile(startYear: 2022, peakYear: 2030, endYear: 2045),
       );
@@ -188,7 +192,7 @@ void main() {
         final wine = _wine(random, allowInvalid: true);
         final external = _external(random, allowInvalid: true);
         for (final call in [
-          () => estimateWindow(wine, external),
+          () => estimateWindow(wine, external) ?? 'to estimate',
           () => pairingsFor(wine, external),
         ]) {
           try {
@@ -207,14 +211,24 @@ void main() {
       final random = Random(42);
       for (var i = 0; i < _cases; i++) {
         final wine = _wine(random);
-        final DrinkingWindow window;
+        final DrinkingWindow? maybe;
         try {
-          window = estimateWindow(wine, _external(random));
+          maybe = estimateWindow(wine, _external(random));
         } on EstimationArgumentError {
           continue;
         }
-        expect(window.startYear, lessThanOrEqualTo(window.peakYear));
-        expect(window.peakYear, lessThanOrEqualTo(window.endYear));
+        // wine-style-profiles BR2.9: a fortified wine without a style has
+        // no window ("To estimate").
+        if (maybe == null) continue;
+        final window = maybe;
+        expect(
+          window.startIndex,
+          lessThanOrEqualTo(window.peakIndex ?? window.startIndex),
+        );
+        expect(
+          window.peakIndex ?? window.startIndex,
+          lessThanOrEqualTo(window.endIndex ?? 1 << 30),
+        );
         expect(
           window.basis == EstimationBasis.catalog,
           window.source == WindowSource.catalog,

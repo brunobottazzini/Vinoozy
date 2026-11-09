@@ -1,0 +1,217 @@
+{
+  "stage": "requirements-analysis",
+  "ids": [
+    {
+      "id": "FR1.1",
+      "kind": "functional",
+      "of": "FR1",
+      "origin": "studio xlsx + richiesta 707b535e"
+    },
+    {
+      "id": "FR1.2",
+      "kind": "functional",
+      "of": "FR1",
+      "origin": "studio xlsx + richiesta 707b535e"
+    },
+    {
+      "id": "FR1.3",
+      "kind": "functional",
+      "of": "FR1",
+      "origin": "studio xlsx + richiesta 707b535e"
+    },
+    {
+      "id": "FR1.4",
+      "kind": "functional",
+      "of": "FR1",
+      "origin": "studio xlsx + richiesta 707b535e"
+    },
+    {
+      "id": "FR1.5",
+      "kind": "functional",
+      "of": "FR1",
+      "origin": "studio xlsx + richiesta 707b535e"
+    },
+    {
+      "id": "FR1.6",
+      "kind": "functional",
+      "of": "FR1",
+      "origin": "studio xlsx + richiesta 707b535e"
+    },
+    {
+      "id": "FR2.1",
+      "kind": "functional",
+      "of": "FR2",
+      "origin": "richiesta e5ee6498"
+    },
+    {
+      "id": "FR2.2",
+      "kind": "functional",
+      "of": "FR2",
+      "origin": "richiesta e5ee6498"
+    },
+    {
+      "id": "FR2.3",
+      "kind": "functional",
+      "of": "FR2",
+      "origin": "richiesta e5ee6498"
+    },
+    {
+      "id": "FR2.4",
+      "kind": "functional",
+      "of": "FR2",
+      "origin": "richiesta e5ee6498"
+    },
+    {
+      "id": "FR2.5",
+      "kind": "functional",
+      "of": "FR2",
+      "origin": "richiesta e5ee6498"
+    },
+    {
+      "id": "FR3.1",
+      "kind": "functional",
+      "of": "FR3",
+      "origin": "Q2, Q3 (358fbdd4)"
+    },
+    {
+      "id": "FR3.2",
+      "kind": "functional",
+      "of": "FR3",
+      "origin": "Q2, Q3 (358fbdd4)"
+    },
+    {
+      "id": "FR3.3",
+      "kind": "functional",
+      "of": "FR3",
+      "origin": "Q2, Q3 (358fbdd4)"
+    },
+    {
+      "id": "FR3.4",
+      "kind": "functional",
+      "of": "FR3",
+      "origin": "Q2, Q3 (358fbdd4)"
+    },
+    {
+      "id": "FR3.5",
+      "kind": "functional",
+      "of": "FR3",
+      "origin": "Q2, Q3 (358fbdd4)"
+    },
+    {
+      "id": "FR3.6",
+      "kind": "functional",
+      "of": "FR3",
+      "origin": "Q2, Q3 (358fbdd4)"
+    },
+    {
+      "id": "FR4.1",
+      "kind": "functional",
+      "of": "FR4",
+      "origin": "Q4 (358fbdd4)"
+    },
+    {
+      "id": "FR4.2",
+      "kind": "functional",
+      "of": "FR4",
+      "origin": "Q4 (358fbdd4)"
+    },
+    {
+      "id": "NFR1",
+      "kind": "non-functional",
+      "origin": "studio xlsx, team.md"
+    },
+    {
+      "id": "NFR2",
+      "kind": "non-functional",
+      "origin": "studio xlsx, team.md"
+    },
+    {
+      "id": "NFR2.1",
+      "kind": "non-functional",
+      "of": "NFR2",
+      "origin": "studio xlsx, team.md"
+    },
+    {
+      "id": "NFR2.2",
+      "kind": "non-functional",
+      "of": "NFR2",
+      "origin": "studio xlsx, team.md"
+    },
+    {
+      "id": "NFR2.3",
+      "kind": "non-functional",
+      "of": "NFR2",
+      "origin": "studio xlsx, team.md"
+    },
+    {
+      "id": "NFR3",
+      "kind": "non-functional",
+      "origin": "studio xlsx, team.md"
+    },
+    {
+      "id": "NFR4",
+      "kind": "non-functional",
+      "origin": "studio xlsx, team.md"
+    },
+    {
+      "id": "NFR4.1",
+      "kind": "non-functional",
+      "of": "NFR4",
+      "origin": "studio xlsx, team.md"
+    },
+    {
+      "id": "NFR4.2",
+      "kind": "non-functional",
+      "of": "NFR4",
+      "origin": "studio xlsx, team.md"
+    },
+    {
+      "id": "NFR4.3",
+      "kind": "non-functional",
+      "of": "NFR4",
+      "origin": "studio xlsx, team.md"
+    },
+    {
+      "id": "NFR4.4",
+      "kind": "non-functional",
+      "of": "NFR4",
+      "origin": "studio xlsx, team.md"
+    },
+    {
+      "id": "NFR4.5",
+      "kind": "non-functional",
+      "of": "NFR4",
+      "origin": "studio xlsx, team.md"
+    },
+    {
+      "id": "NFR5",
+      "kind": "non-functional",
+      "origin": "studio xlsx, team.md"
+    },
+    {
+      "id": "NFR6",
+      "kind": "non-functional",
+      "origin": "studio xlsx, team.md"
+    },
+    {
+      "id": "FR1",
+      "kind": "functional",
+      "origin": "studio xlsx + richiesta 707b535e"
+    },
+    {
+      "id": "FR2",
+      "kind": "functional",
+      "origin": "richiesta e5ee6498"
+    },
+    {
+      "id": "FR3",
+      "kind": "functional",
+      "origin": "Q2, Q3 (358fbdd4)"
+    },
+    {
+      "id": "FR4",
+      "kind": "functional",
+      "origin": "Q4 (358fbdd4)"
+    }
+  ]
+}

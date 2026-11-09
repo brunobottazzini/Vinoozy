@@ -148,7 +148,7 @@ bool canSelect(List<LabelWord> words, Set<int> selected, int id) {
 /// ones and "Superiore", "Crianza". "Classico" is part of names ("Chianti
 /// Classico") and is never stripped.
 final Set<Qualifier> _trailingQualifiers = {
-  ...agingQualifiers,
+  ...selectionQualifiers,
   Qualifier.superiore,
   Qualifier.crianza,
 };

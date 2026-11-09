@@ -15,6 +15,8 @@ import '../domain/wine_origins.dart';
 import '../domain/wine_validator.dart';
 import '../wine_estimator.dart';
 import 'add_wine_screen.dart' show WineTypeField;
+import 'classification_state.dart';
+import 'style_widgets.dart';
 import 'level_section.dart';
 import 'origin_pickers.dart';
 import 'quantity_stepper.dart';
@@ -65,7 +67,18 @@ class _EditWineScreenState extends ConsumerState<EditWineScreen> {
 
   /// label-autofill-windows BR4.3: a saved level is never replaced by a
   /// suggestion; without one the suggestion follows the name.
-  late final LevelChoice _level = LevelChoice(saved: widget.wine.level);
+  late final LevelChoice _level = LevelChoice(
+    saved: widget.wine.level,
+    savedSource: widget.wine.levelSource,
+  );
+
+  /// wine-style-profiles (F2): Type, Style, date and their sources.
+  late final ClassificationState _class = ClassificationState.ofWine(
+    widget.wine,
+  );
+  late final TextEditingController _agingYear = TextEditingController(
+    text: widget.wine.agingStart?.year.toString() ?? '',
+  );
   WineValidation _validation = const WineValidation();
   bool _saving = false;
   EditResult? _result;
@@ -76,6 +89,7 @@ class _EditWineScreenState extends ConsumerState<EditWineScreen> {
     _producer.dispose();
     _vintage.dispose();
     _denomination.dispose();
+    _agingYear.dispose();
     super.dispose();
   }
 
@@ -87,15 +101,58 @@ class _EditWineScreenState extends ConsumerState<EditWineScreen> {
     if (name.isEmpty) return null;
     final denomination = _denomination.text.trim();
     final year = ref.read(clockProvider).now().year;
+    final created = widget.wine.createdAt?.toLocal();
+    final start = _class.agingStart;
     return WineFactsInput(
       name: name,
       producer: _producer.text.trim().isEmpty ? null : _producer.text.trim(),
       vintage: _noVintage ? null : int.tryParse(_vintage.text),
-      wineType: _wineType,
+      wineType: _class.type?.name,
       region: _origin.region,
       denomination: denomination.isEmpty ? null : denomination,
-      referenceYear: widget.wine.createdAt?.toLocal().year ?? year,
+      referenceYear: created?.year ?? year,
+      referenceMonth: created?.month,
+      style: _class.style,
+      styleChosen: _class.styleIsUser,
+      agingStart:
+          start != null &&
+              WineValidator.validateAgingStart(
+                    start.year,
+                    start.month,
+                    vintage: _noVintage
+                        ? null
+                        : int.tryParse(_vintage.text.trim()),
+                    now: ref.read(clockProvider).now(),
+                  ) ==
+                  null
+          ? start
+          : null,
     );
+  }
+
+  /// wine-style-profiles (F2, BR7.2): the automatic fields follow the form.
+  void _refreshClassification() {
+    final denomination = _denomination.text.trim();
+    final producer = _producer.text.trim();
+    _class.refresh(
+      name: _name.text,
+      producer: producer.isEmpty ? null : producer,
+      denomination: denomination.isEmpty ? null : denomination,
+      vintage: _noVintage ? null : int.tryParse(_vintage.text.trim()),
+      country: _origin.country,
+      dbType: WineType.tryParse(_wineType),
+      referenceYear: ref.read(clockProvider).now().year,
+    );
+    _level.preselected = _name.text.trim().isEmpty
+        ? null
+        : suggestedLevel(
+            _name.text,
+            producer: producer.isEmpty ? null : producer,
+            denomination: denomination.isEmpty ? null : denomination,
+            type: _class.type,
+            profile: _class.style?.profile ?? _class.resolution?.profile,
+            styleToConfirm: _class.styleToConfirm,
+          );
   }
 
   Future<void> _save() async {
@@ -107,13 +164,20 @@ class _EditWineScreenState extends ConsumerState<EditWineScreen> {
         vintage: _vintage.text,
         noVintage: _noVintage,
         quantity: _quantity,
-        wineType: _wineType,
+        wineType: _class.type?.name,
         region: _origin.region,
         denomination: _denomination.text,
         country: _origin.country,
         level: _level.effective(_suggestion),
+        typeSource: _class.typeSource,
+        levelSource: _level.sourceFor(_suggestion),
+        style: _class.style,
+        styleSource: _class.styleSource,
+        agingStartYear: _class.agingStartVisible ? _class.agingYear : null,
+        agingStartMonth: _class.agingStartVisible ? _class.agingMonth : null,
       ),
       currentYear: ref.read(clockProvider).now().year,
+      currentMonth: ref.read(clockProvider).now().month,
       minQuantity: 0,
     );
     setState(() {
@@ -145,6 +209,7 @@ class _EditWineScreenState extends ConsumerState<EditWineScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _refreshClassification();
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final year = ref.read(clockProvider).now().year;
@@ -245,15 +310,54 @@ class _EditWineScreenState extends ConsumerState<EditWineScreen> {
                 onChanged: (value) => setState(() => _noVintage = value),
               ),
               WineTypeField(
-                value: _wineType,
-                onChanged: (value) => setState(() => _wineType = value),
+                key: ValueKey('edit-wine-type-${_class.type?.name}'),
+                value: _class.type?.name,
+                onChanged: (value) => setState(() {
+                  _wineType = value;
+                  _class.chooseType(WineType.tryParse(value));
+                }),
               ),
+              SuggestedMark(
+                key: const Key('type-suggested'),
+                visible: _class.typeSource == FieldSource.auto,
+              ),
+              RestoreSuggestionLink(
+                key: const Key('type-restore'),
+                visible: _class.canRestoreType,
+                onRestore: () => setState(_class.restoreType),
+              ),
+              if (_class.type case final type? when _class.styleVisible) ...[
+                StyleField(
+                  wineType: type,
+                  selected: _class.style,
+                  suggested: _class.styleSource == FieldSource.auto,
+                  onChanged: (style) =>
+                      setState(() => _class.chooseStyle(style)),
+                ),
+                RestoreSuggestionLink(
+                  key: const Key('style-restore'),
+                  visible: _class.canRestoreStyle,
+                  onRestore: () => setState(_class.restoreStyle),
+                ),
+              ],
+              if (_class.agingStartAnchor case final anchor?)
+                AgingStartField(
+                  anchor: anchor,
+                  month: _class.agingMonth,
+                  yearController: _agingYear,
+                  error: _validation.agingStartError,
+                  onMonthChanged: (month) =>
+                      setState(() => _class.agingMonth = month),
+                  onYearChanged: (text) =>
+                      setState(() => _class.agingYear = int.tryParse(text)),
+                ),
               const SizedBox(height: 16),
               LevelSection(
                 choice: _level,
                 suggestion: _suggestion,
                 facts: _facts,
                 onChanged: (level) => setState(() => _level.choose(level)),
+                onRestore: () => setState(_level.restore),
               ),
               const SizedBox(height: 8),
               Text(l10n.quantityLabel, style: theme.textTheme.titleSmall),

@@ -26,15 +26,23 @@
 // app never attributes the sample to Open Food Facts and
 // tool/check_wine_db_release.sh refuses it before production (review R-02).
 //
+// wine-style-profiles (F3, BR9.1-BR9.4): every wine kept is classified with
+// `classifyWine` of the estimation package, the same function as the form
+// and the migration: the type of the tags is only its "database type"; the
+// record stores the Type, Level and Style preselected (format 2), and the
+// manifest the share of wines with a Type (`classifiedTypeShare`). Products
+// that are not wine (seltzer, cider...) are dropped as excluded categories.
+//
 // The wine knowledge below (type tags, excluded categories, denomination
 // markers) is decided at Code Generation (project.md correction of
 // 2026-11-04); the reasons are in code-summary.md of the intent.
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:estimation/estimation.dart'
-    show WineType, recognizeDenomination;
+    show WineType, classifyWine, findAppellation, recognizeDenomination;
 import 'package:vinoozy/catalog/core/off/open_food_facts_source.dart'
     show normalizeBarcode;
 import 'package:vinoozy/catalog/core/offline/wine_db_record.dart';
@@ -136,18 +144,42 @@ const List<String> denominationMarkers = [
       name.length > WineDbRecord.maxName) {
     return (record: null, reason: DropReason.invalidName);
   }
+  final producer = _firstBrand(row['brands']);
+  final denomination = denominationOf(name, tags);
+  final country = countryOfTags(row['countries_tags']);
+  final vintage = vintageOf(name, row['quantity']);
+  final preselection = classifyWine(
+    name,
+    producer: producer,
+    denomination: denomination,
+    dbType: wineTypeOfTags(tags),
+    country: country,
+    vintage: vintage,
+  );
+  if (preselection.nonWine) {
+    return (record: null, reason: DropReason.excludedCategory);
+  }
   return (
     record: WineDbRecord(
       code: code,
       name: name,
-      producer: _firstBrand(row['brands']),
-      wineType: wineTypeOfTags(tags),
-      denomination: denominationOf(name, tags),
-      country: countryOfTags(row['countries_tags']),
-      vintage: vintageOf(name, row['quantity']),
+      producer: producer,
+      wineType: preselection.wineType,
+      denomination: denomination,
+      country: country,
+      vintage: vintage,
+      level: preselection.wineType == null ? null : preselection.level,
+      style: preselection.style,
     ),
     reason: null,
   );
+}
+
+/// BR9.5: the share of [records] with a Type, rounded to 4 decimals.
+double classifiedTypeShareOf(List<WineDbRecord> records) {
+  if (records.isEmpty) return 0;
+  final typed = records.where((r) => r.wineType != null).length;
+  return (typed * 10000 / records.length).round() / 10000;
 }
 
 /// BR2.2: the type from the category tags; style before colour (a fortified
@@ -203,6 +235,10 @@ WineType? wineTypeOfTags(Set<String> tags) {
 String? denominationOf(String name, Set<String> tags) {
   final fromName = recognizeDenomination(name);
   if (fromName != null) return fromName.displayName;
+  // wine-style-profiles BR9.1: the whole appellation table (2424 rows), not
+  // only the Italian catalog; weak names (common words) do not count here.
+  final world = findAppellation(name, includeWeak: false);
+  if (world != null) return world.displayName;
   for (final tag in tags) {
     final words = _tagWords(tag);
     if (words.isEmpty) continue;
@@ -244,6 +280,12 @@ int? vintageOf(String name, String? quantity) {
   return null;
 }
 
+final RegExp _wineTag = RegExp('en:wines', caseSensitive: false);
+
+/// Whether the raw [line] of the export may be a wine: it holds `en:wines`
+/// in any case. Conservative: every row recordOfRow keeps passes it.
+bool mayBeWineLine(String line) => _wineTag.hasMatch(line);
+
 /// The wines of an export read line by line, with the dropped rows counted
 /// by reason. The first line is the header; a duplicated barcode keeps the
 /// first row (BR2.4).
@@ -263,6 +305,15 @@ class ExportReader {
       return;
     }
     rows++;
+    // wine-style-profiles NFR3.3 (loop-back 1): a row is a wine only with
+    // the tag `en:wines` (recordOfRow, compared lower-case), so a line whose
+    // raw text does not hold it, in any case, is dropped as notWine before
+    // it is split into a map: same result, without the cost of the 4.9
+    // million rows of other products.
+    if (!mayBeWineLine(line)) {
+      _drop(DropReason.notWine);
+      return;
+    }
     final row = <String, String>{
       for (var i = 0; i < header.length && i < cells.length; i++)
         header[i]: cells[i],
@@ -278,11 +329,20 @@ class ExportReader {
     }
   }
 
+  /// A row known not to be a wine without reading it (RawLineFilter): the
+  /// same count as [addLine] gives it.
+  void addNonWineRow() {
+    rows++;
+    _drop(DropReason.notWine);
+  }
+
   void _drop(DropReason reason) => dropped[reason] = (dropped[reason] ?? 0) + 1;
 }
 
 /// Reads [input] (gzip detected by its first bytes, else plain text) as a
-/// stream of lines (NFR2.8).
+/// stream of lines (NFR2.8). wine-style-profiles NFR3.3 (loop-back 1): the
+/// lines are split on the bytes by [RawLineFilter], and only the header and
+/// the lines that may be a wine are decoded and parsed.
 Future<ExportReader> readExport(File input) async {
   final reader = ExportReader();
   final head = await input
@@ -292,11 +352,102 @@ Future<ExportReader> readExport(File input) async {
   if (head.length == 2 && head[0] == 0x1f && head[1] == 0x8b) {
     bytes = bytes.transform(gzip.decoder);
   }
-  await bytes
-      .transform(const Utf8Decoder(allowMalformed: true))
-      .transform(const LineSplitter())
-      .forEach(reader.addLine);
+  final filter = RawLineFilter(reader);
+  await bytes.forEach(filter.add);
+  filter.close();
   return reader;
+}
+
+/// Splits the bytes of an export into lines as `LineSplitter` does (`\n`,
+/// `\r` and `\r\n` end a line) and hands to [reader] only the lines it
+/// must read: the header, the lines holding `en:wines` in any case (the
+/// only ones that may be a wine, [mayBeWineLine]) and the rare lines
+/// without a visible ASCII character (decoded, so blank lines stay
+/// uncounted as before). Every other line is counted as a non-wine row
+/// without being decoded: the result is the one of reading every line
+/// (wine-style-profiles NFR3.3), at a fraction of the time.
+class RawLineFilter {
+  RawLineFilter(this.reader);
+
+  final ExportReader reader;
+
+  static const List<int> _needle = [
+    0x65, 0x6e, 0x3a, 0x77, 0x69, 0x6e, 0x65, 0x73, // en:wines
+  ];
+
+  /// KMP fallback of [_needle].
+  static final List<int> _fallback = () {
+    final table = List<int>.filled(_needle.length, 0);
+    var k = 0;
+    for (var i = 1; i < _needle.length; i++) {
+      while (k > 0 && _needle[i] != _needle[k]) {
+        k = table[k - 1];
+      }
+      if (_needle[i] == _needle[k]) k++;
+      table[i] = k;
+    }
+    return table;
+  }();
+
+  final BytesBuilder _line = BytesBuilder(copy: false);
+  bool _headerDone = false;
+  bool _matched = false;
+  bool _visible = false;
+  bool _afterCr = false;
+  int _state = 0;
+
+  void add(List<int> chunk) {
+    var start = 0;
+    final length = chunk.length;
+    for (var i = 0; i < length; i++) {
+      final byte = chunk[i];
+      if (byte == 0x0a || byte == 0x0d) {
+        if (byte == 0x0a && _afterCr && i == start && _line.isEmpty) {
+          // The \n of a \r\n: the line already ended.
+          _afterCr = false;
+          start = i + 1;
+          continue;
+        }
+        _end(chunk, start, i);
+        _afterCr = byte == 0x0d;
+        start = i + 1;
+        continue;
+      }
+      _afterCr = false;
+      if (byte > 0x20 && byte < 0x7f) _visible = true;
+      if (!_matched) {
+        final lower = byte >= 0x41 && byte <= 0x5a ? byte | 0x20 : byte;
+        while (_state > 0 && lower != _needle[_state]) {
+          _state = _fallback[_state - 1];
+        }
+        if (lower == _needle[_state]) _state++;
+        if (_state == _needle.length) _matched = true;
+      }
+    }
+    if (start < length) _line.add(chunk.sublist(start));
+  }
+
+  /// The last line, when the export does not end with a line break.
+  void close() {
+    if (_line.isNotEmpty || _matched || _visible) _end(const [], 0, 0);
+  }
+
+  void _end(List<int> chunk, int start, int end) {
+    final needsText = !_headerDone || _matched || !_visible;
+    if (needsText) {
+      if (end > start) _line.add(chunk.sublist(start, end));
+      reader.addLine(
+        const Utf8Decoder(allowMalformed: true).convert(_line.takeBytes()),
+      );
+      _headerDone = true;
+    } else {
+      _line.clear();
+      reader.addNonWineRow();
+    }
+    _matched = false;
+    _visible = false;
+    _state = 0;
+  }
 }
 
 /// The encoded database, ready to be written.
@@ -327,6 +478,7 @@ EncodedWineDb encodeWineDb(
       exportDate: exportDate,
       wineCount: records.length,
       source: source,
+      classifiedTypeShare: classifiedTypeShareOf(records),
     ),
   );
 }
@@ -467,6 +619,11 @@ Future<int> runBuildWineDb(
       '(${encoded.uncompressed.length} uncompressed), export date '
       '${encoded.manifest.toJson()['exportDate']}, source '
       '${encoded.manifest.source.wireName}',
+    )
+    // BR9.5: the share is recorded; 90% is the target of FR2.1.
+    ..writeln(
+      'classifiedTypeShare ${encoded.manifest.classifiedTypeShare} '
+      '(target 0.9)',
     );
   return 0;
 }

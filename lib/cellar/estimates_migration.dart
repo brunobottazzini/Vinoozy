@@ -9,6 +9,7 @@ import '../sharing/domain/membership.dart';
 import 'data/cellar_errors.dart';
 import 'data/wine_repository.dart';
 import 'domain/wine.dart';
+import 'domain/wine_classification.dart';
 import 'domain/wine_estimate.dart';
 import 'wine_estimator.dart';
 
@@ -82,20 +83,26 @@ class PreferencesMigrationAttemptStore implements MigrationAttemptStore {
   }
 }
 
-/// The one-off estimate of every cellar wine with the new tables
-/// (label-autofill-windows BR3.9, NFR4.4, NFR4.7, NFR4.8, NFR4.8a):
+/// The one-off migration of every cellar wine to the style profiles
+/// (wine-style-profiles BR7.4-BR7.7, D4, NFR4.4, NFR4.6, NFR4.9), which
+/// replaces the re-estimate of label-autofill-windows BR3.9:
 ///
-/// - candidates: wines whose base window comes from the internal rules of
-///   an older table version (`tablesVersion` missing or different); catalog
-///   windows do not depend on the tables and stay;
-/// - one wine at a time with the existing `setEstimate` update, never a
-///   batch, and only with `canEdit`; the level and the owner's correction
-///   are kept (BR3.8, BR4.4);
-/// - offline the writes wait in the queue like the others; an interrupted
-///   run continues at the next start, for the wines still on old tables;
-/// - a refusal of the server (rules not deployed) stops the migration for
-///   this start with one `estimates_migration_failed` (permissionDenied);
-///   after 3 starts with a refusal it waits for the next table version.
+/// - candidates: wines with `migrationVersion` missing or below
+///   [tablesVersion]; a migrated wine is never done again (FR4.2);
+/// - provenance (BR7.4): a saved type or level is the user's; the empty ones
+///   and the style are preselected with [classifyWine] as `auto`; a field
+///   chosen by the user is never changed (BR7.2);
+/// - the estimate is computed again with the profiles for the internal
+///   windows; catalog windows stay; the drink feedback and the owner's
+///   correction are kept (BR7.5);
+/// - one wine at a time, each in a transaction that reads it again and
+///   skips it when its `updatedAt` changed since it was read (another
+///   member edited it): it stays to migrate for the next start;
+/// - a transaction needs the server: offline the migration does not start
+///   (NFR4.9) and starts again when the network comes back;
+/// - a refusal of the rules stops it for this start with one
+///   `estimates_migration_failed` (permissionDenied); after 3 starts with a
+///   refusal it waits for the next table version (BR7.6). Silent (BR7.7).
 class EstimatesMigration {
   EstimatesMigration({
     required this._wines,
@@ -105,7 +112,11 @@ class EstimatesMigration {
     this._logger = const ConsoleAppEventLogger(debugLogging: false),
     this._estimator = const WineEstimator(),
     this.tablesVersion = estimationTablesVersion,
-  }) : _store = store ?? MemoryMigrationAttemptStore();
+    Future<bool> Function()? isOnline,
+  }) : _store = store ?? MemoryMigrationAttemptStore(),
+       _isOnline = isOnline ?? _alwaysOnline;
+
+  static Future<bool> _alwaysOnline() async => true;
 
   /// Most starts with a refusal before the migration waits (NFR4.8a).
   static const int maxAttempts = 3;
@@ -116,29 +127,50 @@ class EstimatesMigration {
   final MigrationAttemptStore _store;
   final AppEventLogger _logger;
   final WineEstimator _estimator;
+  final Future<bool> Function() _isOnline;
 
-  /// The version of the tables the wines are moved to.
+  /// The version the wines are moved to (`migrationVersion`).
   final int tablesVersion;
 
   bool _stopped = false;
   bool _failureCounted = false;
   int? _attempts;
 
-  /// Whether [wine] was estimated by the rules of other tables than
-  /// [version] and must be estimated again.
+  /// Whether [wine] still has to be migrated to [version] (BR7.6).
   static bool needsMigration(
     Wine wine, {
     int version = estimationTablesVersion,
-  }) {
-    final base =
-        wine.baseWindow ?? (wine.windowAdjustment == null ? wine.window : null);
-    return base != null &&
-        base.source == WindowSource.internalRules &&
-        base.tablesVersion != version;
+  }) => (wine.migrationVersion ?? 0) < version;
+
+  /// The classification of [wine] after the migration (BR7.4): the saved
+  /// type and level are the user's, the rest is preselected.
+  static WineClassification classificationOf(Wine wine) {
+    final type = WineType.tryParse(wine.wineType);
+    final stored = WineClassification(
+      wineType: type,
+      typeSource: type == null ? null : wine.typeSource ?? FieldSource.user,
+      level: wine.level,
+      levelSource: wine.level == null
+          ? null
+          : wine.levelSource ?? FieldSource.user,
+      style: wine.style,
+      styleSource: wine.style == null ? null : wine.styleSource,
+    );
+    return stored.withPreselection(
+      classifyWine(
+        wine.name,
+        producer: wine.producer,
+        denomination: wine.denomination,
+        // The saved type is a clue too (its style when nothing else says).
+        dbType: type,
+        country: wine.displayCountry,
+        vintage: wine.vintage,
+      ),
+    );
   }
 
-  /// Estimates again the wines of [wines] that need it; returns how many
-  /// were written on the phone.
+  /// Migrates the wines of [wines] that need it; returns how many were
+  /// written.
   Future<int> run(
     AccessibleCellar cellar,
     AppUser user,
@@ -155,39 +187,31 @@ class EstimatesMigration {
       _stopped = true;
       return 0;
     }
+    if (!await _isOnline()) return 0;
     final watch = Stopwatch()..start();
-    final year = _clock.now().year;
+    final now = _clock.now();
     var written = 0;
     for (final wine in candidates) {
       if (_stopped) break;
-      final computed = _estimator.estimate(
-        WineFactsInput.ofWine(wine, fallbackYear: year),
-        adjustment: wine.windowAdjustment,
-        override: wine.windowOverride,
-      );
-      if (computed.window == null) continue;
-      final pairings = wine.pairings;
-      final estimate = WineEstimate(
-        baseWindow: computed.baseWindow,
-        window: computed.window,
-        adjustment: computed.adjustment,
-        // Catalog pairings stay; internal ones follow the new tables.
-        pairings: pairings != null && pairings.source == WindowSource.catalog
-            ? pairings
-            : computed.pairings,
-      );
-      final outcome = await _wines.setEstimate(
+      // A pending write has no server time yet: next start.
+      if (wine.updatedAt == null) continue;
+      final outcome = await _wines.migrateWine(
         cellarId: cellar.cellarId,
         user: user,
-        wine: wine,
-        estimate: estimate,
-        quiet: true,
-        onFailure: _onWriteFailure,
+        wineId: wine.id,
+        seenUpdatedAt: wine.updatedAt,
+        fields: fieldsOf(wine, now),
       );
-      if (outcome is SaveAccepted) {
-        written++;
-      } else {
-        await _fail(EstimatesMigrationFailureReason.localWriteFailed);
+      switch (outcome) {
+        case MigrationWrite.written:
+          written++;
+        case MigrationWrite.skipped:
+          break;
+        case MigrationWrite.rejected:
+          await _fail(EstimatesMigrationFailureReason.permissionDenied);
+        case MigrationWrite.failed:
+          // Network or server: the remaining wines wait for the next start.
+          _stopped = true;
       }
     }
     watch.stop();
@@ -195,12 +219,52 @@ class EstimatesMigration {
     return written;
   }
 
-  void _onWriteFailure(WriteErrorKind kind) {
-    // Only a refusal says the rules are missing; a transient failure or an
-    // expired session leaves the wine on the old tables for the next start.
-    if (kind == WriteErrorKind.rejected) {
-      _fail(EstimatesMigrationFailureReason.permissionDenied);
-    }
+  /// The fields the migration writes for [wine] at [now] (BR7.4).
+  Map<String, Object?> fieldsOf(Wine wine, DateTime now) {
+    final classification = classificationOf(wine);
+    final fields = <String, Object?>{
+      ...classification.toFields(),
+      WineFields.migrationVersion: tablesVersion,
+    };
+    // A catalog estimate stays, also for a wine saved with a drink feedback
+    // and without a base window: its window is the catalog's.
+    final base = wine.baseWindow ?? wine.window;
+    if (base != null && base.source == WindowSource.catalog) return fields;
+    final migrated = Wine(
+      id: wine.id,
+      name: wine.name,
+      vintage: wine.vintage,
+      storedQuantity: wine.storedQuantity,
+      producer: wine.producer,
+      wineType: classification.wineType?.name,
+      region: wine.region,
+      denomination: wine.denomination,
+      createdAt: wine.createdAt,
+      level: classification.level,
+      style: classification.style,
+      styleSource: classification.styleSource,
+      agingStart: wine.agingStart,
+    );
+    final computed = _estimator.estimate(
+      WineFactsInput.ofWine(
+        migrated,
+        fallbackYear: now.year,
+        fallbackMonth: now.month,
+      ),
+      adjustment: wine.windowAdjustment,
+      override: wine.windowOverride,
+    );
+    final pairings = wine.pairings;
+    final estimate = WineEstimate(
+      baseWindow: computed.baseWindow,
+      window: computed.window,
+      adjustment: computed.adjustment,
+      // Catalog pairings stay; internal ones follow the new tables.
+      pairings: pairings != null && pairings.source == WindowSource.catalog
+          ? pairings
+          : computed.pairings,
+    );
+    return {...fields, ...estimate.toFields()};
   }
 
   Future<void> _fail(EstimatesMigrationFailureReason reason) async {

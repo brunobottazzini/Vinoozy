@@ -417,3 +417,94 @@ Ultima scansione: intent 261108-label-autofill-windows (stima della finestra, ca
 
 - **File**: `lib/catalog/core/offline/` e `lib/catalog/platform/wine_db_loader.dart` (analisi superficiale)
 - **Responsabilità**: base dei vini sul telefono da `assets/wine_db/wines.jsonl.gz` (oggi 45 vini di prova), aperta una volta in un isolate; ricerca per codice e per testo con punteggio a parole distintive (`text_score.dart`). I record hanno codice, nome, produttore, tipo, denominazione, paese, annata; nessuna regione.
+
+## Componenti di tipo, livello, stile e finestra (intent 261108-wine-style-profiles)
+
+### Aggiornamenti dei componenti già elencati
+
+Verificati in questa scansione (commit `baba947` più il working tree); dove le voci precedenti dicono altro, vale questo elenco.
+
+- **estimateWindow**: applica `WineLevel.apply` agli scarti prima dell'anno base; fiducia `medium` solo per una riga dedicata (non generata) con annata; scrive `denominationKey` e `tablesVersion`.
+- **resolveWine**: cinque passi (denominazione dell'utente, del catalogo, del nome; vitigno; tipo; generica); una zona con più tipi prende il tipo del vitigno nominato accanto, altrimenti il principale.
+- **denominationTable**: 2424 righe, cioè 47 italiane originali, 677 scritte a mano per il mondo (149 IT, 209 FR, 173 resto d'Europa, 146 Nuovo Mondo) e 1700 generate; le dedicate vincono sulle generate.
+- **typeTable**: invariata (8 tipi e generica 1/3/6).
+- **IdealMomentCard**: mostra anche il livello, l'origine della stima e, per chi può modificare, "Correggi" e "Ripristina la stima".
+- **WineRepository**: `addWine` e `updateWine` scrivono anche `level`; `setOverride` e `clearOverride` scrivono `windowOverride` e `window` insieme.
+- **WineSecurityRules**: 18 campi (`level`, `windowOverride` in più); `validLevel`, `validOverride`, `validWindow` con `grape`, 14 qualificativi, `denominationKey`, `tablesVersion`; `wineType` ancora non validato.
+- **OfflineWineDb**: 15.616 vini reali (non più 45 di prova).
+- **WineTypeField**: 8 tipi con icona e colore della famiglia; usato da `AddWineScreen` ed `EditWineScreen`.
+
+### WineType
+
+- **File**: `packages/estimation/lib/src/models.dart`
+- **Responsabilità**: gli 8 tipi (`redLight`, `redStructured`, `white`, `rose`, `sparklingClassic`, `sparklingTank`, `sweet`, `fortified`); `isSparkling`; `tryParse` accetta i nomi e i valori C1 (`red` → `redStructured`, `sparkling` → `sparklingClassic`). È la "Tipologia" mostrata nel form.
+
+### WineLevel
+
+- **File**: `packages/estimation/lib/src/wine_level.dart`
+- **Responsabilità**: livello del vino (`everyday` 50/60/60%, `good` 100%, `aging` 125/130/140%) applicato agli scarti in anni; arrotondamento intero e ordine garantito; `aging` non rimoltiplica gli scarti di un qualificativo. `null` vale "Buono".
+
+### agingQualifiers
+
+- **File**: `packages/estimation/lib/src/qualifiers.dart`
+- **Responsabilità**: frasi dei 14 qualificativi a parole intere, priorità, e l'insieme dei qualificativi che suggeriscono "Da invecchiamento". È l'unica regola che oggi preseleziona un livello.
+
+### grapeTable
+
+- **File**: `packages/estimation/lib/src/grapes.dart`
+- **Responsabilità**: 46 vitigni con nome, un solo tipo, scarti medi e alias; ripiego della stima quando nessuna denominazione è riconosciuta; il vitigno non dà mai paese né regione.
+
+### appellationTemplates
+
+- **File**: `packages/estimation/lib/src/world_tables.dart`
+- **Responsabilità**: 9 modelli (paese e livello di classificazione) con scarti per tipo, usati dalle righe generate; un tipo assente nel modello viene tolto dalla riga generata. `defaultGeneratedTypes` = `redLight`, `white`, `rose`.
+
+### extractLabelFields
+
+- **File**: `packages/estimation/lib/src/label_fields.dart` (con le parti `label_candidates.dart`, `label_lines.dart`, `label_words.dart`, `label_scoring.dart`)
+- **Responsabilità**: dal testo dell'etichetta ricava nome, produttore, denominazione, annata, tipo, paese, regione, qualificativo e livello suggerito. Tipo: parole di stile prima del colore (fortificato, dolce, spumante, rosato, bianco, rosso), poi tipo unico della riga, poi tipo del vitigno. Livello: `aging` solo con un qualificativo da invecchiamento.
+
+### LevelChoice
+
+- **File**: `lib/cellar/ui/level_section.dart`
+- **Responsabilità**: stato del livello nel form: valore scelto, salvato, toccato, suggerimento spento; `suggestionFor` (qualificativo del nome o della denominazione, o del testo dell'etichetta finché il nome è quello letto); `effective` (scelto, altrimenti `aging` se suggerito).
+
+### LevelSection
+
+- **File**: `lib/cellar/ui/level_section.dart`
+- **Responsabilità**: il selettore del livello e l'anteprima della finestra con e senza livello, calcolate con `WineEstimator` a ogni build.
+
+### WineLevelSelector
+
+- **File**: `lib/cellar/ui/wine_level_selector.dart`
+- **Responsabilità**: scelta singola tra Quotidiano, Buono, Da invecchiamento e Nessuno (≥ 48 dp); il suggerito ha bordo tratteggiato e la parola "suggerito" con il motivo; `LevelPreview` mostra la finestra risultante.
+
+### WineTypeFamily
+
+- **File**: `lib/cellar/ui/wine_badges.dart`
+- **Responsabilità**: le 5 famiglie mostrate (rosso, bianco, rosato, spumante, dolce, con il fortificato tra i dolci), colori, icone e `WineTypeBadge`. La stessa mappatura è ripetuta in `TypeFilter.of` (`lib/cellar/domain/cellar_filter.dart`) e in `DashboardCalculator.familyOf`.
+
+### DashboardCalculator
+
+- **File**: `lib/dashboard/domain/dashboard_calculator.dart`
+- **Responsabilità**: un passaggio sui vini: stato con `statusOf` sulla finestra effettiva (finestre non valide contate a parte), famiglia dal `wineType` salvato ("non specificato" se assente), picchi per anno, "da bere presto" con l'anno di fine.
+
+### EstimatesMigration
+
+- **File**: `lib/cellar/estimates_migration.dart`
+- **Responsabilità**: stima una tantum con le nuove tabelle: candidati con finestra base `internalRules` e `tablesVersion` diversa; un vino alla volta con `setEstimate(quiet)`; conserva livello, correzione e abbinamenti del catalogo; si ferma al primo rifiuto e, dopo 3 avvii con rifiuto, aspetta la versione successiva. Non riscrive tipo né livello. Avviata da `CellarActions` (provider `estimatesMigrationProvider`).
+
+### WineDbRecord
+
+- **File**: `lib/catalog/core/offline/wine_db_record.dart`
+- **Responsabilità**: un vino della base offline: `code`, `name`, `producer?`, `wineType?` (8 tipi), `denomination?`, `country?`, `vintage?`; righe JSON a chiavi brevi, righe danneggiate scartate; `toCandidate` riduce il tipo a `CatalogWineType` (5 famiglie). Nessun vitigno, livello, regione o stile.
+
+### buildWineDb
+
+- **File**: `tool/build_wine_db.dart`
+- **Responsabilità**: costruisce `assets/wine_db/` dall'export CSV di Open Food Facts scaricato a mano: tiene solo i vini, ricava tipo dai tag (`wineTypeOfTags`: fortificato, dolce, metodo classico, Charmat, rosato, bianco, rosso strutturato salvo "light/young/nouveau/primeur"), denominazione (`denominationOf`), paese, annata; controlli di plausibilità (≥ 5000 vini, export ≤ 180 giorni, ≤ 3 MB compressi, ≤ 30 MB).
+
+### buildAppellations
+
+- **File**: `tool/build_appellations.dart`
+- **Responsabilità**: genera `appellations.g.dart` e il manifest da eAmbrosia e dai CSV di `tool/data/appellations/`: modello per paese e protezione; tipi dal CSV, altrimenti dalle parole del nome (`typesFromName`: liquoroso/porto → fortificato, passito/recioto → dolce, spumante/cava/crémant → spumante, rosato, bianco, rosso → `redLight`), altrimenti `redLight,white,rose`; esclude le righe già dedicate e i nomi di vitigni; almeno 1500 denominazioni.

@@ -24,7 +24,7 @@ import '../helpers/fakes.dart';
 import '../helpers/service_mocks.dart';
 import 'cellar_harness.dart';
 
-List<int> years(DrinkingWindow window) => [
+List<int?> years(DrinkingWindow window) => [
   window.startYear,
   window.peakYear,
   window.endYear,
@@ -68,7 +68,7 @@ void main() {
     test('the window keeps denominationKey and tablesVersion both ways', () {
       final window = estimateWindow(
         const WineFacts(name: 'Pauillac', vintage: 2016),
-      );
+      )!;
       final map = Wine.windowToMap(window);
       expect(map[WindowFields.denominationKey], 'pauillac');
       expect(map[WindowFields.tablesVersion], estimationTablesVersion);

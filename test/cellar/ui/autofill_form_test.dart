@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:vinoozy/cellar/domain/wine.dart' show FieldSource;
 import 'package:vinoozy/catalog/core/wine_catalog.dart';
 import 'package:vinoozy/cellar/cellar_actions.dart';
 import 'package:vinoozy/cellar/domain/wine_draft.dart';
@@ -409,7 +410,10 @@ void main() {
       await tester.pumpAndSettle();
       await tester.enterText(key('add-wine-name-field'), 'Barolo');
       await save(tester);
-      expect(saved.single.level, isNull);
+      // wine-style-profiles BR4.3: the level is always preselected, saved
+      // as automatic ("Buono" for a Barolo, BR4.2).
+      expect(saved.single.level, WineLevel.good);
+      expect(saved.single.levelSource, FieldSource.auto);
     });
   });
 
@@ -422,7 +426,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(key('level-preview'), findsOneWidget);
       await save(tester);
-      expect(saved.single.level, isNull);
+      // wine-style-profiles BR4.3: not touched = the preselection, auto.
+      expect(saved.single.level, WineLevel.good);
+      expect(saved.single.levelSource, FieldSource.auto);
     });
 
     testWidgets('a qualifier in the name suggests "Da invecchiamento"; Save '
@@ -452,9 +458,11 @@ void main() {
       expect(find.text(l10n.levelSuggested), findsOneWidget);
       await tester.enterText(key('add-wine-name-field'), 'Chianti');
       await tester.pumpAndSettle();
-      expect(find.text(l10n.levelSuggested), findsNothing);
+      // wine-style-profiles BR4.3: "aging" goes with the qualifier; the
+      // preselection of the Chianti ("Buono") stays suggested.
+      expect(find.text(l10n.levelSuggestedReason('Riserva')), findsNothing);
       await save(tester);
-      expect(saved.single.level, isNull);
+      expect(saved.single.level, WineLevel.good);
     });
 
     testWidgets('"Nessuno" turns the suggestion off for good; Save saves no '
@@ -514,8 +522,91 @@ void main() {
       );
       await tester.enterText(key('add-wine-name-field'), 'Muga');
       await tester.pumpAndSettle();
-      // The name was written by hand: the text qualifier no longer counts.
-      expect(find.text(l10n.levelSuggested), findsNothing);
+      // The name was written by hand: the text qualifier no longer counts
+      // (wine-style-profiles: the preselected "Buono" may stay suggested).
+      expect(
+        find.text(l10n.levelSuggestedReason('Gran Reserva')),
+        findsNothing,
+      );
+    });
+  });
+
+  group('wine-style-profiles: Type, Style and date in the form', () {
+    testWidgets('Champagne: type and style suggested, the date validated', (
+      tester,
+    ) async {
+      await openForm(tester);
+      await tester.enterText(key('add-wine-name-field'), 'Champagne Brut');
+      await tester.pumpAndSettle();
+      expect(key('type-suggested'), findsOneWidget);
+      await tester.ensureVisible(key('style-classicAge'));
+      await tester.tap(key('style-classicAge'));
+      await tester.pumpAndSettle();
+      // Half a date: refused under the field, nothing saved (NFR4.8).
+      await tester.ensureVisible(key('aging-start-year'));
+      await tester.enterText(key('aging-start-year'), '2024');
+      await tester.pumpAndSettle();
+      await save(tester);
+      expect(saved, isEmpty);
+      expect(find.text(l10n.agingStartIncomplete), findsOneWidget);
+      // Before the vintage: refused too.
+      await tester.ensureVisible(key('aging-start-month'));
+      await tester.tap(key('aging-start-month'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('marzo').last);
+      await tester.pumpAndSettle();
+      await tester.enterText(key('aging-start-year'), '2017');
+      await tester.pumpAndSettle();
+      await save(tester);
+      expect(saved, isEmpty);
+      expect(find.text(l10n.agingStartBeforeVintage), findsOneWidget);
+      await tester.enterText(key('aging-start-year'), '2024');
+      await tester.pumpAndSettle();
+      await save(tester);
+      final draft = saved.single;
+      expect(draft.wineType, 'sparklingClassic');
+      expect(draft.typeSource, FieldSource.auto);
+      expect(draft.style, WineStyle.classicAge);
+      expect(draft.styleSource, FieldSource.user);
+      expect(draft.agingStart?.year, 2024);
+      expect(draft.agingStart?.month, 3);
+    });
+
+    testWidgets('BR3.2 Prosecco Dolce stays a tank-method sparkling wine', (
+      tester,
+    ) async {
+      await openForm(tester);
+      await tester.enterText(key('add-wine-name-field'), 'Prosecco Dolce');
+      await tester.pumpAndSettle();
+      await save(tester);
+      expect(saved.single.wineType, 'sparklingTank');
+      expect(saved.single.style, WineStyle.tankFresh);
+      expect(saved.single.level, WineLevel.everyday);
+    });
+
+    testWidgets('BR7.3 a type chosen can go back to the suggestion', (
+      tester,
+    ) async {
+      await openForm(tester);
+      await tester.enterText(key('add-wine-name-field'), 'Barolo');
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(const Key('add-wine-type')));
+      await tester.tap(find.byKey(const Key('add-wine-type')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.typeWhite).last);
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.restoreSuggestion), findsWidgets);
+      await tester.ensureVisible(key('type-restore'));
+      await tester.tap(
+        find.descendant(
+          of: key('type-restore'),
+          matching: find.text(l10n.restoreSuggestion),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await save(tester);
+      expect(saved.single.wineType, 'redStructured');
+      expect(saved.single.typeSource, FieldSource.auto);
     });
   });
 

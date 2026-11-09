@@ -9,8 +9,11 @@ The wines Vinoozy recognises without a network when it reads a label
 - `wines.jsonl.gz`: one wine per line (JSON with short keys: `b` barcode,
   `n` name, `p` producer, `t` type, `d` denomination, `c` country ISO code,
   `v` vintage), gzip-compressed. Only public product data, no personal data.
-- `manifest.json`: format version, export date, number of wines, source and
-  licence.
+  Format 2 (wine-style-profiles BR9.2): `t` is the Type preselected by
+  `classifyWine` of the estimation package, `l` the Level and `s` the Style
+  it preselects; products that are not wine are left out.
+- `manifest.json`: format version, export date, number of wines, source,
+  licence and `classifiedTypeShare`, the share of wines with a Type.
 - `LICENSE`: ODbL 1.0 for the database, DbCL 1.0 for its contents.
 
 ## Source
@@ -19,9 +22,10 @@ The wines Vinoozy recognises without a network when it reads a label
   published for bulk downloads (never the search API page by page).
 - Export date: see `exportDate` in `manifest.json`.
 - Current content: **the real export** of 2026-11-07
-  (`en.openfoodfacts.org.products.csv.gz`, 4,899,177 products), built on
-  2026-11-08: 15,616 wines, `wines.jsonl.gz` of 339,982 bytes (1,254,545
-  bytes uncompressed). Its manifest says `"source": "Open Food Facts"` with
+  (`en.openfoodfacts.org.products.csv.gz`, 4,899,177 products), built again
+  on 2026-11-09 in format 2: 15,490 wines (176 more products left out as
+  not wine), 84.22% with a Type, `wines.jsonl.gz` of 385,466 bytes
+  (1,789,829 bytes uncompressed). Its manifest says `"source": "Open Food Facts"` with
   the ODbL licence, and `tool/check_wine_db_release.sh` passes on it.
 - A database built from the hand-written sample
   (`tool/fixtures/off_wines_sample.csv`) says `"source": "sample"` and has

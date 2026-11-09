@@ -43,6 +43,14 @@ class AboutScreen extends ConsumerWidget {
         l10n.aboutDbDate(
           DateFormat.yMMMMd(language).format(ready.manifest.exportDate),
         ),
+        // wine-style-profiles NFR6.1: the share with a Type (format 2).
+        if (ready.manifest.classifiedTypeShare case final share?)
+          l10n.aboutDbClassified(
+            NumberFormat.decimalPatternDigits(
+              locale: language,
+              decimalDigits: 1,
+            ).format(share * 100),
+          ),
       ],
       AsyncData(value: WineDbUnavailable()) ||
       AsyncError() => [l10n.aboutDbUnavailable],

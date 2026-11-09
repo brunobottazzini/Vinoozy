@@ -139,8 +139,15 @@ void main() {
     test('an aging qualifier suggests it, whatever the case', () {
       expect(agingQualifierIn('Chianti Classico Riserva'), Qualifier.riserva);
       expect(agingQualifierIn('RIOJA GRAN RESERVA'), Qualifier.granReserva);
-      expect(agingQualifierIn('Chablis 1er Cru'), Qualifier.premierCru);
-      expect(agingQualifierIn('Riesling Spätlese'), Qualifier.spatlese);
+      expect(agingQualifierIn('Mosel Beerenauslese'), Qualifier.beerenauslese);
+    });
+
+    test('Premier Cru, Reserva, Spätlese do not suggest it (BR4.4)', () {
+      // wine-style-profiles BR4.4 (owner decision R-01): their own offsets
+      // already lengthen the window and the level is absolute.
+      expect(agingQualifierIn('Chablis 1er Cru'), isNull);
+      expect(agingQualifierIn('Riesling Spätlese'), isNull);
+      expect(agingQualifierIn('Rioja Reserva'), isNull);
     });
 
     test('the most specific qualifier wins (BR1.8)', () {

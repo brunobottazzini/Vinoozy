@@ -255,6 +255,9 @@ void main() {
         'referenceYearOutOfRange',
         'missingReferenceYear',
         'invalidWindow',
+        // wine-style-profiles BR8.2, BR6.10.
+        'monthOutOfRange',
+        'invalidAgingStart',
       ]);
     });
   });

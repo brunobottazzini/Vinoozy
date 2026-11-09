@@ -61,7 +61,7 @@
       "id": "fr-chablis-premier-cru",
       "lang": "fr",
       "text": "Domaine William Fèvre\nCHABLIS PREMIER CRU\nMontmains\nAppellation Chablis Premier Cru Contrôlée\n2020\nMis en bouteille au domaine",
-      "expected": {"name": "Chablis Premier Cru Montmains", "producer": "Domaine William Fèvre", "denomination": "Chablis", "vintage": 2020, "wineType": "white", "country": "FR", "region": "Bourgogne", "suggestedLevel": "aging"}
+      "expected": {"name": "Chablis Premier Cru Montmains", "producer": "Domaine William Fèvre", "denomination": "Chablis", "vintage": 2020, "wineType": "white", "country": "FR", "region": "Bourgogne"}
     },
     {
       "id": "fr-cremant-alsace",
@@ -176,7 +176,7 @@
       "id": "de-donnhoff-spatlese",
       "lang": "de",
       "text": "Dönnhoff\nRiesling Spätlese\nNahe\n2019\nGutsabfüllung",
-      "expected": {"name": "Riesling Spätlese", "producer": "Dönnhoff", "denomination": "Nahe", "vintage": 2019, "wineType": "white", "country": "DE", "region": "Nahe", "suggestedLevel": "aging"}
+      "expected": {"name": "Riesling Spätlese", "producer": "Dönnhoff", "denomination": "Nahe", "vintage": 2019, "wineType": "white", "country": "DE", "region": "Nahe"}
     },
     {
       "id": "de-prum-kabinett",

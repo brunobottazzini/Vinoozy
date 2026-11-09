@@ -26,6 +26,12 @@ import 'wine_labels.dart';
 /// origin of the estimate ([EstimateSourceLine]), and with an owner's
 /// correction "corrected by you" instead of the notice, with the app
 /// estimate under it; "Correct" and "Restore estimate" for who can edit.
+///
+/// wine-style-profiles (BR5.5, BR6.4-BR6.6, BR8.3): a window in months shows
+/// months ("marzo 2027"); without a peak there is no "At its best" line nor
+/// peak; without an end "Ready, no end estimated" and a bar open on the
+/// right; the origin names the profile, and a months window counted from
+/// the date added invites to add the disgorgement or bottling date.
 class IdealMomentCard extends StatelessWidget {
   const IdealMomentCard({
     super.key,
@@ -68,6 +74,9 @@ class IdealMomentCard extends StatelessWidget {
       color: scheme.onSurfaceVariant,
     );
     final override = windowOverride;
+    final dates = window == null
+        ? (start: '', peak: null, end: null)
+        : windowDates(context, window);
     return Card(
       key: const Key('window-card'),
       child: Padding(
@@ -105,9 +114,11 @@ class IdealMomentCard extends StatelessWidget {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Text(
-                    status == StatusFilter.pastWindow
-                        ? l10n.uxIdealUntilPast('${window.endYear}')
-                        : l10n.uxIdealUntil('${window.endYear}'),
+                    dates.end == null
+                        ? l10n.windowNoEnd
+                        : status == StatusFilter.pastWindow
+                        ? l10n.uxIdealUntilPast(dates.end!)
+                        : l10n.uxIdealUntil(dates.end!),
                     key: const Key('ideal-until'),
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
@@ -117,7 +128,10 @@ class IdealMomentCard extends StatelessWidget {
                 ],
               ),
               Text(
-                l10n.uxIdealBest('${window.startYear}', '${window.endYear}'),
+                l10n.uxIdealBest(
+                  dates.start,
+                  dates.end ?? l10n.windowNoEndShort,
+                ),
                 key: const Key('ideal-best'),
                 style: muted,
               ),
@@ -130,9 +144,17 @@ class IdealMomentCard extends StatelessWidget {
                 spacing: 16,
                 runSpacing: 4,
                 children: [
-                  Text('${l10n.windowStartLabel}: ${window.startYear}'),
-                  Text('${l10n.windowPeakLabel}: ${window.peakYear}'),
-                  Text('${l10n.windowEndLabel}: ${window.endYear}'),
+                  Text('${l10n.windowStartLabel}: ${dates.start}'),
+                  // BR6.4: a peak not estimated is not shown.
+                  if (dates.peak != null)
+                    Text(
+                      '${l10n.windowPeakLabel}: ${dates.peak}',
+                      key: const Key('ideal-peak'),
+                    ),
+                  Text(
+                    '${l10n.windowEndLabel}: '
+                    '${dates.end ?? l10n.windowNoEndShort}',
+                  ),
                 ],
               ),
               const SizedBox(height: 4),
@@ -152,15 +174,27 @@ class IdealMomentCard extends StatelessWidget {
               ),
               if (override != null && _withoutOverride != null)
                 Text(
-                  l10n.overrideAppEstimate('${_withoutOverride!.endYear}'),
+                  l10n.overrideAppEstimate(
+                    windowDates(context, _withoutOverride!).end ??
+                        l10n.windowNoEndShort,
+                  ),
                   key: const Key('override-app-estimate'),
                   style: muted,
                 ),
               EstimateSourceLine(window: estimate.baseWindow ?? window),
+              if (_entryDateHint(l10n, estimate.baseWindow ?? window)
+                  case final hint?)
+                Text(hint, key: const Key('ideal-entry-date'), style: muted),
               if (level case final level?)
                 Text(
                   l10n.levelDetail(levelLabel(l10n, level)),
                   key: const Key('ideal-level'),
+                  style: muted,
+                ),
+              if (level != null && !levelChangesWindow(window))
+                Text(
+                  l10n.levelNoEffect,
+                  key: const Key('ideal-level-no-effect'),
                   style: muted,
                 ),
               if (onCorrect != null || (onRestore != null && override != null))
@@ -200,6 +234,17 @@ class IdealMomentCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// BR5.5, BR8.3: a months window counted from the date the wine was
+  /// added invites to add its date.
+  static String? _entryDateHint(AppLocalizations l10n, DrinkingWindow window) {
+    if (!window.inMonths || !window.anchorFallback) return null;
+    return switch (window.anchor) {
+      AgingAnchor.disgorgement => l10n.estimateFromEntryDateDisgorgement,
+      AgingAnchor.bottling => l10n.estimateFromEntryDateBottling,
+      _ => null,
+    };
   }
 
   StatusFilter _statusOf(DrinkingWindow? window) {
@@ -250,18 +295,31 @@ class WindowBar extends StatelessWidget {
   final DrinkingWindow window;
   final DateTime today;
 
+  int get _today => monthIndex(today.year, today.month);
+
+  /// The end shown: the window's end, or for an open window two years after
+  /// the later of its start and today (BR6.5: open on the right).
+  int get _end => window.endIndex ?? math.max(window.startIndex, _today) + 24;
+
+  /// First and last month shown: one year of margin on each side and today
+  /// always inside (wine-style-profiles BR6.1: months for every window).
+  ({int from, int to}) get monthRange => (
+    from: math.min(window.startIndex, _today) - 12,
+    to: math.max(_end, _today) + 12,
+  );
+
   /// First and last year shown.
   ({int from, int to}) get range => (
-    from: math.min(window.startYear, today.year) - 1,
-    to: math.max(window.endYear, today.year) + 1,
+    from: monthOfIndex(monthRange.from).year,
+    to: monthOfIndex(monthRange.to).year,
   );
 
   /// Position of today on the bar, from 0 (left) to 1 (right).
   double get todayFraction {
-    final (:from, :to) = range;
-    final years = to - from + 1;
-    final dayOfYear = today.difference(DateTime(today.year)).inDays;
-    return ((today.year - from) + dayOfYear / 365) / years;
+    final (:from, :to) = monthRange;
+    final months = to - from + 1;
+    final day = (today.day - 1) / 31;
+    return ((_today - from) + day) / months;
   }
 
   @override
@@ -269,15 +327,18 @@ class WindowBar extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     final colors = StatusColors.of(context);
-    final (:from, :to) = range;
-    final before = window.startYear - from;
-    final inside = window.endYear - window.startYear + 1;
-    final after = to - window.endYear;
+    final (:from, :to) = monthRange;
+    final open = window.endIndex == null;
+    final before = window.startIndex - from;
+    final inside = _end - window.startIndex + 1 + (open ? to - _end : 0);
+    final after = open ? 0 : to - _end;
+    final dates = windowDates(context, window);
     final legend = Theme.of(context).textTheme.labelSmall
         ?.copyWith(color: scheme.onSurfaceVariant);
+    final years = range;
     return Semantics(
       key: const Key('ideal-bar'),
-      label: l10n.uxIdealBar('${window.startYear}', '${window.endYear}'),
+      label: l10n.uxIdealBar(dates.start, dates.end ?? l10n.windowNoEndShort),
       excludeSemantics: true,
       child: Column(
         children: [
@@ -304,6 +365,7 @@ class WindowBar extends StatelessWidget {
                                 child: ColoredBox(color: colors.waitingChip),
                               ),
                             Expanded(
+                              key: open ? const Key('ideal-bar-open') : null,
                               flex: inside,
                               child: ColoredBox(color: colors.readyChip),
                             ),
@@ -333,15 +395,16 @@ class WindowBar extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('$from', style: legend),
+              Text('${years.from}', style: legend),
               Flexible(
                 child: Text(
-                  '${window.startYear} – ${window.endYear}',
+                  '${windowDates(context, window, short: true).start} – '
+                  '${windowDates(context, window, short: true).end ?? '…'}',
                   textAlign: TextAlign.center,
                   style: legend,
                 ),
               ),
-              Text('$to', style: legend),
+              Text('${years.to}', style: legend),
             ],
           ),
         ],

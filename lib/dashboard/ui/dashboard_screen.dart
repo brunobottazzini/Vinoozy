@@ -1,3 +1,5 @@
+import '../../app/ui/brand_footer.dart';
+
 import 'dart:developer' show Timeline;
 
 import 'package:estimation/estimation.dart';
@@ -16,6 +18,7 @@ import '../dashboard_providers.dart';
 import '../domain/dashboard_summary.dart';
 import 'chart_cards.dart';
 import 'drink_soon_section.dart';
+import 'to_confirm_card.dart';
 
 /// The Dashboard, first screen after sign-in (u5-dashboard FR5.1, US5.1,
 /// US5.2). Read only: it shows what [dashboardSummaryProvider] computed
@@ -157,6 +160,11 @@ class _DashboardContentState extends State<DashboardContent> {
                 onOpenWine: widget.onOpenWine,
                 onOpenStatus: widget.onOpenStatus,
               ),
+              // wine-style-profiles BR6.7.
+              ToConfirmCard(
+                rows: summary.toConfirm,
+                onOpenWine: widget.onOpenWine,
+              ),
               StatusChartCard(
                 summary: summary,
                 onOpenStatus: widget.onOpenStatus,
@@ -169,6 +177,8 @@ class _DashboardContentState extends State<DashboardContent> {
                 byType: summary.byType,
                 byRegion: summary.byRegion,
               ),
+              // Studio logo and app version at the bottom of the Dashboard.
+              const BrandFooter(),
             ],
           ),
         ),

@@ -207,6 +207,24 @@ Oggi la tabella generata delle denominazioni (`packages/estimation/lib/src/gener
 - [ ] **Risposta entro 2 secondi** (FR2.8, NFR4.17, BR7.23, BR7.24): app appena aperta (base offline ancora chiusa), "Incolla da Lens" con il testo di un'etichetta copiato da Lens. Il pulsante mostra subito "Leggo il testo…" e un secondo tocco non fa nulla; entro 2 secondi compare il modulo compilato, la proposta del vino o la prima domanda della guida. Ripeti 5 volte, anche con la rete mobile lenta. Tempi: ______.
 - [ ] **Conferma guidata** (FR7, NFR4.20, NFR4.22): con il testo di Cascina Castlet ("CASCINA CASTLET" / "Barbera d'Asti Superiore", senza annata) la guida chiede "Domanda 1 di 3": prova "Sì", "No, un'altra", "Modifica", "Salta", la composizione toccando le parole e la ruota dell'annata (anche il tocco sull'anno al centro). Poi: "Indietro" chiude la scheda prima del modulo; "Conferma guidata" la riapre; rotazione e ritorno dal secondo piano riprendono alla stessa domanda; TalkBack legge "Domanda N di T: …" e le parole come pulsanti. Nessun salto di fotogrammi visibile tra una domanda e l'altra. Esito: ______.
 
+## 1-undecies. Profili di stile e classificazione automatica (wine-style-profiles, FR1–FR4, NFR2–NFR6, BR10.3)
+
+### Studio, mappa e base da rigenerare (D1, D9, FR2.5)
+
+- [ ] **Studio come base di dati**: se lo studio Excel cambia, riconvertilo una volta con `python3 -I tool/convert_study.py <studio.xlsx>` (scrive `tool/data/study/study_db.json`), poi rigenera la mappa con `dart run tool/build_profile_map.dart`. `test/tool/build_profile_map_test.dart` verifica che la tabella generata coincida con la fixture del Functional Design.
+- [ ] **Base offline classificata** (formato 2): `dart run tool/build_wine_db.dart --input .cache/off/<export>.csv.gz --output assets/wine_db/ --export-date <data>`; il manifest registra `classifiedTypeShare` (obiettivo 90%, accettato dal proprietario a partire dall'84%). `tool/check_wine_db_release.sh` deve passare.
+
+### Regole prima della build (BR10.3)
+
+- [ ] **Prima le regole**: le regole di questa versione accettano `style`, `typeSource`, `levelSource`, `styleSource`, `agingStartMonth`, `migrationVersion` e le finestre in mesi. Ordine: test delle regole nell'emulatore → **OK del proprietario** → pubblicazione con `firebase-deploy.yml` (§3) → build sul Test interno. Con le regole vecchie la migrazione una tantum viene rifiutata (3 tentativi, poi attende) e i nuovi vini non si salvano. `promote.yml` controlla la funzione `style-profiles` in `RULES_FEATURES`.
+- [ ] **Limite di 1000 espressioni**: le regole di un vino sono vicine al limite di Firestore (l'app scrive in due update la modifica di un vino con riscontro); dopo ogni modifica di `firestore.rules` esegui i test "expression budget" di `test/rules/style_profiles.rules.test.mjs`.
+
+### Prove sul telefono
+
+- [ ] Uno Champagne scritto a mano propone Tipologia e Stile "✦ suggerito"; con "Da evoluzione" e la sboccatura di marzo 2024 il dettaglio mostra "marzo 2027". Esito: ______.
+- [ ] Dopo l'aggiornamento i vini già in cantina hanno lo stile "✦ suggerito", la Tipologia e il Livello salvati restano, un Barolo "Buono" resta 8/15/30. Esito: ______.
+- [ ] Un vino "Stile da confermare": l'avviso compare nel dettaglio e nel cruscotto ("Da confermare"); scelto lo stile, sparisce. Esito: ______.
+
 ## 2. Data Safety in Play Console (NFR8.1–NFR8.3)
 
 Da aggiornare se cambiano i dati raccolti. Per U1 la dichiarazione è:

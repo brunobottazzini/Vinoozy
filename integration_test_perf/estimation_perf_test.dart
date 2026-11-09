@@ -111,9 +111,12 @@ List<WineFacts> _syntheticWines() => List.generate(_wineCount, (i) {
 void _round(List<WineFacts> wines, DateTime today) {
   for (final wine in wines) {
     final window = estimateWindow(wine);
-    statusOf(window, today);
+    // wine-style-profiles BR2.9: "To estimate" has no window.
+    if (window != null) {
+      statusOf(window, today);
+      needsRefinement(window);
+    }
     pairingsFor(wine);
-    needsRefinement(window);
   }
 }
 

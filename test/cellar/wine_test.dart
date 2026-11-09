@@ -86,18 +86,17 @@ void main() {
       expect(Wine.fromMap('w1', document(window: [2024, 2034])).window, isNull);
     });
 
-    test('incomplete window: to estimate', () {
-      for (final missing in [
-        WindowFields.startYear,
-        WindowFields.peakYear,
-        WindowFields.endYear,
-      ]) {
+    test('incomplete window: to estimate without startYear', () {
+      final raw = validWindow()..remove(WindowFields.startYear);
+      expect(Wine.fromMap('w1', document(window: raw)).window, isNull);
+    });
+
+    test('wine-style-profiles D2: a window without peak or end is read', () {
+      for (final missing in [WindowFields.peakYear, WindowFields.endYear]) {
         final raw = validWindow()..remove(missing);
-        expect(
-          Wine.fromMap('w1', document(window: raw)).window,
-          isNull,
-          reason: 'without $missing',
-        );
+        final window = Wine.fromMap('w1', document(window: raw)).window;
+        expect(window, isNotNull, reason: 'without $missing');
+        expect(window!.startYear, 2024);
       }
     });
 
@@ -106,12 +105,15 @@ void main() {
         Wine.windowFrom(validWindow()..[WindowFields.startYear] = '2024'),
         isNull,
       );
+      // wine-style-profiles D2: a peak that is not an integer reads as
+      // "not estimated", the window stays.
       expect(
-        Wine.windowFrom(validWindow()..[WindowFields.peakYear] = 2028.5),
+        Wine.windowFrom(validWindow()..[WindowFields.peakYear] = 2028.5)
+            ?.peakYear,
         isNull,
       );
       expect(
-        Wine.windowFrom(validWindow()..[WindowFields.endYear] = null),
+        Wine.windowFrom(validWindow()..[WindowFields.endYear] = null)?.endYear,
         isNull,
       );
     });

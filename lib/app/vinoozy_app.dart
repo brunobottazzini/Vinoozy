@@ -11,15 +11,24 @@ import '../sharing/ui/shared_cellar_notice.dart';
 import '../sync/sync_error_bus.dart';
 import 'locale_resolution.dart';
 import 'providers.dart';
+import 'ui/brand_splash.dart';
 import 'theme.dart';
 
 /// Root widget: theme and language follow the phone (BR5.1, BR5.2), and the
 /// sync error listener sits at the root so its messages appear on any screen,
 /// also after the form has closed (NFR6.2).
 class VinoozyApp extends StatelessWidget {
-  const VinoozyApp({super.key, this.home = const AccountGateView()});
+  const VinoozyApp({
+    super.key,
+    this.home = const AccountGateView(),
+    this.showBrandSplash = false,
+  });
 
   final Widget home;
+
+  /// Shows the Bottazzini Softworks intro over [home] at start. Only the real
+  /// start-up turns it on (never tests or the E2E build).
+  final bool showBrandSplash;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +44,9 @@ class VinoozyApp extends StatelessWidget {
       supportedLocales: appLocales,
       localeListResolutionCallback: (preferred, _) =>
           resolveAppLocale(preferred),
-      home: SyncEventListener(child: home),
+      home: showBrandSplash
+          ? BrandSplash(child: SyncEventListener(child: home))
+          : SyncEventListener(child: home),
     );
   }
 }

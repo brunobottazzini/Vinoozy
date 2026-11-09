@@ -63,7 +63,9 @@ jobs:
           # BR5.3, NFR1.5): `level`, `windowOverride` and the new window
           # values (`grape`, the foreign qualifiers, `denominationKey`,
           # `tablesVersion`), which the earlier rules refuse.
-          RULES_FEATURES: sharing cellar account origin level-override
+          # wine-style-profiles (BR10.3): style, sources, the bottling or
+          # disgorgement month, migrationVersion and the windows in months.
+          RULES_FEATURES: sharing cellar account origin level-override style-profiles
         run: |
           title="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/firebase-deploy.yml/runs?status=success&per_page=1" \
             --jq '.workflow_runs[0].display_title // empty')"

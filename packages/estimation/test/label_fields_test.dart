@@ -272,7 +272,8 @@ void main() {
       'Napa Valley Reserve': Qualifier.reserva,
       'Rioja Crianza': Qualifier.crianza,
       'Soave Superiore': Qualifier.superiore,
-      'Riesling Beerenauslese': Qualifier.auslese,
+      // wine-style-profiles BR2.6: BA is its own category, never Auslese.
+      'Riesling Beerenauslese': Qualifier.beerenauslese,
       'Riesling Spätlese': Qualifier.spatlese,
       'Riesling Kabinett': Qualifier.kabinett,
       'Late Bottled Vintage Port': Qualifier.lbv,
@@ -285,7 +286,9 @@ void main() {
         expect(fields.qualifier, qualifier);
         expect(
           fields.suggestedLevel,
-          agingQualifiers.contains(qualifier) ? WineLevel.aging : isNull,
+          suggestsAgingLevel(qualifier, fields.denominationKey)
+              ? WineLevel.aging
+              : isNull,
         );
       });
     }

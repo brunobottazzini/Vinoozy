@@ -2,6 +2,7 @@ import 'package:estimation/estimation.dart';
 import 'package:flutter/material.dart';
 
 import '../../app/ui/country_flag.dart';
+import '../../cellar/ui/wine_labels.dart' show formatMonthShort;
 import '../../l10n/app_localizations.dart';
 import '../domain/dashboard_summary.dart';
 import 'status_icons.dart';
@@ -89,7 +90,11 @@ class _DrinkSoonTile extends StatelessWidget {
       row.vintage?.toString() ?? l10n.noVintage,
       ?row.producer,
       l10n.bottleCount(row.quantity),
-      l10n.drinkSoonUntil('${row.endYear}'),
+      // wine-style-profiles BR6.7: "by Mar 2027" for a window in months.
+      if (row.endMonth case final month?)
+        l10n.windowDrinkWithin(formatMonthShort(context, row.endYear, month))
+      else
+        l10n.drinkSoonUntil('${row.endYear}'),
     ];
     final country = row.country;
     return ListTile(
