@@ -1,0 +1,92 @@
+/* Account deletion page (u8-account NFR3: contrast >= 4.5:1, 48 px targets,
+   text that reflows at 200%). Kept in a file: the CSP forbids inline styles. */
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff;
+  --text: #1c1b1f;
+  --muted: #49454f;
+  --accent: #6d1b2c;
+  --on-accent: #ffffff;
+  --error: #b3261e;
+  --border: #79747e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1b1f;
+    --text: #e6e1e5;
+    --muted: #cac4d0;
+    --accent: #ffb3b8;
+    --on-accent: #3e0012;
+    --error: #f2b8b5;
+    --border: #938f99;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 1rem/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+nav { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+
+a { color: var(--accent); }
+
+h1 { font-size: 1.75rem; line-height: 1.25; }
+
+button, input {
+  font: inherit;
+  min-height: 48px;
+}
+
+button {
+  padding: 0.5rem 1.25rem;
+  border-radius: 1.5rem;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+button.danger {
+  background: var(--error);
+  border-color: var(--error);
+  color: var(--bg);
+}
+
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.message { font-weight: 600; }
+.message.error { color: var(--error); }
+
+#progress li[data-state="done"]::marker { content: "✓ "; }
+#progress li[data-state="current"] { font-weight: 700; }
+
+.actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+
+[hidden] { display: none !important; }
