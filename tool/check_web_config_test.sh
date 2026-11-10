@@ -7,9 +7,8 @@
 #   tool/fixtures/web_config/todo_double_quotes.js  TODO in double quotes
 #   tool/fixtures/web_config/emulators.js           emulators set, empty
 #                                                   reCAPTCHA site key
-#   docs/account-deletion/firebase-config.js        the placeholders in the
-#                                                   repository: fails until
-#                                                   the owner fills them
+#   tool/fixtures/web_config/placeholders.js       the unfilled configuration;
+#                                                   independent of real setup
 #
 # Usage: tool/check_web_config_test.sh
 set -euo pipefail
@@ -54,7 +53,7 @@ fi
 
 expect_fail "$fixtures/todo_double_quotes.js" "firebaseConfig.apiKey is empty or still TODO"
 expect_fail "$fixtures/emulators.js" "emulators must be null" "recaptchaSiteKey is empty or still TODO"
-expect_fail docs/account-deletion/firebase-config.js \
+expect_fail "$fixtures/placeholders.js" \
   "firebaseConfig.apiKey is empty or still TODO" \
   "firebaseConfig.appId is empty or still TODO" \
   "recaptchaSiteKey is empty or still TODO"

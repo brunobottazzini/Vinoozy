@@ -7,6 +7,7 @@ https://content-firebaseappcheck.googleapis.com
 https://firebaseappcheck.googleapis.com
 https://firestore.googleapis.com
 https://identitytoolkit.googleapis.com
+https://recaptcha.google.com/recaptcha/
 https://securetoken.googleapis.com
 https://vinoozy-d6f45.firebaseapp.com
 https://www.google.com/recaptcha/

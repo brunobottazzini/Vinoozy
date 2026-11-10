@@ -23,7 +23,7 @@ Data: 2026-11-10. Decisioni: Q1 = A (test interno), Q2 = B (due commit), Q3 = A 
 
 Il primo commit da solo non si compila (usa testi che arrivano col secondo). Per questo i due commit vanno uniti nella stessa PR.
 
-## Da fare, a cura del proprietario
+## Piano iniziale, prima dell'aggiornamento di main
 
 Su questo Mac non c'è la CLI `gh`, quindi PR e merge non sono eseguibili da qui.
 
@@ -34,6 +34,35 @@ Su questo Mac non c'è la CLI `gh`, quindi PR e merge non sono eseguibili da qui
 5. **Pubblicare le regole** con `firebase-deploy.yml`, usando il commit di merge o un tag `v*`, e approvare in `firebase-prod`. Va fatto prima di qualsiasi promozione: `promote.yml` la blocca finché le regole della build non sono quelle pubblicate (`RULES_FEATURES` ora comprende `freemium`).
 6. **Smoke test** sul telefono con la build del test interno (smoke-test-results.md).
 7. Produzione (`promote.yml`), Blaze, funzioni e Play Console: più avanti, secondo deployment-strategy.md.
+
+## Verifica operativa del 2026-11-10
+
+Questo aggiornamento supera lo stato del piano iniziale sopra.
+
+| Passo | Stato verificato |
+|---|---|
+| Codice su main | `105c0ba432ad39d1fc05814c3150ab6a3ac80504`, con entrambi i commit sopra e una correzione al test web. Nessuna PR del ramo trovata; il metodo di integrazione non è attestato da questa verifica |
+| CI su main | [Run 42828170872](https://github.com/brunobottazzini/Vinoozy/actions/runs/42828170872): `rules`, `estimation` e `format` riusciti; `secrets` e `analyze` falliti; `unit` ed `e2e` ancora in corso al controllo. La validazione locale verde non equivale alla CI verde |
+| Ambiente firebase-prod | Creato, perché mancava. Revisore obbligatorio `brunobottazzini`; bypass amministrativo disabilitato; distribuzione limitata al ramo `main` e ai tag `v*` |
+| Progetto Firebase | Variabile di ambiente `FIREBASE_PROD_PROJECT_ID=vinoozy-d6f45` salvata |
+| Workflow delle regole | [Run 42829140441](https://github.com/brunobottazzini/Vinoozy/actions/runs/42829140441), avviato manualmente da `main` con `ref=105c0ba432ad39d1fc05814c3150ab6a3ac80504`; `verify-ref` e `rules` riusciti; job `deploy` in attesa della revisione di `firebase-prod` |
+| Autenticazione del deploy | Mancano `WIF_PROVIDER` e `WIF_SERVICE_ACCOUNT` sia nell'ambiente sia nelle variabili del repository. Controllata anche Google Cloud con l'account proprietario: nessun pool Workload Identity configurato e nessun account dedicato al deploy; presente solo l'account Firebase Admin SDK. Configurazione preparata nei moduli della console, non salvata, in attesa del consenso ai nuovi accessi |
+| Build interna e produzione | Nessuna nuova build interna verificata. Smoke test sul telefono ancora da eseguire; nessuna promozione avviata |
+
+La configurazione WIF deve essere completata prima che il proprietario approvi il job `deploy` di `firebase-prod`. L'avvio del workflow non attesta che le regole siano pubblicate: serve l'esito positivo del job `deploy`. Le dichiarazioni Play Console e la revisione dei testi privacy/cancellazione restano da completare prima della produzione. Blaze, funzioni, acquisti, limite e annunci non sono stati attivati.
+
+### Accesso proposto, da approvare prima della creazione
+
+- Progetto: `vinoozy-d6f45` (`742143174654`).
+- Account dedicato: `github-firestore-deployer@vinoozy-d6f45.iam.gserviceaccount.com`, senza chiavi JSON.
+- Ruoli sul solo progetto: `roles/firebaserules.admin`, `roles/datastore.indexAdmin`, `roles/firebase.viewer`, `roles/serviceusage.serviceUsageConsumer`, come da `docs/firebase-setup.md` §4.
+- Pool: `github-actions`; provider OIDC: `vinoozy-rules`, emittente `https://token.actions.githubusercontent.com`, pubblico predefinito del provider.
+- Mapping: `google.subject=assertion.sub`, `attribute.environment=assertion.environment`.
+- Condizione preparata: repository `brunobottazzini/Vinoozy`, ID immutabile `1445706433`, proprietario ID `4460234`, ambiente `firebase-prod`, evento `workflow_dispatch`, ramo `main` o tag `v*`, solo workflow `.github/workflows/firebase-deploy.yml`.
+- Il ruolo `roles/iam.workloadIdentityUser` va concesso sul solo account dedicato al principale `principalSet://iam.googleapis.com/projects/742143174654/locations/global/workloadIdentityPools/github-actions/attribute.environment/firebase-prod`.
+- Variabili GitHub da salvare dopo la creazione: `WIF_PROVIDER=projects/742143174654/locations/global/workloadIdentityPools/github-actions/providers/vinoozy-rules`, `WIF_SERVICE_ACCOUNT=github-firestore-deployer@vinoozy-d6f45.iam.gserviceaccount.com`.
+
+I moduli di creazione dell'account e del provider sono compilati, ma i pulsanti di creazione/salvataggio non sono stati premuti. Il consenso richiesto riguarda questi nuovi accessi; l'approvazione del deploy delle regole resta un passaggio successivo e distinto. Per le funzioni, il provider dovrà essere rivalutato separatamente: quello proposto ora accetta solo il workflow delle regole.
 
 ## Rollback
 

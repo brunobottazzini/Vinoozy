@@ -7,7 +7,7 @@
 // choice, monitoring-design.md §5): an error shows its message with
 // "Try again" and the email address as the last resort.
 import { initializeApp } from 'firebase/app';
-import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check';
 import {
   connectAuthEmulator,
   deleteUser,
@@ -67,7 +67,7 @@ function start() {
   const app = initializeApp(firebaseConfig);
   if (recaptchaSiteKey && !String(recaptchaSiteKey).startsWith('TODO')) {
     initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider(recaptchaSiteKey),
+      provider: new ReCaptchaEnterpriseProvider(recaptchaSiteKey),
       isTokenAutoRefreshEnabled: true,
     });
   }
