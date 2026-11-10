@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart' show FirebaseException;
 
 import '../cellar/domain/cellar.dart';
+import 'capacity_rejection.dart';
 
 /// Events about writes that already left the form (NFR6.2): a single stream,
 /// listened to at the app root, so the message appears even after the form
@@ -14,10 +15,19 @@ sealed class SyncEvent {
 /// The cloud refused a write (permission-denied and similar): "Change not
 /// allowed: `name`".
 class WriteRejected extends SyncEvent {
-  const WriteRejected({required this.wineId, required this.wineName});
+  const WriteRejected({
+    required this.wineId,
+    required this.wineName,
+    this.reason,
+  });
 
   final String wineId;
   final String wineName;
+
+  /// Set when the refusal was the capacity limit or a counter conflict
+  /// (freemium-plus FR2.5): the app explains it instead of a generic "not
+  /// allowed".
+  final CapacityRejection? reason;
 }
 
 /// A write failed for a transient reason: "Could not save, try again".
@@ -90,9 +100,15 @@ void reportWriteRejected(
   String? wineId,
   String? wineName,
 }) {
+  final capacity = error is CapacityRejectedException ? error.reason : null;
   if (wineId != null && wineName != null) {
-    bus.publish(WriteRejected(wineId: wineId, wineName: wineName));
+    bus.publish(
+      WriteRejected(wineId: wineId, wineName: wineName, reason: capacity),
+    );
   }
+  // freemium-plus FR2.5: a capacity refusal is the plan of the cellar owner,
+  // never a lost access.
+  if (capacity != null) return;
   final personal = Cellar.personalCellarId(uid);
   if (cellarId != personal &&
       error is FirebaseException &&

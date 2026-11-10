@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../sync/snapshot_meta.dart';
+import '../../usage/cloud_usage_meter.dart';
+import '../../usage/firestore_metering.dart';
 import '../domain/cellar.dart';
 import 'firestore_codec.dart';
 import 'retry.dart';
@@ -27,10 +29,14 @@ class CellarSnapshot {
 
 /// Access to `cellars/{uid}` (logical-components.md: CellarRepository).
 class CellarRepository {
-  CellarRepository({required this._db, this._sleep = realSleep});
+  CellarRepository({required this._db, this._sleep = realSleep, this._meter});
 
   final FirebaseFirestore _db;
   final Sleep _sleep;
+
+  /// freemium-plus FR6.1 (study §7.5): the cellar listener and the setup
+  /// read of the account.
+  final CloudUsageMeter? _meter;
 
   /// Makes sure the personal cellar `cellars/{uid}` exists (BR1.3, NFR4.11).
   ///
@@ -57,6 +63,7 @@ class CellarRepository {
         }),
         sleep: _sleep,
       );
+      _meter?.recordDocument(exists: true);
     } catch (error) {
       throw CellarSetupException(error);
     }
@@ -81,19 +88,20 @@ class CellarRepository {
   /// u7-sharing it is the active cellar: the personal one passes
   /// `Cellar.personalCellarId(uid)`, which is the uid itself.
   Stream<CellarSnapshot> watchCellar(String cellarId) {
-    return _db
-        .doc(cellarPath(cellarId))
-        .snapshots(includeMetadataChanges: true)
-        .map(
-          (snapshot) => CellarSnapshot(
-            cellar: snapshot.exists
-                ? Cellar.fromMap(cellarId, decodeDocument(snapshot.data()))
-                : null,
-            meta: SnapshotMeta(
-              hasPendingWrites: snapshot.metadata.hasPendingWrites,
-              isFromCache: snapshot.metadata.isFromCache,
-            ),
-          ),
-        );
+    return meteredDocumentSnapshots(
+      _db.doc(cellarPath(cellarId)).snapshots(includeMetadataChanges: true),
+      _meter,
+      key: cellarPath(cellarId),
+    ).map(
+      (snapshot) => CellarSnapshot(
+        cellar: snapshot.exists
+            ? Cellar.fromMap(cellarId, decodeDocument(snapshot.data()))
+            : null,
+        meta: SnapshotMeta(
+          hasPendingWrites: snapshot.metadata.hasPendingWrites,
+          isFromCache: snapshot.metadata.isFromCache,
+        ),
+      ),
+    );
   }
 }

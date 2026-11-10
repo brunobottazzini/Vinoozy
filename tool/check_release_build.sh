@@ -13,7 +13,8 @@
 #   1. plain release                 -> every marker must be ABSENT;
 #   2. release + E2E=true, PERF=true -> every marker must be PRESENT
 #      (positive control, proves the check can see them at all).
-# The control build carries both defines, so there are still two builds.
+# The control build carries both defines (since freemium-plus also
+# ENABLE_DEV_CHEATS, see below), so these are still two builds.
 #
 # Since u6-label-recognition (security-design.md §2, cicd-pipeline.md §1),
 # after the plain build it also reads the merged release manifest in clear
@@ -26,10 +27,24 @@
 # It fails when the merged manifest is missing. The plain AAB is kept as
 # build/check_release/app-release.aab for tool/check_app_size.sh.
 #
+# Since freemium-plus (plan Step 19; FR5.1, FR5.7, D6):
+#   - VINOOZY_DEV_CHEATS_PANEL, the marker of the developer panel, must be
+#     absent from the plain release AND from the release built with
+#     --dart-define=ENABLE_DEV_CHEATS=true by mistake (the second build above
+#     carries the flag too: kDevCheatsAvailable is false in every release);
+#   - a third build, --profile with ENABLE_DEV_CHEATS=true, is its positive
+#     control: there the tools exist and the marker must be PRESENT;
+#   - the merged release manifest must declare the Play Billing permission
+#     (com.android.vending.BILLING) and the advertising id permission
+#     (com.google.android.gms.permission.AD_ID), both expected from
+#     in_app_purchase and google_mobile_ads, and the AdMob App ID meta-data.
+#
 # Usage: tool/check_release_build.sh
 set -euo pipefail
 
 markers=("EmulatorGoogleAuthService" "VINOOZY_DASHBOARD_READY" "VINOOZY_E2E_LOCALE")
+dev_marker="VINOOZY_DEV_CHEATS_PANEL"
+profile_aab="build/app/outputs/bundle/profile/app-profile.aab"
 aab="build/app/outputs/bundle/release/app-release.aab"
 so="build/check_release/libapp.so"
 merged_manifest="build/app/intermediates/merged_manifest/release/processReleaseMainManifest/AndroidManifest.xml"
@@ -48,6 +63,19 @@ check_merged_manifest() {
     fi
     echo "merged manifest: $permission absent (ok)"
   done
+  # freemium-plus D6: Play Billing and the advertising id are expected.
+  for permission in com.android.vending.BILLING com.google.android.gms.permission.AD_ID; do
+    if ! grep -Eq "android:name=\"${permission//./\\.}\"" "$merged_manifest"; then
+      echo "check_release_build: FAILED, the merged manifest does not declare $permission" >&2
+      exit 1
+    fi
+    echo "merged manifest: $permission present (expected)"
+  done
+  if ! grep -Eq 'android:name="com\.google\.android\.gms\.ads\.APPLICATION_ID"' "$merged_manifest"; then
+    echo "check_release_build: FAILED, the AdMob APPLICATION_ID meta-data is missing" >&2
+    exit 1
+  fi
+  echo "merged manifest: AdMob APPLICATION_ID meta-data present (ok)"
   # The MainActivity block, from its <activity> to the next </activity>.
   local activity
   activity="$(awk '
@@ -86,20 +114,24 @@ flutter clean >/dev/null
 mkdir -p build/check_release
 
 build_snapshot() {
+  local mode="$1"
+  shift
   local defines=("$@")
-  flutter build appbundle --release --target-platform android-arm64 \
+  local bundle="$aab"
+  [[ "$mode" == profile ]] && bundle="$profile_aab"
+  flutter build appbundle "--$mode" --target-platform android-arm64 \
     --dart-define=FIREBASE_ENV=demo ${defines[@]+"${defines[@]}"} >/dev/null
-  unzip -p "$aab" base/lib/arm64-v8a/libapp.so > "$so"
+  unzip -p "$bundle" base/lib/arm64-v8a/libapp.so > "$so"
   if [[ ! -s "$so" ]]; then
-    echo "check_release_build: libapp.so not found in $aab" >&2
+    echo "check_release_build: libapp.so not found in $bundle" >&2
     exit 2
   fi
 }
 
-build_snapshot
+build_snapshot release
 check_merged_manifest
 cp "$aab" "$plain_aab"
-for marker in "${markers[@]}"; do
+for marker in "${markers[@]}" "$dev_marker"; do
   if grep -a -q "$marker" "$so"; then
     echo "check_release_build: FAILED, the release build contains $marker" >&2
     exit 1
@@ -107,7 +139,8 @@ for marker in "${markers[@]}"; do
   echo "release build: $marker absent (ok)"
 done
 
-build_snapshot --dart-define=E2E=true --dart-define=PERF=true
+build_snapshot release --dart-define=E2E=true --dart-define=PERF=true \
+  --dart-define=ENABLE_DEV_CHEATS=true
 for marker in "${markers[@]}"; do
   if ! grep -a -q "$marker" "$so"; then
     echo "check_release_build: FAILED, positive control could not find $marker" >&2
@@ -115,3 +148,18 @@ for marker in "${markers[@]}"; do
   fi
   echo "E2E+PERF build: $marker present (positive control ok)"
 done
+# FR5.7: a release built with the flag by mistake still has no tools.
+if grep -a -q "$dev_marker" "$so"; then
+  echo "check_release_build: FAILED, a release built with ENABLE_DEV_CHEATS=true contains $dev_marker" >&2
+  exit 1
+fi
+echo "release + ENABLE_DEV_CHEATS=true: $dev_marker absent (ok)"
+
+# FR5.1: positive control of the developer panel marker, a profile build
+# (not release) with the flag, where the tools exist.
+build_snapshot profile --dart-define=ENABLE_DEV_CHEATS=true
+if ! grep -a -q "$dev_marker" "$so"; then
+  echo "check_release_build: FAILED, positive control could not find $dev_marker in the profile build" >&2
+  exit 1
+fi
+echo "profile + ENABLE_DEV_CHEATS=true: $dev_marker present (positive control ok)"

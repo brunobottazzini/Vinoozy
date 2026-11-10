@@ -7,6 +7,8 @@ import '../../account/network_status.dart';
 import '../../app/error_reporter.dart';
 import '../../cellar/data/firestore_codec.dart';
 import '../../cellar/domain/cellar.dart';
+import '../../usage/cloud_usage_meter.dart';
+import '../../usage/firestore_metering.dart';
 import '../domain/invite_validator.dart';
 import '../domain/membership.dart';
 import '../domain/sharing_error.dart';
@@ -52,12 +54,24 @@ class SharingRepository {
     required this._network,
     required this._reporter,
     this._timeout = commitTimeout,
+    this._meter,
   });
 
   /// Longest wait for the server's confirmation (BR1.11).
   static const Duration commitTimeout = Duration(seconds: 10);
 
   final FirebaseFirestore _db;
+
+  /// freemium-plus FR6.1 (study §7.5): the sharing listeners, queries and
+  /// confirmed writes of the account.
+  final CloudUsageMeter? _meter;
+
+  /// Above 0 while [revokeAllForUser] runs: an account deletion is system
+  /// usage, never personal (FR6.4).
+  int _systemDepth = 0;
+
+  UsageScope get _scope =>
+      _systemDepth > 0 ? UsageScope.system : UsageScope.personal;
   final NetworkStatus _network;
   final ErrorReporter _reporter;
   final Duration _timeout;
@@ -67,14 +81,18 @@ class SharingRepository {
   /// The person's own invitations in every state (BR1.4, BR1.14): one query
   /// on the `members` collection group filtered on `inviteeEmail` only, so
   /// the rules can prove every result is theirs (NFR4.5).
-  Stream<MembershipsSnapshot> watchMyMemberships(String email) => _db
-      .collectionGroup('members')
-      .where(
-        MemberFields.inviteeEmail,
-        isEqualTo: InviteValidator.normalizeEmail(email),
-      )
-      .snapshots(includeMetadataChanges: true)
-      .map(
+  Stream<MembershipsSnapshot> watchMyMemberships(String email) =>
+      meteredQuerySnapshots(
+        _db
+            .collectionGroup('members')
+            .where(
+              MemberFields.inviteeEmail,
+              isEqualTo: InviteValidator.normalizeEmail(email),
+            )
+            .snapshots(includeMetadataChanges: true),
+        _meter,
+        key: 'memberships/${InviteValidator.normalizeEmail(email)}',
+      ).map(
         (snapshot) => MembershipsSnapshot(
           memberships: [
             for (final doc in snapshot.docs)
@@ -86,10 +104,12 @@ class SharingRepository {
 
   /// The invitations of [cellarId], for the owner's "People" screen only
   /// (BR1.12, NFR5.1).
-  Stream<List<Membership>> watchCellarMembers(String cellarId) => _db
-      .collection(membersPath(cellarId))
-      .snapshots()
-      .map(
+  Stream<List<Membership>> watchCellarMembers(String cellarId) =>
+      meteredQuerySnapshots(
+        _db.collection(membersPath(cellarId)).snapshots(),
+        _meter,
+        key: membersPath(cellarId),
+      ).map(
         (snapshot) => [
           for (final doc in snapshot.docs)
             ?_membershipOf(doc.reference.path, doc.data()),
@@ -137,8 +157,10 @@ class SharingRepository {
       sensitive: sensitive,
       cellarRef: cellarRef,
       memberRef: memberRef,
+      writes: 2,
       build: () async {
         final current = await memberRef.get();
+        recordDocumentRead(_meter, current, scope: _scope);
         final existing = current.exists
             ? Membership.fromMap(cellar.id, key, decodeDocument(current.data()))
             : null;
@@ -186,6 +208,7 @@ class SharingRepository {
     final memberRef = _db.doc(memberPath(cellarId, memberKey));
     await _run(
       reason: 'sharing_permission_failed',
+      writes: 1,
       sensitive: _sensitive(owner, [memberKey]),
       cellarRef: _db.doc(cellarPath(cellarId)),
       memberRef: memberRef,
@@ -242,6 +265,7 @@ class SharingRepository {
     final memberRef = _db.doc(memberPath(cellarId, key));
     await _run(
       reason: 'sharing_activate_failed',
+      writes: 1,
       sensitive: _sensitive(user, [key]),
       cellarRef: _db.doc(cellarPath(cellarId)),
       memberRef: memberRef,
@@ -277,7 +301,18 @@ class SharingRepository {
   /// invitation [user] received (an `invited` one is activated first, the
   /// only way the rules let the invitee close it). Each step is its own
   /// batch; all are tried, and the first failure is thrown at the end.
+  ///
+  /// freemium-plus FR6.4: an account deletion step, counted as system usage.
   Future<void> revokeAllForUser(AppUser user) async {
+    _systemDepth++;
+    try {
+      await _revokeAll(user);
+    } finally {
+      _systemDepth--;
+    }
+  }
+
+  Future<void> _revokeAll(AppUser user) async {
     await _requireNetwork();
     final ownCellar = Cellar.personalCellarId(user.uid);
     SharingException? firstFailure;
@@ -359,6 +394,7 @@ class SharingRepository {
       sensitive: sensitive,
       cellarRef: cellarRef,
       memberRef: memberRef,
+      writes: 2,
       build: () async => _db.batch()
         ..update(memberRef, {
           MemberFields.status: MemberStatus.revoked.name,
@@ -391,6 +427,7 @@ class SharingRepository {
   ) async {
     try {
       final snapshot = await query().timeout(_timeout);
+      recordQueryRead(_meter, snapshot, scope: _scope);
       return [
         for (final doc in snapshot.docs)
           ?_membershipOf(doc.reference.path, doc.data()),
@@ -420,10 +457,14 @@ class SharingRepository {
     required DocumentReference<Map<String, dynamic>> cellarRef,
     required DocumentReference<Map<String, dynamic>> memberRef,
     required Future<WriteBatch> Function() build,
+    int writes = 0,
   }) async {
     try {
       final batch = await build().timeout(_timeout);
       await batch.commit().timeout(_timeout);
+      // freemium-plus FR6.1: [writes] documents set or updated, counted on
+      // the server's confirmation (a delete adds none).
+      _meter?.recordWrites(writes, scope: _scope);
     } on SharingException {
       rethrow;
     } catch (error, stack) {

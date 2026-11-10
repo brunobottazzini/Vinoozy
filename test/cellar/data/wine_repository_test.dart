@@ -530,13 +530,25 @@ void main() {
         older: cellarWine('old', quantity: -1),
         newer: cellarWine('new', quantity: 2),
       );
+      await pumpEventQueue();
 
-      final batch = batches.single;
-      expect(
-        batch.opAt(path('old')).data!['quantity'],
-        FieldValue.increment(3),
-      );
-      expect(batch.opAt(path('new')).kind, 'delete');
+      // freemium-plus FR2.2: the finished older entry becomes active and the
+      // newer one stops being active. The rules pair the counter with one
+      // wine per batch, so the bottles move first (+1) and the newer entry
+      // goes only after that was confirmed (-1): no bottle is ever lost.
+      expect(batches.batches, hasLength(2));
+      final move = batches.batches.first;
+      expect(move.opAt(path('old')).data!['quantity'], FieldValue.increment(3));
+      expect(move.opAt('cellars/user-a').data, {
+        'activeWineCount': FieldValue.increment(1),
+        'activeOpWineId': 'old',
+      });
+      final remove = batches.batches.last;
+      expect(remove.opAt(path('new')).kind, 'delete');
+      expect(remove.opAt('cellars/user-a').data, {
+        'activeWineCount': FieldValue.increment(-1),
+        'activeOpWineId': 'new',
+      });
     },
   );
 
@@ -567,7 +579,26 @@ void main() {
         }
         return querySnapshotOf(drinks(2));
       });
+      // freemium-plus FR2.2: the retry and purgeRecords read the wine from
+      // the server for the counter; it is still active with 2 bottles.
+      final wineRef = MockDocRef();
+      when(() => wineRef.path).thenReturn(path('w1'));
+      when(() => wineRef.get(any())).thenAnswer((_) async {
+        if (cacheOnly) throw firestoreError('unavailable');
+        return docSnapshot(exists: true, data: {'quantity': 2});
+      });
+      when(() => db.doc(path('w1'))).thenReturn(wineRef);
     });
+
+    /// The counter -1 of the active wine, last in the last part.
+    void expectCounterLast() {
+      final last = batches.batches.last.ops.last;
+      expect(last.path, 'cellars/user-a');
+      expect(last.data, {
+        'activeWineCount': FieldValue.increment(-1),
+        'activeOpWineId': 'w1',
+      });
+    }
 
     Future<DeleteOutcome> delete() => repository.deleteWineWithRecords(
       cellarId: 'user-a',
@@ -580,9 +611,9 @@ void main() {
 
       expect(await delete(), DeleteOutcome.deleted);
 
-      expect(batches.batches.map((b) => b.ops.length), [400, 400, 101]);
-      expect(batches.batches.last.ops.last.path, path('w1'));
-      expect(batches.batches.last.ops.last.kind, 'delete');
+      expect(batches.batches.map((b) => b.ops.length), [400, 400, 102]);
+      expect(batches.batches.last.opAt(path('w1')).kind, 'delete');
+      expectCounterLast();
       expect(batches.batches.every((b) => b.committed), isTrue);
     });
 
@@ -592,7 +623,8 @@ void main() {
         serverAnswers.add(drinks(400));
 
         expect(await delete(), DeleteOutcome.deleted);
-        expect(batches.batches.map((b) => b.ops.length), [400, 1]);
+        expect(batches.batches.map((b) => b.ops.length), [400, 2]);
+        expectCounterLast();
       },
     );
 
@@ -611,6 +643,7 @@ void main() {
           'cellars/user-a/drinkingRecords/r1',
           'cellars/user-a/drinkingRecords/r2',
           path('w1'),
+          'cellars/user-a',
         ]);
         expect(sink.recorded, isEmpty);
       },
@@ -641,7 +674,9 @@ void main() {
           'delete',
           'delete',
           'delete',
+          'update',
         ]);
+        expectCounterLast();
         expect(batches.single.committed, isTrue);
       },
     );
@@ -677,7 +712,9 @@ void main() {
         expect(batches.single.ops.map((op) => op.path), [
           'cellars/user-a/drinkingRecords/r5',
           path('w1'),
+          'cellars/user-a',
         ]);
+        expectCounterLast();
       },
     );
   });

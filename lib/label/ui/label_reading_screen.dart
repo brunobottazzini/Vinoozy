@@ -16,6 +16,7 @@ import '../../cellar/domain/wine_validator.dart';
 import '../../cellar/ui/add_wine_screen.dart';
 import '../../cellar/ui/cellar_dialogs.dart';
 import '../../l10n/app_localizations.dart';
+import '../../plan/ui/capacity_limit_sheet.dart';
 import '../../catalog/core/catalog_event_logger.dart' show LensRoute;
 import '../core/label_lookup_flow.dart';
 import '../core/label_merge.dart';
@@ -323,6 +324,19 @@ class _LabelReadingScreenState extends ConsumerState<LabelReadingScreen> {
       setState(() => _saving = false);
       return;
     }
+    // freemium-plus FR2.5: a finished duplicate coming back takes a place
+    // of the free plan; at the limit, nothing is written.
+    if (existing.storedQuantity <= 0 &&
+        !await ensureCapacity(
+          context,
+          ref,
+          user: _target.user,
+          cellar: _target.cellar,
+        )) {
+      if (mounted) setState(() => _saving = false);
+      return;
+    }
+    if (!mounted) return;
     final outcome = await actions.addBottles(
       cellar: _target.cellar,
       user: _target.user,

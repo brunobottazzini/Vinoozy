@@ -30,9 +30,6 @@ jobs:
     outputs:
       name: ${{ steps.version.outputs.name }}
       code: ${{ steps.version.outputs.code }}
-    env:
-      PLAY_SA_JSON_FILE: ${{ runner.temp }}/play-internal.json
-      ANDROID_UPLOAD_KEYSTORE_PATH: ${{ runner.temp }}/upload.jks
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -50,6 +47,12 @@ jobs:
           channel: stable
           cache: true
 
+      # runner is available in steps, not in jobs.<job_id>.env.
+      - name: Set temporary credential paths
+        run: |
+          echo "PLAY_SA_JSON_FILE=$RUNNER_TEMP/play-internal.json" >> "$GITHUB_ENV"
+          echo "ANDROID_UPLOAD_KEYSTORE_PATH=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+
       - name: Write secret files (removed at the end, even on failure)
         env:
           GOOGLE_SERVICES_B64: ${{ secrets.FIREBASE_PROD_GOOGLE_SERVICES_JSON_B64 }}
@@ -57,6 +60,7 @@ jobs:
           KEYSTORE_B64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_B64 }}
           PLAY_SA_JSON: ${{ secrets.PLAY_INTERNAL_SA_JSON }}
         run: |
+          umask 077
           echo "$GOOGLE_SERVICES_B64" | base64 -d > android/app/google-services.json
           mkdir -p config
           echo "$PROD_DEFINES_B64" | base64 -d > config/firebase_prod.json
@@ -78,6 +82,11 @@ jobs:
           ANDROID_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
           ANDROID_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEY_PASSWORD }}
           GOOGLE_SERVER_CLIENT_ID: ${{ vars.GOOGLE_SERVER_CLIENT_ID }}
+          # freemium-plus D6: the real AdMob App ID, read by
+          # android/app/build.gradle.kts into the manifest. Without the
+          # secret the build falls back to Google's public test App ID; the
+          # SDK is never started while config/policy.adsEnabled is false.
+          ADMOB_APP_ID: ${{ secrets.ADMOB_APP_ID }}
         run: >
           flutter build appbundle --release
           --dart-define=FIREBASE_ENV=prod

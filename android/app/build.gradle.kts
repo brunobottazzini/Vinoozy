@@ -37,6 +37,15 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // freemium-plus D6: google_mobile_ads stops the app at start-up
+        // without an AdMob App ID in the manifest. Debug, CI and any build
+        // without ADMOB_APP_ID use Google's public test App ID; the real one
+        // comes only from a Gradle property or the ADMOB_APP_ID environment
+        // variable (a GitHub Actions secret), never from the repository.
+        manifestPlaceholders["admobAppId"] =
+            (project.findProperty("ADMOB_APP_ID") as String?)?.takeIf { it.isNotBlank() }
+                ?: System.getenv("ADMOB_APP_ID")?.takeIf { it.isNotBlank() }
+                ?: "ca-app-pub-3940256099942544~3347511713"
     }
 
     signingConfigs {

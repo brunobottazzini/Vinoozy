@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../cellar/data/firestore_codec.dart';
+import '../usage/cloud_usage_meter.dart';
+import '../usage/firestore_metering.dart';
 
 /// Result of reading a journaled wine from the server.
 enum ServerCheck {
@@ -53,9 +55,13 @@ abstract interface class SyncGateway {
 
 /// [SyncGateway] over Cloud Firestore.
 class FirestoreSyncGateway implements SyncGateway {
-  FirestoreSyncGateway(this._db);
+  FirestoreSyncGateway(this._db, {this.meter});
 
   final FirebaseFirestore Function() _db;
+
+  /// freemium-plus FR6.4: the server checks of the sync recovery are system
+  /// usage (study §7.5).
+  final CloudUsageMeter? meter;
 
   @override
   Future<void> waitForPendingWrites() => _db().waitForPendingWrites();
@@ -69,6 +75,7 @@ class FirestoreSyncGateway implements SyncGateway {
       final snapshot = await _db()
           .doc(winePath(cellarId, wineId))
           .get(const GetOptions(source: Source.server));
+      recordDocumentRead(meter, snapshot, scope: UsageScope.system);
       return snapshot.exists ? ServerCheck.exists : ServerCheck.missing;
     } on FirebaseException catch (error) {
       if (error.code == 'permission-denied') return ServerCheck.denied;

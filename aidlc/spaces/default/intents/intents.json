@@ -46,5 +46,13 @@
     "scope": "refactor",
     "status": "complete",
     "request": "e8b55e4b"
+  },
+  {
+    "uuid": "01a1c4f3-69dd-7ed2-8ed1-e44b6684911c",
+    "slug": "freemium-plus",
+    "dirName": "261110-freemium-plus",
+    "scope": "express",
+    "status": "in-flight",
+    "request": "1cdefae3"
   }
 ]

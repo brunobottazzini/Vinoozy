@@ -2,8 +2,11 @@
 ///
 /// It holds only what NFR8.1 allows outside Firestore: the last uid, the
 /// owner of the pending writes, a counter, and a journal of creations with
-/// wine id, cellar id, name, owner and state.
+/// wine id, cellar id, name, owner and state, plus (freemium-plus FR2.5) the
+/// fixed reason of a capacity refusal.
 library;
+
+import '../capacity_rejection.dart';
 
 /// State of a journal entry.
 enum JournalState {
@@ -23,8 +26,12 @@ class JournalEntry {
     required this.ownerUid,
     this.state = JournalState.open,
     this.notices = 0,
+    this.reason,
   });
 
+  /// `reason` is optional and read leniently: absent in ledgers written
+  /// before freemium-plus, and an unknown value from a newer version reads
+  /// as no reason instead of corrupting the whole ledger.
   factory JournalEntry.fromJson(Map<String, Object?> json) => JournalEntry(
     wineId: _string(json, 'wineId'),
     cellarId: _string(json, 'cellarId'),
@@ -36,6 +43,7 @@ class JournalEntry {
       final other => throw FormatException('unknown journal state $other'),
     },
     notices: _int(json, 'notices'),
+    reason: CapacityRejection.fromWire(json['reason']),
   );
 
   final String wineId;
@@ -47,13 +55,24 @@ class JournalEntry {
   /// How many times the "not saved" notice was shown; at 3 the entry goes.
   final int notices;
 
-  JournalEntry copyWith({JournalState? state, int? notices}) => JournalEntry(
+  /// Why the server refused the wine, when it was the capacity limit or a
+  /// counter conflict (FR2.5); null for any other refusal.
+  final CapacityRejection? reason;
+
+  /// [clearReason] drops the reason (an entry opened again).
+  JournalEntry copyWith({
+    JournalState? state,
+    int? notices,
+    CapacityRejection? reason,
+    bool clearReason = false,
+  }) => JournalEntry(
     wineId: wineId,
     cellarId: cellarId,
     name: name,
     ownerUid: ownerUid,
     state: state ?? this.state,
     notices: notices ?? this.notices,
+    reason: clearReason ? null : reason ?? this.reason,
   );
 
   Map<String, Object?> toJson() => {
@@ -63,6 +82,7 @@ class JournalEntry {
     'ownerUid': ownerUid,
     'state': state.name,
     'notices': notices,
+    'reason': ?reason?.wireValue,
   };
 }
 

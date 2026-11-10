@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/providers.dart';
+import '../../app/external_links.dart';
 import '../../l10n/app_localizations.dart';
+import '../../plan/ui/profile_plan_row.dart';
 import '../account_providers.dart';
 import '../app_user.dart';
 import 'delete_account_screen.dart';
@@ -86,6 +88,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
         actions: [
           TextButton(
+            key: const Key('privacy-open'),
+            onPressed: () async {
+              final opened = await ref.read(externalLinkOpenerProvider)(url);
+              if (!mounted) return;
+              if (opened) {
+                if (context.mounted) Navigator.of(context).pop();
+              } else {
+                _snack(l10n.profileOpenLinkFailed);
+              }
+            },
+            child: Text(l10n.profileOpenLink),
+          ),
+          TextButton(
             key: const Key('privacy-copy'),
             onPressed: () async {
               await Clipboard.setData(ClipboardData(text: url));
@@ -151,7 +166,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
+              // freemium-plus FR1.3, FR5.4: the plan and "Discover Plus".
+              ProfilePlanRow(user: user),
+              const SizedBox(height: 24),
               if (_busy) const LinearProgressIndicator(),
               const SizedBox(height: 8),
               OutlinedButton.icon(

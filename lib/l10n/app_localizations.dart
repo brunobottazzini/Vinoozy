@@ -1750,6 +1750,18 @@ abstract class AppLocalizations {
   /// **'You can read the privacy policy at this address:'**
   String get profilePrivacyBody;
 
+  /// No description provided for @profileOpenLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in browser'**
+  String get profileOpenLink;
+
+  /// No description provided for @profileOpenLinkFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the page. You can copy the link and open it in your browser.'**
+  String get profileOpenLinkFailed;
+
   /// No description provided for @profileCopyLink.
   ///
   /// In en, this message translates to:
@@ -3759,6 +3771,360 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{percent}% of the wines with a recognised type'**
   String aboutDbClassified(String percent);
+
+  /// freemium-plus FR1.3: label of the plan row in the Profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get planTitle;
+
+  /// freemium-plus FR1.3.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get planFree;
+
+  /// freemium-plus FR1.3: a Plus bought on Google Play.
+  ///
+  /// In en, this message translates to:
+  /// **'Plus'**
+  String get planPlus;
+
+  /// freemium-plus FR1.3: a Plus granted by the owner, never with renewals.
+  ///
+  /// In en, this message translates to:
+  /// **'Plus (gift)'**
+  String get planPlusGift;
+
+  /// freemium-plus FR5.4: developer override indicator.
+  ///
+  /// In en, this message translates to:
+  /// **'DEV · Test Plus'**
+  String get planDevUnlockAll;
+
+  /// freemium-plus FR5.4.
+  ///
+  /// In en, this message translates to:
+  /// **'DEV · Simulated free plan'**
+  String get planDevSimulateFree;
+
+  /// freemium-plus FR5.4.
+  ///
+  /// In en, this message translates to:
+  /// **'DEV · Simulated expired Plus'**
+  String get planDevSimulateExpired;
+
+  /// freemium-plus FR1.3, FR2.5, FR7.5: opens the Plus screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover Plus'**
+  String get planDiscoverPlus;
+
+  /// freemium-plus FR3.2: title of the Plus screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Vinoozy Plus'**
+  String get plusTitle;
+
+  /// freemium-plus FR3.2.
+  ///
+  /// In en, this message translates to:
+  /// **'With Plus'**
+  String get plusBenefitsTitle;
+
+  /// freemium-plus FR3.2: a real benefit.
+  ///
+  /// In en, this message translates to:
+  /// **'No ads'**
+  String get plusBenefitNoAds;
+
+  /// freemium-plus FR3.2: a real benefit.
+  ///
+  /// In en, this message translates to:
+  /// **'No limit on the wines in your cellar'**
+  String get plusBenefitNoLimit;
+
+  /// freemium-plus FR3.5, FR8.2: purchases are off.
+  ///
+  /// In en, this message translates to:
+  /// **'Plus is coming soon'**
+  String get plusComingSoon;
+
+  /// freemium-plus FR3.1.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the prices from Google Play'**
+  String get plusLoading;
+
+  /// freemium-plus FR3.1: never invented prices.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read the prices from Google Play. Try again later.'**
+  String get plusStoreUnavailable;
+
+  /// freemium-plus FR3.1: store price of the monthly plan.
+  ///
+  /// In en, this message translates to:
+  /// **'{price} per month'**
+  String plusPriceMonthly(String price);
+
+  /// freemium-plus FR3.1: store price of the annual plan.
+  ///
+  /// In en, this message translates to:
+  /// **'{price} per year'**
+  String plusPriceAnnual(String price);
+
+  /// freemium-plus FR3.2: renewal.
+  ///
+  /// In en, this message translates to:
+  /// **'The subscription renews automatically at the price shown until you cancel it on Google Play.'**
+  String get plusRenewal;
+
+  /// freemium-plus FR3.2: terms.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment is charged to your Google Play account when you confirm the purchase. You can cancel at any time: Plus stays active until the end of the period already paid. When Plus ends, all your wines stay.'**
+  String get plusTerms;
+
+  /// freemium-plus FR3.2.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore purchases'**
+  String get plusRestore;
+
+  /// freemium-plus FR3.2: link to the Play subscriptions page.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage or cancel the subscription on Google Play'**
+  String get plusManage;
+
+  /// freemium-plus FR1.3.
+  ///
+  /// In en, this message translates to:
+  /// **'Plus is active on this account'**
+  String get plusActive;
+
+  /// freemium-plus FR1.3: never renewals or charges for a gift.
+  ///
+  /// In en, this message translates to:
+  /// **'You have Plus as a gift: no charges and no renewals.'**
+  String get plusActiveGift;
+
+  /// freemium-plus FR3.3: a pending purchase unlocks nothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment pending: Plus will be active when Google Play confirms it.'**
+  String get plusPending;
+
+  /// freemium-plus FR3.3.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying the purchase'**
+  String get plusVerifying;
+
+  /// freemium-plus FR3.3.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase verified: Plus will be active in a few seconds.'**
+  String get plusVerified;
+
+  /// freemium-plus FR3.3.
+  ///
+  /// In en, this message translates to:
+  /// **'The purchase was not completed. Try again.'**
+  String get plusPurchaseFailed;
+
+  /// freemium-plus FR3.3.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Play did not confirm this purchase for Vinoozy.'**
+  String get plusInvalidPurchase;
+
+  /// freemium-plus FR3.3: a token bound to another uid.
+  ///
+  /// In en, this message translates to:
+  /// **'This subscription already belongs to another Vinoozy account.'**
+  String get plusOwnedByOther;
+
+  /// freemium-plus FR3.3.
+  ///
+  /// In en, this message translates to:
+  /// **'The purchase could not be verified now. Try again later: the subscription stays on Google Play.'**
+  String get plusVerificationUnavailable;
+
+  /// freemium-plus FR2.5.
+  ///
+  /// In en, this message translates to:
+  /// **'You reached the limit of the free plan'**
+  String get capacityLimitTitle;
+
+  /// freemium-plus FR2.5.
+  ///
+  /// In en, this message translates to:
+  /// **'The free plan includes up to {limit} different wines in your cellar. You can always edit, drink and add bottles to the wines you already have. To add a new one, finish or delete a wine, or switch to Plus.'**
+  String capacityLimitBody(int limit);
+
+  /// freemium-plus FR2.5, FR3.5: purchases are off.
+  ///
+  /// In en, this message translates to:
+  /// **'The free plan includes up to {limit} different wines in your cellar. You can always edit, drink and add bottles to the wines you already have. To add a new one, finish or delete a wine. Plus is coming soon.'**
+  String capacityLimitBodyComingSoon(int limit);
+
+  /// freemium-plus FR2.5: reason of a refused draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Not synced: it goes over the wine limit of the free plan. The change stays on this phone.'**
+  String get rejectedCapacityLimit;
+
+  /// freemium-plus FR2.5: reason of a refused draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Not synced: the cellar changed on another device at the same time. The change stays on this phone: try again.'**
+  String get rejectedCapacityConflict;
+
+  /// freemium-plus FR2.5.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}: not synced, over the limit of the free plan'**
+  String writeRejectedCapacityLimit(String name);
+
+  /// freemium-plus FR2.5.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}: not synced, the cellar changed on another device'**
+  String writeRejectedCapacityConflict(String name);
+
+  /// freemium-plus FR8.2.
+  ///
+  /// In en, this message translates to:
+  /// **'The free plan'**
+  String get freeIntroTitle;
+
+  /// freemium-plus FR8.1 (study §7.8).
+  ///
+  /// In en, this message translates to:
+  /// **'You can manage up to {limit} different wines for free.'**
+  String freeIntroLimit(int limit);
+
+  /// freemium-plus FR8.1 (study §7.8).
+  ///
+  /// In en, this message translates to:
+  /// **'Light use is ad-free. If you go over the monthly usage threshold of the service, you may see occasional ads that help cover the costs of servers and sync.'**
+  String get freeIntroAds;
+
+  /// freemium-plus FR8.1 (study §7.8): ads are off.
+  ///
+  /// In en, this message translates to:
+  /// **'No ads in the launch version.'**
+  String get freeIntroNoAds;
+
+  /// freemium-plus FR8.1 (study §7.8).
+  ///
+  /// In en, this message translates to:
+  /// **'With Plus you remove the ads and the cellar limit.'**
+  String get freeIntroPlus;
+
+  /// freemium-plus FR7.5, FR8.2: closes a plan notice.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get noticeGotIt;
+
+  /// freemium-plus FR7.5 (study §7.8).
+  ///
+  /// In en, this message translates to:
+  /// **'Ads help keep Vinoozy free'**
+  String get thresholdTitle;
+
+  /// freemium-plus FR7.5 (study §7.8).
+  ///
+  /// In en, this message translates to:
+  /// **'You reached the monthly ad-free usage threshold. From now on you may see occasional ads: they help us cover the costs of servers and sync, keeping Vinoozy free.'**
+  String get thresholdBody;
+
+  /// freemium-plus FR7.5 (study §7.8).
+  ///
+  /// In en, this message translates to:
+  /// **'The count starts again next month. With Plus you can use the app without ads and without the cellar limit.'**
+  String get thresholdReset;
+
+  /// freemium-plus FR7.5: date and time in local time.
+  ///
+  /// In en, this message translates to:
+  /// **'Next reset: {date}'**
+  String thresholdNextReset(String date);
+
+  /// freemium-plus FR7.5.
+  ///
+  /// In en, this message translates to:
+  /// **'How it works'**
+  String get thresholdHowItWorks;
+
+  /// freemium-plus FR7.5 (study §7.8).
+  ///
+  /// In en, this message translates to:
+  /// **'The threshold depends on an estimate of the syncs with the cloud made by this account during the month. Offline use alone does not create new cloud operations. Ads appear at most once a day, only on the Dashboard, and never while you save or export your data.'**
+  String get thresholdHowItWorksBody;
+
+  /// freemium-plus FR7.3: label of the Dashboard banner.
+  ///
+  /// In en, this message translates to:
+  /// **'Advertisement'**
+  String get adLabel;
+
+  /// freemium-plus FR5.2: development builds only.
+  ///
+  /// In en, this message translates to:
+  /// **'Developer tools'**
+  String get devToolsTitle;
+
+  /// freemium-plus FR5.3.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock everything — test Plus'**
+  String get devUnlockAll;
+
+  /// freemium-plus FR5.3.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulate free plan'**
+  String get devSimulateFree;
+
+  /// freemium-plus FR5.3.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulate expired Plus'**
+  String get devSimulateExpired;
+
+  /// freemium-plus FR5.3.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore normal state'**
+  String get devRestore;
+
+  /// freemium-plus FR5.4.
+  ///
+  /// In en, this message translates to:
+  /// **'No simulation active'**
+  String get devNoOverride;
+
+  /// freemium-plus FR5.6.
+  ///
+  /// In en, this message translates to:
+  /// **'Scenario applied in the Firestore emulator too'**
+  String get devApplied;
+
+  /// freemium-plus FR5.6: never a rejected write shown as a success.
+  ///
+  /// In en, this message translates to:
+  /// **'Incomplete simulation: the Firestore emulator did not confirm the test entitlement. The server rules do not see this scenario.'**
+  String get devIncomplete;
+
+  /// freemium-plus FR5.3.
+  ///
+  /// In en, this message translates to:
+  /// **'Development builds with the emulator only: no payments, tokens or receipts.'**
+  String get devNotice;
 }
 
 class _AppLocalizationsDelegate

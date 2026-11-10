@@ -69,8 +69,11 @@ void main() {
           currentYear: 2026,
         ).draft!,
       );
+      // freemium-plus FR2.2: a create also moves the cellar counter, so the
+      // wine is picked by its path.
+      const winePath = 'cellars/user-a/wines/w1';
       expect(
-        batches.batches.last.ops.single.data![WineFields.level],
+        batches.batches.last.opAt(winePath).data![WineFields.level],
         'everyday',
       );
 
@@ -80,7 +83,7 @@ void main() {
         draft: WineValidator.validate(input(), currentYear: 2026).draft!,
       );
       expect(
-        batches.batches.last.ops.single.data!.containsKey(WineFields.level),
+        batches.batches.last.opAt(winePath).data!.containsKey(WineFields.level),
         isFalse,
       );
     });

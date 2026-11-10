@@ -5,11 +5,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../account/app_user.dart';
 import '../../app/error_reporter.dart';
 import '../../core/id_generator.dart';
+import '../../sync/capacity_rejection.dart';
 import '../../sync/ledger/local_ledger.dart';
 import '../../sync/sync_error_bus.dart';
+import '../../usage/cloud_usage_meter.dart';
+import '../../usage/firestore_metering.dart';
 import '../domain/drinking_record.dart';
 import '../domain/quantity_delta.dart';
 import '../domain/wine.dart';
+import 'active_wine_counter.dart';
 import 'cellar_errors.dart';
 import 'firestore_codec.dart';
 import 'pending_writes_probe.dart';
@@ -109,9 +113,21 @@ class DrinkingRecordRepository {
     required this._ids,
     this._onWriteStarted,
     this._readTimeout = const Duration(seconds: 1),
-  });
+    ActiveWineCounter? counter,
+    this._meter,
+  }) : _counterOverride = counter;
 
   final FirebaseFirestore _db;
+
+  /// freemium-plus FR2.2: drinking the last bottle and "Undo" of it change
+  /// whether the wine is active, so they carry the counter.
+  final ActiveWineCounter? _counterOverride;
+  late final ActiveWineCounter _counter =
+      _counterOverride ?? ActiveWineCounter(db: _db, meter: _meter);
+
+  /// freemium-plus FR6.1 (study §7.5): the History page from the server,
+  /// the drinks of a wine and the confirmed writes.
+  final CloudUsageMeter? _meter;
   final LocalLedger _ledger;
   final SyncErrorBus _bus;
   final ErrorReporter _reporter;
@@ -149,25 +165,33 @@ class DrinkingRecordRepository {
       );
     }
     final recordId = _ids.newId();
-    final outcome = await _commit(
+    final outcome = await _commitCounted(
       user: user,
       reason: CellarErrorReasons.drinkFailed,
       sensitive: sensitiveOfWine(wine),
-      build: (batch) => batch
-        ..update(_db.doc(winePath(cellarId, wine.id)), {
-          WineFields.quantity: FieldValue.increment(-1),
-          WineFields.updatedAt: FieldValue.serverTimestamp(),
-          WineFields.updatedBy: user.uid,
-        })
-        ..set(_db.doc(drinkingRecordPath(cellarId, recordId)), {
-          DrinkingRecordFields.wineId: wine.id,
-          DrinkingRecordFields.wineName: wine.name,
-          DrinkingRecordFields.vintage: wine.vintage,
-          DrinkingRecordFields.drankOn: formatDrankOn(today),
-          DrinkingRecordFields.rating: ?rating,
-          DrinkingRecordFields.recordedBy: user.uid,
-          DrinkingRecordFields.createdAt: FieldValue.serverTimestamp(),
-        }),
+      counted: CountedWineWrite(
+        cellarId: cellarId,
+        wineId: wine.id,
+        stored: wine.storedQuantity,
+        // The last bottle makes the wine inactive: counter -1 (FR2.2).
+        after: (stored) => stored == null ? null : stored - 1,
+        updates: 2,
+        write: (batch, _) => batch
+          ..update(_db.doc(winePath(cellarId, wine.id)), {
+            WineFields.quantity: FieldValue.increment(-1),
+            WineFields.updatedAt: FieldValue.serverTimestamp(),
+            WineFields.updatedBy: user.uid,
+          })
+          ..set(_db.doc(drinkingRecordPath(cellarId, recordId)), {
+            DrinkingRecordFields.wineId: wine.id,
+            DrinkingRecordFields.wineName: wine.name,
+            DrinkingRecordFields.vintage: wine.vintage,
+            DrinkingRecordFields.drankOn: formatDrankOn(today),
+            DrinkingRecordFields.rating: ?rating,
+            DrinkingRecordFields.recordedBy: user.uid,
+            DrinkingRecordFields.createdAt: FieldValue.serverTimestamp(),
+          }),
+      ),
       onError: (error) => _onRejected(
         error,
         cellarId: cellarId,
@@ -195,21 +219,40 @@ class DrinkingRecordRepository {
       // Not in the cache: it was deleted or never reached this phone.
       return UndoResult.nothingToUndo;
     }
-    final failure = await _commit(
+    final failure = await _commitCounted(
       user: user,
       reason: CellarErrorReasons.undoFailed,
       sensitive: sensitiveOfWine(wine),
-      build: (batch) => batch
-        ..delete(ref)
-        ..update(_db.doc(winePath(cellarId, wine.id)), {
-          WineFields.quantity: FieldValue.increment(
-            QuantityDelta.forIncrease(wine.storedQuantity, 1),
-          ),
-          WineFields.updatedAt: FieldValue.serverTimestamp(),
-          WineFields.updatedBy: user.uid,
-        }),
-      onError: (_) =>
-          _bus.publish(const CellarNotice(CellarNoticeKind.undoRejected)),
+      counted: CountedWineWrite(
+        cellarId: cellarId,
+        wineId: wine.id,
+        stored: wine.storedQuantity,
+        // "Undo" of the last bottle makes the wine active again: +1 (FR2.2).
+        after: (stored) => stored == null
+            ? null
+            : stored + QuantityDelta.forIncrease(stored, 1),
+        write: (batch, stored) => batch
+          ..delete(ref)
+          ..update(_db.doc(winePath(cellarId, wine.id)), {
+            WineFields.quantity: FieldValue.increment(
+              QuantityDelta.forIncrease(stored ?? 0, 1),
+            ),
+            WineFields.updatedAt: FieldValue.serverTimestamp(),
+            WineFields.updatedBy: user.uid,
+          }),
+      ),
+      onError: (error) => error is CapacityRejectedException
+          // freemium-plus FR2.5: refused by the capacity limit or a counter
+          // conflict, explained as such rather than as a late "Undo".
+          ? reportWriteRejected(
+              _bus,
+              cellarId: cellarId,
+              uid: user.uid,
+              error: error,
+              wineId: wine.id,
+              wineName: wine.name,
+            )
+          : _bus.publish(const CellarNotice(CellarNoticeKind.undoRejected)),
     );
     return failure == null ? UndoResult.undone : UndoResult.failed;
   }
@@ -264,6 +307,8 @@ class DrinkingRecordRepository {
         .orderBy(DrinkingRecordFields.createdAt, descending: true);
     if (after != null) query = query.startAfterDocument(after.lastDocument);
     final snapshot = await query.limit(limit).get();
+    // Study §7.5: the page received from the server, at least one read.
+    recordQueryRead(_meter, snapshot);
     final docs = snapshot.docs;
     return HistoryPage(
       records: [
@@ -285,18 +330,20 @@ class DrinkingRecordRepository {
     final query = _db
         .collection(drinkingRecordsPath(cellarId))
         .where(DrinkingRecordFields.wineId, isEqualTo: wineId);
+    // freemium-plus FR6.1: the cache costs nothing; the server read after the
+    // network came back is a recovery, system usage (FR6.4).
     final QueryRead read = switch (source) {
       RecordsSource.serverOrCache => await readServerOrCache(
         query,
         _readTimeout,
+        meter: _meter,
       ),
       RecordsSource.cache => QueryRead(
         await query.get(const GetOptions(source: Source.cache)),
         fromServer: false,
       ),
-      RecordsSource.server => QueryRead(
+      RecordsSource.server => _serverRead(
         await query.get(const GetOptions(source: Source.server)),
-        fromServer: true,
       ),
     };
     return WineRecords(
@@ -308,14 +355,56 @@ class DrinkingRecordRepository {
     );
   }
 
+  QueryRead _serverRead(QuerySnapshot<Map<String, dynamic>> snapshot) {
+    recordQueryRead(_meter, snapshot, scope: UsageScope.system);
+    return QueryRead(snapshot, fromServer: true);
+  }
+
   /// Ledger first, then one batch committed without waiting; returns the
   /// local failure, or `null` when the write is on its way. [onError] runs
-  /// for a server refusal after the fixed-reason report.
+  /// for a server refusal after the fixed-reason report. [documents] set or
+  /// updated are counted by the meter on the confirmation (FR6.1).
   Future<Object?> _commit({
     required AppUser user,
     required String reason,
     required List<String> sensitive,
     required void Function(WriteBatch batch) build,
+    required void Function(Object error) onError,
+    int documents = 1,
+  }) => _start(
+    user: user,
+    reason: reason,
+    sensitive: sensitive,
+    commit: () {
+      final batch = _db.batch();
+      build(batch);
+      return batch.commit().then((_) => documents);
+    },
+    onError: onError,
+  );
+
+  /// [_commit] for a drink or an "Undo" (freemium-plus FR2.2): the counter
+  /// joins the batch when the wine's active state changes, and a conflict is
+  /// retried once with the server quantity (D1).
+  Future<Object?> _commitCounted({
+    required AppUser user,
+    required String reason,
+    required List<String> sensitive,
+    required CountedWineWrite counted,
+    required void Function(Object error) onError,
+  }) => _start(
+    user: user,
+    reason: reason,
+    sensitive: sensitive,
+    commit: () => _counter.commit(counted).then(counted.writtenDocuments),
+    onError: onError,
+  );
+
+  Future<Object?> _start({
+    required AppUser user,
+    required String reason,
+    required List<String> sensitive,
+    required Future<int> Function() commit,
     required void Function(Object error) onError,
   }) async {
     final all = [user.uid, user.email, ...sensitive];
@@ -326,18 +415,16 @@ class DrinkingRecordRepository {
       await _reporter.report(error, stack, reason: reason, sensitive: all);
       return error;
     }
-    final Future<void> write;
+    final Future<int> write;
     try {
-      final batch = _db.batch();
-      build(batch);
-      write = batch.commit();
+      write = commit();
     } catch (error, stack) {
       await _reporter.report(error, stack, reason: reason, sensitive: all);
       return error;
     }
     unawaited(
       write.then(
-        (_) {},
+        (documents) => _meter?.recordWrites(documents),
         onError: (Object error, StackTrace stack) async {
           if (!await _isCurrent(ticket)) return;
           if (classifyWriteError(error) == WriteErrorKind.unauthenticated) {

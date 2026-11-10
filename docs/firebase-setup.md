@@ -8,6 +8,7 @@ Spunta ogni voce quando è fatta e annota la data.
 
 - [x] Crea il progetto Firebase (un solo progetto reale, `team.md` Q9): `vinoozy-d6f45`, creato il 2026-11-05 sul piano gratuito Spark per le prove via cavo.
 - [ ] **Prima della prima pubblicazione su Google Play** (anche test interno): passa al piano **Blaze** e crea il budget mensile di 1 € con avvisi al 50%, 90% e 100% (NFR5.3, NFR5.4).
+  - Per le funzioni di Freemium e Plus (scollegamento automatico della fatturazione oltre 1 €, pulizia di Artifact Registry, pubblicazione in `europe-west8`) segui `docs/blaze-switch.md`, poi `docs/plus-setup.md`.
 - [ ] Firestore in modalità nativa, database `(default)`, località **`europe-west8` (Milano)**. La località è definitiva.
 - [ ] Authentication: attiva **solo il provider Google**. Accesso anonimo ed email/password restano disattivati (NFR4.1).
 - [ ] Registra l'app Android `com.vinoozy.app`. Dalla console scarica `google-services.json` e scrivi `config/firebase_prod.json` con i valori `FIREBASE_API_KEY`, `FIREBASE_APP_ID`, `FIREBASE_MESSAGING_SENDER_ID`, `FIREBASE_PROJECT_ID`, `FIREBASE_STORAGE_BUCKET` (presi da `google-services.json`), **senza** committarli: vanno solo nei segreti (§5). L'app li riceve con `--dart-define-from-file=config/firebase_prod.json`.
@@ -16,7 +17,7 @@ Spunta ogni voce quando è fatta e annota la data.
 ## 2. App Check e Play Integrity (NFR4.6)
 
 - [ ] In Play Console collega l'app al progetto Google Cloud e attiva l'API Play Integrity.
-- [ ] In Firebase → App Check registra l'app Android con il provider **Play Integrity**, con l'impronta SHA-256 della **chiave di firma di Google Play** (Play Console → Integrità dell'app).
+- [x] In Firebase → App Check registrata l'app Android con **Play Integrity**, con le tre SHA-256 delle firme effettive Play (deployment, hybrid classical, hybrid PQC). Registrate anche le corrispondenti SHA-1 nelle impostazioni Android Firebase. Play Integrity collegato al progetto Cloud **Vinoozy**, numero **742143174654**, quota giornaliera 10.000. App Check Android risulta **Registrata**, TTL token un'ora; Firestore e Authentication risultano **Non applicato**. Configurazione eseguita dopo autorizzazione e accettazione Termini del titolare, 2026-11-09.
 - [ ] Lascia Firestore in **modalità di controllo**. Rendi App Check obbligatorio solo quando, per 7 giorni di test interno, almeno il **99%** delle richieste risulta verificato.
 - [ ] Il token di debug (solo build di debug su telefono reale) resta sul tuo computer: mai nel repository né nei segreti.
 
@@ -91,7 +92,9 @@ Open Food Facts chiede a ogni app un identificativo `Vinoozy/<versione> (<contat
 
 ## 10. Pagina web di cancellazione dell'account (u8-account, BR1.11, NFR4.7, NFR8.5)
 
-La pagina `docs/account-deletion/` (it, en, pt-BR) cancella l'account dal browser con l'accesso Google, senza server né funzioni nel cloud. Si pubblica sul ramo `gh-pages` solo con `pages.yml`, dopo le regole. Indirizzo: `https://brunobottazzini.github.io/Vinoozy/account-deletion/`.
+La pagina automatica `docs/account-deletion/` (it, en, pt-BR) cancella l'account dal browser con l'accesso Google, senza server né funzioni nel cloud. Si pubblica sul ramo `gh-pages` con `pages.yml`, dopo le regole e la prova reale del flusso. Indirizzo: `https://brunobottazzini.github.io/Vinoozy/account-deletion/`.
+
+**Prima pubblicazione statica (2026-11-09):** per rendere disponibili privacy e richiesta di cancellazione senza attendere la configurazione dell'applicazione web, `node tool/prepare_static_pages.mjs` esporta tre informative e tre pagine con richiesta via email. L'export non include Firebase, login o moduli automatici. Con autorizzazione pubblica esplicita del titolare, caricato sul nuovo ramo `gh-pages`, commit `9c086d3e65e3ef7f2eb9763a1501851eaaae467d`. Hosting sul ramo verificato, HTTPS obbligatorio, otto risorse pubbliche verificate HTTP 200 e SHA-256 corrispondente all'export. Questo bootstrap non soddisfa i controlli della futura pagina automatica descritti sotto.
 
 **Repository pubblico** (GitHub Pages gratuito lo richiede), prima della prima pubblicazione:
 
@@ -101,7 +104,7 @@ La pagina `docs/account-deletion/` (it, en, pt-BR) cancella l'account dal browse
 
 **Console Firebase, una volta:**
 
-- [ ] Registra un'**app web** nel progetto (Impostazioni progetto → Le tue app → Aggiungi app → Web). Copia `apiKey`, `authDomain` (`vinoozy-d6f45.firebaseapp.com`), `projectId` e `appId` in `docs/account-deletion/firebase-config.js`, al posto dei valori `TODO_…`. Sono valori pubblici per natura, non segreti; il file non deve contenere altro. Il bundle non va ricostruito: il file si carica a parte.
+- [x] Registrata **Vinoozy Web** il 2026-11-09 nel progetto `vinoozy-d6f45` (app ID `1:742143174654:web:815bb282e4a519d0e042af`). Copiati dalla Console `apiKey`, `authDomain` (`vinoozy-d6f45.firebaseapp.com`), `projectId` e `appId` in `docs/account-deletion/firebase-config.js`. Sono valori pubblici per natura, non segreti. Hosting non configurato durante la registrazione; piano Spark invariato. Il bundle non va ricostruito: il file si carica a parte.
 - [ ] Authentication → Impostazioni → **Domini autorizzati**: aggiungi `brunobottazzini.github.io`.
 - [ ] **reCAPTCHA v3**: crea una chiave del sito (console di reCAPTCHA) con il dominio `brunobottazzini.github.io`, e scrivi la chiave del sito (pubblica) in `recaptchaSiteKey` di `firebase-config.js`. La chiave segreta resta solo nella console di App Check.
 - [ ] App Check → Applicazioni → app web → provider **reCAPTCHA v3** con la stessa chiave.
@@ -110,7 +113,7 @@ La pagina `docs/account-deletion/` (it, en, pt-BR) cancella l'account dal browse
 **GitHub, una volta:**
 
 - [ ] Ambiente **`github-pages-publish`**: approvazione obbligatoria del proprietario, limitato a `main` (il workflow si avvia da `main`). Nessun segreto: `pages.yml` usa il `GITHUB_TOKEN` con `contents: write` e `actions: read`.
-- [ ] Dopo la prima esecuzione di `pages.yml` (che crea il ramo `gh-pages`): Settings → Pages → "Deploy from a branch" → ramo **`gh-pages`**, cartella `/ (root)`.
+- [x] Ramo `gh-pages` creato con l'export statico iniziale: verificato Settings → Pages → "Deploy from a branch" → ramo **`gh-pages`**, con hosting e URL HTTPS operativi. Questo non certifica il flusso automatico Firebase.
 - [ ] Ruleset sul ramo `gh-pages`: aggiornamento solo da GitHub Actions.
 
 **Ogni pubblicazione:** merge, `firebase-deploy.yml`, poi `pages.yml` con `mode: publish` e lo stesso `ref` (si ferma con "Pubblica prima le regole con firebase-deploy.yml" se le regole pubblicate sono diverse, e se `firebase-config.js` ha ancora valori `TODO`), poi `promote.yml`. Rollback della pagina: `pages.yml` con `mode: rollback`.

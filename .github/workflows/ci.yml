@@ -26,6 +26,18 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Validate GitHub Actions workflows
+        env:
+          ACTIONLINT_VERSION: 1.7.12
+          ACTIONLINT_SHA256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
+        run: |
+          archive="actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          curl -sSfL -o "$RUNNER_TEMP/$archive" \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/$archive"
+          echo "$ACTIONLINT_SHA256  $RUNNER_TEMP/$archive" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/actionlint"
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP/actionlint" actionlint
+          "$RUNNER_TEMP/actionlint/actionlint" -shellcheck= -pyflakes=
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version-file: .flutter-version
@@ -124,6 +136,8 @@ jobs:
       # (review R-04): its test, which also proves the placeholders in the
       # repository are refused.
       - run: tool/check_web_config_test.sh
+      - name: Publication material structure (drafts allowed)
+        run: node tool/check_publication.mjs --draft
       # NFR4.7: no production configuration or signing material in the repo.
       - name: No production config or keystores committed
         run: |
@@ -134,7 +148,10 @@ jobs:
 
   unit:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Flutter tests, native Robolectric tests and two release builds plus one
+    # profile build (freemium-plus) on a fresh runner also download/compile
+    # the Android dependencies.
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
@@ -146,6 +163,11 @@ jobs:
       # NFR7.1: every file of lib/ counts, untested files as 0%.
       - run: dart run tool/gen_coverage_helper.dart
       - run: flutter test --coverage
+      # freemium-plus FR5.2: the hidden sequence of the developer tools is
+      # compiled only with ENABLE_DEV_CHEATS=true (a constant, FR5.7), so its
+      # tests are skipped above and run here with the flag.
+      - name: Developer tools tests (ENABLE_DEV_CHEATS=true)
+        run: flutter test --dart-define=ENABLE_DEV_CHEATS=true test/dev/ui
       # Project coverage (80%, no exclusions) counts the estimation package
       # too: its lcov is appended to the app's (u2 cicd-pipeline.md §3).
       - name: Estimation package coverage
@@ -190,7 +212,10 @@ jobs:
           path: coverage/lcov.info
           retention-days: 14
       # Step 13 build test: the release build must not contain the E2E hooks
-      # nor the Dashboard PERF signal (u5); still two builds.
+      # nor the Dashboard PERF signal (u5); since freemium-plus also not the
+      # developer panel (FR5.7), with a third build (profile +
+      # ENABLE_DEV_CHEATS) as its positive control, and Play Billing and
+      # AD_ID expected in the merged manifest.
       - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
         with:
           distribution: temurin
@@ -243,7 +268,8 @@ jobs:
 
   rules:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # freemium-plus: + the functions and admin-script suites on the emulators.
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -264,6 +290,15 @@ jobs:
       # deletionStartedAt, the whole deletion) and the compatibility with the
       # deployed versions.
       - run: npm run test:rules
+      # freemium-plus D4, NFR5: the Cloud Functions (compiled with tsc
+      # strict, then mocha against the Firestore, Auth and Functions
+      # emulators with a fake Play and a fake Cloud Billing) and the owner's
+      # admin scripts (grant_plus, set_policy, migrate_capacity in --emulator
+      # mode). Tests only: no workflow ever deploys the functions (FR9.1).
+      - run: npm ci --prefix functions
+      - run: npm run test:functions
+      - run: npm ci --prefix tool/admin
+      - run: npm run test:admin
       # u8 NFR7.6: the account deletion page against the Firestore and Auth
       # emulators (rules of this commit loaded explicitly, Google sign-in
       # simulated), c8 at 80% of the lines of account-deletion.js, and the
@@ -279,7 +314,9 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # freemium-plus: + one more app build (developer tools) for
+    # tool/e2e_freemium.sh.
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Enable KVM
@@ -301,6 +338,12 @@ jobs:
           channel: stable
           cache: true
       - run: npm ci
+      # freemium-plus Step 18: the Functions emulator serves the callables
+      # of the demo build, and tool/e2e_freemium.sh gifts Plus with the
+      # owner's grant_plus.mjs in --emulator mode.
+      - run: npm ci --prefix functions
+      - run: npm --prefix functions run build
+      - run: npm ci --prefix tool/admin
       - run: flutter pub get
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -310,11 +353,15 @@ jobs:
             ~/.android/avd/*
             ~/.android/adb*
           key: e2e-${{ runner.os }}-api34-${{ hashFiles('pubspec.lock', 'android/**/*.kts') }}
-      - name: Start the Firebase emulators (Auth + Firestore, demo-vinoozy)
+      - name: Start the Firebase emulators (Auth + Firestore + Functions, demo-vinoozy)
         run: |
-          npx firebase emulators:start --only auth,firestore --project demo-vinoozy > emulators.log 2>&1 &
-          for i in $(seq 1 60); do
-            curl -sf http://127.0.0.1:8080 >/dev/null && curl -sf http://127.0.0.1:9099 >/dev/null && exit 0
+          npx firebase emulators:start --only auth,firestore,functions --project demo-vinoozy > emulators.log 2>&1 &
+          for i in $(seq 1 90); do
+            # The Functions emulator has loaded functions/lib when the CLI
+            # prints this line, after Auth and Firestore answer.
+            grep -q 'All emulators ready' emulators.log \
+              && curl -sf http://127.0.0.1:8080 >/dev/null \
+              && curl -sf http://127.0.0.1:9099 >/dev/null && exit 0
             sleep 2
           done
           cat emulators.log
@@ -338,10 +385,13 @@ jobs:
           cores: 4
           ram-size: 4096M
           disable-animations: true
+          # freemium_test.dart is skipped in the first run (no developer
+          # tools) and runs in tool/e2e_freemium.sh with ENABLE_DEV_CHEATS.
           script: |
             touch e2e-started
             flutter test integration_test --dart-define=FIREBASE_ENV=demo --dart-define=E2E=true
             tool/e2e_force_stop.sh
+            tool/e2e_freemium.sh
       # One automatic retry only when the Android emulator never booted (an
       # infrastructure error); a test failure is never retried.
       - name: End-to-end tests (retry after an emulator boot failure)
@@ -360,6 +410,7 @@ jobs:
           script: |
             flutter test integration_test --dart-define=FIREBASE_ENV=demo --dart-define=E2E=true
             tool/e2e_force_stop.sh
+            tool/e2e_freemium.sh
       - name: Fail when the tests failed
         if: steps.attempt1.outcome == 'failure' && hashFiles('e2e-started') != ''
         run: exit 1

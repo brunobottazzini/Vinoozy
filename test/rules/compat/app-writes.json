@@ -1286,6 +1286,135 @@
           }
         }
       ]
+    },
+    {
+      "app": "freemium-plus",
+      "writes": [
+        {
+          "label": "profile created on first sign-in (UserRepository.ensureProfile)",
+          "op": "set",
+          "path": "users/$uid",
+          "data": {
+            "displayName": "User A",
+            "email": "user-a@example.com",
+            "onboardingSeen": false,
+            "createdAt": "$serverTimestamp",
+            "schemaVersion": 1
+          }
+        },
+        {
+          "label": "personal cellar created (CellarRepository.ensurePersonalCellar)",
+          "op": "set",
+          "path": "cellars/$uid",
+          "data": {
+            "ownerId": "$uid",
+            "name": "La mia cantina",
+            "schemaVersion": 1,
+            "createdAt": "$serverTimestamp"
+          }
+        },
+        {
+          "label": "wine created with the active-wine counter in the same batch (WineRepository.addWine, ActiveWineCounter)",
+          "requiresRules": "freemium",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "set",
+              "path": "cellars/$uid/wines/compat-f1",
+              "data": {
+                "name": "Prosecco Superiore",
+                "quantity": 1,
+                "updatedBy": "$uid",
+                "wineType": "sparklingTank",
+                "level": "everyday",
+                "style": "tankFresh",
+                "typeSource": "auto",
+                "levelSource": "auto",
+                "styleSource": "auto",
+                "agingStartMonth": {
+                  "year": 2025,
+                  "month": 3
+                },
+                "migrationVersion": 3,
+                "matchKey": "prosecco superiore||",
+                "baseWindow": {
+                  "startYear": 2025,
+                  "startMonth": 3,
+                  "peakYear": 2025,
+                  "peakMonth": 9,
+                  "endYear": 2026,
+                  "endMonth": 9,
+                  "unit": "months",
+                  "confidence": "medium",
+                  "source": "internalRules",
+                  "basis": "denomination",
+                  "denominationKey": "prosecco",
+                  "tablesVersion": 3,
+                  "profile": "SP_TANK",
+                  "anchor": "bottling"
+                },
+                "window": {
+                  "startYear": 2025,
+                  "startMonth": 3,
+                  "peakYear": 2025,
+                  "peakMonth": 9,
+                  "endYear": 2026,
+                  "endMonth": 9,
+                  "unit": "months",
+                  "confidence": "medium",
+                  "source": "internalRules",
+                  "basis": "denomination",
+                  "denominationKey": "prosecco",
+                  "tablesVersion": 3,
+                  "profile": "SP_TANK",
+                  "anchor": "bottling"
+                },
+                "pairings": {
+                  "items": [],
+                  "categoryKeys": [
+                    "aperitif"
+                  ],
+                  "source": "internalRules"
+                },
+                "createdAt": "$serverTimestamp",
+                "updatedAt": "$serverTimestamp"
+              }
+            },
+            {
+              "op": "update",
+              "path": "cellars/$uid",
+              "data": {
+                "activeWineCount": "$increment:1",
+                "activeOpWineId": "compat-f1"
+              }
+            }
+          ]
+        },
+        {
+          "label": "last bottle drunk: quantity to 0 and counter -1 in the same batch (CellarActions.drink, ActiveWineCounter)",
+          "requiresRules": "freemium",
+          "op": "batch",
+          "writes": [
+            {
+              "op": "update",
+              "path": "cellars/$uid/wines/compat-f1",
+              "data": {
+                "quantity": "$increment:-1",
+                "updatedBy": "$uid",
+                "updatedAt": "$serverTimestamp"
+              }
+            },
+            {
+              "op": "update",
+              "path": "cellars/$uid",
+              "data": {
+                "activeWineCount": "$increment:-1",
+                "activeOpWineId": "compat-f1"
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }

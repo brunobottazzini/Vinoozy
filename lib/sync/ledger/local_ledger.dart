@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import '../../app/error_reporter.dart';
+import '../capacity_rejection.dart';
 import 'key_value_store.dart';
 import 'ledger_state.dart';
 
@@ -116,13 +117,19 @@ class LocalLedger {
   Future<void> markConfirmed(String wineId) =>
       _mutate((state) => (_without(state, wineId), null));
 
-  /// The server rejected the wine: keep the entry to tell the user.
-  Future<void> markRejected(String wineId) => _mutate(
-    (state) => (
-      _update(state, wineId, (e) => e.copyWith(state: JournalState.rejected)),
-      null,
-    ),
-  );
+  /// The server rejected the wine: keep the entry to tell the user, with the
+  /// capacity [reason] when there is one (freemium-plus FR2.5).
+  Future<void> markRejected(String wineId, {CapacityRejection? reason}) =>
+      _mutate(
+        (state) => (
+          _update(
+            state,
+            wineId,
+            (e) => e.copyWith(state: JournalState.rejected, reason: reason),
+          ),
+          null,
+        ),
+      );
 
   /// A rejected wine turned out to be still queued on the phone: track it
   /// again as `open`, so the next verification pass checks it.
@@ -131,7 +138,8 @@ class LocalLedger {
       _update(
         state,
         wineId,
-        (e) => e.copyWith(state: JournalState.open, notices: 0),
+        (e) =>
+            e.copyWith(state: JournalState.open, notices: 0, clearReason: true),
       ),
       null,
     ),

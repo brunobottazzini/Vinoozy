@@ -7,9 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../account/app_user.dart';
+import '../../ads/ui/dashboard_ad_slot.dart';
 import '../../cellar/ui/cellar_screen.dart' show CellarSetup;
 import '../../firebase/firebase_env.dart';
 import '../../l10n/app_localizations.dart';
+import '../../plan/ui/dashboard_plan_notices.dart';
 import '../../sharing/domain/membership.dart';
 import '../../sharing/sharing_providers.dart';
 import '../../sharing/ui/cellar_switcher.dart';
@@ -61,6 +63,9 @@ class DashboardScreen extends ConsumerWidget {
           // The banner explains a wait for the first sync (BR1.9).
           if (!preparing) OfflineBanner(cellarId: active.cellarId),
           Expanded(child: _body(context, ref, l10n, active)),
+          // freemium-plus FR7.3: the only ad space of the app, empty unless
+          // a banner of the day is loaded.
+          if (!preparing) DashboardAdSlot(user: user),
         ],
       ),
     );
@@ -97,6 +102,7 @@ class DashboardScreen extends ConsumerWidget {
         summary: summary,
         onOpenWine: onOpenWine,
         onOpenStatus: onOpenStatus,
+        header: DashboardPlanNotices(user: user),
       ),
     };
   }
@@ -112,11 +118,15 @@ class DashboardContent extends StatefulWidget {
     required this.summary,
     required this.onOpenWine,
     required this.onOpenStatus,
+    this.header,
   });
 
   final DashboardSummary summary;
   final void Function(String wineId) onOpenWine;
   final void Function(WineStatus status) onOpenStatus;
+
+  /// freemium-plus FR7.5, FR8.2: the plan notices, above the hero.
+  final Widget? header;
 
   @override
   State<DashboardContent> createState() => _DashboardContentState();
@@ -152,6 +162,7 @@ class _DashboardContentState extends State<DashboardContent> {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           sliver: SliverList.list(
             children: [
+              ?widget.header,
               _TotalHero(summary: summary, l10n: l10n),
               const SizedBox(height: 8),
               DrinkSoonSection(

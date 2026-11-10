@@ -8,9 +8,12 @@
   },
   "scripts": {
     "emulators": "firebase emulators:start --only auth,firestore --project demo-vinoozy",
-    "test:rules": "firebase emulators:exec --only firestore --project demo-vinoozy \"npm --prefix test/rules test -- u1.rules.test.mjs u7.rules.test.mjs u4.rules.test.mjs u8.rules.test.mjs label_autofill.rules.test.mjs compat/\"",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-vinoozy \"npm --prefix test/rules test -- u1.rules.test.mjs u7.rules.test.mjs u4.rules.test.mjs u8.rules.test.mjs label_autofill.rules.test.mjs style_profiles.rules.test.mjs freemium.rules.test.mjs compat/\"",
+    "test:functions": "npm --prefix functions run build && firebase emulators:exec --only firestore,auth,functions --project demo-vinoozy \"npm --prefix functions test\"",
+    "test:admin": "firebase emulators:exec --only firestore,auth --project demo-vinoozy \"node --test --test-concurrency=1 test/admin/*.test.mjs\"",
     "test:web": "firebase emulators:exec --only firestore,auth --project demo-vinoozy \"c8 --check-coverage --lines 80 --include docs/account-deletion/account-deletion.js --reporter text --reporter lcov --report-dir coverage/web node --test --test-concurrency=1 test/web/*.test.mjs\"",
-    "build:web": "tool/build_web_bundle.sh"
+    "build:web": "tool/build_web_bundle.sh",
+    "check:publication": "node tool/check_publication.mjs"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "6.0.0",

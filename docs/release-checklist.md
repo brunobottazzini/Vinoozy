@@ -2,6 +2,8 @@
 
 Si usa prima di ogni promozione in produzione (`cicd-pipeline.md` §5). La build da provare è quella del canale **Test interno**, pubblicata da `release.yml` dopo il merge in `main`.
 
+Per la **prima pubblicazione**, partire dallo [stato operativo](pubblicazione-stato-operativo.md) e dall'[audit di pubblicazione](vinoozy-pubblicazione-checklist.md): la presenza del workflow non prova che esistano già una build interna, una scheda Play o pagine pubbliche funzionanti.
+
 ## 1. Smoke test sul telefono reale
 
 - [ ] Installa la build dal canale Test interno (`versionCode`: ______).
@@ -237,6 +239,9 @@ Da aggiornare se cambiano i dati raccolti. Per U1 la dichiarazione è:
 | Testo cercato, parole dell'etichetta e codici a barre (solo con Open Food Facts acceso) | No, non li conserviamo noi | Sì, con Open Food Facts, insieme all'indirizzo IP | Funzionalità dell'app: suggerimenti di vini e riconoscimento dell'etichetta |
 | Indirizzi email di altre persone forniti dall'utente (u7-sharing, NFR8.4) | Sì | No | Funzionalità dell'app: condivisione della cantina (`cellars/{id}/members`). Cancellabili: "Elimina definitivamente" del proprietario, e la persona invitata può eliminare il proprio invito chiuso |
 | Bevute: data, voto, note e "Com'era?" (u4-cellar, NFR8.1, NFR8.3) | Sì | No | Funzionalità dell'app: Storico e riscontro sulla stima (`cellars/{id}/drinkingRecords`). Visibili solo a chi vede la cantina; mai nei rapporti di crash |
+| Cronologia acquisti: abbonamento Plus, token d'acquisto di Google Play e stato (freemium-plus, FR3.3, NFR6) | Sì | No (il pagamento lo gestisce Google Play) | Funzionalità dell'app: attivare Plus (`entitlements/{uid}`; token e stato in `purchases/{hash}`, solo lato server). Dopo la cancellazione dell'account resta solo il record d'acquisto senza uid |
+| Interazioni con l'app: contatori mensili di letture, scritture e byte, identificativo casuale dell'installazione (freemium-plus, FR6.3, NFR6) | Sì | No | Funzionalità dell'app e prevenzione degli abusi: misura del costo del piano gratuito (`usage/{uid}`). Solo numeri, dettagli cancellati dopo 90 giorni e con l'account |
+| ID pubblicità, IP e dati tecnici degli annunci (freemium-plus, FR7; **solo con `adsEnabled` acceso**) | Sì, dall'SDK di Google AdMob | Sì, con Google AdMob | Pubblicità. Registro dei tentativi in `adSlots/{uid}` (cancellato dopo 90 giorni e con l'account). Da dichiarare **prima** di accendere gli annunci |
 
 - [ ] **Note e voti delle bevute** (u4-cellar, NFR8.3): rientrano nella voce "Cantina e vini" già dichiarata, o nella riga delle bevute sopra. Verificato: ______.
 - [ ] **Foto delle etichette** (u6-label-recognition, NFR8.3): **non** si dichiarano come raccolte. Si leggono solo sul telefono con ML Kit, non si conservano e non vanno nel cloud; la copia di lavoro sta in `cache/label/` e si cancella appena la lettura finisce (al più 10 minuti, e al successivo avvio dopo una chiusura improvvisa). Il codice a barre e le parole verso Open Food Facts sono nella riga di Open Food Facts sopra.
@@ -265,6 +270,15 @@ Dati che restano solo sul telefono, fuori da Firestore, nel valore `ledger.v1` d
 | `owner.uid`, `owner.email`, `owner.seq` | account a cui appartengono le modifiche in coda e contatore delle scritture |
 | `journal[].wineId`, `journal[].cellarId`, `journal[].name`, `journal[].ownerUid`, `journal[].state`, `journal[].notices` | giornale delle creazioni non ancora confermate: ID, cantina, nome del vino, proprietario, stato (`open`/`rejected`) e numero di avvisi mostrati |
 | `resetPending` | reset dei dati locali in corso |
+
+Freemium e Plus (intent `261110-freemium-plus`, NFR6; procedura in `docs/plus-setup.md` e `docs/blaze-switch.md`):
+
+- [ ] **Acquisti e misurazione** dichiarati nella scheda "Sicurezza dei dati" con le righe della tabella sopra, prima di pubblicare la versione con Plus. Verificato: ______.
+- [ ] **ID pubblicità**: il manifest dichiara `com.google.android.gms.permission.AD_ID` (SDK degli annunci, controllato da `tool/check_release_build.sh`). Dichiarazione "ID pubblicità" in Contenuti dell'app compilata. Verificato: ______.
+- [ ] **Annunci**: finché `config/policy.adsEnabled` è `false` l'SDK non parte. Prima di accenderli: voce "Annunci" di Play Console, riga degli annunci nella scheda "Sicurezza dei dati" e messaggio di consenso UMP in AdMob. Verificato: ______.
+- [ ] **Informativa privacy e pagina di cancellazione** (it, en, pt-BR) con il paragrafo su Plus, misurazione e annunci e la nota "un abbonamento attivo si annulla in Google Play". Testi da far rivedere a un professionista prima di vendere (studio di monetizzazione, "Diritti del consumatore e privacy"). Verificato: ______.
+- [ ] **Cancellazione dell'account**: con le funzioni pubblicate, `onUserDeleted` cancella `entitlements`, `usage` e `adSlots`; del record d'acquisto resta il token senza uid. Provato con un account di test: ______.
+- [ ] **Smoke test di Plus** sul test interno, con un account tester di licenza: acquisto, Profilo "Plus", "Ripristina acquisti" su un secondo telefono, annullamento in Google Play e Plus attivo fino alla scadenza. Esito: ______.
 
 - [ ] Backup automatico disattivato (`allowBackup=false` e regole di estrazione dei dati, NFR8.4): verificato nel manifest dell'AAB.
 - [ ] Dichiarazione Data Safety coerente con le tabelle sopra.

@@ -12,6 +12,17 @@ abstract final class CellarFields {
 
   /// Member key changed in the same batch as [memberSlots] (u7-sharing).
   static const String memberOpKey = 'memberOpKey';
+
+  /// Wines with `quantity > 0` of the cellar (freemium-plus FR2.2, D1).
+  /// Absent until the first write of an app that keeps it.
+  static const String activeWineCount = 'activeWineCount';
+
+  /// Wine id changed in the same batch as [activeWineCount] (D1).
+  static const String activeOpWineId = 'activeOpWineId';
+
+  /// Active-wine limit frozen by the admin migration (FR2.3); never written
+  /// by the client.
+  static const String legacyActiveWineLimit = 'legacyActiveWineLimit';
 }
 
 /// A cellar. In U1 every user has exactly one personal cellar whose id is
@@ -25,6 +36,8 @@ class Cellar {
     this.schemaVersion = currentSchemaVersion,
     this.memberSlots = 0,
     this.memberOpKey,
+    this.activeWineCount,
+    this.legacyActiveWineLimit,
   });
 
   /// Never throws: missing or mistyped fields get safe defaults; a cellar
@@ -41,7 +54,16 @@ class Cellar {
       FirestoreValues.integer(data[CellarFields.memberSlots]),
     ),
     memberOpKey: FirestoreValues.string(data[CellarFields.memberOpKey]),
+    activeWineCount: FirestoreValues.integer(
+      data[CellarFields.activeWineCount],
+    ),
+    legacyActiveWineLimit: _positive(
+      FirestoreValues.integer(data[CellarFields.legacyActiveWineLimit]),
+    ),
   );
+
+  static int? _positive(int? value) =>
+      value == null || value < 1 ? null : value;
 
   static int _nonNegative(int? value) => value == null || value < 0 ? 0 : value;
 
@@ -80,4 +102,13 @@ class Cellar {
 
   /// Key of the invitation changed with the last counter update.
   final String? memberOpKey;
+
+  /// Active wines as kept by the rules-checked counter (FR2.2); null before
+  /// the first counted write. It may be negative before the admin migration
+  /// recounts it (FR2.3), like a quantity after concurrent decrements.
+  final int? activeWineCount;
+
+  /// Limit frozen by the migration (FR2.3); null when the cellar was never
+  /// migrated, so the free limit of the policy applies.
+  final int? legacyActiveWineLimit;
 }

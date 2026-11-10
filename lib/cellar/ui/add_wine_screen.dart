@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../account/app_user.dart';
 import '../../app/app_event_logger.dart';
 import '../../app/providers.dart';
+import '../../plan/ui/capacity_limit_sheet.dart';
 import '../../catalog/core/wine_catalog.dart';
 import '../../catalog/platform/catalog_providers.dart';
 import '../../l10n/app_localizations.dart';
@@ -1068,6 +1069,19 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
       setState(() => _saving = false);
       return;
     }
+    // freemium-plus FR2.5: a finished duplicate coming back takes a place
+    // of the free plan; at the limit, nothing is written and the form stays.
+    if (existing.storedQuantity <= 0 &&
+        !await ensureCapacity(
+          context,
+          ref,
+          user: widget.user,
+          cellar: _cellar,
+        )) {
+      if (mounted) setState(() => _saving = false);
+      return;
+    }
+    if (!mounted) return;
     // At most up to 99 bottles in all (BR1.3 cap, review R-05).
     final outcome = await actions.addBottles(
       cellar: _cellar,

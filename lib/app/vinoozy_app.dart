@@ -8,6 +8,7 @@ import '../e2e/e2e_locale.dart';
 import '../l10n/app_localizations.dart';
 import '../sharing/sharing_providers.dart';
 import '../sharing/ui/shared_cellar_notice.dart';
+import '../sync/capacity_rejection.dart';
 import '../sync/sync_error_bus.dart';
 import 'locale_resolution.dart';
 import 'providers.dart';
@@ -108,6 +109,14 @@ class _SyncEventListenerState extends ConsumerState<SyncEventListener> {
     if (event is CellarAccessLost) return _showAccessLost(event);
     final l10n = AppLocalizations.of(context);
     final message = switch (event) {
+      // freemium-plus FR2.5: a capacity refusal says why.
+      WriteRejected(:final wineName, reason: CapacityRejection.capacityLimit) =>
+        l10n.writeRejectedCapacityLimit(wineName),
+      WriteRejected(
+        :final wineName,
+        reason: CapacityRejection.capacityConflict,
+      ) =>
+        l10n.writeRejectedCapacityConflict(wineName),
       WriteRejected(:final wineName) => l10n.writeRejected(wineName),
       WriteFailed() => l10n.saveFailed,
       // Handled by AccountGate (back to sign-in).

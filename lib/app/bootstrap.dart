@@ -37,6 +37,9 @@ import '../firebase/firebase_env.dart';
 import '../firebase/firestore_bootstrap.dart';
 import '../l10n/app_localizations.dart';
 import '../label/label_providers.dart';
+import '../plan/plan_providers.dart';
+import '../plan/plan_session.dart';
+import '../plan/plan_wiring.dart';
 import '../sharing/data/sharing_repository.dart';
 import '../sharing/sharing_providers.dart';
 import '../sync/ledger/key_value_store.dart';
@@ -51,12 +54,22 @@ import 'providers.dart';
 
 /// Everything started by [AppBootstrap.start].
 class AppServices {
-  AppServices({required this.container, required this.gate});
+  AppServices({
+    required this.container,
+    required this.gate,
+    this.onDispose = const [],
+  });
 
   final ProviderContainer container;
   final AccountGate gate;
 
+  /// freemium-plus: the plan session's gate listener and app lifecycle.
+  final List<void Function()> onDispose;
+
   void dispose() {
+    for (final dispose in onDispose) {
+      dispose();
+    }
     gate.dispose();
     container.dispose();
   }
@@ -90,6 +103,19 @@ abstract final class AppBootstrap {
             ? const AndroidPlayIntegrityProvider()
             : const AndroidDebugProvider(),
       );
+    } else if (!kReleaseMode) {
+      // freemium-plus: the callables keep `enforceAppCheck` in the Functions
+      // emulator too (the token is decoded, not verified), so demo builds
+      // send a debug App Check token. Never in a release build.
+      try {
+        await FirebaseAppCheck.instance.activate(
+          providerAndroid: const AndroidDebugProvider(),
+        );
+      } on Object catch (error) {
+        // A demo build still starts; its callables then fail and are
+        // reported where they are used.
+        debugPrint('App Check debug provider not active: $error');
+      }
     }
 
     final reporter = ErrorReporter(_errorSink(env));
@@ -176,18 +202,25 @@ abstract final class AppBootstrap {
   }) {
     FirebaseFirestore db() => FirebaseFirestore.instance;
     final bus = SyncErrorBus();
+    // freemium-plus FR6.1: one meter for every repository; FR2.2: one
+    // active-wine counter for the wine and drink writes, which explains a
+    // refused +1 as the capacity limit only while the policy turns it on.
+    final plan = PlanServices.create(env: env, db: db(), reporter: reporter);
+    final meter = plan.meter;
     final watcher = SyncWatcher(
       ledger: ledger,
-      gateway: FirestoreSyncGateway(db),
+      gateway: FirestoreSyncGateway(db, meter: meter),
       reporter: reporter,
     );
-    final cellars = CellarRepository(db: db());
+    final cellars = CellarRepository(db: db(), meter: meter);
     final wines = WineRepository(
       db: db(),
       ledger: ledger,
       bus: bus,
       reporter: reporter,
       onWriteStarted: watcher.trigger,
+      counter: plan.counter,
+      meter: meter,
     );
     final AuthService auth = kIsE2EBuild
         ? EmulatorGoogleAuthService(FirebaseAuth.instance)
@@ -197,13 +230,24 @@ abstract final class AppBootstrap {
             serverClientId: _serverClientId,
           );
     late final ProviderContainer container;
-    final users = UserRepository(db: db());
+    final users = UserRepository(db: db(), meter: meter);
+    final session = PlanSession(
+      meter: meter,
+      uploader: plan.uploader,
+      store: plan.store,
+      reporter: reporter,
+      entitlements: plan.entitlements,
+      devOverrides: plan.devOverrides,
+      onSessionChanged: (uid) =>
+          container.read(signedInUidProvider.notifier).set(uid),
+    );
     final resets = ResetCoordinator(
       ledger: ledger,
       bootstrap: firestore,
       watcher: watcher,
       reporter: reporter,
       invalidateListeners: () => invalidateFirestoreListeners(container),
+      clearAccountState: session.clearAccountData,
     );
     final network = ConnectivityNetworkStatus();
     // u8-account (logical-components.md): the account deletion run by the
@@ -247,6 +291,7 @@ abstract final class AppBootstrap {
       db: db(),
       network: network,
       reporter: reporter,
+      meter: meter,
     );
     // u4-cellar: the drinks keep the sync banner "pending" until the server
     // confirms them (security-design.md §4, NFR6.6).
@@ -264,6 +309,8 @@ abstract final class AppBootstrap {
       probe: probe,
       ids: RandomIdGenerator(),
       onWriteStarted: watcher.trigger,
+      counter: plan.counter,
+      meter: meter,
     );
     final reconciler = RecordReconciler(
       preferences: SharedPreferences.getInstance,
@@ -289,11 +336,20 @@ abstract final class AppBootstrap {
         onboardingFlagProvider.overrideWithValue(
           OnboardingFlag(SharedPreferences.getInstance),
         ),
+        ...plan.overrides(),
       ],
     );
     // Drinks queued by an earlier session count too (NFR6.6).
     unawaited(probe.checkAtStartup());
-    return AppServices(container: container, gate: gate);
+    return AppServices(
+      container: container,
+      gate: gate,
+      onDispose: plan.attach(
+        container: container,
+        gate: gate,
+        session: session,
+      ),
+    );
   }
 
   /// OAuth web client id of the production project (public value), passed by

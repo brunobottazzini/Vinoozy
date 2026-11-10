@@ -13,6 +13,8 @@ import '../cellar/data/cellar_repository.dart';
 import '../cellar/data/wine_repository.dart';
 import '../core/clock.dart';
 import '../core/id_generator.dart';
+import '../plan/plan_providers.dart'
+    show entitlementProvider, planPolicyStreamProvider;
 import '../sharing/sharing_providers.dart' show invalidateSharingListeners;
 import '../sync/ledger/local_ledger.dart';
 import '../sync/snapshot_meta.dart';
@@ -163,6 +165,9 @@ void invalidateFirestoreListeners(ProviderContainer container) {
     ..invalidate(wineProvider)
     ..invalidate(archivedWinesProvider)
     ..invalidate(recentDrinksProvider)
-    ..invalidate(historyPagerProvider);
+    ..invalidate(historyPagerProvider)
+    // freemium-plus: the entitlement and policy listeners.
+    ..invalidate(entitlementProvider)
+    ..invalidate(planPolicyStreamProvider);
   invalidateSharingListeners(container);
 }

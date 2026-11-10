@@ -33,6 +33,30 @@ rules_version = '2';
 //
 // A management batch (cellar + members) totals 4, well under the 20 per
 // batch of Firestore.
+//
+// freemium-plus (FR2.2, FR2.4, D1, D2, NFR2) adds, per evaluated path:
+//
+//   Path and operation                                  | Accesses
+//   ----------------------------------------------------|---------------------
+//   wines: write that keeps the active state            | as above
+//   wines: write paired with the counter                | as above (the cellar
+//                                                       |  get/getAfter is the
+//                                                       |  same document)
+//   wines: write of the published app, no counter       | +1 (config/policy)
+//   wines: delete during an account deletion            | +1 (users profile)
+//   cellars/{id}: activeWineCount by the owner, -1      | 1 (the wine)
+//   cellars/{id}: activeWineCount by the owner, +1      | 3 (wine, policy,
+//                                                       |    entitlement)
+//   cellars/{id}: activeWineCount by an `edit` member   | 4 (members, wine,
+//                                                       |    policy,
+//                                                       |    entitlement)
+//   entitlements, config, usage, adSlots: read          | 0
+//
+// The 4 of an `edit` member's reactivation goes over the 3 per path of u7
+// NFR5.2, an internal target of u7-sharing; it stays well within the 10 per
+// single request and 20 per batch of Firestore (NFR2). The worst batch, an
+// `edit` member reactivating a wine with the limit on (wine + cellar), reads
+// 5 distinct documents (test/rules/freemium.rules.test.mjs, "worst case").
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -159,6 +183,73 @@ service cloud.firestore {
         .get('deletionStartedAt', null) != null;
     }
 
+    // ---- Freemium and Plus (freemium-plus FR1.1, FR1.2, FR2.4, D2) -------
+
+    function policyPath() {
+      return /databases/$(database)/documents/config/policy;
+    }
+
+    // FR2.4: the capacity limit applies only when config/policy turns it on.
+    // A missing policy is the safe default: off (study §7.1). One document
+    // access (the policy).
+    function capacityLimitOn() {
+      return exists(policyPath())
+        && get(policyPath()).data.get('capacityLimitEnabled', false) == true;
+    }
+
+    // FR2.4: the migrated legacy limit of the cellar, otherwise the free
+    // limit of the policy (15 by default). Read only while the limit is on,
+    // so the policy exists.
+    function activeWineLimit(cellarData) {
+      return cellarData.get('legacyActiveWineLimit',
+        get(policyPath()).data.get('freeActiveWineLimit', 15));
+    }
+
+    // FR1.2: plan plus, status active or grace, and expiresAt after the
+    // server time, or no expiresAt for a manual_grant. The same test as
+    // Entitlement.isPlusValidAt in the app. One document access.
+    function hasValidPlus(userId) {
+      let path = /databases/$(database)/documents/entitlements/$(userId);
+      return exists(path) && validPlus(get(path).data);
+    }
+
+    function validPlus(e) {
+      return e.get('plan', '') == 'plus'
+        && e.get('status', '') in ['active', 'grace']
+        && (e.get('expiresAt', null) == null
+          ? e.get('source', '') == 'manual_grant'
+          : e.expiresAt > request.time);
+    }
+
+    // NFR1: the plan, the product switches, the usage counters, the ad slots
+    // and the purchases are written only by the backend or by the owner's
+    // admin scripts (Admin SDK, which skips these rules). The client reads
+    // only its own entitlement, usage and ad slots, and the policy.
+    match /entitlements/{userId} {
+      allow get: if signedIn() && userId == uid();
+      allow list, create, update, delete: if false;
+    }
+
+    match /config/{configId} {
+      allow get: if signedIn();
+      allow list, create, update, delete: if false;
+    }
+
+    match /usage/{userId}/{document=**} {
+      allow read: if signedIn() && userId == uid();
+      allow write: if false;
+    }
+
+    match /adSlots/{userId}/{document=**} {
+      allow read: if signedIn() && userId == uid();
+      allow write: if false;
+    }
+
+    // FR3.3: the purchase tokens bound to an account; server only.
+    match /purchases/{tokenHash} {
+      allow read, write: if false;
+    }
+
     // ---- cellars/{cellarId} (NFR4.3, NFR4.11) ----------------------------
 
     function validCellarName(name) {
@@ -226,6 +317,53 @@ service cloud.firestore {
               && getAfter(opMember()).data.get('closedBy', '') == 'invitee'));
       }
 
+      // ---- activeWineCount counter (freemium-plus FR2.2, FR2.4, D1, D2) --
+      // Same pattern as memberSlots: every batch that changes whether a wine
+      // is active (quantity > 0, FR2.1) writes the cellar with
+      // activeWineCount +1 or -1 and activeOpWineId = that wine id, plus that
+      // wine. A batch writes the cellar once, so one wine pairs with the
+      // counter change. The change is checked on the wine as the batch
+      // leaves it (getAfter), so an increment resolved on the server
+      // differently from what the client expected is refused (D1).
+      // No lower bound: before the admin migration recounts it (FR2.3) the
+      // counter starts from 0 wherever it was first written, so it may go
+      // below 0, like a quantity (ADR-004). legacyActiveWineLimit is never
+      // written here: no branch of `allow update` lets it change.
+
+      function opWine() {
+        return /databases/$(database)/documents/cellars/$(cellarId)/wines/$(incoming().activeOpWineId);
+      }
+
+      function opWineDelta() {
+        return (existsAfter(opWine()) && getAfter(opWine()).data.get('quantity', 0) > 0 ? 1 : 0)
+          - (exists(opWine()) && get(opWine()).data.get('quantity', 0) > 0 ? 1 : 0);
+      }
+
+      // D2: an increase stays within the effective limit, unless the limit
+      // is off or the cellar owner has a valid Plus (the plan of the cellar
+      // owner counts, also for an `edit` member's write).
+      function withinActiveLimit(count) {
+        return !capacityLimitOn()
+          || count <= activeWineLimit(existing())
+          || hasValidPlus(existing().ownerId);
+      }
+
+      function validActiveCounterUpdate() {
+        let data = incoming();
+        let delta = opWineDelta();
+        return onlyChanged(['activeWineCount', 'activeOpWineId'])
+          && data.activeWineCount is int
+          && data.activeOpWineId is string
+          && data.activeOpWineId.size() >= 1
+          && data.activeOpWineId.size() <= 128
+          && (existing().ownerId == uid()
+            || (isActiveMember(cellarId)
+              && get(memberPath(cellarId)).data.permission == 'edit'))
+          && delta != 0
+          && data.activeWineCount == existing().get('activeWineCount', 0) + delta
+          && (delta < 0 || withinActiveLimit(data.activeWineCount));
+      }
+
       // Short circuit: the owner may read cellars/{uid} even before it exists.
       // An invited person with an active invitation reads name and owner.
       allow get: if signedIn()
@@ -240,6 +378,7 @@ service cloud.firestore {
             && onlyChanged(['name'])
             && validCellarName(incoming().name))
           || validSlotsUpdate()
+          || validActiveCounterUpdate()
           || (onlyChanged(['matchKeyBackfill'])
             && resource.data.get('matchKeyBackfill', false) == false
             && incoming().matchKeyBackfill == true
@@ -540,15 +679,64 @@ service cloud.firestore {
           && validMatchKey(incoming().matchKey);
       }
 
+      // ---- Active-wine counter on wine writes (freemium-plus FR2.2, FR2.6,
+      // D1) ----------------------------------------------------------------
+
+      function cellarPath() {
+        return /databases/$(database)/documents/cellars/$(cellarId);
+      }
+
+      // The cellar of the same batch names this wine and moves the counter
+      // by exactly [delta] (its own rule checks the wine and the limit).
+      function counterPaired(wineId, delta) {
+        return getAfter(cellarPath()).data.get('activeOpWineId', '') == wineId
+          && getAfter(cellarPath()).data.get('activeWineCount', 0)
+            == get(cellarPath()).data.get('activeWineCount', 0) + delta;
+      }
+
+      // FR2.6: the app version already published does not keep the counter.
+      // Its writes stay valid while the capacity limit is off and the cellar
+      // is not migrated yet. "Not migrated" is the absence of
+      // legacyActiveWineLimit, which only the admin migration writes (FR2.3):
+      // the new app may already have started activeWineCount in a cellar
+      // where an invited member still runs the published app (mixed-version
+      // cellar), and those writes must keep passing. After the migration
+      // every change of the active state must carry the counter (D1).
+      function uncountedWriteAllowed() {
+        return !('legacyActiveWineLimit' in get(cellarPath()).data) && !capacityLimitOn();
+      }
+
+      // [delta]: +1 when the write makes the wine active, -1 when it makes
+      // it inactive, 0 when it stays as it was (FR2.1: active = quantity > 0).
+      function counterKept(wineId, delta) {
+        return delta == 0 || counterPaired(wineId, delta) || uncountedWriteAllowed();
+      }
+
+      function updateDelta() {
+        return (incoming().get('quantity', 0) > 0 ? 1 : 0)
+          - (existing().get('quantity', 0) > 0 ? 1 : 0);
+      }
+
       // Read: owner and active invitations; write: owner and active `edit`
       // invitations; delete: the owner only (u7 NFR4.1, Q3; u4-cellar uses
-      // it for "Delete").
+      // it for "Delete"). freemium-plus: every write that changes whether
+      // the wine is active keeps the counter (FR2.2); a create is always +1
+      // (validWineCreate requires quantity >= 1). An account deletion
+      // (u8-account NFR4.3) deletes the wines without the counter: the
+      // cellar goes with them, and the limit never blocks it (FR2.4, NFR4).
       match /wines/{wineId} {
         allow read: if signedIn() && canReadCellar(cellarId);
-        allow create: if signedIn() && canEditCellar(cellarId) && validWineCreate();
+        allow create: if signedIn() && canEditCellar(cellarId) && validWineCreate()
+          && counterKept(wineId, 1);
         allow update: if signedIn() && canEditCellar(cellarId)
-          && (validWineUpdate() || validMatchKeyBackfill());
-        allow delete: if signedIn() && isOwner(cellarId);
+          && (validWineUpdate() || validMatchKeyBackfill())
+          && counterKept(wineId, updateDelta());
+        // A wine already gone (a retried delete) changes nothing: allowed,
+        // as before the counter.
+        allow delete: if signedIn() && isOwner(cellarId)
+          && (resource == null
+            || counterKept(wineId, existing().get('quantity', 0) > 0 ? -1 : 0)
+            || deletingAccount());
       }
 
       // ---- cellars/{cellarId}/drinkingRecords/{recordId} (u7 NFR4.8;

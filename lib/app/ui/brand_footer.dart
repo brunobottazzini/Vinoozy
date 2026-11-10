@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../dev/dev_cheats.dart';
+import '../../dev/dev_providers.dart';
 import '../../l10n/app_localizations.dart';
 import 'about_screen.dart';
 import 'brand_splash.dart';
@@ -40,6 +42,17 @@ class BrandFooter extends ConsumerWidget {
         key: const Key('brand-footer'),
         borderRadius: BorderRadius.circular(16),
         onTap: () => AboutScreen.open(context),
+        // freemium-plus FR5.2: two taps on the logo start the hidden
+        // sequence; a single tap still opens "Informazioni". Only in
+        // development builds: the constant drops it from release builds.
+        onDoubleTap: kDevCheatsAvailable
+            ? () {
+                final detector = ref.read(secretSequenceProvider);
+                detector
+                  ..register(DevGestureStep.logo)
+                  ..register(DevGestureStep.logo);
+              }
+            : null,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
           child: Row(

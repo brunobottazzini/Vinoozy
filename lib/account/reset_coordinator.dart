@@ -30,6 +30,7 @@ class ResetCoordinator {
     required this._reporter,
     required this._invalidateListeners,
     this._inProcessReset = kInProcessFirestoreReset,
+    this._clearAccountState,
   });
 
   final LocalLedger _ledger;
@@ -39,6 +40,13 @@ class ResetCoordinator {
   final void Function() _invalidateListeners;
   final bool _inProcessReset;
 
+  /// freemium-plus FR1.4, FR5.5, FR6.1: the plan state of the previous
+  /// account on this phone (developer override, entitlement copy, usage
+  /// counters and upload state). Run before the listeners are invalidated,
+  /// so the plan listeners are closed too; a failure is reported and never
+  /// stops the reset.
+  final Future<void> Function()? _clearAccountState;
+
   /// Clears the local data before [newUid] opens its cellar.
   ///
   /// u8-account BR1.7 step 7: with [openCellar] false, [newUid] is the account
@@ -47,6 +55,14 @@ class ResetCoordinator {
   /// cellar without clearing the (already empty) data again.
   Future<ResetOutcome> reset(String newUid, {bool openCellar = true}) async {
     _watcher.stop();
+    final clearAccountState = _clearAccountState;
+    if (clearAccountState != null) {
+      try {
+        await clearAccountState();
+      } catch (error, stack) {
+        await _reporter.report(error, stack, reason: 'ResetPlanStateFailed');
+      }
+    }
     _invalidateListeners();
     try {
       await _ledger.setResetPending(true);

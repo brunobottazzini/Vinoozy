@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/providers.dart';
 import '../../l10n/app_localizations.dart';
+import '../capacity_rejection.dart';
 import '../ledger/local_ledger.dart';
 
 /// Wines already shown a notice in this app session: each `rejected` entry
@@ -98,6 +99,22 @@ class RejectedWineNotice extends StatelessWidget {
                 style: theme.textTheme.bodyLarge,
               ),
             ),
+            // freemium-plus FR2.5: why the draft was not synced.
+            if (switch (entry.reason) {
+                  CapacityRejection.capacityLimit => l10n.rejectedCapacityLimit,
+                  CapacityRejection.capacityConflict =>
+                    l10n.rejectedCapacityConflict,
+                  null => null,
+                }
+                case final reason?)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  reason,
+                  key: const Key('rejected-wine-reason'),
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ),
             Wrap(
               alignment: WrapAlignment.end,
               spacing: 8,

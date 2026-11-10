@@ -9,9 +9,13 @@ import 'package:vinoozy/cellar/domain/wine_draft.dart';
 import 'package:vinoozy/sync/ledger/local_ledger.dart';
 import 'package:vinoozy/sync/sync_error_bus.dart';
 
+import '../../cellar/cellar_harness.dart' show BatchRecorder;
 import '../../helpers/fakes.dart';
 import '../../helpers/firestore_mocks.dart';
 
+// freemium-plus FR2.2: create and incrementQuantity write one batch, so the
+// active-wine counter of the cellar can join the wine write. These tests
+// check the batch operations by path instead of a single `set`/`update`.
 void main() {
   setUpAll(registerFirestoreFallbacks);
 
@@ -20,8 +24,9 @@ void main() {
     email: 'user-a@example.com',
     displayName: 'User A',
   );
+  const winePath = 'cellars/user-a/wines/wine-1';
   late MockFirestore db;
-  late MockDocRef wineRef;
+  late BatchRecorder batches;
   late InMemoryKeyValueStore store;
   late LocalLedger ledger;
   late SyncErrorBus bus;
@@ -43,7 +48,6 @@ void main() {
 
   setUp(() {
     db = MockFirestore();
-    wineRef = MockDocRef();
     store = InMemoryKeyValueStore();
     sink = RecordingErrorSink();
     ledger = LocalLedger(store: store, reporter: recordingReporter(sink));
@@ -52,8 +56,14 @@ void main() {
     bus.events.listen(events.add);
     writesStarted = 0;
     serverWrite = Completer<void>();
-    when(() => db.doc('cellars/user-a/wines/wine-1')).thenReturn(wineRef);
-    when(() => wineRef.set(any())).thenAnswer((_) => serverWrite.future);
+    // Every batch commit ends as the test completes [serverWrite].
+    batches = BatchRecorder(
+      db,
+      commitWith: (_, result) => serverWrite.future.then(
+        result.complete,
+        onError: result.completeError,
+      ),
+    );
     repository = WineRepository(
       db: db,
       ledger: ledger,
@@ -73,9 +83,14 @@ void main() {
 
       expect(outcome, isA<SaveAccepted>());
       expect(writesStarted, 1);
-      final written =
-          verify(() => wineRef.set(captureAny())).captured.single
-              as Map<String, dynamic>;
+      final batch = batches.single;
+      expect(batch.opAt(winePath).kind, 'set');
+      final written = batch.opAt(winePath).data!;
+      // A new wine is active: the cellar counter goes +1 in the same batch.
+      expect(batch.opAt('cellars/user-a').data, {
+        'activeWineCount': FieldValue.increment(1),
+        'activeOpWineId': 'wine-1',
+      });
       expect(written['name'], 'Barolo');
       expect(written['vintage'], 2016);
       expect(written['quantity'], 2);
@@ -159,7 +174,7 @@ void main() {
       final outcome = await create();
 
       expect(outcome, isA<SaveFailure>());
-      verifyNever(() => wineRef.set(any()));
+      expect(batches.batches, isEmpty);
       expect(writesStarted, 0);
       expect(sink.reasons, ['LedgerWriteFailed']);
     },
@@ -168,7 +183,7 @@ void main() {
   test(
     'a synchronous cache error returns SaveFailure and drops the entry',
     () async {
-      when(() => wineRef.set(any())).thenThrow(StateError('cache closed'));
+      when(() => db.batch()).thenThrow(StateError('cache closed'));
 
       final outcome = await create();
 
@@ -181,7 +196,7 @@ void main() {
 
   group('incrementQuantity (BR3.4)', () {
     test('writes an increment, not an absolute value', () async {
-      when(() => wineRef.update(any())).thenAnswer((_) async {});
+      serverWrite.complete();
 
       final outcome = await repository.incrementQuantity(
         cellarId: 'user-a',
@@ -189,29 +204,46 @@ void main() {
         wineName: 'Barolo',
         user: user,
         delta: -1,
+        storedQuantity: 3,
       );
 
       expect(outcome, isA<SaveAccepted>());
-      final update =
-          verify(() => wineRef.update(captureAny())).captured.single
-              as Map<Object, Object?>;
-      expect(update['quantity'], isA<FieldValue>());
+      final update = batches.single.opAt(winePath).data!;
+      expect(update['quantity'], FieldValue.increment(-1));
       expect(update['updatedBy'], 'user-a');
+      // 3 -> 2: still active, so no counter in the batch.
+      expect(batches.single.ops, hasLength(1));
       expect((await ledger.read()).owner!.seq, 1);
     });
 
-    test('a rejected increment is published without a journal entry', () async {
-      final failing = Completer<void>();
-      when(() => wineRef.update(any())).thenAnswer((_) => failing.future);
+    test('the last bottle carries the counter -1', () async {
+      serverWrite.complete();
 
       await repository.incrementQuantity(
         cellarId: 'user-a',
         wineId: 'wine-1',
         wineName: 'Barolo',
         user: user,
-        delta: 1,
+        delta: -1,
+        storedQuantity: 1,
       );
-      failing.completeError(firestoreError('permission-denied'));
+
+      expect(batches.single.opAt('cellars/user-a').data, {
+        'activeWineCount': FieldValue.increment(-1),
+        'activeOpWineId': 'wine-1',
+      });
+    });
+
+    test('a rejected increment is published without a journal entry', () async {
+      await repository.incrementQuantity(
+        cellarId: 'user-a',
+        wineId: 'wine-1',
+        wineName: 'Barolo',
+        user: user,
+        delta: 1,
+        storedQuantity: 2,
+      );
+      serverWrite.completeError(firestoreError('permission-denied'));
       await pumpEventQueue();
 
       expect(events.single, isA<WriteRejected>());
@@ -226,6 +258,7 @@ void main() {
           wineName: 'Barolo',
           user: user,
           delta: 0,
+          storedQuantity: 1,
         ),
         throwsArgumentError,
       );
@@ -267,22 +300,11 @@ void main() {
   });
 
   group('refusals in a shared cellar (u7-sharing BR1.7, BR1.14)', () {
-    late MockDocRef sharedRef;
-    late Completer<void> sharedWrite;
-
-    setUp(() {
-      sharedRef = MockDocRef();
-      sharedWrite = Completer<void>();
-      when(() => db.doc('cellars/user-z/wines/wine-1')).thenReturn(sharedRef);
-      when(() => sharedRef.set(any())).thenAnswer((_) => sharedWrite.future);
-      when(() => sharedRef.update(any())).thenAnswer((_) => sharedWrite.future);
-    });
-
     test('BR1.14 a refused wine creation publishes WriteRejected and '
         'CellarAccessLost with the cellar of the path', () async {
       await repository.create(cellarId: 'user-z', user: user, draft: draft());
 
-      sharedWrite.completeError(firestoreError('permission-denied'));
+      serverWrite.completeError(firestoreError('permission-denied'));
       await pumpEventQueue();
 
       expect(events, hasLength(2));
@@ -299,8 +321,9 @@ void main() {
         wineName: 'Barolo',
         user: user,
         delta: -1,
+        storedQuantity: 2,
       );
-      sharedWrite.completeError(firestoreError('permission-denied'));
+      serverWrite.completeError(firestoreError('permission-denied'));
       await pumpEventQueue();
 
       expect(events.whereType<CellarAccessLost>().single.cellarId, 'user-z');
@@ -309,7 +332,7 @@ void main() {
     test('an invalid-argument refusal is not an access loss', () async {
       await repository.create(cellarId: 'user-z', user: user, draft: draft());
 
-      sharedWrite.completeError(firestoreError('invalid-argument'));
+      serverWrite.completeError(firestoreError('invalid-argument'));
       await pumpEventQueue();
 
       expect(events.single, isA<WriteRejected>());

@@ -79,7 +79,8 @@ void main() {
         currentYear: 2026,
       ).draft!;
       await repository.addWine(cellarId: 'user-a', user: user, draft: draft);
-      final data = batches.batches.last.ops.single.data!;
+      // freemium-plus FR2.2: the batch also moves the cellar counter.
+      final data = batches.batches.last.opAt('cellars/user-a/wines/w1').data!;
       expect(data[WineFields.style], 'classicAge');
       expect(data[WineFields.styleSource], 'user');
       expect(data[WineFields.typeSource], 'auto');

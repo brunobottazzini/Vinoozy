@@ -1,0 +1,101 @@
+# Manual deploy of the Cloud Functions to production (freemium-plus
+# deployment pipeline, FR9.1). Never triggered by a merge. Only after the
+# project is on the Blaze plan with the spending protections of
+# docs/blaze-switch.md. Kept apart from firebase-deploy.yml on purpose:
+# promote.yml reads the last successful firebase-deploy.yml run as the
+# deployed rules, so a functions-only run there would fool that check.
+# Keyless auth through Workload Identity Federation, accepted only from this
+# repository and the firebase-prod environment (owner approval).
+name: functions-deploy
+run-name: functions-deploy ${{ inputs.ref }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: A v* tag or a full 40-character commit hash contained in main
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify-ref:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      sha: ${{ steps.check.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: The ref must be a v* tag or a commit of main
+        id: check
+        env:
+          REF: ${{ inputs.ref }}
+        run: |
+          sha="$(git rev-parse --verify "$REF^{commit}")"
+          if git show-ref --verify --quiet "refs/tags/$REF" && [[ "$REF" == v* ]]; then
+            echo "tag $REF -> $sha"
+          elif ! [[ "$REF" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "$REF must be a v* tag or a full commit hash, not a branch name" >&2
+            exit 1
+          elif git merge-base --is-ancestor "$sha" origin/main; then
+            echo "commit $sha is contained in main"
+          else
+            echo "$REF is neither a v* tag nor a commit of main" >&2
+            exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+  test:
+    needs: verify-ref
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.verify-ref.outputs.sha }}
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm ci --prefix functions
+      # The same backend suite as ci.yml, on the emulators with fake Play and
+      # Billing clients.
+      - run: npm run test:functions
+
+  deploy:
+    needs: [verify-ref, test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: firebase-prod
+    permissions:
+      contents: read
+      id-token: write # Workload Identity Federation, this job only
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.verify-ref.outputs.sha }}
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm ci --prefix functions
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.WIF_SERVICE_ACCOUNT }}
+      # firebase.json builds functions/ (predeploy) and deploys to
+      # europe-west8. --force keeps the Artifact Registry cleanup policy
+      # (FR9.3) without an interactive prompt.
+      - run: >
+          npx firebase deploy --only functions
+          --project "${{ vars.FIREBASE_PROD_PROJECT_ID }}" --non-interactive --force

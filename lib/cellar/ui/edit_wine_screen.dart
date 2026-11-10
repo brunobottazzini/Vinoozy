@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../account/app_user.dart';
 import '../../app/providers.dart';
 import '../../l10n/app_localizations.dart';
+import '../../plan/ui/capacity_limit_sheet.dart';
 import '../../sharing/domain/membership.dart';
 import '../cellar_actions.dart';
 import '../cellar_providers.dart';
@@ -186,6 +187,19 @@ class _EditWineScreenState extends ConsumerState<EditWineScreen> {
     });
     final draft = validation.draft;
     if (draft == null) return;
+    // freemium-plus FR2.5: bringing a finished wine back above 0 takes a
+    // place of the free plan; at the limit nothing is written.
+    if (widget.wine.storedQuantity <= 0 &&
+        _quantity > 0 &&
+        !await ensureCapacity(
+          context,
+          ref,
+          user: widget.user,
+          cellar: widget.cellar,
+        )) {
+      return;
+    }
+    if (!mounted) return;
     setState(() => _saving = true);
     final result = await ref
         .read(cellarActionsProvider)

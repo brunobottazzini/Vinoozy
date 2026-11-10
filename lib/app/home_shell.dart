@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../account/app_user.dart';
+import '../ads/ads_providers.dart';
 import '../cellar/cellar_providers.dart';
 import '../cellar/domain/cellar_filter.dart';
 import '../cellar/domain/wine.dart';
@@ -13,6 +14,9 @@ import '../cellar/ui/cellar_screen.dart';
 import '../cellar/ui/history_screen.dart';
 import '../cellar/ui/wine_detail_screen.dart';
 import '../dashboard/ui/dashboard_screen.dart';
+import '../dev/dev_cheats.dart';
+import '../dev/dev_providers.dart';
+import '../dev/ui/dev_tools_screen.dart';
 import '../l10n/app_localizations.dart';
 import '../label/autofill_providers.dart';
 import '../label/core/label_session.dart';
@@ -21,6 +25,7 @@ import '../label/ui/add_choice_screen.dart';
 import '../label/ui/label_capture_flow.dart';
 import '../label/ui/label_reading_screen.dart';
 import '../label/ui/replace_label_dialog.dart';
+import '../plan/ui/capacity_limit_sheet.dart';
 import '../sharing/domain/membership.dart';
 import '../sharing/sharing_providers.dart';
 import 'providers.dart';
@@ -64,6 +69,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   bool _historyOpened = false;
 
   void _select(int tab) {
+    // freemium-plus FR5.2: the hidden sequence counts every tap on the bar,
+    // also on the tab already shown. Development builds only.
+    if (kDevCheatsAvailable) _registerDevStep(_devStepOf(tab));
     if (tab == _tab) return;
     // The History stays mounted once opened: coming back to it reads the
     // first page again, so drinks written meanwhile, also by other people
@@ -79,6 +87,23 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       _tab = tab;
       if (tab == HomeShell.historyTab) _historyOpened = true;
     });
+    // freemium-plus FR7.3: the ad slot lives only on the Dashboard tab.
+    ref
+        .read(dashboardTabVisibleProvider.notifier)
+        .set(tab == HomeShell.dashboardTab);
+  }
+
+  static DevGestureStep _devStepOf(int tab) => switch (tab) {
+    HomeShell.cellarTab => DevGestureStep.cellar,
+    HomeShell.historyTab => DevGestureStep.history,
+    _ => DevGestureStep.dashboard,
+  };
+
+  /// freemium-plus FR5.2: a completed sequence opens the developer tools.
+  /// Called only inside `if (kDevCheatsAvailable)`.
+  void _registerDevStep(DevGestureStep step) {
+    if (!ref.read(secretSequenceProvider).register(step)) return;
+    unawaited(DevToolsScreen.open(context, widget.user));
   }
 
   void _openWine(String wineId) {
@@ -112,9 +137,18 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   }
 
   /// "Aggiungi" from the Cellar and "Add your first wine" from the
-  /// Dashboard: the three ways to add (u6-label-recognition BR1.1).
-  void _openAdd([AccessibleCellar? cellar, List<Wine>? wines]) {
-    Navigator.of(context).push(
+  /// Dashboard: the three ways to add (u6-label-recognition BR1.1). With the
+  /// free plan's limit reached, the explanation opens instead and nothing is
+  /// written (freemium-plus FR2.5).
+  Future<void> _openAdd([AccessibleCellar? cellar, List<Wine>? wines]) async {
+    final allowed = await ensureCapacity(
+      context,
+      ref,
+      user: widget.user,
+      cellar: cellar ?? ref.read(activeCellarProvider(widget.user)),
+    );
+    if (!allowed || !mounted) return;
+    await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => AddChoiceScreen(target: _target(cellar, wines)),
       ),
@@ -126,7 +160,21 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     super.initState();
     _shares = ref.read(sharedImageProvider.notifier);
     _scheduleShellReport();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref
+          .read(dashboardTabVisibleProvider.notifier)
+          .set(_tab == HomeShell.dashboardTab);
+    });
+    // freemium-plus FR5.2: leaving the app starts the sequence again.
+    if (kDevCheatsAvailable) {
+      _devLifecycle = AppLifecycleListener(
+        onHide: () => ref.read(secretSequenceProvider).reset(),
+      );
+    }
   }
+
+  AppLifecycleListener? _devLifecycle;
 
   @override
   void didUpdateWidget(HomeShell oldWidget) {
@@ -136,6 +184,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
 
   @override
   void dispose() {
+    _devLifecycle?.dispose();
     _shares.shellGone();
     super.dispose();
   }

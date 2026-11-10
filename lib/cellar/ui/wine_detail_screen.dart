@@ -10,6 +10,7 @@ import '../../account/app_user.dart';
 import '../../app/providers.dart';
 import '../../dashboard/today_provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../../plan/ui/capacity_limit_sheet.dart';
 import '../../sharing/domain/membership.dart';
 import '../../app/theme.dart';
 import '../../app/ui/country_flag.dart';
@@ -395,12 +396,25 @@ class _QuantityRow extends ConsumerWidget {
                 tooltip: l10n.increaseQuantity,
                 // Off at 99 bottles (BR1.3 cap, review R-05).
                 onPressed: QuantityDelta.canIncrease(wine.storedQuantity, 1)
-                    ? () => actions.addBottles(
-                        cellar: cellar,
-                        user: user,
-                        wine: wine,
-                        n: 1,
-                      )
+                    ? () async {
+                        // freemium-plus FR2.5: a finished wine coming back
+                        // takes a place of the free plan.
+                        if (wine.storedQuantity <= 0 &&
+                            !await ensureCapacity(
+                              context,
+                              ref,
+                              user: user,
+                              cellar: cellar,
+                            )) {
+                          return;
+                        }
+                        await actions.addBottles(
+                          cellar: cellar,
+                          user: user,
+                          wine: wine,
+                          n: 1,
+                        );
+                      }
                     : null,
                 icon: const Icon(Icons.add),
               ),

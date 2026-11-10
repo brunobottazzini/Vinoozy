@@ -1,0 +1,13 @@
+{
+  "name": "vinoozy-admin-tools",
+  "private": true,
+  "type": "module",
+  "description": "Owner-only administration scripts (freemium-plus D7): grant_plus.mjs, set_policy.mjs, migrate_capacity.mjs. Run from the owner's Mac with credentials from GOOGLE_APPLICATION_CREDENTIALS or --credentials <path> outside the repository; --emulator targets the demo-vinoozy emulator.",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "firebase-admin": "13.10.0"
+  }
+}

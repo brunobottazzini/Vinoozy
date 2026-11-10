@@ -58,6 +58,15 @@ android/key.properties
 # Node (firebase-tools, rules tests)
 node_modules/
 
+# Cloud Functions build output (freemium-plus D4): compiled by `npm run build`
+functions/lib/
+functions/.env.local
+
+# Service account keys of the admin scripts (freemium-plus D7, FR4.4): they
+# live outside the repository; these patterns catch one copied in by mistake
+*service-account*.json
+tool/admin/*.key.json
+
 # Firebase emulators
 firebase-debug.log
 firestore-debug.log
@@ -71,3 +80,4 @@ android/app/google-services.json
 config/firebase_prod.json
 *.jks
 *.keystore
+*.p12

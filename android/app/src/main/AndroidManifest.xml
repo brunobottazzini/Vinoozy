@@ -79,6 +79,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/label_file_paths" />
         </provider>
+        <!-- freemium-plus D6: AdMob App ID from the admobAppId placeholder
+             (app/build.gradle.kts; Google's test ID unless ADMOB_APP_ID is
+             set). The SDK is never initialized while adsEnabled=false (FR7.1). -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

@@ -11,11 +11,11 @@ on:
         required: true
         type: string
       fraction:
-        description: Staged rollout fraction for "promote"
+        description: '1.0 for the first release; 0.2 is for subsequent updates only'
         required: true
         type: choice
         options: ['0.2', '1.0']
-        default: '0.2'
+        default: '1.0'
       action:
         description: promote, complete (100%) or halt (stop the rollout)
         required: true
@@ -34,7 +34,6 @@ jobs:
       contents: read
       actions: read # the firebase-deploy.yml runs, for the rules check
     env:
-      PLAY_SA_JSON_FILE: ${{ runner.temp }}/play-production.json
       VERSION_CODE: ${{ inputs.versionCode }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -65,7 +64,10 @@ jobs:
           # `tablesVersion`), which the earlier rules refuse.
           # wine-style-profiles (BR10.3): style, sources, the bottling or
           # disgorgement month, migrationVersion and the windows in months.
-          RULES_FEATURES: sharing cellar account origin level-override style-profiles
+          # freemium-plus (FR2.2): the active-wine counter (`activeWineCount`,
+          # `activeOpWineId`) written on the cellar with every change of a
+          # wine's active state, which the earlier rules refuse.
+          RULES_FEATURES: sharing cellar account origin level-override style-profiles freemium
         run: |
           title="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/firebase-deploy.yml/runs?status=success&per_page=1" \
             --jq '.workflow_runs[0].display_title // empty')"
@@ -110,7 +112,10 @@ jobs:
       - name: Write the Play credentials
         env:
           PLAY_SA_JSON: ${{ secrets.PLAY_PRODUCTION_SA_JSON }}
-        run: printf '%s' "$PLAY_SA_JSON" > "$PLAY_SA_JSON_FILE"
+        run: |
+          umask 077
+          echo "PLAY_SA_JSON_FILE=$RUNNER_TEMP/play-production.json" >> "$GITHUB_ENV"
+          printf '%s' "$PLAY_SA_JSON" > "$RUNNER_TEMP/play-production.json"
       - name: Run ${{ inputs.action }}
         env:
           ACTION: ${{ inputs.action }}

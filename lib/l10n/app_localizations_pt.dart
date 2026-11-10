@@ -984,6 +984,13 @@ class AppLocalizationsPt extends AppLocalizations {
       'You can read the privacy policy at this address:';
 
   @override
+  String get profileOpenLink => 'Open in browser';
+
+  @override
+  String get profileOpenLinkFailed =>
+      'Could not open the page. You can copy the link and open it in your browser.';
+
+  @override
   String get profileCopyLink => 'Copy link';
 
   @override
@@ -2228,6 +2235,217 @@ class AppLocalizationsPt extends AppLocalizations {
   String aboutDbClassified(String percent) {
     return '$percent% of the wines with a recognised type';
   }
+
+  @override
+  String get planTitle => 'Plan';
+
+  @override
+  String get planFree => 'Free';
+
+  @override
+  String get planPlus => 'Plus';
+
+  @override
+  String get planPlusGift => 'Plus (gift)';
+
+  @override
+  String get planDevUnlockAll => 'DEV · Test Plus';
+
+  @override
+  String get planDevSimulateFree => 'DEV · Simulated free plan';
+
+  @override
+  String get planDevSimulateExpired => 'DEV · Simulated expired Plus';
+
+  @override
+  String get planDiscoverPlus => 'Discover Plus';
+
+  @override
+  String get plusTitle => 'Vinoozy Plus';
+
+  @override
+  String get plusBenefitsTitle => 'With Plus';
+
+  @override
+  String get plusBenefitNoAds => 'No ads';
+
+  @override
+  String get plusBenefitNoLimit => 'No limit on the wines in your cellar';
+
+  @override
+  String get plusComingSoon => 'Plus is coming soon';
+
+  @override
+  String get plusLoading => 'Reading the prices from Google Play';
+
+  @override
+  String get plusStoreUnavailable =>
+      'Could not read the prices from Google Play. Try again later.';
+
+  @override
+  String plusPriceMonthly(String price) {
+    return '$price per month';
+  }
+
+  @override
+  String plusPriceAnnual(String price) {
+    return '$price per year';
+  }
+
+  @override
+  String get plusRenewal =>
+      'The subscription renews automatically at the price shown until you cancel it on Google Play.';
+
+  @override
+  String get plusTerms =>
+      'Payment is charged to your Google Play account when you confirm the purchase. You can cancel at any time: Plus stays active until the end of the period already paid. When Plus ends, all your wines stay.';
+
+  @override
+  String get plusRestore => 'Restore purchases';
+
+  @override
+  String get plusManage => 'Manage or cancel the subscription on Google Play';
+
+  @override
+  String get plusActive => 'Plus is active on this account';
+
+  @override
+  String get plusActiveGift =>
+      'You have Plus as a gift: no charges and no renewals.';
+
+  @override
+  String get plusPending =>
+      'Payment pending: Plus will be active when Google Play confirms it.';
+
+  @override
+  String get plusVerifying => 'Verifying the purchase';
+
+  @override
+  String get plusVerified =>
+      'Purchase verified: Plus will be active in a few seconds.';
+
+  @override
+  String get plusPurchaseFailed => 'The purchase was not completed. Try again.';
+
+  @override
+  String get plusInvalidPurchase =>
+      'Google Play did not confirm this purchase for Vinoozy.';
+
+  @override
+  String get plusOwnedByOther =>
+      'This subscription already belongs to another Vinoozy account.';
+
+  @override
+  String get plusVerificationUnavailable =>
+      'The purchase could not be verified now. Try again later: the subscription stays on Google Play.';
+
+  @override
+  String get capacityLimitTitle => 'You reached the limit of the free plan';
+
+  @override
+  String capacityLimitBody(int limit) {
+    return 'The free plan includes up to $limit different wines in your cellar. You can always edit, drink and add bottles to the wines you already have. To add a new one, finish or delete a wine, or switch to Plus.';
+  }
+
+  @override
+  String capacityLimitBodyComingSoon(int limit) {
+    return 'The free plan includes up to $limit different wines in your cellar. You can always edit, drink and add bottles to the wines you already have. To add a new one, finish or delete a wine. Plus is coming soon.';
+  }
+
+  @override
+  String get rejectedCapacityLimit =>
+      'Not synced: it goes over the wine limit of the free plan. The change stays on this phone.';
+
+  @override
+  String get rejectedCapacityConflict =>
+      'Not synced: the cellar changed on another device at the same time. The change stays on this phone: try again.';
+
+  @override
+  String writeRejectedCapacityLimit(String name) {
+    return '$name: not synced, over the limit of the free plan';
+  }
+
+  @override
+  String writeRejectedCapacityConflict(String name) {
+    return '$name: not synced, the cellar changed on another device';
+  }
+
+  @override
+  String get freeIntroTitle => 'The free plan';
+
+  @override
+  String freeIntroLimit(int limit) {
+    return 'You can manage up to $limit different wines for free.';
+  }
+
+  @override
+  String get freeIntroAds =>
+      'Light use is ad-free. If you go over the monthly usage threshold of the service, you may see occasional ads that help cover the costs of servers and sync.';
+
+  @override
+  String get freeIntroNoAds => 'No ads in the launch version.';
+
+  @override
+  String get freeIntroPlus =>
+      'With Plus you remove the ads and the cellar limit.';
+
+  @override
+  String get noticeGotIt => 'Got it';
+
+  @override
+  String get thresholdTitle => 'Ads help keep Vinoozy free';
+
+  @override
+  String get thresholdBody =>
+      'You reached the monthly ad-free usage threshold. From now on you may see occasional ads: they help us cover the costs of servers and sync, keeping Vinoozy free.';
+
+  @override
+  String get thresholdReset =>
+      'The count starts again next month. With Plus you can use the app without ads and without the cellar limit.';
+
+  @override
+  String thresholdNextReset(String date) {
+    return 'Next reset: $date';
+  }
+
+  @override
+  String get thresholdHowItWorks => 'How it works';
+
+  @override
+  String get thresholdHowItWorksBody =>
+      'The threshold depends on an estimate of the syncs with the cloud made by this account during the month. Offline use alone does not create new cloud operations. Ads appear at most once a day, only on the Dashboard, and never while you save or export your data.';
+
+  @override
+  String get adLabel => 'Advertisement';
+
+  @override
+  String get devToolsTitle => 'Developer tools';
+
+  @override
+  String get devUnlockAll => 'Unlock everything — test Plus';
+
+  @override
+  String get devSimulateFree => 'Simulate free plan';
+
+  @override
+  String get devSimulateExpired => 'Simulate expired Plus';
+
+  @override
+  String get devRestore => 'Restore normal state';
+
+  @override
+  String get devNoOverride => 'No simulation active';
+
+  @override
+  String get devApplied => 'Scenario applied in the Firestore emulator too';
+
+  @override
+  String get devIncomplete =>
+      'Incomplete simulation: the Firestore emulator did not confirm the test entitlement. The server rules do not see this scenario.';
+
+  @override
+  String get devNotice =>
+      'Development builds with the emulator only: no payments, tokens or receipts.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -3211,6 +3429,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get profilePrivacyBody =>
       'Você pode ler a política de privacidade neste endereço:';
+
+  @override
+  String get profileOpenLink => 'Abrir no navegador';
+
+  @override
+  String get profileOpenLinkFailed =>
+      'Não foi possível abrir a página. Você pode copiar o link e abri-lo no navegador.';
 
   @override
   String get profileCopyLink => 'Copiar link';
@@ -4460,4 +4685,216 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String aboutDbClassified(String percent) {
     return '$percent% dos vinhos com o tipo reconhecido';
   }
+
+  @override
+  String get planTitle => 'Plano';
+
+  @override
+  String get planFree => 'Gratuito';
+
+  @override
+  String get planPlus => 'Plus';
+
+  @override
+  String get planPlusGift => 'Plus de presente';
+
+  @override
+  String get planDevUnlockAll => 'DEV · Plus de teste';
+
+  @override
+  String get planDevSimulateFree => 'DEV · Plano gratuito simulado';
+
+  @override
+  String get planDevSimulateExpired => 'DEV · Plus expirado simulado';
+
+  @override
+  String get planDiscoverPlus => 'Conheça o Plus';
+
+  @override
+  String get plusTitle => 'Vinoozy Plus';
+
+  @override
+  String get plusBenefitsTitle => 'Com o Plus';
+
+  @override
+  String get plusBenefitNoAds => 'Sem anúncios';
+
+  @override
+  String get plusBenefitNoLimit => 'Sem limite de vinhos na adega';
+
+  @override
+  String get plusComingSoon => 'O Plus chegará em breve';
+
+  @override
+  String get plusLoading => 'Lendo os preços no Google Play';
+
+  @override
+  String get plusStoreUnavailable =>
+      'Não foi possível ler os preços no Google Play. Tente novamente mais tarde.';
+
+  @override
+  String plusPriceMonthly(String price) {
+    return '$price por mês';
+  }
+
+  @override
+  String plusPriceAnnual(String price) {
+    return '$price por ano';
+  }
+
+  @override
+  String get plusRenewal =>
+      'A assinatura é renovada automaticamente pelo preço indicado até você cancelá-la no Google Play.';
+
+  @override
+  String get plusTerms =>
+      'O pagamento é cobrado na sua conta do Google Play quando você confirma a compra. Você pode cancelar a qualquer momento: o Plus continua ativo até o fim do período já pago. Quando o Plus termina, todos os seus vinhos continuam.';
+
+  @override
+  String get plusRestore => 'Restaurar compras';
+
+  @override
+  String get plusManage => 'Gerenciar ou cancelar a assinatura no Google Play';
+
+  @override
+  String get plusActive => 'O Plus está ativo nesta conta';
+
+  @override
+  String get plusActiveGift =>
+      'Você tem o Plus de presente: sem cobranças e sem renovações.';
+
+  @override
+  String get plusPending =>
+      'Pagamento pendente: o Plus será ativado quando o Google Play confirmar.';
+
+  @override
+  String get plusVerifying => 'Verificando a compra';
+
+  @override
+  String get plusVerified =>
+      'Compra verificada: o Plus será ativado em poucos segundos.';
+
+  @override
+  String get plusPurchaseFailed =>
+      'A compra não foi concluída. Tente novamente.';
+
+  @override
+  String get plusInvalidPurchase =>
+      'O Google Play não confirmou esta compra para o Vinoozy.';
+
+  @override
+  String get plusOwnedByOther =>
+      'Esta assinatura já pertence a outra conta do Vinoozy.';
+
+  @override
+  String get plusVerificationUnavailable =>
+      'Não foi possível verificar a compra agora. Tente novamente mais tarde: a assinatura continua no Google Play.';
+
+  @override
+  String get capacityLimitTitle => 'Você atingiu o limite do plano gratuito';
+
+  @override
+  String capacityLimitBody(int limit) {
+    return 'O plano gratuito inclui até $limit vinhos diferentes na adega. Você sempre pode editar, beber e adicionar garrafas aos vinhos que já tem. Para adicionar um novo, termine ou exclua um vinho, ou passe para o Plus.';
+  }
+
+  @override
+  String capacityLimitBodyComingSoon(int limit) {
+    return 'O plano gratuito inclui até $limit vinhos diferentes na adega. Você sempre pode editar, beber e adicionar garrafas aos vinhos que já tem. Para adicionar um novo, termine ou exclua um vinho. O Plus chegará em breve.';
+  }
+
+  @override
+  String get rejectedCapacityLimit =>
+      'Não sincronizado: ultrapassa o limite de vinhos do plano gratuito. A alteração fica neste celular.';
+
+  @override
+  String get rejectedCapacityConflict =>
+      'Não sincronizado: a adega mudou em outro dispositivo ao mesmo tempo. A alteração fica neste celular: tente novamente.';
+
+  @override
+  String writeRejectedCapacityLimit(String name) {
+    return '$name: não sincronizado, ultrapassa o limite do plano gratuito';
+  }
+
+  @override
+  String writeRejectedCapacityConflict(String name) {
+    return '$name: não sincronizado, a adega mudou em outro dispositivo';
+  }
+
+  @override
+  String get freeIntroTitle => 'O plano gratuito';
+
+  @override
+  String freeIntroLimit(int limit) {
+    return 'Você pode gerenciar gratuitamente até $limit vinhos diferentes.';
+  }
+
+  @override
+  String get freeIntroAds =>
+      'O uso leve é sem anúncios. Se você ultrapassar o limite mensal de uso do serviço, poderá ver anúncios ocasionais que ajudam a cobrir os custos dos servidores e da sincronização.';
+
+  @override
+  String get freeIntroNoAds => 'Sem anúncios na versão de lançamento.';
+
+  @override
+  String get freeIntroPlus =>
+      'Com o Plus você elimina os anúncios e o limite da adega.';
+
+  @override
+  String get noticeGotIt => 'Entendi';
+
+  @override
+  String get thresholdTitle => 'Os anúncios ajudam a manter o Vinoozy gratuito';
+
+  @override
+  String get thresholdBody =>
+      'Você atingiu o limite mensal de uso sem anúncios. A partir de agora poderá ver anúncios ocasionais: eles nos ajudam a cobrir os custos dos servidores e da sincronização, mantendo o Vinoozy gratuito.';
+
+  @override
+  String get thresholdReset =>
+      'A contagem recomeça no próximo mês. Com o Plus você pode usar o app sem anúncios e sem o limite da adega.';
+
+  @override
+  String thresholdNextReset(String date) {
+    return 'Próximo reinício: $date';
+  }
+
+  @override
+  String get thresholdHowItWorks => 'Como funciona';
+
+  @override
+  String get thresholdHowItWorksBody =>
+      'O limite depende de uma estimativa das sincronizações com a nuvem feitas por esta conta no mês. O uso offline, sozinho, não gera novas operações na nuvem. Os anúncios aparecem no máximo uma vez por dia, só no Painel, e nunca enquanto você salva ou exporta seus dados.';
+
+  @override
+  String get adLabel => 'Anúncio';
+
+  @override
+  String get devToolsTitle => 'Ferramentas de desenvolvedor';
+
+  @override
+  String get devUnlockAll => 'Desbloquear tudo — Plus de teste';
+
+  @override
+  String get devSimulateFree => 'Simular plano gratuito';
+
+  @override
+  String get devSimulateExpired => 'Simular Plus expirado';
+
+  @override
+  String get devRestore => 'Restaurar estado normal';
+
+  @override
+  String get devNoOverride => 'Nenhuma simulação ativa';
+
+  @override
+  String get devApplied => 'Cenário aplicado também no emulador do Firestore';
+
+  @override
+  String get devIncomplete =>
+      'Simulação incompleta: o emulador do Firestore não confirmou o direito de teste. As regras do servidor não veem este cenário.';
+
+  @override
+  String get devNotice =>
+      'Somente builds de desenvolvimento com o emulador: nenhum pagamento, token ou recibo.';
 }
