@@ -2137,3 +2137,268 @@
 **Context**: operation > deployment-execution > deployment-execution-questions.md
 
 ---
+
+## Artifact Created
+**Timestamp**: 2026-11-10T13:30:06Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261110-freemium-plus/operation/deployment-execution/deployment-log.md
+**Context**: operation > deployment-execution > deployment-log.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-11-10T13:30:14Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261110-freemium-plus/operation/deployment-execution/smoke-test-results.md
+**Context**: operation > deployment-execution > smoke-test-results.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-11-10T13:30:19Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261110-freemium-plus/operation/deployment-execution/health-check-report.md
+**Context**: operation > deployment-execution > health-check-report.md
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-11-10T13:30:20Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: deployment-execution
+**Next Stage**: observability-setup
+**Brief Digest**: none
+**Sensor State**: required-sections@aidlc/spaces/default/intents/261110-freemium-plus/operation/deployment-execution/deployment-log.md=not-run; required-sections@aidlc/spaces/default/intents/261110-freemium-plus/operation/deployment-execution/smoke-test-results.md=not-run; required-sections@aidlc/spaces/default/intents/261110-freemium-plus/operation/deployment-execution/health-check-report.md=not-run; required-sections@aidlc/spaces/default/intents/261110-freemium-plus/operation/deployment-execution/deployment-execution-questions.md=not-run; upstream-coverage@aidlc/spaces/default/intents/261110-freemium-plus/operation/deployment-execution/deployment-log.md=not-run
+**Open Decisions**: 0
+**Question Id**: 0847b1d9
+**Question Type**: gate
+**Question Chat**: 32256623-2139-4c8e-a92f-530a1f1d2b19
+**Question Shows**: sha256:d5c59f404f4a8d330ff500410666fe05f0d019e789f508d499475d68b1f095b3
+
+---
+
+## Human Turn
+**Timestamp**: 2026-11-10T13:35:14Z
+**Event**: HUMAN_TURN
+**Session**: 32256623-2139-4c8e-a92f-530a1f1d2b19
+**Origin**: person
+**Source**: picker
+**Picked**: ["Approve"]
+**Message Id**: 108bd9f2
+**Open Questions**: 4f1162d1, b3bdf612, 0847b1d9
+**Questions Digest**: {"file":"aidlc/spaces/default/intents/261110-freemium-plus/operation/deployment-execution/deployment-execution-questions.md","entries":{"Q1":"4a5f1a192b740ff4","Q2":"3064d03e88766a0b","Q3":"71de34760cb21d3a"}}
+
+---
+
+## Question Replied
+**Timestamp**: 2026-11-10T13:35:14Z
+**Event**: QUESTION_REPLIED
+**Session**: 32256623-2139-4c8e-a92f-530a1f1d2b19
+**Question**: Deployment Execution completata per la parte che posso fare da qui. Come vuoi procedere?
+**Reply**: Approve
+**Options**: ["Approve","Request Changes"]
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-11-10T13:35:17Z
+**Event**: GATE_APPROVED
+**Stage**: deployment-execution
+**User Input**: Approve
+**Person Reply**: Approve
+**Message Id**: 108bd9f2
+**Brief Digest**: none
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-11-10T13:35:17Z
+**Event**: STAGE_COMPLETED
+**Stage**: deployment-execution
+**Validation Basis**: {"graphContract":"sha256:9324fac9ed5362e892b6f0c448c7cd3701eec134e2e24178d842efc36efe955a","inputs":[{"artifact":"build-test-results","contentHash":"sha256:ea51d416b7bea8754b771ebfd382c2f7638acf28f491ea6e0d0923f5d83ad299","instanceCount":1,"presentCount":1,"producer":"build-and-test","required":true,"structureHash":"sha256:351217e7ae53fc70c5d16f5409a015f228fc64ff6bc7433a1236db62729d9865"},{"artifact":"cd-config","contentHash":"sha256:30cf236e479d7e68a7f3a958bfda00e85a8884ab347a50fbe52fb05bb6d80ac7","instanceCount":1,"presentCount":1,"producer":"deployment-pipeline","required":true,"structureHash":"sha256:02bd04d02689639505209fa48ccc76390baf428cd4f85d0602e547f9653f9f9c"},{"artifact":"deployment-strategy","contentHash":"sha256:ecaba7bab87518672a82abc33edf1527eb6124abdd6af1deaf58afa19aedb52d","instanceCount":1,"presentCount":1,"producer":"deployment-pipeline","required":true,"structureHash":"sha256:d01359a3623e64379fb57a76a4881b8a0810188d36661b847da67d1800a5e5c8"},{"artifact":"environment-inventory","contentHash":"sha256:f1b0fa0177b7fb5036e9c1e1f1aadfeb9ba069bd7962e17c39a7a2ad6e9df5c6","instanceCount":1,"presentCount":0,"producer":"environment-provisioning","required":true,"structureHash":"sha256:e7aabe8d84d59a90eed19fe0404e80adf88b22bfc864b741e6a2b3370e57ab6c"}],"outputs":[{"artifact":"deployment-execution-questions","contentHash":"sha256:a512d12768753029534867e0e525f8b3350acb728e39bca289cdc87085f5df5a","instanceCount":1,"presentCount":1,"producer":"deployment-execution","required":true,"structureHash":"sha256:ddc53588b72cb8d335a3f90b79f0a3d537a496c2ab23b186b8a9583b518d9821"},{"artifact":"deployment-log","contentHash":"sha256:22e85cfaff9991e13dddb9f2b0cf1b65379bbfd99ac3f8235a86d186889e43a3","instanceCount":1,"presentCount":1,"producer":"deployment-execution","required":true,"structureHash":"sha256:a48f3593e229f1bbd37b75fcb995db2291c0e03bd4e98521c251f5bd62a35807"},{"artifact":"health-check-report","contentHash":"sha256:704277783ade9ef6669952ebb8c03c75600920e75498496398ae6e27505a00bb","instanceCount":1,"presentCount":1,"producer":"deployment-execution","required":true,"structureHash":"sha256:9871b153dde07d95b617d5e5478677c3143155db780c38c5b478986c981de8f0"},{"artifact":"smoke-test-results","contentHash":"sha256:ddcd1649a086510ceaf9583e0f90750ed38000ccd9a477b090bf3257dda28f6f","instanceCount":1,"presentCount":1,"producer":"deployment-execution","required":true,"structureHash":"sha256:73c76b71c93b9bee32d6c2ed468aa93217865faa658cb87424b5fe34105e901d"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Deployment Execution approved by gate
+**Tokens In**: 38
+**Tokens Out**: 16538
+**Cache Read**: 13599459
+**Cache Write**: 25557
+**Cost USD**: 3.26
+**By Model**: opus-5-5=3.26
+**By Agent**: main=3.26
+**Tokens By Model**: opus-5-5=38/16.5k/13.6M/25.6k
+**Tokens By Agent**: main=38/16.5k/13.6M/25.6k
+
+---
+
+## Stage Start
+**Timestamp**: 2026-11-10T13:35:17Z
+**Event**: STAGE_STARTED
+**Stage**: observability-setup
+**Agent**: aidlc-operations-agent
+**Answer Mode**: guide (reused from requirements-analysis)
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-11-10T13:35:39Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261110-freemium-plus/operation/observability-setup/observability-setup-questions.md
+**Context**: operation > observability-setup > observability-setup-questions.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-11-10T13:35:48Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261110-freemium-plus/operation/observability-setup/slo-config.md
+**Context**: operation > observability-setup > slo-config.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-11-10T13:36:01Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261110-freemium-plus/operation/observability-setup/alarms.md
+**Context**: operation > observability-setup > alarms.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-11-10T13:36:09Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261110-freemium-plus/operation/observability-setup/dashboards.md
+**Context**: operation > observability-setup > dashboards.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-11-10T13:36:20Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261110-freemium-plus/operation/observability-setup/log-queries.md
+**Context**: operation > observability-setup > log-queries.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-11-10T13:36:25Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261110-freemium-plus/operation/observability-setup/tracing-config.md
+**Context**: operation > observability-setup > tracing-config.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-11-10T13:36:33Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261110-freemium-plus/operation/observability-setup/anomaly-config.md
+**Context**: operation > observability-setup > anomaly-config.md
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-11-10T13:36:34Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: observability-setup
+**Next Stage**: none
+**Brief Digest**: none
+**Sensor State**: required-sections@aidlc/spaces/default/intents/261110-freemium-plus/operation/observability-setup/dashboards.md=not-run; required-sections@aidlc/spaces/default/intents/261110-freemium-plus/operation/observability-setup/alarms.md=not-run; required-sections@aidlc/spaces/default/intents/261110-freemium-plus/operation/observability-setup/slo-config.md=not-run; required-sections@aidlc/spaces/default/intents/261110-freemium-plus/operation/observability-setup/log-queries.md=not-run; required-sections@aidlc/spaces/default/intents/261110-freemium-plus/operation/observability-setup/tracing-config.md=not-run; required-sections@aidlc/spaces/default/intents/261110-freemium-plus/operation/observability-setup/anomaly-config.md=not-run; required-sections@aidlc/spaces/default/intents/261110-freemium-plus/operation/observability-setup/observability-setup-questions.md=not-run; upstream-coverage@aidlc/spaces/default/intents/261110-freemium-plus/operation/observability-setup/dashboards.md=not-run
+**Open Decisions**: 0
+**Question Id**: 68b163e6
+**Question Type**: gate
+**Question Chat**: 32256623-2139-4c8e-a92f-530a1f1d2b19
+**Question Shows**: sha256:9c538ca42c8141f3b197dec177fc7bb9ebe46a45c5e8c5fa47b6bf0c22139902
+
+---
+
+## Human Turn
+**Timestamp**: 2026-11-10T13:36:44Z
+**Event**: HUMAN_TURN
+**Session**: 32256623-2139-4c8e-a92f-530a1f1d2b19
+**Origin**: person
+**Source**: picker
+**Picked**: ["Approve"]
+**Message Id**: 14be65f3
+**Open Questions**: 68b163e6
+
+---
+
+## Question Replied
+**Timestamp**: 2026-11-10T13:36:45Z
+**Event**: QUESTION_REPLIED
+**Session**: 32256623-2139-4c8e-a92f-530a1f1d2b19
+**Question**: Observability Setup completata. Come vuoi procedere?
+**Reply**: Approve
+**Options**: ["Approve","Request Changes"]
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-11-10T13:36:47Z
+**Event**: GATE_APPROVED
+**Stage**: observability-setup
+**User Input**: Approve
+**Person Reply**: Approve
+**Message Id**: 14be65f3
+**Brief Digest**: none
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-11-10T13:36:47Z
+**Event**: STAGE_COMPLETED
+**Stage**: observability-setup
+**Validation Basis**: {"graphContract":"sha256:5439ba71ee89e8bb05c69469d09f20904292c89988f3f19da2740a7389b1381e","inputs":[{"artifact":"infrastructure-specification","contentHash":"sha256:a68a99006bf255b14ef754b9924292f77cfabd5ccc94ff3783818a097f91fb2f","instanceCount":1,"presentCount":0,"producer":"infrastructure-design","required":true,"structureHash":"sha256:ad1831ca827a0dccc2d3fabcdc547a5ca31303f71871145e9a0952d5268ce03e"},{"artifact":"monitoring-design","contentHash":"sha256:3f2171cc6dd404570584d036cb147ab465c88d67dca31b1f3f578312637b5a1f","instanceCount":1,"presentCount":0,"producer":"infrastructure-design","required":true,"structureHash":"sha256:6a3aa9aa6c18c8729db14a6bb05a08b2295f244d8db04d41167a9b4ec9969a8c"},{"artifact":"performance-design","contentHash":"sha256:2390657f3d90c2def2ffb532afb341c51557a8cc35076715c932365df84a4384","instanceCount":1,"presentCount":0,"producer":"nfr-design","required":true,"structureHash":"sha256:801f9d4ac13ea82c2f28d78b195fbeb7e8c3bd858999c2d5050ccf08f5c670ae"},{"artifact":"reliability-design","contentHash":"sha256:97087adb75576dcb59aafa5e0e804666fea01dae9db756993c2e45d3831e73b0","instanceCount":1,"presentCount":0,"producer":"nfr-design","required":true,"structureHash":"sha256:1f2ee653c587c03195ba954348cc2e1918de5c4398d7948eb0d919e6d229d6e4"},{"artifact":"security-design","contentHash":"sha256:99521c927919f277d8953369af68322dd575c1a3608c0ba26774b4c21236f9b7","instanceCount":1,"presentCount":0,"producer":"nfr-design","required":true,"structureHash":"sha256:fc76bb1bb4f7bbca0c2965492034fb1e1aeb273c8ce84e085af6e99eaf011d57"}],"outputs":[{"artifact":"alarms","contentHash":"sha256:356e16f1ae98011c9b35d23c72720033a3b48e27554e99f77ca297ba8c5720f7","instanceCount":1,"presentCount":1,"producer":"observability-setup","required":true,"structureHash":"sha256:5848b589fbf8089cbce5ad43e1c958fab2c85af43d6889924e61523f582a890a"},{"artifact":"anomaly-config","contentHash":"sha256:cf7cf153c360191be0e12b1d222781c281f1766990ab3f5a3842f157bd9439a1","instanceCount":1,"presentCount":1,"producer":"observability-setup","required":true,"structureHash":"sha256:cff4fee4cc072272bda72de54e7e80cc95febaa52bca7c065a9200ea0479b909"},{"artifact":"dashboards","contentHash":"sha256:0af22f7ee2f34541f1956c99d15b499f4fe4f53cc296e9884b5c704d782301d1","instanceCount":1,"presentCount":1,"producer":"observability-setup","required":true,"structureHash":"sha256:5bc14ebe4395333daa71258aadce0daea8eac63d13c833df7406ef0de3506d4c"},{"artifact":"log-queries","contentHash":"sha256:e4c8569c1d665152b7952604a7f005067e8e9c4493b0c8cd8428fb96a9791d86","instanceCount":1,"presentCount":1,"producer":"observability-setup","required":true,"structureHash":"sha256:ab2ea39398fa221d5df302b3d3cde8b6311ebb01f4474a102233606014969d2c"},{"artifact":"observability-setup-questions","contentHash":"sha256:eed3e7b675cf2f49fbee3b60c8e144a05cb04d8c2d4b4528e9327a604c5ccbdc","instanceCount":1,"presentCount":1,"producer":"observability-setup","required":true,"structureHash":"sha256:d23039a1eacc1f11c61e15b1662a33b1460dac72fd057c5124530e84435b82e9"},{"artifact":"slo-config","contentHash":"sha256:3d12b6de5498c69150d07822c0fb0d272a64a00c0a692b9057ce0e4a58897cef","instanceCount":1,"presentCount":1,"producer":"observability-setup","required":true,"structureHash":"sha256:c6cdca419523800d739f831750a3683a934deaa1b14e080d71a3b5f52d5f50e8"},{"artifact":"tracing-config","contentHash":"sha256:773b5715ae064823383fbff8da162a54aa017d8de850e4787a9e9ce959eb4fc3","instanceCount":1,"presentCount":1,"producer":"observability-setup","required":true,"structureHash":"sha256:1880b2451dd436ec8957d48c8b0fc5d8c422215ba9383c6bead8c0ad455fb7aa"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Observability Setup approved by gate
+**Tokens In**: 12
+**Tokens Out**: 8795
+**Cache Read**: 4414723
+**Cache Write**: 22150
+**Cost USD**: 1.24
+**By Model**: opus-5-5=1.24
+**By Agent**: main=1.24
+**Tokens By Model**: opus-5-5=12/8.8k/4.4M/22.1k
+**Tokens By Agent**: main=12/8.8k/4.4M/22.1k
+
+---
+
+## Phase Completion
+**Timestamp**: 2026-11-10T13:36:47Z
+**Event**: PHASE_COMPLETED
+**From phase**: operation
+**To phase**: (end)
+**Stages completed**: 10
+
+---
+
+## Phase Verification
+**Timestamp**: 2026-11-10T13:36:47Z
+**Event**: PHASE_VERIFIED
+**Phase boundary**: operation → end
+
+---
+
+## Workflow Completion
+**Timestamp**: 2026-11-10T13:36:47Z
+**Event**: WORKFLOW_COMPLETED
+**Scope**: express
+**Details**: Scope: express, 10 stages completed
+**Tokens In**: 1434
+**Tokens Out**: 954097
+**Cache Read**: 225409619
+**Cache Write**: 2749710
+**Cost USD**: 79.79
+**By Model**: opus-5-5=79.79
+**By Agent**: main=24.95; aidlc-developer-agent=54.84
+**Tokens By Model**: opus-5-5=1.4k/954.1k/225.4M/2.7M
+**Tokens By Agent**: main=328/228.6k/76.9M/624.3k; aidlc-developer-agent=1.1k/725.5k/148.5M/2.1M
+
+---

@@ -37,6 +37,22 @@ export const emulators = {
 };
 `;
 
+/**
+ * The unfilled configuration the page ships with before the owner copies the
+ * real values (BR1.11). Served explicitly: the committed firebase-config.js
+ * now holds the real public web configuration.
+ */
+const PLACEHOLDER_CONFIG = `
+export const firebaseConfig = {
+  apiKey: 'TODO_WEB_API_KEY',
+  authDomain: 'TODO_PROJECT_ID.firebaseapp.com',
+  projectId: 'TODO_PROJECT_ID',
+  appId: 'TODO_WEB_APP_ID',
+};
+export const recaptchaSiteKey = 'TODO_RECAPTCHA_V3_SITE_KEY';
+export const emulators = null;
+`;
+
 let server;
 let base;
 let browser;
@@ -111,7 +127,7 @@ describe('account deletion page in Chromium', () => {
   }
 
   test('BR1.11 with the placeholder configuration the page says it is not configured', async () => {
-    const { page, errors } = await open('/', { config: null });
+    const { page, errors } = await open('/', { config: PLACEHOLDER_CONFIG });
     await page.locator('[data-message="config"]').waitFor({ state: 'visible' });
     assert.equal(await page.locator('#sign-in').isDisabled(), true);
     assert.deepEqual(await page.evaluate(() => window.__cspViolations), []);
