@@ -1,0 +1,165 @@
+{
+  "status": "saved_as_draft_in_console",
+  "scope": {
+    "package": "com.vinoozy.app",
+    "version_code": 1,
+    "aab_sha256": "9ff1bef1eb3c9a6cbd79b3624ea6846719c5bd346e1eb44ce4cb6b8a6f37dd7b",
+    "firebase_project": "vinoozy-d6f45",
+    "off_online_enabled": false,
+    "ads": false,
+    "payments": false,
+    "independent_security_review": false
+  },
+  "collection": true,
+  "encrypted_in_transit": true,
+  "account_creation": [
+    "OAuth"
+  ],
+  "account_deletion_url": "https://brunobottazzini.github.io/Vinoozy/account-deletion/",
+  "account_deletion_url_must_be_live_before_submission": true,
+  "data_types": [
+    {
+      "type": "Name",
+      "collected": true,
+      "shared_under_play_definition": false,
+      "ephemeral": false,
+      "required": true,
+      "purposes": [
+        "App functionality",
+        "Account management"
+      ],
+      "evidence": "GoogleAuthService and UserRepository store the signed-in profile. Sharing also stores invitee/member names."
+    },
+    {
+      "type": "Email address",
+      "collected": true,
+      "shared_under_play_definition": false,
+      "ephemeral": false,
+      "required": true,
+      "purposes": [
+        "App functionality",
+        "Account management"
+      ],
+      "evidence": "Google/Firebase authentication and Firestore user profiles; manually entered invitation email addresses."
+    },
+    {
+      "type": "User IDs",
+      "collected": true,
+      "shared_under_play_definition": false,
+      "ephemeral": false,
+      "required": true,
+      "purposes": [
+        "App functionality",
+        "Account management",
+        "Fraud prevention, security, and compliance"
+      ],
+      "evidence": "Firebase UID, ownership, member access and audit fields. No Crashlytics custom user identifier found."
+    },
+    {
+      "type": "Photos",
+      "collected": true,
+      "shared_under_play_definition": false,
+      "ephemeral": false,
+      "required": true,
+      "purposes": [
+        "App functionality",
+        "Account management"
+      ],
+      "evidence": "Conservative disclosure of the available Google profile-photo reference within federated account information. ProfileScreen displays FirebaseAuth.currentUser.photoURL. No Vinoozy upload of label photos: OCR/barcode processing is local."
+    },
+    {
+      "type": "Contacts",
+      "collected": true,
+      "shared_under_play_definition": false,
+      "ephemeral": false,
+      "required": false,
+      "purposes": [
+        "App functionality"
+      ],
+      "evidence": "Optional manually entered invitations and member relationships. No device address-book permission or import."
+    },
+    {
+      "type": "App interactions",
+      "collected": true,
+      "shared_under_play_definition": false,
+      "ephemeral": false,
+      "required": true,
+      "purposes": [
+        "Analytics"
+      ],
+      "evidence": "Firebase Sessions transitive to Crashlytics and ML Kit technical feature-event telemetry. No Firebase Analytics SDK is integrated."
+    },
+    {
+      "type": "Other user-generated content",
+      "collected": true,
+      "shared_under_play_definition": false,
+      "ephemeral": false,
+      "required": true,
+      "purposes": [
+        "App functionality"
+      ],
+      "evidence": "Firestore cellar inventory, quantities, wine details, dates, drinking records, ratings and notes. Core inventory sync is required; individual notes and sharing are optional."
+    },
+    {
+      "type": "Crash logs",
+      "collected": true,
+      "shared_under_play_definition": false,
+      "ephemeral": false,
+      "required": true,
+      "purposes": [
+        "Analytics"
+      ],
+      "evidence": "AppServices._configureCrashlytics enables collection in real release builds. No user opt-out switch exists. Error reporting sanitizes application-provided sensitive strings."
+    },
+    {
+      "type": "Diagnostics",
+      "collected": true,
+      "shared_under_play_definition": false,
+      "ephemeral": false,
+      "required": true,
+      "purposes": [
+        "Analytics"
+      ],
+      "evidence": "Crashlytics, Firebase Sessions and bundled ML Kit collect app/device metadata, latency, technical errors and feature metrics."
+    },
+    {
+      "type": "Device or other IDs",
+      "collected": true,
+      "shared_under_play_definition": false,
+      "ephemeral": false,
+      "required": true,
+      "purposes": [
+        "Analytics",
+        "Fraud prevention, security, and compliance"
+      ],
+      "evidence": "Crashlytics installation UUID, Firebase Installation ID, ML Kit per-installation identifiers and Play Integrity attestation material. No advertising ID permission/use."
+    }
+  ],
+  "sharing_rationale": [
+    "Google/Firebase storage and diagnostics are evaluated under the service-provider exception; ML Kit and Play Integrity official disclosure states no onward transfer to third parties.",
+    "Invited-cellar access and the confirmed opening of a photo in Lens/another selected app are specific user-initiated transfers that users reasonably expect.",
+    "No data sale or advertising transfer found. OFF online requests are disabled in this AAB; enabling them requires a new assessment."
+  ],
+  "not_selected": [
+    "Location: no location permission or application location inference found; IP use for authentication security alone is not assumed to be location collection.",
+    "Financial information, health/fitness, email message contents, SMS, audio, videos, files/documents, calendar, browsing history: no relevant collection found.",
+    "In-app search history: catalog queries remain local with OFF disabled.",
+    "Installed apps: no installed-app inventory collection by Vinoozy; optional Play Integrity environment details are not configured in application code."
+  ],
+  "sources": [
+    "https://support.google.com/googleplay/android-developer/answer/10787469?hl=en",
+    "https://support.google.com/googleplay/android-developer/answer/13327111?hl=en",
+    "https://firebase.google.com/docs/android/play-data-disclosure",
+    "https://developers.google.com/ml-kit/android-data-disclosure",
+    "https://developer.android.com/google/play/integrity/terms#data-safety"
+  ],
+  "console": {
+    "imported_from": "data-safety.csv",
+    "official_template_rows": 782,
+    "data_types_completed": 10,
+    "preview_checked": true,
+    "final_save_blocked_by": "Target audience and content must be completed first",
+    "partial_data_deletion_optional_question": "unanswered",
+    "submitted_for_review": false
+  }
+}

@@ -1,0 +1,27 @@
+La tua cantina, a portata di mano.
+
+Con Vinoozy organizzi le bottiglie che possiedi e consulti una stima della loro evoluzione nel tempo: inizio della finestra, picco e fine indicativa.
+
+AGGIUNGI I TUOI VINI
+Inserisci i dati a mano, leggi un'etichetta con la fotocamera, usa un codice a barre o importa il testo da Google Lens. Controlla sempre i dati proposti prima di salvarli.
+
+TIENI IN ORDINE LA CANTINA
+Gestisci quantità, annate e caratteristiche. Consulta il Cruscotto, filtra i vini e ritrova nello Storico le registrazioni con voti e note. Scopri gli abbinamenti con il cibo.
+
+ANCHE SENZA RETE
+Consulta e aggiorna i dati disponibili sul telefono: le modifiche si sincronizzano quando torna la connessione. Il primo accesso con Google richiede Internet; alcune ricerche richiedono la rete.
+
+CONDIVIDI CON LE PERSONE CHE SCEGLI
+Invita altre persone nella tua cantina e scegli se possono soltanto consultarla o anche modificarla.
+
+LEGGI L'ETICHETTA SUL TELEFONO
+Il riconoscimento del testo avviene sul dispositivo. Le ricerche online possono inviare parole e codici a barre a Open Food Facts. L'apertura di una foto in Google Lens richiede la tua conferma.
+
+Le finestre sono stime indicative: conservazione, stile e condizioni della singola bottiglia possono cambiare il risultato. Non sono una garanzia di qualità né un invito al consumo.
+
+Vinoozy è destinata a persone maggiorenni. Non vende bevande alcoliche.
+
+Interfaccia in italiano, inglese e portoghese brasiliano.
+
+Dati del catalogo da Open Food Facts, con licenze ODbL 1.0 e DbCL 1.0. Database derivato e attribuzioni: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Denominazioni da eAmbrosia e dai registri nazionali indicati nella documentazione dei dati. Le stime sono elaborate da Vinoozy.

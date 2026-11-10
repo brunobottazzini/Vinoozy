@@ -299,11 +299,14 @@ void main() {
     expect(restValue(doc['denomination']), 'Barolo DOCG');
     expect(restValue(doc['vintage']), 2019);
     expect(restValue(doc['country']), 'IT');
-    expect(doc.containsKey('level'), isFalse, reason: 'BR4.3 not chosen');
+    // Style profiles preselect the level from the denomination (BR4.3).
+    expect(restValue(doc['level']), 'good');
+    expect(restValue(doc['levelSource']), 'auto');
+    expect(restValue(doc['style']), 'redLong');
     final window = restValue(doc['window'])! as Map;
     expect(window['basis'], 'denomination');
     expect(window['denominationKey'], 'barolo');
-    expect(window['tablesVersion'], 2);
+    expect(window['tablesVersion'], 3);
   });
 
   testWidgets('FR7 the guided check on the Cascina Castlet text: No, '

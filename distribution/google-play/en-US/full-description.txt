@@ -1,0 +1,27 @@
+Your wine cellar, close at hand.
+
+Vinoozy helps you organise the bottles you own and explore estimates of how they may evolve: the start, peak and indicative end of their drinking window.
+
+ADD YOUR WINES
+Enter details manually, read a label with your camera, use a barcode or import text from Google Lens. Always review suggested details before saving.
+
+KEEP YOUR CELLAR ORGANISED
+Manage quantities, vintages and wine characteristics. Explore the Dashboard, filter your wines and keep ratings and notes in History. Find food pairing suggestions.
+
+WORK OFFLINE
+View and update data available on your phone. Changes synchronise when your connection returns. Your first Google sign-in requires Internet; some searches also require a connection.
+
+SHARE WITH PEOPLE YOU CHOOSE
+Invite people to your cellar and choose whether they can view it or also make changes.
+
+READ LABELS ON YOUR PHONE
+Text recognition runs on your device. Online searches may send words and barcodes to Open Food Facts. Opening a photo in Google Lens requires your confirmation.
+
+Drinking windows are indicative estimates. Storage, style and the condition of each bottle may change the result. Estimates are not a quality guarantee or an invitation to consume alcohol.
+
+Vinoozy is intended for adults. It does not sell alcoholic drinks.
+
+Interface available in Italian, English and Brazilian Portuguese.
+
+Catalogue data from Open Food Facts under ODbL 1.0 and DbCL 1.0. Derived database and attribution: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Appellations from eAmbrosia and the national registers listed in the data documentation. Estimates are produced by Vinoozy.

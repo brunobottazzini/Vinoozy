@@ -1,8 +1,14 @@
-# Manual publication of the account deletion page on GitHub Pages
+# Manual publication of the account deletion and privacy pages on GitHub Pages
 # (u8-account cicd-pipeline.md §2 and §6; infrastructure-specification.md,
-# both correction sections). The page is never published from main: only
-# this workflow updates the gh-pages branch, after the owner's approval in
-# the github-pages-publish environment. Order: merge, rules
+# both correction sections). The automatic deletion application is never
+# published directly from main: this workflow updates the gh-pages branch,
+# after the owner's approval in the github-pages-publish environment.
+# The initial, script-free privacy/email-deletion pages were bootstrapped
+# separately with the owner's explicit public-data authorization; their
+# reproducible export is tool/prepare_static_pages.mjs. They use no Firebase
+# SDK or backend access. This workflow replaces that email-only landing page
+# only after the automatic application's configuration and tests are ready.
+# Order for the automatic application: merge, rules
 # (firebase-deploy.yml), then the page and the app.
 #
 # mode=publish  checks that the rules of the ref are the deployed ones (as
@@ -126,7 +132,10 @@ jobs:
             echo "Fill docs/account-deletion/firebase-config.js from the Firebase console first (docs/firebase-setup.md §10)" >&2
             exit 1
           fi
-      - name: Publish docs/account-deletion to gh-pages
+      - name: Privacy notice and public links are complete
+        if: inputs.mode == 'publish'
+        run: node tool/check_publication.mjs --web-only
+      - name: Publish account deletion and privacy to gh-pages
         if: inputs.mode == 'publish'
         env:
           SHA: ${{ steps.ref.outputs.sha }}
@@ -147,6 +156,8 @@ jobs:
           cp "$src/index.html" "$src/app.bundle.js" "$src/firebase-config.js" "$src/style.css" "$site/account-deletion/"
           cp "$src/en/index.html" "$site/account-deletion/en/"
           cp "$src/pt-BR/index.html" "$site/account-deletion/pt-BR/"
+          rm -rf "$site/privacy"
+          cp -R docs/privacy "$site/privacy"
           touch "$site/.nojekyll"
           git -C "$site" add -A
           if git -C "$site" diff --cached --quiet; then
@@ -156,6 +167,7 @@ jobs:
           git -C "$site" commit --quiet -m "$PUBLISH_PREFIX $REF ($SHA)"
           git -C "$site" push origin "HEAD:refs/heads/$PAGES_BRANCH"
           echo "Published https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/account-deletion/"
+          echo "Published https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/privacy/"
 
       # ---- rollback ---------------------------------------------------------
       - name: Roll back to the previous publication

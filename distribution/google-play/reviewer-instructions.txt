@@ -1,0 +1,40 @@
+Vinoozy — reviewer access instructions (draft)
+
+Dedicated Google test account: [TO COMPLETE IN PLAY CONSOLE]
+Password: [ENTER DIRECTLY IN PLAY CONSOLE; NEVER COMMIT CREDENTIALS]
+Second dedicated account for shared-cellar review: [TO COMPLETE IN PLAY CONSOLE]
+
+Provide reusable test credentials in the App access section of Play Console.
+Verify sign-in from a fresh installation without OTP, location restrictions,
+or another device's approval. Use fictional cellar data. These placeholders
+must be replaced in the console before submitting for review.
+
+Prepared Console entry title: Vinoozy — Google review account
+Prepared "Any other information" field (425/500 characters):
+Skip the introduction, then tap Sign in with Google and use the demo account above. Internet is required for first sign-in. In Cellar, tap Add and use manual entry to add a fictional wine. Open its detail and record a bottle; inspect Dashboard and History. Cellar menu > People manages sharing and permissions. Profile contains sign-out, privacy and account deletion. No subscription, payment or location restriction applies.
+
+The developer enters the demo credentials directly in Play Console. Keep
+credentials out of this file. The detailed flow below also supports QA;
+a second demo account is useful for testing both sides of cellar sharing.
+
+1. Open Vinoozy. On first launch, continue through or skip the introduction.
+2. Tap Sign in with Google and use the dedicated test account above. An
+   internet connection is required for the first sign-in.
+3. Dashboard shows an overview of the cellar. Open the Cellar tab, tap Add,
+   choose manual entry, enter a fictional wine and vintage, and save.
+4. Open the wine to inspect its indicative ageing window. Type, style,
+   storage and available dates affect this estimate.
+5. Record one bottle as drunk after confirming. Undo is available briefly;
+   History shows the record and permits eligible users to edit notes/rating.
+6. Already available cellar data can be viewed and edited offline. Changes
+   synchronise after reconnecting.
+7. In the cellar menu, People allows an owner to invite another Google
+   account and select view/edit permissions. Use the second test account
+   above on another device to verify sharing. The owner can revoke access;
+   the invitee can leave the cellar.
+8. Profile provides Sign out, Privacy policy and Delete account. Deletion
+   requires confirmation and renewed Google sign-in. Use disposable test
+   accounts for deletion; provide working replacements for future reviews.
+
+No paid features, subscription or advertising is integrated in this build.
+The app manages a private wine inventory; it does not sell alcoholic drinks.

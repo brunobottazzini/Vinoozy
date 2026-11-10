@@ -711,6 +711,19 @@ void main() {
         expect(find.text(best), findsOneWidget);
         expect(key('ideal-bar'), findsOneWidget);
         expect(key('ideal-today'), findsOneWidget);
+        final segments = find.descendant(
+          of: key('ideal-bar'),
+          matching: find.byType(ColoredBox),
+        );
+        expect(segments, findsWidgets);
+        // Every colored segment must remain visible, even though the
+        // ColoredBox widgets have no child of their own.
+        for (final segment in segments.evaluate()) {
+          expect(
+            tester.getSize(find.byWidget(segment.widget)).height,
+            greaterThan(0),
+          );
+        }
         expect(find.textContaining(notice), findsOneWidget);
       });
 

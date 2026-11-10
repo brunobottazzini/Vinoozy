@@ -358,6 +358,7 @@ class WindowBar extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(7),
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             if (before > 0)
                               Expanded(

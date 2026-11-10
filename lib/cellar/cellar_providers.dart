@@ -306,7 +306,12 @@ class HistoryPager extends Notifier<HistoryState> {
       if (!ref.mounted || generation != _generation) return;
       _cursor = page.cursor ?? _cursor;
       state = HistoryState(
-        records: [...state.records, ...page.records],
+        // Pending server timestamps can move an entry across the cursor
+        // between reads. Keep one row per document even if pages overlap.
+        records: {
+          for (final record in state.records) record.id: record,
+          for (final record in page.records) record.id: record,
+        }.values.toList(),
         hasMore: page.hasMore,
       );
     } catch (error, stack) {

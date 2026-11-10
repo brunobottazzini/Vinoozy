@@ -1,5 +1,5 @@
 // u8-account BR1.11 and BR1.12: the web page in three languages shows the
-// email address only as the last resort, and the release checklist holds
+// email address as a fallback and for privacy rights, and the checklist holds
 // the email procedure (NFR8.5, NFR8.6).
 import 'dart:io';
 
@@ -22,20 +22,20 @@ void main() {
     }
   });
 
-  test('BR1.12 the email address appears only in the last-resort section', () {
-    for (final path in pages.values) {
-      final html = File(path).readAsStringSync();
-      final section = html.indexOf('id="no-access"');
-      expect(section, greaterThan(0), reason: path);
-      expect(html.indexOf(ownerEmail), greaterThan(section), reason: path);
-      expect(
-        ownerEmail.allMatches(html.substring(0, section)),
-        isEmpty,
-        reason: '$path: no address before "Can\'t sign in?"',
-      );
-      expect(html, isNot(contains('<form')), reason: 'NFR8.5 no form');
-    }
-  });
+  test(
+    'BR1.12 automatic deletion and a fallback privacy contact are available',
+    () {
+      for (final path in pages.values) {
+        final html = File(path).readAsStringSync();
+        final section = html.indexOf('id="no-access"');
+        expect(section, greaterThan(0), reason: path);
+        expect(html.substring(section), contains(ownerEmail), reason: path);
+        expect(html, contains('id="sign-in"'), reason: path);
+        expect(html, contains('privacy/'), reason: path);
+        expect(html, isNot(contains('<form')), reason: 'NFR8.5 no form');
+      }
+    },
+  );
 
   test('BR1.12 the checklist holds the email procedure with its deadlines', () {
     final checklist = File('docs/release-checklist.md').readAsStringSync();

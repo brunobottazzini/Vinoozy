@@ -48,6 +48,10 @@ abstract final class DrinkSnackBar {
       SnackBar(
         key: const Key('drink-snackbar'),
         duration: duration,
+        behavior: SnackBarBehavior.floating,
+        // The shared messenger belongs to the shell, whose nested Cellar
+        // owns the Add FAB. Reserve its height here as well.
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 88),
         // The two actions are buttons of the content: SnackBar has one.
         content: Column(
           mainAxisSize: MainAxisSize.min,

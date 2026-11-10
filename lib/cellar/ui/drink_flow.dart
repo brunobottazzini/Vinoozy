@@ -29,8 +29,12 @@ Future<void> drinkWithUndo(
 }) async {
   final actions = ref.read(cellarActionsProvider);
   final clock = ref.read(clockProvider);
-  final messenger = ScaffoldMessenger.of(context);
   final navigator = Navigator.of(context);
+  // The Cellar has a local messenger for its FAB. Undo belongs to the
+  // session and must also remain visible after switching to History or
+  // popping the detail route, so use the navigator's shared messenger.
+  final outerScaffold = context.findRootAncestorStateOfType<ScaffoldState>();
+  final messenger = ScaffoldMessenger.of(outerScaffold?.context ?? context);
   final l10n = AppLocalizations.of(context);
   final duration = DrinkSnackBar.durationFor(context);
   final container = ProviderScope.containerOf(context, listen: false);

@@ -1,0 +1,89 @@
+{
+  "source": "Current Flutter widgets with fictional data; see tool/render_store_screenshots_test.dart and ../README.md",
+  "screenshots": [
+    {
+      "file": "screenshots/en/01-cantina.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 239106,
+      "sha256": "beddbad8beaa640eca001734498e12a61684a1b8024599de30c23fb1ea0f17f8"
+    },
+    {
+      "file": "screenshots/en/02-cruscotto.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 113457,
+      "sha256": "1662ad7e1358fdc87fe3189b897f78ebe0eca0b72455d856176ea61331346040"
+    },
+    {
+      "file": "screenshots/en/03-dettaglio.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 180686,
+      "sha256": "bd646fd2590b805f1a9caa0962712c0f225168f66fdeb5a82672a39cf5960c48"
+    },
+    {
+      "file": "screenshots/en/04-storico.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 145205,
+      "sha256": "a9ff6414dba03888eb91cc2376153aee636796152b3d314d2f3c0e14051eccd7"
+    },
+    {
+      "file": "screenshots/it/01-cantina.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 229757,
+      "sha256": "39a1b77b2230f3a80cb85992beac24b563aa91498eb87268a665bb2d3775373c"
+    },
+    {
+      "file": "screenshots/it/02-cruscotto.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 125569,
+      "sha256": "c3ab7ecfeae67b328ce8d2499a0e2961320efd5063cab7f102e4abe424f224b6"
+    },
+    {
+      "file": "screenshots/it/03-dettaglio.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 183258,
+      "sha256": "8ddaa7915d653175d696799dc0c61b5af9962dceb9ee45777755de7e43882f6b"
+    },
+    {
+      "file": "screenshots/it/04-storico.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 144866,
+      "sha256": "d367eca516cc8fd22d0cf314e93da8daadcdb7a339698f1542bd29333eeb3711"
+    },
+    {
+      "file": "screenshots/pt-BR/01-cantina.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 229951,
+      "sha256": "c08015692c4438d9b48e490dbe0e35514e9b6514bbe28ddb2c8d0e3213eb6ec3"
+    },
+    {
+      "file": "screenshots/pt-BR/02-cruscotto.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 119982,
+      "sha256": "9c4ec44f1963ef2f1307a842bf64e2e17aa8395c36e24386893c9a293c9b8463"
+    },
+    {
+      "file": "screenshots/pt-BR/03-dettaglio.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 182321,
+      "sha256": "773f071c8403ffbfaf5c9fcbb622ed27e0ebc6a7b4b5b148d2e98d5fb231b341"
+    },
+    {
+      "file": "screenshots/pt-BR/04-storico.png",
+      "width": 1080,
+      "height": 1920,
+      "bytes": 155933,
+      "sha256": "d5f9052b66658a7d69d9348789d8ed894b08711edfdfe0338286df24d3dfb7f2"
+    }
+  ]
+}

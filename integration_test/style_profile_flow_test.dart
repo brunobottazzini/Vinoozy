@@ -133,12 +133,17 @@ void main() {
     expect([window['peakYear'], window['peakMonth']], [2027, 3]);
 
     await openDetail(tester, 'Champagne Brut');
+    await waitFor(
+      tester,
+      find.byKey(const Key('ideal-peak')),
+      viaCellarTab: false,
+    );
+    await tester.ensureVisible(find.byKey(const Key('ideal-peak')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('ideal-peak')), findsOneWidget);
     expect(
-      find.descendant(
-        of: find.byKey(const Key('ideal-peak')),
-        matching: find.textContaining('marzo 2027'),
-      ),
-      findsOneWidget,
+      tester.widget<Text>(find.byKey(const Key('ideal-peak'))).data,
+      contains('marzo 2027'),
     );
     await closeDetail(tester);
 

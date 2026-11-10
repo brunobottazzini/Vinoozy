@@ -1,0 +1,9 @@
+<it-IT>
+Prima versione per il test interno: gestione della cantina, dettaglio dei vini, cruscotto e storico delle bevute.
+</it-IT>
+<en-US>
+First internal test version: cellar management, wine details, dashboard and drinking history.
+</en-US>
+<pt-BR>
+Primeira versão para teste interno: gestão da adega, detalhes dos vinhos, painel e histórico de consumo.
+</pt-BR>

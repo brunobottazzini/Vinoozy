@@ -3,16 +3,15 @@
 // are not secrets: Firestore is protected by the rules and by App Check.
 // No service credential ever goes here.
 //
-// TODO(owner): fill every value from the Firebase console of the production
-// project (Project settings > Your apps > Web app, and App Check > reCAPTCHA
-// v3 site key), then run pages.yml. While a value starts with "TODO" the page
-// shows "not configured yet" and signs nobody in. The real values were not
-// available when this file was written, so none is invented here.
+// Public configuration copied from the registered "Vinoozy Web" app in the
+// production Firebase project on 2026-11-09. The public reCAPTCHA site key
+// below still needs configuration. While a value starts with "TODO" the
+// page shows "not configured yet" and signs nobody in.
 export const firebaseConfig = {
-  apiKey: 'TODO_WEB_API_KEY',
-  authDomain: 'TODO_PROJECT_ID.firebaseapp.com',
-  projectId: 'TODO_PROJECT_ID',
-  appId: 'TODO_WEB_APP_ID',
+  apiKey: "AIzaSyDMNC_kLEeoeVb3wcKMtzqZwNQJrqbjfFU",
+  authDomain: "vinoozy-d6f45.firebaseapp.com",
+  projectId: "vinoozy-d6f45",
+  appId: "1:742143174654:web:815bb282e4a519d0e042af",
 };
 
 // TODO(owner): public reCAPTCHA v3 site key registered for

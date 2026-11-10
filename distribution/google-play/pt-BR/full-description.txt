@@ -1,0 +1,27 @@
+Sua adega sempre à mão.
+
+Com o Vinoozy, você organiza as garrafas que possui e consulta estimativas de sua evolução: início, auge e fim indicativo da janela de consumo.
+
+ADICIONE SEUS VINHOS
+Insira os dados manualmente, leia um rótulo com a câmera, use um código de barras ou importe texto do Google Lens. Confira os dados sugeridos antes de salvar.
+
+MANTENHA SUA ADEGA ORGANIZADA
+Gerencie quantidades, safras e características. Consulte o Painel, filtre seus vinhos e guarde avaliações e notas no Histórico. Encontre sugestões de harmonização com alimentos.
+
+USE MESMO SEM CONEXÃO
+Consulte e atualize os dados disponíveis no celular. As alterações serão sincronizadas quando a conexão voltar. O primeiro acesso com o Google exige Internet; algumas buscas também precisam de conexão.
+
+COMPARTILHE COM QUEM VOCÊ ESCOLHER
+Convide outras pessoas para sua adega e escolha se elas podem apenas consultar ou também fazer alterações.
+
+LEIA O RÓTULO NO CELULAR
+O reconhecimento de texto acontece no aparelho. As buscas online podem enviar palavras e códigos de barras ao Open Food Facts. A abertura de uma foto no Google Lens exige sua confirmação.
+
+As janelas são estimativas indicativas: armazenamento, estilo e condições de cada garrafa podem alterar o resultado. Não representam garantia de qualidade nem incentivo ao consumo.
+
+O Vinoozy é destinado a pessoas adultas. Não vende bebidas alcoólicas.
+
+Interface em italiano, inglês e português do Brasil.
+
+Dados do catálogo do Open Food Facts, sob as licenças ODbL 1.0 e DbCL 1.0. Banco derivado e atribuições: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Denominações do eAmbrosia e dos registros nacionais listados na documentação dos dados. As estimativas são elaboradas pelo Vinoozy.

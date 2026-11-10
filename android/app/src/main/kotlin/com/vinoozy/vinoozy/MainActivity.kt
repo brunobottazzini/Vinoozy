@@ -26,6 +26,7 @@ class MainActivity : FlutterActivity() {
 
         /** "Apri in Google Lens" (label-recognition FR4.3, lens_channel.dart). */
         const val LENS_CHANNEL = "vinoozy/lens"
+        const val LINKS_CHANNEL = "com.vinoozy.app/links"
     }
 
     private val executor: ExecutorService = Executors.newSingleThreadExecutor()
@@ -49,6 +50,23 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, LINKS_CHANNEL).setMethodCallHandler { call, result ->
+            if (call.method != "open") {
+                result.notImplemented()
+            } else {
+                val uri = call.argument<String>("url")?.let(Uri::parse)
+                if (uri?.scheme != "https" || uri.host.isNullOrBlank()) {
+                    result.success(false)
+                } else {
+                    try {
+                        startActivity(Intent(Intent.ACTION_VIEW, uri).addCategory(Intent.CATEGORY_BROWSABLE))
+                        result.success(true)
+                    } catch (error: Exception) {
+                        result.success(false)
+                    }
+                }
+            }
+        }
         channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, LABEL_CHANNEL).also {
             it.setMethodCallHandler(::onLabelCall)
         }

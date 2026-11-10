@@ -32,12 +32,11 @@ class OnboardingSeen extends AsyncNotifier<bool> {
 
 /// Address of the privacy policy linked from the profile (BR1.2). Public;
 /// set at build time with `--dart-define=PRIVACY_POLICY_URL=...`, otherwise
-/// the account deletion page, whose "Privacy" section lists the data kept
-/// and the codes left in other people's cellars (NFR8.4).
+/// the dedicated public privacy notice. Publishing it is a release gate.
 final privacyPolicyUrlProvider = Provider<String>((ref) {
   const configured = String.fromEnvironment('PRIVACY_POLICY_URL');
   return configured.isEmpty ? defaultPrivacyPolicyUrl : configured;
 });
 
 const String defaultPrivacyPolicyUrl =
-    'https://brunobottazzini.github.io/Vinoozy/account-deletion/';
+    'https://brunobottazzini.github.io/Vinoozy/privacy/';

@@ -18,6 +18,7 @@ import 'package:vinoozy/account/ui/profile_screen.dart';
 import 'package:vinoozy/account/ui/sign_in_screen.dart';
 import 'package:vinoozy/account/ui/status_screens.dart';
 import 'package:vinoozy/app/providers.dart';
+import 'package:vinoozy/app/external_links.dart';
 
 import '../helpers/ui_harness.dart';
 import 'account_harness.dart';
@@ -326,6 +327,49 @@ void main() {
       for (final key in ['profile-sign-out', 'profile-delete']) {
         expect(find.byKey(Key(key)), findsOneWidget);
       }
+    });
+
+    testWidgets('BR1.2 the privacy policy opens in the browser', (
+      tester,
+    ) async {
+      String? opened;
+      await pumpScreen(
+        tester,
+        const ProfileScreen(user: mario),
+        overrides: [
+          ...overrides(),
+          externalLinkOpenerProvider.overrideWithValue((url) async {
+            opened = url;
+            return true;
+          }),
+        ],
+      );
+      await tester.tap(find.byKey(const Key('profile-privacy')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('privacy-open')));
+      await tester.pumpAndSettle();
+      expect(opened, defaultPrivacyPolicyUrl);
+      expect(find.byKey(const Key('privacy-dialog')), findsNothing);
+    });
+
+    testWidgets('a browser failure keeps the privacy link available', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const ProfileScreen(user: mario),
+        overrides: [
+          ...overrides(),
+          externalLinkOpenerProvider.overrideWithValue((_) async => false),
+        ],
+      );
+      await tester.tap(find.byKey(const Key('profile-privacy')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('privacy-open')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('privacy-dialog')), findsOneWidget);
+      expect(find.byKey(const Key('privacy-copy')), findsOneWidget);
+      expect(find.byKey(const Key('profile-snackbar')), findsOneWidget);
     });
 
     testWidgets('BR1.2 the privacy policy link can be copied', (tester) async {

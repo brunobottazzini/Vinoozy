@@ -33,7 +33,18 @@ List<Wine> _cellar(int year) => List.generate(_wineCount, (i) {
     name: 'Vino Cruscotto $i',
     vintage: i % 7 == 0 ? null : 2000 + i % 25,
     storedQuantity: 1,
-    wineType: const ['redStructured', 'white', 'sparkling', 'rose'][i % 4],
+    wineType: const ['redStructured', 'white', 'sparklingTank', 'rose'][i % 4],
+    // This test measures a known 500-wine snapshot. Migration is tested in
+    // style_profile_flow_test; it must not rewrite these synthetic windows
+    // or insert hundreds of "Style to confirm" rows during chart checks.
+    style: const [
+      WineStyle.redMedium,
+      WineStyle.whiteFresh,
+      WineStyle.tankFresh,
+      WineStyle.roseFresh,
+    ][i % 4],
+    styleSource: FieldSource.user,
+    migrationVersion: estimationTablesVersion,
     region: const ['Piemonte', 'Toscana', 'Veneto', 'Sicilia'][i % 4],
     window: i % 3 == 0
         ? null
@@ -96,12 +107,9 @@ void main() {
         await tester.scrollUntilVisible(
           bar,
           200,
-          scrollable: find
-              .descendant(
-                of: find.byKey(const Key('dashboard-content')),
-                matching: find.byType(Scrollable),
-              )
-              .first,
+          scrollable: find.byWidgetPredicate(
+            (widget) => widget is Scrollable && widget.axis == Axis.vertical,
+          ),
         );
         await tester.pump();
         expect(

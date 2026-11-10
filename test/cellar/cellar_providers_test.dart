@@ -187,6 +187,23 @@ void main() {
       },
     );
 
+    test('BR1.16 overlapping pages keep one row per drinking record', () async {
+      final first = page(30);
+      when(() => records.pageHistory('user-a', after: null, limit: 30))
+          .thenAnswer((_) async => first);
+      when(() => records.pageHistory('user-a', after: first.cursor, limit: 30))
+          .thenAnswer((_) async => page(3, from: 29, hasMore: false));
+      final sub = container.listen(historyPagerProvider('user-a'), (_, _) {});
+      await pumpEventQueue();
+      await container.read(historyPagerProvider('user-a').notifier).loadMore();
+      expect(sub.read().records, hasLength(32));
+      expect(
+        sub.read().records.where((record) => record.id == 'r29'),
+        hasLength(1),
+      );
+      sub.close();
+    });
+
     test('BR1.16 a failed page shows the error; "Try again" reloads', () async {
       var fail = true;
       when(
