@@ -7,3 +7,9 @@
 # vinoozy-d6f45.firebaseapp.com and to the Identity Toolkit, Token Service,
 # Cloud Firestore and Firebase App Check APIs (docs/firebase-setup.md).
 1baf1a0fc96dd23f208c7e6715d6237c86ef3432:docs/account-deletion/firebase-config.js:gcp-api-key:11
+
+# Public reCAPTCHA Enterprise site key used by Firebase App Check on the same
+# page. Site keys are public by design (the browser sends them to Google);
+# the key is limited to the domain brunobottazzini.github.io with domain
+# verification. No secret key is stored anywhere in the repository.
+906cdde337fe08efa6023583ebe9cd3479702331:docs/account-deletion/firebase-config.js:generic-api-key:18

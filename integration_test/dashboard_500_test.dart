@@ -104,9 +104,12 @@ void main() {
         final bar = find.byKey(Key('chart-status-${status.name}'));
         // The Dashboard list is lazy (SliverList): a card below the fold is
         // not built yet, so scroll until it is, instead of ensureVisible.
+        // With 500 wines the "drink soon" list is long and the status chart
+        // sits beyond 10 000 px: 50 steps of 200 px never reach it.
         await tester.scrollUntilVisible(
           bar,
-          200,
+          400,
+          maxScrolls: 200,
           scrollable: find.byWidgetPredicate(
             (widget) => widget is Scrollable && widget.axis == Axis.vertical,
           ),

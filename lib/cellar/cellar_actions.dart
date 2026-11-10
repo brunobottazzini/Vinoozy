@@ -171,6 +171,14 @@ class CellarActions {
       pairings: estimate.pairings,
       matchKey: matchKeyOf(draft.name, draft.producer, draft.vintage),
       level: draft.level,
+      // The refresher estimates this wine again: without the style, its
+      // sources and the date it would replace the window just saved with the
+      // generic profile (wine-style-profiles BR11.2).
+      style: draft.style,
+      typeSource: draft.typeSource,
+      levelSource: draft.levelSource,
+      styleSource: draft.styleSource,
+      agingStart: draft.agingStart,
     );
     unawaited(_refresher.refreshWine(cellar, user, wine));
     return AddSaved(wine);
