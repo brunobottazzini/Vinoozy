@@ -1,0 +1,9 @@
+# Findings reviewed and accepted (gitleaks fingerprint: commit:file:rule:line).
+#
+# Public Firebase web API key of the account deletion page. It is meant to
+# ship in the published page (pages.yml copies firebase-config.js), it is not
+# a credential: access is enforced by Firestore Security Rules and App Check.
+# Restricted on 2026-11-10 to the referrers brunobottazzini.github.io and
+# vinoozy-d6f45.firebaseapp.com and to the Identity Toolkit, Token Service,
+# Cloud Firestore and Firebase App Check APIs (docs/firebase-setup.md).
+1baf1a0fc96dd23f208c7e6715d6237c86ef3432:docs/account-deletion/firebase-config.js:gcp-api-key:11

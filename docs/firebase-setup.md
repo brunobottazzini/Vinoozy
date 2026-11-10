@@ -27,15 +27,20 @@ Spunta ogni voce quando è fatta e annota la data.
 
 ## 4. Federazione d'identità (WIF): deploy delle regole e simboli di Crashlytics
 
-Nessuna chiave JSON: GitHub Actions ottiene token a breve scadenza. Un solo pool e un solo provider servono due ambienti GitHub, ognuno legato al proprio account di servizio con il ruolo minimo.
+Nessuna chiave JSON: GitHub Actions ottiene token a breve scadenza. Il collegamento delle regole è stato configurato il 2026-11-10, dopo il consenso esplicito del proprietario. I simboli di Crashlytics restano facoltativi e richiedono un provider separato.
 
-- [ ] Crea un Workload Identity Pool e un provider OIDC per GitHub, con la mappatura `attribute.environment = assertion.environment` e questa condizione sugli attributi:
-  `assertion.repository == 'brunobottazzini/Vinoozy' && assertion.environment in ['firebase-prod', 'crashlytics-symbols']`.
-- [ ] Account di servizio del **deploy delle regole** (`firebase-deploy.yml`) con **solo** questi ruoli sul progetto di produzione: `roles/firebaserules.admin`, `roles/datastore.indexAdmin`, `roles/firebase.viewer`, `roles/serviceusage.serviceUsageConsumer`.
-  Concedi `roles/iam.workloadIdentityUser` su questo account **solo** al principale `principalSet://iam.googleapis.com/<pool>/attribute.environment/firebase-prod`.
+- [x] Pool `github-actions`, provider OIDC `vinoozy-rules`, emittente `https://token.actions.githubusercontent.com`, pubblico predefinito. Mapping `google.subject=assertion.sub`, `attribute.environment=assertion.environment`. Condizione salvata:
+
+  ```text
+  assertion.repository_id == '1445706433' && assertion.repository_owner_id == '4460234' && assertion.repository == 'brunobottazzini/Vinoozy' && assertion.environment == 'firebase-prod' && assertion.event_name == 'workflow_dispatch' && (assertion.ref == 'refs/heads/main' || assertion.ref.startsWith('refs/tags/v')) && assertion.workflow_ref.startsWith('brunobottazzini/Vinoozy/.github/workflows/firebase-deploy.yml@')
+  ```
+
+- [x] Account del **deploy delle regole**: `github-firestore-deployer@vinoozy-d6f45.iam.gserviceaccount.com`, senza chiavi, con `roles/firebaserules.admin`, `roles/datastore.indexAdmin`, `roles/serviceusage.serviceUsageConsumer` e il ruolo personalizzato `projects/vinoozy-d6f45/roles/firestoreDeployMetadataViewer` (solo `firebase.projects.get`). Ruoli verificati nella console IAM.
+  Il ruolo ampio `roles/firebase.viewer` previsto inizialmente non è stato concesso: comprende anche lettura di documenti e utenti Authentication ([riferimento Google](https://docs.cloud.google.com/iam/docs/roles-permissions/firebase#firebase.viewer)). Il ruolo personalizzato fornisce il permesso di metadati richiesto dalla CLI Firebase senza quegli accessi.
+- [x] `roles/iam.workloadIdentityUser` sull'account dedicato solo per `principalSet://iam.googleapis.com/projects/742143174654/locations/global/workloadIdentityPools/github-actions/attribute.environment/firebase-prod`. Verificata nella console del pool l'associazione all'account con `attribute.environment="firebase-prod"`.
 - [ ] Facoltativo, account di servizio dei **simboli di Crashlytics** (job `crashlytics-symbols` di `release.yml`) con **solo** `roles/firebasecrashlytics.admin` e `roles/serviceusage.serviceUsageConsumer` sul progetto di produzione.
   Concedi `roles/iam.workloadIdentityUser` su questo account **solo** al principale `principalSet://iam.googleapis.com/<pool>/attribute.environment/crashlytics-symbols`.
-- [ ] Variabili dell'ambiente GitHub `firebase-prod`: `WIF_PROVIDER`, `WIF_SERVICE_ACCOUNT`, `FIREBASE_PROD_PROJECT_ID`.
+- [x] Variabili dell'ambiente GitHub `firebase-prod`, salvate e verificate il 2026-11-10: `WIF_PROVIDER=projects/742143174654/locations/global/workloadIdentityPools/github-actions/providers/vinoozy-rules`, `WIF_SERVICE_ACCOUNT=github-firestore-deployer@vinoozy-d6f45.iam.gserviceaccount.com`, `FIREBASE_PROD_PROJECT_ID=vinoozy-d6f45`. Revisore obbligatorio `brunobottazzini`, bypass amministrativo disabilitato, distribuzione limitata a `main` e ai tag `v*`. Autenticazione effettiva e deploy riusciti nel [run 42829140441](https://github.com/brunobottazzini/Vinoozy/actions/runs/42829140441), dopo l'approvazione del proprietario, il 2026-11-10 alle 15:39 (Europe/Rome).
 - [ ] Variabile dell'ambiente GitHub `crashlytics-symbols`: `WIF_PROVIDER`. Variabili **del repository** (non dell'ambiente): `CRASHLYTICS_WIF_SERVICE_ACCOUNT` e `FIREBASE_ANDROID_APP_ID` (identificativi pubblici, non segreti). Devono stare a livello di repository perché la condizione `if` del job `crashlytics-symbols` viene valutata prima che il job entri nel suo ambiente e non vede le variabili d'ambiente. Finché mancano, `release.yml` salta solo il job dei simboli.
 
 ## 5. Google Play: app e i due account di servizio
@@ -77,7 +82,7 @@ Nessuna chiave JSON: GitHub Actions ottiene token a breve scadenza. Un solo pool
 
 ## 8. Prima distribuzione delle regole
 
-- [ ] Dopo il primo merge, esegui `firebase-deploy.yml` con `ref` uguale all'hash completo (40 caratteri) del commit di `main` (o al primo tag `v*`; un nome di ramo come `main` viene rifiutato) e approva l'ambiente `firebase-prod`.
+- [x] Prima distribuzione riuscita il 2026-11-10 alle 15:39 (Europe/Rome), dopo l'approvazione del proprietario in `firebase-prod`: [firebase-deploy, run 42829140441](https://github.com/brunobottazzini/Vinoozy/actions/runs/42829140441), `ref=105c0ba432ad39d1fc05814c3150ab6a3ac80504`. I log confermano compilazione delle regole, distribuzione degli indici del database `(default)` e pubblicazione di `firestore.rules` su `vinoozy-d6f45`. Per i deploy successivi usare ancora l'hash completo di un commit di `main` o un tag `v*`. Prima della promozione verificare anche lo stato «Abilitato» degli indici nella console, come da `docs/release-checklist.md` §3.
 
 ## 9. Contatto per Open Food Facts (`OFF_CONTACT`, catalogo dei vini U3)
 
