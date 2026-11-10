@@ -1,16 +1,85 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'">
-<title>Vinoozy — Request account deletion</title><link rel="stylesheet" href="../style.css"></head>
-<body><main>
-<nav aria-label="Language"><a href="../" lang="it">Italiano</a> <a href="../pt-BR/" lang="pt-BR">Português (Brasil)</a></nav>
-<h1>Vinoozy — Request account deletion</h1><p>You can request deletion of your Vinoozy account and associated data without having the app installed.</p>
-<section><h2>Send a deletion request by email</h2><p>Write from the Google email address you use for Vinoozy, or identify the email address of the account concerned. Explicitly request deletion of your Vinoozy account and its data. Do not send passwords or unsolicited identity documents. We will verify that the request comes from the account owner before proceeding.</p>
-<p><a href="mailto:bottazzinibruno@gmail.com?subject=Vinoozy%20account%20deletion%20request">Request deletion by email</a>: <a href="mailto:bottazzinibruno@gmail.com">bottazzinibruno@gmail.com</a></p>
-<p>We normally respond within one month of receiving the request and explain any lawful extension. This request does not delete your Google account.</p></section>
-<section><h2>Data that will be deleted</h2><p>Deletion removes your Vinoozy profile, personal cellar with its wines and History, and invitations and access records associated with your account. People you shared your own cellar with will lose access to it.</p></section>
-<section><h2>Data that may remain</h2><p>Records and notes you entered in other people’s cellars may remain with persistent technical identifiers; they are not necessarily anonymous. You can request their removal in the same email. Copies exported by other users remain under their control. Provider diagnostic data and technical copies follow the retention periods described in the privacy notice.</p></section>
-<section><h2>Deletion from the app</h2><p>If you have the app installed, you can start deletion under Profile → Delete account. The email request is also available without reinstalling the app.</p></section>
-<p><a href="../../privacy/en/">Full privacy notice</a></p>
-</main></body></html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://apis.google.com; frame-src https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/ https://accounts.google.com https://vinoozy-d6f45.firebaseapp.com; connect-src 'self' https://www.google.com/recaptcha/ https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseappcheck.googleapis.com https://content-firebaseappcheck.googleapis.com; img-src 'self' data:; object-src 'none'; base-uri 'none'">
+  <title>Vinoozy: delete your account</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="alternate" hreflang="it" href="../">
+  <link rel="alternate" hreflang="pt-BR" href="../pt-BR/">
+</head>
+<body>
+<main>
+  <nav aria-label="Language">
+    <a href="../" lang="it">Italiano</a>
+    <a href="../pt-BR/" lang="pt-BR">Português (Brasil)</a>
+  </nav>
+
+  <h1>Delete your Vinoozy account</h1>
+  <p>You can request deletion here without installing Vinoozy. Sign in with the Google account you used in the app, check the displayed email address and follow the on-screen confirmation.</p>
+
+  <section aria-labelledby="from-app">
+    <h2 id="from-app">From the app</h2>
+    <p>Open Vinoozy, tap the cellar menu, then <strong>Profile</strong> and <strong>Delete account</strong>. Type the confirmation word and sign in again with Google: the deletion starts at once.</p>
+  </section>
+
+  <section aria-labelledby="what">
+    <h2 id="what">What is deleted</h2>
+    <p><strong>What is deleted:</strong> your Vinoozy profile, personal cellar with its wines and History, and invitations and access records associated with your account. People you shared your own cellar with will lose access to that cellar. Deleting Vinoozy does not delete your Google account.</p>
+    <p><strong>Plan and subscription:</strong> the Plus plan recorded by Vinoozy (gifts included), the usage counters and the ad records are deleted too. Of a Google Play purchase we keep only its technical reference and status, no longer linked to your account, to handle refunds and disputes. Deleting your account does not cancel an active Plus subscription: cancel it in Google Play, under Payments &amp; subscriptions, otherwise Google keeps charging it.</p>
+    <p><strong>Timing and help:</strong> the automatic process deletes data during the connected session. If interrupted, return to the page and complete it. We cannot guarantee immediate removal of every provider backup or diagnostic record. If Google sign-in is unavailable, email bottazzinibruno@gmail.com and identify your Vinoozy account; do not send passwords or unsolicited identity documents. We will verify identity appropriately and normally respond within one month of receipt, explaining any lawful extension.</p>
+  </section>
+
+  <section aria-labelledby="privacy">
+    <h2 id="privacy">Privacy: what is kept</h2>
+    <p><strong>Data in other people&#x27;s cellars:</strong> records and notes you entered there may remain with persistent technical identifiers. They are not necessarily anonymous. To request removal or object to retention, contact bottazzinibruno@gmail.com. Copies exported by other users remain under their control.</p>
+    <p>The same option is available in the app under <strong>Profile → Delete account</strong>. Retention and rights: <a href="../../privacy/en/">Privacy notice</a>.</p>
+  </section>
+
+  <section aria-labelledby="here">
+    <h2 id="here">From this page</h2>
+
+    <p class="message error" data-message="config" hidden>This page is not configured yet. Use the app or write to us at the address below.</p>
+    <p class="message error" data-message="offline" hidden>Connect to the internet to delete the account.</p>
+    <p class="message error" data-message="failed" hidden>The operation could not be completed. Try again.</p>
+    <p class="message error" data-message="network" hidden>The connection was lost. Try again.</p>
+    <p class="message error" data-message="rejected" hidden>Could not complete the deletion. Try again.</p>
+    <p class="message error" data-message="reauthRequired" hidden>A new Google sign-in is needed to finish. Tap Try again.</p>
+    <p class="message error" data-message="sameAccount" hidden>The deletion requires signing in with the same Google account.</p>
+    <p class="message" data-message="started" hidden>A deletion of this account has already started. Confirm to complete it.</p>
+    <p class="message" data-message="done" hidden>Account deleted.</p>
+
+    <div id="signed-out">
+      <button id="sign-in" class="primary" type="button">Sign in with Google</button>
+    </div>
+
+    <div id="signed-in" hidden>
+      <p>Account: <strong id="account-email"></strong></p>
+      <label for="confirm-word">Type DELETE to confirm</label>
+      <input id="confirm-word" data-word="DELETE" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <p>Then you will sign in again with Google to confirm it is you.</p>
+      <div class="actions">
+        <button id="delete" class="danger" type="button" disabled>Delete forever</button>
+        <button id="retry" type="button" hidden>Try again</button>
+        <button id="sign-out" type="button">Sign out</button>
+      </div>
+      <ol id="progress" aria-live="polite" hidden>
+        <li data-step="1">Starting the deletion</li>
+        <li data-step="2">Leaving other people's cellars</li>
+        <li data-step="3">Closing your shares</li>
+        <li data-step="4">Deleting wines and History <span id="deleted-count"></span></li>
+        <li data-step="5">Deleting the cellar</li>
+        <li data-step="6">Deleting the profile and the account</li>
+      </ol>
+    </div>
+  </section>
+
+  <section aria-labelledby="no-access">
+    <h2 id="no-access">Can't sign in?</h2>
+    <p>If you cannot use Google sign-in, email <a href="mailto:bottazzinibruno@gmail.com">bottazzinibruno@gmail.com</a> and identify your Vinoozy account. Do not send passwords or unsolicited identity documents. We will verify your identity appropriately; response times and any lawful extension are explained above.</p>
+  </section>
+</main>
+<script type="module" src="../app.bundle.js"></script>
+</body>
+</html>
