@@ -1,9 +1,9 @@
 <it-IT>
-Versione 0.2.0: nel Profilo compare il tuo piano (Gratuito). Preparato Vinoozy Plus, che arriverà presto. Le stime di spumanti e Champagne tengono conto dello stile e della data di sboccatura. Pagina per cancellare l'account online e correzioni varie.
+Versione 0.2.1: corretto l'arresto all'avvio della 0.2.0. Nel Profilo compare il tuo piano (Gratuito); Vinoozy Plus arriverà presto. Le stime di spumanti e Champagne tengono conto dello stile e della data di sboccatura. Pagina per cancellare l'account online e correzioni varie.
 </it-IT>
 <en-US>
-Version 0.2.0: your plan (Free) now shows in Profile. Vinoozy Plus is on its way. Sparkling wine and Champagne estimates now use the style and disgorgement date. Online account deletion page and various fixes.
+Version 0.2.1: fixes the crash at start of 0.2.0. Your plan (Free) now shows in Profile; Vinoozy Plus is on its way. Sparkling wine and Champagne estimates now use the style and disgorgement date. Online account deletion page and various fixes.
 </en-US>
 <pt-BR>
-Versão 0.2.0: o seu plano (Gratuito) aparece no Perfil. O Vinoozy Plus chega em breve. As estimativas de espumantes e Champagne usam o estilo e a data de dégorgement. Página online para excluir a conta e várias correções.
+Versão 0.2.1: corrige o fechamento ao abrir da 0.2.0. O seu plano (Gratuito) aparece no Perfil; o Vinoozy Plus chega em breve. As estimativas de espumantes e Champagne usam o estilo e a data de dégorgement. Página online para excluir a conta e várias correções.
 </pt-BR>

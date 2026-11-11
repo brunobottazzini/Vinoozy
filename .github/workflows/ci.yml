@@ -317,8 +317,9 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     # freemium-plus: + one more app build (developer tools) for
-    # tool/e2e_freemium.sh.
-    timeout-minutes: 60
+    # tool/e2e_freemium.sh, and the R8-shrunk release build started by
+    # tool/check_release_launch.sh (0.2.0 crashed at start on the phone).
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Enable KVM
@@ -394,6 +395,7 @@ jobs:
             flutter test integration_test --dart-define=FIREBASE_ENV=demo --dart-define=E2E=true
             tool/e2e_force_stop.sh
             tool/e2e_freemium.sh
+            tool/check_release_launch.sh
       # One automatic retry only when the Android emulator never booted (an
       # infrastructure error); a test failure is never retried.
       - name: End-to-end tests (retry after an emulator boot failure)
@@ -413,6 +415,7 @@ jobs:
             flutter test integration_test --dart-define=FIREBASE_ENV=demo --dart-define=E2E=true
             tool/e2e_force_stop.sh
             tool/e2e_freemium.sh
+            tool/check_release_launch.sh
       - name: Fail when the tests failed
         if: steps.attempt1.outcome == 'failure' && hashFiles('e2e-started') != ''
         run: exit 1

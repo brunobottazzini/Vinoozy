@@ -13,3 +13,10 @@
 -dontwarn com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
 -dontwarn com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions$Builder
 -dontwarn com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
+
+# freemium-plus: google_mobile_ads brings WorkManager, whose Room database
+# (androidx.work.impl.WorkDatabase_Impl) is created by reflection. R8 removed
+# its constructor and the release app crashed at start
+# ("Failed to create an instance of androidx.work.impl.WorkDatabase").
+-keep class * extends androidx.room.RoomDatabase { <init>(); }
+-keep class androidx.work.impl.WorkDatabase_Impl { *; }
