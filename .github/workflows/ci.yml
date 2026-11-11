@@ -70,7 +70,11 @@ jobs:
       - name: Scan the history for secrets
         # --verbose prints each finding (secret redacted) with its fingerprint,
         # the value an accepted finding needs in .gitleaksignore.
-        run: '"$RUNNER_TEMP/gitleaks" git --redact --verbose --no-banner --exit-code 1 .'
+        # --log-opts=HEAD: only the history of the commit under test. The
+        # gh-pages branch (pages.yml) holds only copies of files already in
+        # main, so it is scanned through main; scanning it again would flag the
+        # accepted public keys under each new publication commit.
+        run: '"$RUNNER_TEMP/gitleaks" git --redact --verbose --no-banner --exit-code 1 --log-opts=HEAD .'
 
   analyze:
     runs-on: ubuntu-latest
