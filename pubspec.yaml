@@ -5,7 +5,7 @@ publish_to: 'none'
 
 # versionName (semver) is read from here by release.yml; the build number is
 # replaced in CI with the next Google Play versionCode (--build-number).
-version: 0.1.0+1
+version: 0.2.0+2
 
 environment:
   sdk: ^3.13.7

@@ -274,7 +274,7 @@ Dati che restano solo sul telefono, fuori da Firestore, nel valore `ledger.v1` d
 Freemium e Plus (intent `261110-freemium-plus`, NFR6; procedura in `docs/plus-setup.md` e `docs/blaze-switch.md`):
 
 - [ ] **Acquisti e misurazione** dichiarati nella scheda "Sicurezza dei dati" con le righe della tabella sopra, prima di pubblicare la versione con Plus. Verificato: ______.
-- [ ] **ID pubblicità**: il manifest dichiara `com.google.android.gms.permission.AD_ID` (SDK degli annunci, controllato da `tool/check_release_build.sh`). Dichiarazione "ID pubblicità" in Contenuti dell'app compilata. Verificato: ______.
+- [ ] **ID pubblicità**: con gli annunci spenti il manifest unito **non** dichiara `com.google.android.gms.permission.AD_ID` (rimosso in `AndroidManifest.xml`, controllato da `tool/check_release_build.sh`); la dichiarazione Play «nessun utilizzo dell'ID pubblicità» resta valida. Da rivedere solo quando si accendono gli annunci. Verificato: ______.
 - [ ] **Annunci**: finché `config/policy.adsEnabled` è `false` l'SDK non parte. Prima di accenderli: voce "Annunci" di Play Console, riga degli annunci nella scheda "Sicurezza dei dati" e messaggio di consenso UMP in AdMob. Verificato: ______.
 - [ ] **Informativa privacy e pagina di cancellazione** (it, en, pt-BR) con il paragrafo su Plus, misurazione e annunci e la nota "un abbonamento attivo si annulla in Google Play". Testi da far rivedere a un professionista prima di vendere (studio di monetizzazione, "Diritti del consumatore e privacy"). Verificato: ______.
 - [ ] **Cancellazione dell'account**: con le funzioni pubblicate, `onUserDeleted` cancella `entitlements`, `usage` e `adSlots`; del record d'acquisto resta il token senza uid. Provato con un account di test: ______.

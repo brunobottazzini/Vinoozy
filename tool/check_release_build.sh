@@ -35,9 +35,9 @@
 #   - a third build, --profile with ENABLE_DEV_CHEATS=true, is its positive
 #     control: there the tools exist and the marker must be PRESENT;
 #   - the merged release manifest must declare the Play Billing permission
-#     (com.android.vending.BILLING) and the advertising id permission
-#     (com.google.android.gms.permission.AD_ID), both expected from
-#     in_app_purchase and google_mobile_ads, and the AdMob App ID meta-data.
+#     (com.android.vending.BILLING, from in_app_purchase) and the AdMob App
+#     ID meta-data, and must NOT declare the advertising id permission
+#     (com.google.android.gms.permission.AD_ID) while the ads are off.
 #
 # Usage: tool/check_release_build.sh
 set -euo pipefail
@@ -63,14 +63,18 @@ check_merged_manifest() {
     fi
     echo "merged manifest: $permission absent (ok)"
   done
-  # freemium-plus D6: Play Billing and the advertising id are expected.
-  for permission in com.android.vending.BILLING com.google.android.gms.permission.AD_ID; do
-    if ! grep -Eq "android:name=\"${permission//./\\.}\"" "$merged_manifest"; then
-      echo "check_release_build: FAILED, the merged manifest does not declare $permission" >&2
-      exit 1
-    fi
-    echo "merged manifest: $permission present (expected)"
-  done
+  # freemium-plus D6: Play Billing is expected. The advertising id is removed
+  # while the ads are off (Play declares "no advertising ID").
+  if ! grep -Eq 'android:name="com\.android\.vending\.BILLING"' "$merged_manifest"; then
+    echo "check_release_build: FAILED, the merged manifest does not declare com.android.vending.BILLING" >&2
+    exit 1
+  fi
+  echo "merged manifest: com.android.vending.BILLING present (expected)"
+  if grep -Eq 'android:name="com\.google\.android\.gms\.permission\.AD_ID"' "$merged_manifest"; then
+    echo "check_release_build: FAILED, the merged manifest declares AD_ID while the ads are off" >&2
+    exit 1
+  fi
+  echo "merged manifest: com.google.android.gms.permission.AD_ID absent (ok, ads off)"
   if ! grep -Eq 'android:name="com\.google\.android\.gms\.ads\.APPLICATION_ID"' "$merged_manifest"; then
     echo "check_release_build: FAILED, the AdMob APPLICATION_ID meta-data is missing" >&2
     exit 1

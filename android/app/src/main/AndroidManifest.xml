@@ -13,6 +13,13 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:node="remove"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:node="remove"/>
 
+    <!-- freemium-plus: the ads module is off (config/policy.adsEnabled=false)
+         and Play Console declares "no advertising ID". google_mobile_ads
+         adds AD_ID, so it is removed until the ads are turned on; then drop
+         this line and update the Play declarations (docs/plus-setup.md §9).
+         Checked by tool/check_release_build.sh. -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+
     <!-- allowBackup=false and the data extraction rules keep the pending-writes
          ledger and the Firestore cache off backups and device transfers (NFR8.4).
          usesCleartextTraffic=false: only the debug variant opens 10.0.2.2 for the

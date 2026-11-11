@@ -172,7 +172,7 @@ Rieseguire la migrazione è sicuro: ricalcola `activeWineCount` e lascia `legacy
 ## 9. Annunci (spenti al lancio)
 
 - [ ] L'App ID reale di AdMob va nel segreto GitHub **`ADMOB_APP_ID`** (ambiente `play-internal`, usato da `release.yml`). Senza il segreto la build usa l'App ID di test di Google; l'SDK degli annunci non parte mai finché `adsEnabled` è `false` (FR7.1).
-- [ ] Play Console → **Contenuti dell'app** → **ID pubblicità**: il manifest dichiara ora `com.google.android.gms.permission.AD_ID` (dall'SDK degli annunci), quindi la dichiarazione va compilata in modo coerente prima di pubblicare questa versione.
+- [ ] **ID pubblicità**: finché gli annunci sono spenti, `AndroidManifest.xml` rimuove `com.google.android.gms.permission.AD_ID` (aggiunto dall'SDK degli annunci) e Play Console resta su «nessun utilizzo dell'ID pubblicità». Prima di `--ads-enabled true`: togli la riga `tools:node="remove"` di `AD_ID` dal manifest, aggiorna `tool/check_release_build.sh` e la dichiarazione «ID pubblicità» in Play Console.
 - [ ] Prima di `--ads-enabled true`: aggiorna in Play Console la voce **Annunci** («L'app contiene annunci»), la scheda **Sicurezza dei dati** (`docs/release-checklist.md` §2) e configura in AdMob il messaggio di consenso (UMP) per lo Spazio economico europeo.
 
 ## 10. Dati e cancellazione dell'account
