@@ -5,13 +5,13 @@
 //   node tool/admin/set_policy.mjs [--ads-enabled true|false]
 //        [--capacity-limit-enabled true|false] [--purchases-enabled true|false]
 //        [--usage-budget-euro 0.005] [--free-active-wine-limit 15]
-//        [--policy-version freemium-v1] --project <id> [--credentials <path>]
+//        [--policy-version freemium-v1] --project <id> [--credentials <path> | --firebase-login]
 //   add --emulator (project demo-vinoozy) to work on the local emulator.
 import { AdminError, openProject, parseOptions, runCli } from './lib/admin_context.mjs';
 
 const USAGE = `Usage: set_policy.mjs [--ads-enabled true|false] [--capacity-limit-enabled true|false]
   [--purchases-enabled true|false] [--usage-budget-euro <decimal>] [--free-active-wine-limit <n>]
-  [--policy-version <text>]  --project <id> [--credentials <path>] | --emulator`;
+  [--policy-version <text>]  --project <id> [--credentials <path> | --firebase-login] | --emulator`;
 
 /** CLI option → policy field and parser. */
 const FIELDS = {

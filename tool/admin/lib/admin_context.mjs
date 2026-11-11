@@ -1,16 +1,20 @@
 // Shared start-up of the owner's admin scripts (freemium-plus D7, FR4.4):
 // options, credentials, project verification and Firebase Admin.
 //
-// Production: credentials come only from --credentials <path> or
-// GOOGLE_APPLICATION_CREDENTIALS, from a file outside the repository, and
-// the key's project_id must equal the --project the owner typed.
+// Production: credentials come from --credentials <path> or
+// GOOGLE_APPLICATION_CREDENTIALS (a service account key outside the
+// repository, whose project_id must equal the --project the owner typed), or,
+// with --firebase-login, from the owner's own Firebase CLI login
+// (`npx firebase login`): no key file exists at all, and the account's own
+// IAM roles on the project decide what it may do.
 // Emulator (--emulator): project demo-vinoozy on loopback hosts only.
 import { readFileSync } from 'node:fs';
-import { dirname, resolve, sep } from 'node:path';
+import { createRequire } from 'node:module';
+import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
-import { cert, initializeApp } from 'firebase-admin/app';
+import { cert, initializeApp, refreshToken } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 
@@ -33,6 +37,7 @@ export class AdminError extends Error {
 export const COMMON_OPTIONS = {
   project: { type: 'string' },
   credentials: { type: 'string' },
+  'firebase-login': { type: 'boolean', default: false },
   emulator: { type: 'boolean', default: false },
   help: { type: 'boolean', default: false },
 };
@@ -75,13 +80,44 @@ function readServiceAccount(path) {
   return json;
 }
 
+/**
+ * The refresh token of the account logged in with the Firebase CLI of this
+ * repository (firebase-tools in the root devDependencies), with the CLI's
+ * own OAuth client. Nothing is copied or written anywhere.
+ */
+function firebaseLoginCredential() {
+  let api;
+  let auth;
+  try {
+    const require = createRequire(join(REPO_ROOT, 'package.json'));
+    api = require('firebase-tools/lib/api');
+    auth = require('firebase-tools/lib/auth');
+  } catch (error) {
+    throw new AdminError(`Cannot load the Firebase CLI (run npm ci in the repository root): ${error.message}`);
+  }
+  const account = auth.getGlobalDefaultAccount();
+  const token = account?.tokens?.refresh_token;
+  if (!token) {
+    throw new AdminError('Not logged in to the Firebase CLI: run npx firebase login, then try again.');
+  }
+  return {
+    credential: refreshToken({
+      type: 'authorized_user',
+      client_id: api.clientId(),
+      client_secret: api.clientSecret(),
+      refresh_token: token,
+    }),
+    who: account.user?.email ?? 'the Firebase CLI account',
+  };
+}
+
 function emulatorContext(values, out) {
   const projectId = values.project ?? DEMO_PROJECT_ID;
   if (projectId !== DEMO_PROJECT_ID) {
     throw new AdminError(`--emulator works only with project ${DEMO_PROJECT_ID}, not ${projectId}.`);
   }
-  if (values.credentials) {
-    throw new AdminError('--emulator takes no --credentials.');
+  if (values.credentials || values['firebase-login']) {
+    throw new AdminError('--emulator takes no --credentials or --firebase-login.');
   }
   process.env.FIRESTORE_EMULATOR_HOST ??= DEFAULT_FIRESTORE_EMULATOR;
   process.env.FIREBASE_AUTH_EMULATOR_HOST ??= DEFAULT_AUTH_EMULATOR;
@@ -102,11 +138,17 @@ function productionContext(values, out) {
         'FIRESTORE_EMULATOR_HOST and FIREBASE_AUTH_EMULATOR_HOST to work on the real project.',
     );
   }
-  const path = values.credentials ?? process.env.GOOGLE_APPLICATION_CREDENTIALS;
-  if (!path) {
+  if (values['firebase-login'] && values.credentials) {
+    throw new AdminError('Pass either --credentials or --firebase-login, not both.', 2);
+  }
+  const path = values['firebase-login']
+    ? undefined
+    : (values.credentials ?? process.env.GOOGLE_APPLICATION_CREDENTIALS);
+  if (!path && !values['firebase-login']) {
     throw new AdminError(
-      'Missing credentials: pass --credentials <path to the service account key, ' +
-        'outside the repository> or set GOOGLE_APPLICATION_CREDENTIALS.',
+      'Missing credentials: add --firebase-login to use your Firebase CLI login, ' +
+        'or pass --credentials <path to the service account key, outside the ' +
+        'repository>, or set GOOGLE_APPLICATION_CREDENTIALS.',
     );
   }
   if (!values.project) {
@@ -114,6 +156,12 @@ function productionContext(values, out) {
   }
   if (values.project.startsWith('demo-')) {
     throw new AdminError(`${values.project} is a demo project: use --emulator.`);
+  }
+  if (values['firebase-login']) {
+    const { credential, who } = firebaseLoginCredential();
+    const app = initializeApp({ credential, projectId: values.project }, `admin-${values.project}`);
+    out(`Project: ${values.project} (PRODUCTION, as ${who})`);
+    return { app, projectId: values.project, emulator: false };
   }
   const account = readServiceAccount(path);
   if (account.project_id !== values.project) {

@@ -2,6 +2,9 @@
 // FR4.4). Run with:
 //   firebase emulators:exec --only firestore,auth --project demo-vinoozy "node --test test/admin/grant_plus.test.mjs"
 import assert from 'node:assert/strict';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { beforeEach, describe, it } from 'node:test';
 
 import {
@@ -131,6 +134,35 @@ describe('grant_plus.mjs', () => {
     assert.match(noCredentials.stderr, /Missing credentials/);
     assert.match(keyInRepo.stderr, /inside the repository/);
     for (const result of [withEmulatorHosts, noCredentials, keyInRepo]) assert.equal(result.code, 1);
+    assert.deepEqual(await listIds('entitlements'), []);
+  });
+
+  it('--firebase-login needs a Firebase CLI login and excludes the other credentials', async () => {
+    const args = ['grant', '--email', 'friend@example.com', '--no-expiry', '--firebase-login'];
+    // An empty home and config directory: no Firebase CLI login is stored.
+    const home = await mkdtemp(join(tmpdir(), 'vinoozy-admin-'));
+    const noLoginEnv = productionEnv({ HOME: home, XDG_CONFIG_HOME: join(home, '.config') });
+    try {
+      const notLoggedIn = await runScript('grant_plus.mjs', [...args, '--project', 'vinoozy-d6f45'], noLoginEnv);
+      const both = await runScript(
+        'grant_plus.mjs',
+        [...args, '--project', 'vinoozy-d6f45', '--credentials', '/tmp/key.json'],
+        noLoginEnv,
+      );
+      const noProject = await runScript('grant_plus.mjs', args, noLoginEnv);
+      const onEmulator = await grant('--email', 'friend@example.com', '--no-expiry', '--firebase-login');
+
+      assert.equal(notLoggedIn.code, 1);
+      assert.match(notLoggedIn.stderr, /Not logged in to the Firebase CLI/);
+      assert.equal(both.code, 2);
+      assert.match(both.stderr, /either --credentials or --firebase-login/);
+      assert.equal(noProject.code, 1);
+      assert.match(noProject.stderr, /Missing --project/);
+      assert.equal(onEmulator.code, 1);
+      assert.match(onEmulator.stderr, /--emulator takes no --credentials or --firebase-login/);
+    } finally {
+      await rm(home, { recursive: true, force: true });
+    }
     assert.deepEqual(await listIds('entitlements'), []);
   });
 });

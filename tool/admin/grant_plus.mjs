@@ -4,8 +4,8 @@
 // never a purchase token; revoking keeps every cellar data.
 //
 //   node tool/admin/grant_plus.mjs grant --email <e> (--until YYYY-MM-DD | --no-expiry)
-//        [--reason gift|owner_test] [--force] --project <id> [--credentials <path>]
-//   node tool/admin/grant_plus.mjs revoke --email <e> --project <id> [--credentials <path>]
+//        [--reason gift|owner_test] [--force] --project <id> [--credentials <path> | --firebase-login]
+//   node tool/admin/grant_plus.mjs revoke --email <e> --project <id> [--credentials <path> | --firebase-login]
 //   add --emulator (project demo-vinoozy) to work on the local emulator.
 import { Timestamp } from 'firebase-admin/firestore';
 
@@ -14,7 +14,7 @@ import { AdminError, openProject, parseOptions, runCli } from './lib/admin_conte
 const USAGE = `Usage:
   grant_plus.mjs grant --email <e> (--until YYYY-MM-DD | --no-expiry) [--reason gift|owner_test] [--force]
   grant_plus.mjs revoke --email <e>
-Common: --project <id> [--credentials <path>] | --emulator`;
+Common: --project <id> [--credentials <path> | --firebase-login] | --emulator`;
 
 const OPTIONS = {
   email: { type: 'string' },

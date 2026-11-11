@@ -5,11 +5,11 @@
 // capacityLimitEnabled on. Re-running recounts activeWineCount and keeps an
 // existing legacyActiveWineLimit.
 //
-//   node tool/admin/migrate_capacity.mjs [--dry-run] --project <id> [--credentials <path>]
+//   node tool/admin/migrate_capacity.mjs [--dry-run] --project <id> [--credentials <path> | --firebase-login]
 //   add --emulator (project demo-vinoozy) to work on the local emulator.
 import { AdminError, openProject, parseOptions, runCli } from './lib/admin_context.mjs';
 
-const USAGE = `Usage: migrate_capacity.mjs [--dry-run]  --project <id> [--credentials <path>] | --emulator`;
+const USAGE = `Usage: migrate_capacity.mjs [--dry-run]  --project <id> [--credentials <path> | --firebase-login] | --emulator`;
 
 /** The free plan's active wines (FR2.4). */
 export const FREE_ACTIVE_WINE_LIMIT = 15;

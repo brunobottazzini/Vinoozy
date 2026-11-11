@@ -92,6 +92,16 @@ Per provare prima sugli emulatori (`npm run emulators` in un altro terminale), s
 
 Gli script di `tool/admin/` (`grant_plus.mjs`, `set_policy.mjs`, `migrate_capacity.mjs`) girano solo sul tuo Mac.
 
+**Modo più semplice, senza chiavi: `--firebase-login`.** Gli script usano l'accesso che hai già fatto con la Firebase CLI del repository (`npx firebase login`, lo stesso account proprietario del progetto). Non esiste nessun file di chiave da custodire: per togliere l'accesso basta `npx firebase logout`. Lo script stampa il progetto e l'account con cui scrive («Project: vinoozy-d6f45 (PRODUCTION, as …)») prima di scrivere.
+
+```bash
+npx firebase login            # una volta sola, se non l'hai già fatto
+node tool/admin/grant_plus.mjs grant --email bottazzinibruno@gmail.com --no-expiry --reason owner_test \
+  --project vinoozy-d6f45 --firebase-login
+```
+
+In tutti gli esempi qui sotto puoi mettere `--firebase-login` al posto di `--credentials …`. La chiave di un account di servizio, descritta di seguito, serve solo se un giorno vuoi far girare gli script senza il tuo account personale.
+
 - [ ] Google Cloud Console → **IAM e amministrazione** → **Account di servizio** → **Crea account di servizio**: nome `vinoozy-admin`, con **solo** questi ruoli sul progetto:
   - **Visualizzatore Firebase Authentication** (`roles/firebaseauth.viewer`), per trovare l'account dall'email;
   - **Utente Cloud Datastore** (`roles/datastore.user`), per scrivere `entitlements`, `config/policy` e le cantine.
@@ -133,7 +143,7 @@ node tool/admin/grant_plus.mjs revoke --email amica@example.com \
 
 La revoca rifiuta un abbonamento comprato su Play: quello si gestisce solo da Google Play (rimborso o annullamento in Play Console → **Ordini**).
 
-Sugli emulatori, per provare, usa `--emulator` al posto di `--project … --credentials …`.
+Sugli emulatori, per provare, usa `--emulator` al posto di `--project … --credentials …` (o `--firebase-login`).
 
 ## 8. Accensione del limite: prima `migrate_capacity.mjs`, poi `capacityLimitEnabled`
 
