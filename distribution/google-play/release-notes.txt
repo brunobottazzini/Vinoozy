@@ -1,9 +1,9 @@
 <it-IT>
-Prima versione per il test interno: gestione della cantina, dettaglio dei vini, cruscotto e storico delle bevute.
+Versione 0.2.0: nel Profilo compare il tuo piano (Gratuito). Preparato Vinoozy Plus, che arriverà presto. Le stime di spumanti e Champagne tengono conto dello stile e della data di sboccatura. Pagina per cancellare l'account online e correzioni varie.
 </it-IT>
 <en-US>
-First internal test version: cellar management, wine details, dashboard and drinking history.
+Version 0.2.0: your plan (Free) now shows in Profile. Vinoozy Plus is on its way. Sparkling wine and Champagne estimates now use the style and disgorgement date. Online account deletion page and various fixes.
 </en-US>
 <pt-BR>
-Primeira versão para teste interno: gestão da adega, detalhes dos vinhos, painel e histórico de consumo.
+Versão 0.2.0: o seu plano (Gratuito) aparece no Perfil. O Vinoozy Plus chega em breve. As estimativas de espumantes e Champagne usam o estilo e a data de dégorgement. Página online para excluir a conta e várias correções.
 </pt-BR>
