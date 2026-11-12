@@ -327,6 +327,9 @@ abstract final class AppBootstrap {
         syncErrorBusProvider.overrideWithValue(bus),
         syncWatcherProvider.overrideWithValue(watcher),
         accountGateProvider.overrideWithValue(gate),
+        accessNoticesAllowedProvider.overrideWithValue(
+          () => gate.current is GateCellar,
+        ),
         sharingRepositoryProvider.overrideWithValue(sharing),
         drinkingRecordRepositoryProvider.overrideWithValue(records),
         matchKeyBackfillProvider.overrideWithValue(

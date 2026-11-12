@@ -185,6 +185,47 @@ void main() {
       expect(find.byKey(const Key('shared-cellar-notice')), findsNothing);
     });
 
+    testWidgets('BR1.8 no "Non hai più accesso" without an open cellar '
+        '(account deletion, sign-in screen); "shared with you" still shows', (
+      tester,
+    ) async {
+      // actions-release-fix: after an account deletion the notice covered
+      // the sign-in screen and the next sign-in could not be tapped.
+      var cellarOpen = false;
+      await pumpScreen(
+        tester,
+        const Scaffold(body: SizedBox.expand()),
+        overrides: [
+          syncErrorBusProvider.overrideWithValue(bus),
+          sharingNoticesProvider.overrideWithValue(notices),
+          accessNoticesAllowedProvider.overrideWithValue(() => cellarOpen),
+        ],
+      );
+
+      bus.publish(
+        const CellarAccessLost(cellarId: 'user-a', ownerName: 'Mario'),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('shared-cellar-notice')), findsNothing);
+
+      notices.publish(
+        const CellarShared(cellarId: 'user-z', ownerName: 'Anna'),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('shared-cellar-notice')), findsOneWidget);
+      await dismiss(tester);
+
+      cellarOpen = true;
+      bus.publish(
+        const CellarAccessLost(cellarId: 'user-a', ownerName: 'Mario'),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Non hai più accesso alla cantina di Mario'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('BR1.14 refused queued writes: one notice with the last '
         'known owner name', (tester) async {
       await pumpRoot(tester);

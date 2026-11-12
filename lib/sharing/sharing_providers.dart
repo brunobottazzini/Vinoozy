@@ -91,6 +91,17 @@ final knownCellarOwnersProvider = Provider<Map<String, String>>(
   (ref) => <String, String>{},
 );
 
+/// Whether "You no longer have access" may be shown now. True by default;
+/// at start-up (lib/app/bootstrap.dart) it is true only while the account
+/// gate shows a cellar (actions-release-fix): an account deletion leaves and
+/// deletes the invitations it received, a list where an active one simply
+/// disappears reads as a revocation, and the notice covered the sign-in
+/// screen after the deletion, so the next sign-in could not be tapped.
+final accessNoticesAllowedProvider = Provider<bool Function()>(
+  (ref) =>
+      () => true,
+);
+
 /// Cellars and kinds of notice already shown in this session (one notice
 /// per cellar, BR1.8, NFR6.3).
 final shownAccessNoticesProvider = Provider<Set<String>>((ref) => <String>{});
@@ -120,20 +131,29 @@ final myMembershipsProvider = StreamProvider.autoDispose
       final owners = ref.read(knownCellarOwnersProvider);
       final tracker = MembershipTracker();
       final activating = <String>{};
+      // Activations whose commit did not answer in time: the batch may still
+      // reach the server. The notice is shown when the server confirms the
+      // invitation active (actions-release-fix: with a busy server the
+      // notice was lost, since the confirmed list was then already active).
+      final unconfirmed = <String>{};
+
+      void announce(Membership membership) => notices.publish(
+        CellarShared(
+          cellarId: membership.cellarId,
+          ownerName: membership.ownerLabel,
+        ),
+      );
 
       Future<void> activate(Membership membership) async {
         try {
           await repository.activate(cellarId: membership.cellarId, user: user);
-          notices.publish(
-            CellarShared(
-              cellarId: membership.cellarId,
-              ownerName: membership.ownerLabel,
-            ),
-          );
+          unconfirmed.remove(membership.cellarId);
+          announce(membership);
         } catch (_) {
           // Reported by the repository with a fixed reason; the next
-          // confirmed list tries again.
+          // confirmed list tries again, or confirms a late commit.
           activating.remove(membership.cellarId);
+          unconfirmed.add(membership.cellarId);
         }
       }
 
@@ -172,6 +192,21 @@ final myMembershipsProvider = StreamProvider.autoDispose
               unawaited(activate(membership));
             }
           }
+          // A late commit confirmed by the server: the notice is due now.
+          for (final membership in memberships) {
+            if (membership.status == MemberStatus.active &&
+                unconfirmed.remove(membership.cellarId)) {
+              announce(membership);
+            }
+          }
+          unconfirmed.removeWhere(
+            (cellarId) => !memberships.any(
+              (m) =>
+                  m.cellarId == cellarId &&
+                  (m.status == MemberStatus.invited ||
+                      m.status == MemberStatus.active),
+            ),
+          );
         }
         return memberships;
       });

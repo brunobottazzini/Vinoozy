@@ -41,6 +41,15 @@ class LedgerOwnerConflict extends StateError {
   LedgerOwnerConflict() : super('pending writes belong to another account');
 }
 
+/// Raised when a write is attempted for an account that is no longer this
+/// phone's: deleted here ([LedgerState.closedUid]) or replaced by another
+/// account after a reset (actions-release-fix). It happens to background
+/// work still running for the old account; the write is skipped.
+class LedgerSessionClosed implements Exception {
+  @override
+  String toString() => 'LedgerSessionClosed: the account is no longer active';
+}
+
 /// Local ledger of pending writes, stored as the single JSON value
 /// `ledger.v1` (NFR4.9, NFR6.3, NFR8.1).
 ///
@@ -95,6 +104,15 @@ class LocalLedger {
     return _mutate((state) {
       final owner = state.owner;
       if (owner != null && owner.uid != uid) throw LedgerOwnerConflict();
+      // actions-release-fix: a late background write of an account that is
+      // no longer this phone's (deleted, or replaced by another account
+      // after a reset) must not become the owner of the pending writes:
+      // the next sign-in would show "unsaved changes of another account".
+      if (owner == null &&
+          (state.closedUid == uid ||
+              (state.lastUid != null && state.lastUid != uid))) {
+        throw LedgerSessionClosed();
+      }
       final nextOwner = LedgerOwner(
         uid: uid,
         email: owner?.email ?? email,
@@ -178,13 +196,15 @@ class LocalLedger {
   /// Local reset (NFR4.10): empties owner and journal, records [newUid] as the
   /// last user and increments `generation`, so callbacks of earlier writes are
   /// ignored. `resetPending` is kept until the reset is completed.
-  /// A null [newUid] (u8-account, deleted account) records no last user.
-  Future<void> reset(String? newUid) => _mutate(
+  /// A null [newUid] (u8-account, deleted account) records no last user;
+  /// [closedUid] names the deleted account, whose late writes are refused.
+  Future<void> reset(String? newUid, {String? closedUid}) => _mutate(
     (state) => (
       LedgerState(
         lastUid: newUid,
         generation: state.generation + 1,
         resetPending: state.resetPending,
+        closedUid: closedUid,
       ),
       null,
     ),

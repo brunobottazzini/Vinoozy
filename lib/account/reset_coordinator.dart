@@ -66,7 +66,12 @@ class ResetCoordinator {
     _invalidateListeners();
     try {
       await _ledger.setResetPending(true);
-      await _ledger.reset(openCellar ? newUid : null);
+      // A deleted account (openCellar false) is remembered as closed, so a
+      // late write of its background work cannot block the next sign-in.
+      await _ledger.reset(
+        openCellar ? newUid : null,
+        closedUid: openCellar ? null : newUid,
+      );
     } catch (error, stack) {
       await _reporter.report(error, stack, reason: 'ResetLedgerFailed');
       return ResetOutcome.failed;

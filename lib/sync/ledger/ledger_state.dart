@@ -118,6 +118,7 @@ class LedgerState {
     this.owner,
     this.journal = const [],
     this.resetPending = false,
+    this.closedUid,
   });
 
   static const LedgerState empty = LedgerState();
@@ -129,6 +130,7 @@ class LedgerState {
     final journal = json['journal'];
     final lastUid = json['lastUid'];
     final resetPending = json['resetPending'] ?? false;
+    final closedUid = json['closedUid'];
     final Map<String, Object?>? owner = switch (rawOwner) {
       null => null,
       final Map<String, Object?> map => map,
@@ -137,6 +139,9 @@ class LedgerState {
     if (journal is! List) throw const FormatException('journal must be a list');
     if (lastUid != null && lastUid is! String) {
       throw const FormatException('lastUid must be a string');
+    }
+    if (closedUid != null && closedUid is! String) {
+      throw const FormatException('closedUid must be a string');
     }
     if (resetPending is! bool) {
       throw const FormatException('resetPending must be a bool');
@@ -153,6 +158,7 @@ class LedgerState {
             throw const FormatException('journal entries must be objects'),
       ],
       resetPending: resetPending,
+      closedUid: closedUid as String?,
     );
   }
 
@@ -168,6 +174,12 @@ class LedgerState {
   /// Set before a local reset and cleared once Firestore's persistence has
   /// been cleared (plan B of security-design.md §5).
   final bool resetPending;
+
+  /// The account deleted on this phone (actions-release-fix): its late
+  /// background writes are refused, so they cannot make it the owner of the
+  /// pending writes again and block the next account. Absent from values
+  /// written before this field existed.
+  final String? closedUid;
 
   Iterable<JournalEntry> entriesOf(String uid) =>
       journal.where((entry) => entry.ownerUid == uid);
@@ -191,6 +203,7 @@ class LedgerState {
     owner: clearOwner ? null : owner ?? this.owner,
     journal: journal ?? this.journal,
     resetPending: resetPending ?? this.resetPending,
+    closedUid: closedUid,
   );
 
   Map<String, Object?> toJson() => {
@@ -199,6 +212,7 @@ class LedgerState {
     'owner': owner?.toJson(),
     'journal': [for (final entry in journal) entry.toJson()],
     'resetPending': resetPending,
+    'closedUid': ?closedUid,
   };
 }
 

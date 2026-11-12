@@ -267,4 +267,68 @@ void main() {
     expect(events.first.lastUid, isNull);
     expect(events.last.lastUid, 'user-a');
   });
+
+  group('actions-release-fix: writes of an account no longer active', () {
+    test(
+      'a write of the deleted account is refused and sets no owner',
+      () async {
+        await ledger.reset(null, closedUid: 'user-a');
+
+        await expectLater(
+          ledger.beginWrite(uid: 'user-a', email: 'a@example.com'),
+          throwsA(isA<LedgerSessionClosed>()),
+        );
+        final state = await ledger.read();
+        expect(state.owner, isNull);
+        // The next account (any other uid) writes normally.
+        await ledger.beginWrite(uid: 'user-b', email: 'b@example.com');
+        expect((await ledger.read()).owner!.uid, 'user-b');
+      },
+    );
+
+    test('after a reset for another account the old one is refused', () async {
+      await ledger.setLastUid('user-a');
+      await ledger.reset('user-b');
+
+      await expectLater(
+        ledger.beginWrite(uid: 'user-a', email: 'a@example.com'),
+        throwsA(isA<LedgerSessionClosed>()),
+      );
+      await ledger.beginWrite(uid: 'user-b', email: 'b@example.com');
+      expect((await ledger.read()).owner!.uid, 'user-b');
+    });
+
+    test('the active account and a fresh ledger keep writing', () async {
+      await ledger.beginWrite(uid: 'user-a', email: 'a@example.com');
+      await ledger.setLastUid('user-a');
+      await ledger.beginWrite(uid: 'user-a', email: 'a@example.com');
+      expect((await ledger.read()).owner!.seq, 2);
+    });
+
+    test(
+      'closedUid is saved, read back and absent from older values',
+      () async {
+        await ledger.reset(null, closedUid: 'user-a');
+        expect(stored()['closedUid'], 'user-a');
+        final reopened = LocalLedger(
+          store: store,
+          reporter: recordingReporter(sink),
+        );
+        expect((await reopened.read()).closedUid, 'user-a');
+
+        store.values[LocalLedger.storageKey] = jsonEncode({
+          'lastUid': 'user-a',
+          'generation': 3,
+          'owner': null,
+          'journal': <Object?>[],
+          'resetPending': false,
+        });
+        final older = LocalLedger(
+          store: store,
+          reporter: recordingReporter(sink),
+        );
+        expect((await older.read()).closedUid, isNull);
+      },
+    );
+  });
 }

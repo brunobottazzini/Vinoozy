@@ -89,6 +89,12 @@ class _SyncEventListenerState extends ConsumerState<SyncEventListener> {
   }
 
   void _showAccessLost(CellarAccessLost event) {
+    // Only with a cellar open (actions-release-fix): an account deletion
+    // leaves and deletes the invitations it received, and a list where an
+    // active one simply disappears read as a revocation. The notice then
+    // covered the sign-in screen and the next sign-in could not be tapped.
+    // Signed out, deleting or resetting, there is no access to lose.
+    if (!ref.read(accessNoticesAllowedProvider)()) return;
     final shown = ref.read(shownAccessNoticesProvider);
     if (!shown.add('${event.cellarId}/${event.fromQueuedWrite}')) return;
     final l10n = AppLocalizations.of(context);

@@ -70,6 +70,14 @@ void main() {
       final state = await ledger.read();
       expect(state.owner, isNull);
       expect(state.lastUid, isNull);
+      // actions-release-fix: the deleted account's late background writes
+      // are refused and cannot block the next sign-in.
+      expect(state.closedUid, 'user-a');
+      await expectLater(
+        ledger.beginWrite(uid: 'user-a', email: 'a@example.com'),
+        throwsA(isA<LedgerSessionClosed>()),
+      );
+      expect((await ledger.read()).owner, isNull);
     },
   );
 

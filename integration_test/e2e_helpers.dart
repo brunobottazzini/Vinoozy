@@ -526,7 +526,27 @@ Future<void> waitFor(
       await tester.tap(cellarTab);
     }
   }
-  throw TestFailure('Timed out after $timeout waiting for $finder');
+  throw TestFailure(
+    'Timed out after $timeout waiting for $finder\n'
+    'On screen: ${visibleKeys().join(', ')}',
+  );
+}
+
+/// The string keys of the widgets on screen (offstage ones excluded), in
+/// tree order: a timed-out wait names what the app was showing instead,
+/// such as a dialog covering the tab bar (actions-release-fix, account
+/// deletion E2E that timed out in CI without saying why).
+List<String> visibleKeys() {
+  final keys = <String>[];
+  for (final element
+      in find
+          .byWidgetPredicate((widget) => widget.key is ValueKey<String>)
+          .evaluate()) {
+    final value = (element.widget.key! as ValueKey<String>).value;
+    if (!keys.contains(value)) keys.add(value);
+    if (keys.length >= 60) break;
+  }
+  return keys;
 }
 
 /// Taps [finder] once it can really receive the tap.

@@ -209,6 +209,63 @@ void main() {
       expect(notices, hasLength(1));
     });
 
+    test('BR1.4 an activation that timed out but reached the server shows '
+        'the notice once, when the server confirms it active', () async {
+      // actions-release-fix: with a busy server the commit answered after
+      // the timeout, the confirmed list was already `active` and the notice
+      // was never shown (account deletion E2E, local runs 3 and 5).
+      when(
+        () => sharing.repository.activate(
+          cellarId: any(named: 'cellarId'),
+          user: any(named: 'user'),
+        ),
+      ).thenAnswer((_) async {
+        throw const SharingException(SharingError.timeout);
+      });
+      final notices = <CellarShared>[];
+      container.read(sharingNoticesProvider).events.listen(notices.add);
+      listenActive();
+      await settle();
+
+      sharing.emitMine([membership(status: MemberStatus.invited)]);
+      await settle();
+      expect(notices, isEmpty);
+      // The late commit reaches the server: the list is confirmed active.
+      sharing.emitMine([membership(status: MemberStatus.active)]);
+      await settle();
+      sharing.emitMine([membership(status: MemberStatus.active)]);
+      await settle();
+
+      expect(notices.map((notice) => notice.ownerName), ['Mario']);
+    });
+
+    test('BR1.4 a timed-out activation whose invitation is then revoked '
+        'shows no notice', () async {
+      when(
+        () => sharing.repository.activate(
+          cellarId: any(named: 'cellarId'),
+          user: any(named: 'user'),
+        ),
+      ).thenAnswer((_) async {
+        throw const SharingException(SharingError.timeout);
+      });
+      final notices = <CellarShared>[];
+      container.read(sharingNoticesProvider).events.listen(notices.add);
+      listenActive();
+      await settle();
+
+      sharing.emitMine([membership(status: MemberStatus.invited)]);
+      await settle();
+      sharing.emitMine([
+        membership(status: MemberStatus.revoked, closedBy: ClosedBy.owner),
+      ]);
+      await settle();
+      sharing.emitMine([membership(status: MemberStatus.active)]);
+      await settle();
+
+      expect(notices, isEmpty);
+    });
+
     test('BR1.4 BR1.2 a re-invitation after a revoke is activated again '
         'while the app stays open', () async {
       listenActive();
