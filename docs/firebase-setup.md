@@ -45,6 +45,9 @@ Nessuna chiave JSON: GitHub Actions ottiene token a breve scadenza. Il collegame
 
 ## 5. Google Play: app e i due account di servizio
 
+Nomi esatti, formati, comandi per copiare i valori senza mostrarli e controlli
+finali dei segreti di `play-internal` e `play-production`: `docs/github-actions-setup.md`.
+
 - [ ] Crea l'app in Play Console con il pacchetto **`com.vinoozy.app`** e attiva **Play App Signing**. Il primo AAB va caricato a mano, poi `release.yml` fa il resto.
 - [ ] Verifica se il tuo account sviluppatore deve fare un test chiuso con 12 tester per 14 giorni prima della produzione.
 - [ ] Account di servizio **`play-internal-publisher`**: in Play Console, sulla sola app Vinoozy, solo il permesso "Rilascia nei canali di test". La chiave JSON va nel segreto `PLAY_INTERNAL_SA_JSON` dell'ambiente `play-internal`.
@@ -61,7 +64,7 @@ Nessuna chiave JSON: GitHub Actions ottiene token a breve scadenza. Il collegame
 - [ ] Actions → "Require approval for first-time contributors". I workflow usano solo `pull_request`, mai `pull_request_target`.
 - [ ] Ambienti:
   - `play-internal`: limitato a `main`;
-  - `play-production`: limitato a `main`, approvazione obbligatoria del proprietario;
+  - `play-production`: limitato a `main`, approvazione obbligatoria del proprietario (creazione passo per passo in `docs/github-actions-setup.md` §2);
   - `firebase-prod`: limitato a `main` e ai tag `v*`, approvazione obbligatoria del proprietario;
   - `crashlytics-symbols`: limitato a `main`, senza approvazione (carica solo i simboli di debug, nessun segreto);
   - `github-pages-publish` (u8-account): approvazione obbligatoria del proprietario, per `pages.yml` (§10).

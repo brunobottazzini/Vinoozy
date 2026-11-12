@@ -1,0 +1,22 @@
+{
+  "project_info": {
+    "project_number": "000000000000",
+    "project_id": "fake-project",
+    "storage_bucket": "fake-project.invalid"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:000000000000:android:FAKEAPPID",
+        "android_client_info": {
+          "package_name": "com.vinoozy.app"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "fakeapikeyfakeapikey"
+        }
+      ]
+    }
+  ]
+}

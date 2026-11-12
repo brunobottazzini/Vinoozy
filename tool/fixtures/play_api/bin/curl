@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Fake curl for tool/play_api_test.sh: answers the Play Developer API calls of
+# tool/play_api.sh from fixtures, never over the network. It honours the
+# `-w '\n%{http_code}'` the script passes by printing the status last.
+#   FAKE_TRACKS_JSON     body of GET .../edits/<id>/tracks
+#   FAKE_FAIL_METHOD     method of the call that fails (with FAKE_FAIL_STATUS,
+#   FAKE_FAIL_STATUS     FAKE_FAIL_BODY); unset: every call succeeds
+#   FAKE_FAIL_BODY
+set -euo pipefail
+
+method=GET
+url=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -X) method="$2"; shift 2 ;;
+    -H | --data | -w) shift 2 ;;
+    -*) shift ;;
+    *) url="$1"; shift ;;
+  esac
+done
+
+status=200
+case "$method $url" in
+  "POST "*/edits) body='{"id":"fake-edit-1"}' ;;
+  "GET "*/tracks)
+    body='{"tracks":[]}'
+    if [[ -n "${FAKE_TRACKS_JSON:-}" ]]; then body="$FAKE_TRACKS_JSON"; fi
+    ;;
+  "DELETE "*) body=""; status=204 ;;
+  *) body='{}' ;;
+esac
+
+if [[ -n "${FAKE_FAIL_METHOD:-}" && "$method" == "$FAKE_FAIL_METHOD" ]]; then
+  status="${FAKE_FAIL_STATUS:-500}"
+  body='{"error":{"message":"fake failure"}}'
+  if [[ -n "${FAKE_FAIL_BODY:-}" ]]; then body="$FAKE_FAIL_BODY"; fi
+fi
+
+printf '%s\n%s' "$body" "$status"

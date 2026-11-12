@@ -76,4 +76,4 @@ App: **Vinoozy: la tua cantina**, package `com.vinoozy.app`.
 - Plus in vendita: passaggio a Blaze con le protezioni (`docs/blaze-switch.md`), pubblicazione delle funzioni, prodotto `vinoozy_plus` in Play Console, `purchasesEnabled`, aggiornamento della Sicurezza dei dati (`docs/plus-setup.md`).
 - Limite di 15 vini: prima `migrate_capacity.mjs`, poi `capacityLimitEnabled`.
 - Pubblicità: dopo circa 2 settimane di misure. Bisogna rimettere AD_ID, dichiarare annunci e ID pubblicità in Console, configurare il consenso UMP in AdMob e poi `adsEnabled`.
-- `release.yml` e `promote.yml` non hanno i segreti GitHub (chiave di firma, account di servizio Play): per ora carichi e promuovi a mano.
+- `release.yml` e `promote.yml` non hanno i segreti GitHub (chiave di firma, account di servizio Play): per ora carichi e promuovi a mano. Per configurarli segui `docs/github-actions-setup.md`.

@@ -125,6 +125,11 @@ jobs:
       # for the table generated from eAmbrosia; the sample built with
       # --allow-sample is refused by promote.yml before production.
       - run: tool/check_appellations_release_test.sh
+      # Play delivery (actions-release-fix FR3.4): the input check of
+      # release.yml and promote.yml, and the error messages of
+      # tool/play_api.sh, on fake fixtures and stubs of gcloud and curl.
+      - run: tool/check_release_inputs_test.sh
+      - run: tool/play_api_test.sh
       # Account (u8 NFR7.2): every rule BR1.1-BR1.13 is in a test name.
       - run: tool/check_rule_ids.sh BR1. 13 test/account test/rules/u8.rules.test.mjs
       # Account deletion page (u8 NFR4.7, infrastructure-specification.md

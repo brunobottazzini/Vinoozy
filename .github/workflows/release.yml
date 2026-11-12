@@ -37,6 +37,22 @@ jobs:
           # The write token is not left in .git/config for the build, third
           # party actions, pub and Gradle; only the tag step receives it.
           persist-credentials: false
+      # actions-release-fix FR1, NFR3: a secret that is not configured reaches
+      # the job as an empty string. Every input is checked here, before any
+      # file is written or any tool is installed, and all the missing or
+      # invalid ones are named together with the environment to fix. The
+      # values are only decoded into pipes, never printed.
+      - name: Check the play-internal configuration
+        env:
+          PLAY_INTERNAL_SA_JSON: ${{ secrets.PLAY_INTERNAL_SA_JSON }}
+          ANDROID_UPLOAD_KEYSTORE_B64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_B64 }}
+          ANDROID_UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
+          ANDROID_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
+          ANDROID_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEY_PASSWORD }}
+          FIREBASE_PROD_GOOGLE_SERVICES_JSON_B64: ${{ secrets.FIREBASE_PROD_GOOGLE_SERVICES_JSON_B64 }}
+          FIREBASE_PROD_DEFINES_JSON_B64: ${{ secrets.FIREBASE_PROD_DEFINES_JSON_B64 }}
+          GOOGLE_SERVER_CLIENT_ID: ${{ vars.GOOGLE_SERVER_CLIENT_ID }}
+        run: tool/check_release_inputs.sh --profile internal
       - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
         with:
           distribution: temurin

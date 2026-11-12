@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart' show FirebaseException;
 import 'package:flutter/foundation.dart';
@@ -180,6 +181,14 @@ final myMembershipsProvider = StreamProvider.autoDispose
 /// of `active` invitations by owner name (BR1.5). While the invitations are
 /// loading, or when their query fails, only the personal cellar: the
 /// sharing never blocks it.
+///
+/// The list compares by content (actions-release-fix FR7.2): Riverpod
+/// notifies the listeners only when the value is `!=` the previous one, and a
+/// new List instance always was. When `CellarScreen.build` watched the active
+/// cellar, Riverpod flushed this pending dependency first, and its
+/// notification marked the Dashboard's CellarSwitcher during the build of
+/// another widget ("setState() or markNeedsBuild() called during build",
+/// E2E test 8 of CI run 15), even though the cellars had not changed.
 final accessibleCellarsProvider = Provider.autoDispose
     .family<List<AccessibleCellar>, AppUser>((ref, user) {
       final memberships = ref.watch(myMembershipsProvider(user)).value;
@@ -208,7 +217,22 @@ List<AccessibleCellar> accessibleCellarsOf(
       );
       return byName != 0 ? byName : a.cellarId.compareTo(b.cellarId);
     });
-  return [personal, ...sorted];
+  return AccessibleCellarList([personal, ...sorted]);
+}
+
+/// The read-only list of [accessibleCellarsProvider], equal to another list
+/// with the same cellars in the same order (see there why).
+class AccessibleCellarList extends UnmodifiableListView<AccessibleCellar> {
+  AccessibleCellarList(super.cellars);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AccessibleCellarList &&
+          listEquals<AccessibleCellar>(this, other);
+
+  @override
+  int get hashCode => Object.hashAll(this);
 }
 
 /// C4 `canRead`: whether [cellarId] is among [cellars].

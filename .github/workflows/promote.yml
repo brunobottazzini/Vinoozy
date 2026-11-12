@@ -109,6 +109,12 @@ jobs:
           git show "build-$VERSION_CODE:packages/estimation/lib/src/generated/appellations_manifest.json" > "$manifest"
           git show "build-$VERSION_CODE:packages/estimation/lib/src/generated/appellations.g.dart" > "$generated"
           tool/check_appellations_release.sh "$manifest" "$generated"
+      # actions-release-fix FR4.1: the credential is checked before it is
+      # written; a missing or invalid one names the secret and play-production.
+      - name: Check the play-production configuration
+        env:
+          PLAY_PRODUCTION_SA_JSON: ${{ secrets.PLAY_PRODUCTION_SA_JSON }}
+        run: tool/check_release_inputs.sh --profile production
       - name: Write the Play credentials
         env:
           PLAY_SA_JSON: ${{ secrets.PLAY_PRODUCTION_SA_JSON }}

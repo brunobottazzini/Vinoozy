@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Fake gcloud for tool/play_api_test.sh: never calls Google.
+#   FAKE_GCLOUD_AUTH=fail   activate-service-account fails (with a message that
+#                           contains key material the script must not print)
+#   FAKE_GCLOUD_TOKEN=fail  print-access-token fails
+set -euo pipefail
+
+case "${1:-} ${2:-}" in
+  "auth activate-service-account")
+    if [[ "${FAKE_GCLOUD_AUTH:-ok}" == "fail" ]]; then
+      echo 'ERROR: (gcloud.auth.activate-service-account) There was a problem refreshing your current auth tokens: invalid_grant: Invalid JWT Signature.' >&2
+      echo '"private_key": "-----BEGIN PRIVATE KEY-----fakekeyfakekeyfakekey"' >&2
+      exit 1
+    fi
+    echo "Activated service account credentials for: [fake-publisher@fake-project.iam.gserviceaccount.com]" >&2
+    ;;
+  "auth print-access-token")
+    if [[ "${FAKE_GCLOUD_TOKEN:-ok}" == "fail" ]]; then
+      echo 'ERROR: (gcloud.auth.print-access-token) Your current active account does not have any valid credentials' >&2
+      exit 1
+    fi
+    echo "ya29.faketokenfaketokenfaketoken"
+    ;;
+  *)
+    echo "fake gcloud: unexpected arguments: $*" >&2
+    exit 64
+    ;;
+esac
