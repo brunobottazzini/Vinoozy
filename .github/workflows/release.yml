@@ -59,7 +59,7 @@ jobs:
           java-version: '17'
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
-          flutter-version-file: .flutter-version
+          flutter-version: 3.47.9 # = .flutter-version (checked in ci.yml, format job)
           channel: stable
           cache: true
 

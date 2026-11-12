@@ -38,9 +38,22 @@ jobs:
           mkdir -p "$RUNNER_TEMP/actionlint"
           tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP/actionlint" actionlint
           "$RUNNER_TEMP/actionlint/actionlint" -shellcheck= -pyflakes=
+      # subosito/flutter-action reads a version from a pubspec-style file only:
+      # with the bare number of .flutter-version it installed the latest
+      # stable (3.50.0 on 2026-11-12) and every job ran on an unpinned SDK.
+      # The workflows now name the version; this keeps them equal to the file.
+      - name: Flutter version pinned in every workflow equals .flutter-version
+        run: |
+          want="$(tr -d '[:space:]' < .flutter-version)"
+          bad="$(grep -n -E '^[[:space:]]+flutter-version(-file)?:' .github/workflows/*.yml | grep -v -E "flutter-version: ${want//./\\.}( |$)" || true)"
+          if [[ -n "$bad" ]]; then
+            echo "Flutter version in the workflows differs from .flutter-version ($want):" >&2
+            echo "$bad" >&2
+            exit 1
+          fi
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
-          flutter-version-file: .flutter-version
+          flutter-version: 3.47.9 # = .flutter-version (checked in the format job)
           channel: stable
           cache: true
       - run: flutter pub get
@@ -83,7 +96,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
-          flutter-version-file: .flutter-version
+          flutter-version: 3.47.9 # = .flutter-version (checked in the format job)
           channel: stable
           cache: true
       - run: flutter pub get
@@ -167,7 +180,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
-          flutter-version-file: .flutter-version
+          flutter-version: 3.47.9 # = .flutter-version (checked in the format job)
           channel: stable
           cache: true
       - run: flutter pub get
@@ -256,7 +269,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
-          flutter-version-file: .flutter-version
+          flutter-version: 3.47.9 # = .flutter-version (checked in the format job)
           channel: stable
           cache: true
       - run: dart pub get
@@ -346,7 +359,7 @@ jobs:
           cache: npm
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
-          flutter-version-file: .flutter-version
+          flutter-version: 3.47.9 # = .flutter-version (checked in the format job)
           channel: stable
           cache: true
       - run: npm ci
