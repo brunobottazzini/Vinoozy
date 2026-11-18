@@ -30,13 +30,39 @@ class OnboardingSeen extends AsyncNotifier<bool> {
   }
 }
 
-/// Address of the privacy policy linked from the profile (BR1.2). Public;
-/// set at build time with `--dart-define=PRIVACY_POLICY_URL=...`, otherwise
-/// the dedicated public privacy notice. Publishing it is a release gate.
-final privacyPolicyUrlProvider = Provider<String>((ref) {
-  const configured = String.fromEnvironment('PRIVACY_POLICY_URL');
-  return configured.isEmpty ? defaultPrivacyPolicyUrl : configured;
-});
+/// Address of the privacy policy linked from the profile (BR1.2), for the
+/// language tag of the interface (`it`, `pt-BR`, `fr`, ...). Public; see
+/// [privacyPolicyUrlFor]. Publishing the notice is a release gate.
+final privacyPolicyUrlProvider = Provider.family<String, String>(
+  (ref, languageTag) => privacyPolicyUrlFor(languageTag),
+);
 
+/// The Italian privacy notice, the base page; the other languages are
+/// folders under it (`docs/privacy/`).
 const String defaultPrivacyPolicyUrl =
     'https://brunobottazzini.github.io/Vinoozy/privacy/';
+
+/// Set at build time with `--dart-define=PRIVACY_POLICY_URL=...`.
+const String _configuredPrivacyPolicyUrl = String.fromEnvironment(
+  'PRIVACY_POLICY_URL',
+);
+
+/// The privacy notice for [languageTag] (wine-culture-languages FR5.1): the
+/// notice is published in Italian (the base page), English (`en/`) and
+/// Brazilian Portuguese (`pt-BR/`); every other interface language opens the
+/// English one. An address [configured] at build time is used as it is,
+/// whatever the language.
+String privacyPolicyUrlFor(
+  String languageTag, {
+  String configured = _configuredPrivacyPolicyUrl,
+}) {
+  if (configured.isNotEmpty) return configured;
+  final parts = languageTag.split(RegExp('[-_]'));
+  final language = parts.first.toLowerCase();
+  final isBrazilian = parts.skip(1).any((part) => part.toUpperCase() == 'BR');
+  return switch (language) {
+    'it' => defaultPrivacyPolicyUrl,
+    'pt' when isBrazilian => '${defaultPrivacyPolicyUrl}pt-BR/',
+    _ => '${defaultPrivacyPolicyUrl}en/',
+  };
+}

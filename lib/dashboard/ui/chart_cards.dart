@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme.dart';
 import '../../app/ui/country_flag.dart';
 import '../../cellar/domain/wine_origins.dart';
+import '../../cellar/ui/origin_language.dart';
 import '../../cellar/ui/wine_badges.dart';
 import '../../l10n/app_localizations.dart';
 import '../dashboard_providers.dart';
@@ -152,8 +153,8 @@ class BreakdownChartCard extends ConsumerWidget {
   final List<BreakdownBar> byType;
   final List<BreakdownBar> byRegion;
 
-  /// The bar label; a listed region is shown in [languageCode] (Bourgogne
-  /// as "Borgogna" in Italian, review R-02).
+  /// The bar label; a listed region is shown in the origin language tag
+  /// [languageCode] (Bourgogne as "Borgogna" in Italian, review R-02).
   static String labelOf(
     AppLocalizations l10n,
     BreakdownBar bar, {
@@ -185,7 +186,7 @@ class BreakdownChartCard extends ConsumerWidget {
     AppLocalizations l10n,
     BreakdownBar bar,
   ) {
-    final language = Localizations.localeOf(context).languageCode;
+    final language = originLanguageTagOf(context);
     final label = labelOf(l10n, bar, languageCode: language);
     final neutral = StatusColors.of(context).neutral;
     final typeColors = WineTypeColors.of(context);

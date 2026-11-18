@@ -1,0 +1,27 @@
+Pivnița ta de vinuri, mereu la îndemână.
+
+Vinoozy te ajută să îți organizezi sticlele și să explorezi estimări despre cum pot evolua: începutul, apogeul și sfârșitul orientativ al ferestrei de consum.
+
+ADAUGĂ VINURILE
+Introdu datele de mână, citește o etichetă cu camera, folosește un cod de bare sau importă text din Google Lens. Verifică întotdeauna datele sugerate înainte de a salva.
+
+ȚINE PIVNIȚA ÎN ORDINE
+Gestionează cantitățile, anii de recoltă și caracteristicile vinurilor. Explorează Panoul, filtrează vinurile și păstrează evaluările și notele în Istoric. Găsește sugestii de asocieri culinare.
+
+LUCREAZĂ OFFLINE
+Vezi și actualizezi datele disponibile pe telefon. Modificările se sincronizează când revine conexiunea. Prima conectare cu Google are nevoie de internet; și unele căutări au nevoie de conexiune.
+
+PARTAJEAZĂ CU CINE ALEGI TU
+Invită persoane în pivnița ta și alege dacă o pot doar vedea sau pot face și modificări.
+
+CITEȘTE ETICHETELE PE TELEFON
+Recunoașterea textului are loc pe dispozitivul tău. Căutările online pot trimite cuvinte și coduri de bare către Open Food Facts. Deschiderea unei fotografii în Google Lens are nevoie de confirmarea ta.
+
+Ferestrele de consum sunt estimări orientative. Păstrarea, stilul și starea fiecărei sticle pot schimba rezultatul. Estimările nu sunt o garanție a calității și nici un îndemn la consumul de alcool.
+
+Vinoozy este destinată adulților. Nu vinde băuturi alcoolice.
+
+Interfață disponibilă în 25 de limbi, inclusiv în română.
+
+Date de catalog de la Open Food Facts, sub licențele ODbL 1.0 și DbCL 1.0. Bază de date derivată și atribuiri: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Denumiri de origine din eAmbrosia și din registrele naționale indicate în documentația datelor. Estimările sunt realizate de Vinoozy.

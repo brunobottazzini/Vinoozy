@@ -1,237 +1,190 @@
-# Architettura
+# Architecture
 
 ## Architecture Analysis
 
 ### System Overview
 
-App mobile monolitica Flutter per Android che parla direttamente con Firebase
-(Auth, Firestore, App Check, Crashlytics) senza alcun backend proprio. La
-logica di autorizzazione e di integrità dei dati sta nelle regole di sicurezza
-(`firestore.rules`); la logica di stima sta nel pacchetto Dart puro
-`packages/estimation`. Le scritture sono offline-first: prima il ledger locale
-(`LocalLedger`, SharedPreferences), poi il batch Firestore senza attendere la
-rete; `SyncWatcher` verifica in background che le creazioni arrivino al server.
+Vinoozy è un'app Flutter per Android con un backend Firebase. L'app tiene i dati in Firestore con la coda offline del telefono, calcola le stime con una libreria Dart pura inclusa nel repository e riconosce le etichette sul dispositivo. Un piccolo insieme di Cloud Functions gestisce acquisti, misura d'uso e annunci. Due pagine web statiche (privacy, cancellazione dell'account) sono pubblicate su GitHub Pages.
 
 ### Architectural Style
 
-Client-heavy "serverless" con BaaS: monolite modulare per funzionalità
-(`lib/account`, `lib/cellar`, `lib/sharing`, `lib/dashboard`, `lib/label`,
-`lib/catalog`, `lib/sync`), stratificato in `domain/` (puro), `data/`
-(repository Firestore), provider Riverpod e `ui/`. Dipendenze iniettate da
-`AppBootstrap._wire` con `overrideWithValue`, sostituite da fake nei test.
-Evidenze: nessuna directory `functions/`, nessun endpoint HTTP proprio,
-`firestore.rules` con ~30 funzioni di validazione.
+Client pesante con backend serverless, in un unico repository:
+
+- **Monolite modulare sul client**: `lib/` è diviso per funzione (`account`, `cellar`, `catalog`, `label`, `dashboard`, `sharing`, `sync`, `plan`, `ads`, `usage`), e dentro ogni modulo per strato (`domain`, `data`, `ui`, oppure `core` e `platform`). Evidenza: struttura delle cartelle e controlli di CI che vietano importazioni tra strati (`tool/check_dashboard_readonly.sh`, `tool/check_label_imports.sh`, `tool/check_off_config.sh`).
+- **Libreria di dominio isolata**: `packages/estimation` non ha dipendenze di produzione (`tool/check_estimation_purity.sh`).
+- **Serverless**: regole di sicurezza Firestore come confine di autorizzazione (`firestore.rules`), Cloud Functions 2nd gen in `europe-west8` (`functions/src/index.ts`).
+- **Offline-first**: le scritture passano da un registro locale (`lib/sync/ledger/`) e vengono verificate in background (`lib/sync/sync_watcher.dart`).
 
 ### Component Relationships
 
 ```mermaid
 flowchart TD
-  main["main.dart runVinoozy"] --> boot["AppBootstrap"]
-  boot --> env["FirebaseEnvConfig"]
-  boot --> fsb["FirestoreBootstrap"]
-  boot --> gate["AccountGate"]
-  boot --> container["ProviderContainer"]
-  gate --> auth["AuthService"]
-  gate --> users["UserRepository"]
-  gate --> cellars["CellarRepository"]
-  gate --> watcher["SyncWatcher"]
-  gate --> deletion["AccountDeletionRunner"]
-  container --> shell["HomeShell"]
-  shell --> dash["DashboardScreen"]
-  shell --> cellarUi["CellarScreen"]
-  shell --> history["HistoryScreen"]
-  cellarUi --> actions["CellarActions"]
-  cellarUi --> about["AboutScreen"]
-  cellarUi --> profile["ProfileScreen"]
-  dash --> footer["BrandFooter"]
-  footer --> about
-  actions --> wines["WineRepository"]
-  actions --> records["DrinkingRecordRepository"]
-  actions --> estimation["estimation package"]
-  wines --> ledger["LocalLedger"]
-  records --> ledger
-  wines --> bus["SyncErrorBus"]
-  watcher --> gw["FirestoreSyncGateway"]
-  watcher --> ledger
-  sharing["SharingRepository"] --> fs[("Cloud Firestore")]
-  wines --> fs
-  records --> fs
-  users --> fs
-  cellars --> fs
-  gw --> fs
-  fs --> rules["firestore.rules"]
-  auth --> fa[("Firebase Auth Google")]
+  subgraph Phone["Telefono Android"]
+    Shell["App Shell"]
+    L10n["Localization"]
+    Account["Account"]
+    Cellar["Cellar"]
+    Catalog["Catalog"]
+    Label["Label"]
+    Dashboard["Dashboard"]
+    Sharing["Sharing"]
+    Sync["Sync"]
+    Plan["Plan"]
+    Ads["Ads"]
+    Usage["Usage"]
+    Estimation["Estimation Package"]
+    Host["Android Host"]
+  end
+  subgraph Cloud["Firebase e Google"]
+    Auth["Firebase Auth"]
+    Store["Firestore e regole"]
+    Functions["Cloud Functions"]
+    Play["Google Play"]
+  end
+  OFF["Open Food Facts"]
+  Web["Account Deletion Web"]
+
+  Shell --> Account
+  Shell --> Cellar
+  Shell --> Dashboard
+  Shell --> L10n
+  Account --> Auth
+  Account --> Sync
+  Cellar --> Estimation
+  Cellar --> Catalog
+  Cellar --> Sync
+  Cellar --> Store
+  Label --> Catalog
+  Label --> Estimation
+  Label --> Host
+  Catalog --> OFF
+  Dashboard --> Cellar
+  Sharing --> Store
+  Plan --> Functions
+  Plan --> Play
+  Ads --> Functions
+  Usage --> Functions
+  Functions --> Store
+  Functions --> Play
+  Web --> Auth
+  Web --> Store
 ```
 
-<!-- Text fallback: main avvia AppBootstrap, che legge FirebaseEnvConfig,
-configura FirestoreBootstrap, crea AccountGate e il ProviderContainer.
-AccountGate usa AuthService, UserRepository, CellarRepository, SyncWatcher e
-AccountDeletionRunner. HomeShell ospita Dashboard, Cantina e Storico; la
-Cantina usa CellarActions e apre AboutScreen e ProfileScreen; la Dashboard
-apre AboutScreen tramite BrandFooter. CellarActions usa WineRepository,
-DrinkingRecordRepository e il pacchetto estimation; i repository scrivono nel
-LocalLedger e in Firestore, protetto da firestore.rules. -->
+<!-- Text fallback: l'App Shell avvia Account, Cellar, Dashboard e usa Localization. Account usa Firebase Auth e Sync. Cellar usa Estimation Package, Catalog, Sync e Firestore. Label usa Catalog, Estimation Package e l'Android Host. Catalog chiama Open Food Facts. Dashboard legge Cellar. Sharing scrive in Firestore. Plan, Ads e Usage chiamano le Cloud Functions; Plan usa anche Google Play. Le Cloud Functions leggono e scrivono Firestore e interrogano Google Play. La pagina web di cancellazione account usa Firebase Auth e Firestore. -->
 
 ### Data Flow
 
-1. **Lettura quotidiana**: un solo listener `winesStreamProvider(cellarId)`
-   (`where quantity > 0`, con metadati) e uno `cellarStreamProvider(cellarId)`
-   alimentano Cantina, Dashboard (`dashboardComputedProvider`), stato di
-   sincronizzazione (`syncStatusProvider`) e manutenzione
-   (`cellarMaintenanceTriggerProvider`). Dettaglio vino: listener separato
-   `wineProvider`. Archivio: `fetchArchived` (`quantity <= 0`) una tantum.
-   Storico: pagine da 30 (`pageHistory`).
-2. **Letture "server, poi cache"**: `readServerOrCache` (timeout 1 s) per
-   duplicati (`findByMatchKey`), bevute di un vino e cancellazioni.
-3. **Scritture**: `LocalLedger.beginWrite` → `WriteBatch.commit()` non atteso →
-   esito su ledger e `SyncErrorBus` (`WriteRejected`, `WriteFailed`,
-   `SessionExpired`, `CellarAccessLost`, `CellarNotice`).
-4. **Condivisione**: operazioni solo con rete, `commit()` atteso fino a 10 s,
-   contatore `memberSlots` accoppiato nello stesso batch.
-5. **Lavori di sistema**: backfill `matchKey`, migrazione stime/stili,
-   `RecordReconciler` (operazioni da completare al ritorno della rete).
+1. **Avvio** (`lib/app/bootstrap.dart`): Firebase, poi App Check, poi in parallelo Crashlytics e lettura del registro locale; nessuna chiamata ad Auth o Firestore prima di App Check. Poi si collegano i servizi e parte `AccountGate`.
+2. **Scrittura di un vino**: il modulo registra l'intenzione nel registro locale, scrive in Firestore (coda offline se manca la rete), e `SyncWatcher` verifica più tardi che il server abbia accettato. Un rifiuto arriva alla radice dell'app come evento (`SyncErrorBus`) e diventa un messaggio tradotto.
+3. **Stima**: `lib/cellar/wine_estimator.dart` trasforma i dati del vino nei fatti del contratto C2 e chiama il pacchetto `estimation`; la finestra viene salvata con il vino.
+4. **Etichetta**: l'immagine è preparata in Kotlin, letta da ML Kit sul telefono, e il testo passa a `estimation` (campi) e a `Catalog` (database offline, catalogo interno, Open Food Facts).
+5. **Piano e uso**: i contatori d'uso restano sul telefono e vengono inviati con `reportUsage`; l'acquisto Plus è verificato da `verifyPurchase`.
+
+### Localization Architecture
+
+- Fonte dei testi: file ARB in `lib/l10n/`, con `app_en.arb` come modello. `flutter gen-l10n` genera `AppLocalizations` e una classe per lingua; i file generati sono versionati.
+- Lingue offerte: decise da `lib/app/locale_resolution.dart` (`appLocales`, `resolveAppLocale`, `fallbackLocale`), non dalla lista generata. `VinoozyApp` le passa a `MaterialApp` insieme ai delegate generati.
+- Nessuno stato di lingua nell'app: niente provider, niente preferenza salvata. L'unica forzatura è `appLocaleOverride` per le build E2E.
+- I widget leggono i testi con `AppLocalizations.of(context)`; funzioni di etichetta come `lib/cellar/ui/wine_labels.dart` mappano i valori di dominio (enum del pacchetto `estimation`) sulle chiavi tradotte.
+- I nomi di paesi e regioni non stanno negli ARB: sono dati Dart con un campo per lingua (`lib/cellar/domain/wine_origins.dart`).
+- Date e numeri: `intl` con la lingua del contesto.
+
+Inventario completo dei punti toccati dalle lingue: `code-structure.md`, sezione "Localization Touchpoints".
 
 ### Key Design Decisions
 
-| Decisione | Alternative rifiutate (dal codice) | Conseguenze |
-|---|---|---|
-| Nessun backend; autorizzazione nelle regole Firestore | Cloud Functions (richiedono Blaze, budget 0 €) | Ogni invariante deve stare in `firestore.rules` o nel client; contatori atomici solo via batch accoppiati (vedi `memberSlots`). |
-| Scritture offline-first con ledger locale | Attendere il server prima di chiudere il modulo | UI immediata; un rifiuto arriva in ritardo come notifica ("vino rifiutato"). |
-| Quantità come incrementi, negativo ammesso (ADR-004) | Valore assoluto con transazione | Decrementi concorrenti sommabili; "attivo" = `quantity > 0`. |
-| Flag di build come costanti di compilazione (`E2E`, `PERF`) | Flag a runtime | Il codice di test sparisce dalla release; verificato da `check_release_build.sh`. |
-| `FIREBASE_ENV` predefinito `demo` | Predefinito produzione | Una build senza define non tocca mai produzione. |
-| Un solo listener per cantina condiviso da più schermate | Listener per schermata | Meno letture Firestore; utile per il futuro `CloudUsageMeter` (contare una volta). |
-
-Implicazioni di sicurezza: solo il provider `google.com`; App Check Play
-Integrity in release; Crashlytics solo in release produzione con valori
-sensibili oscurati (`ErrorReporter`); segreti solo in GitHub Actions.
+| Decisione | Implicazione |
+|---|---|
+| Lingua dal telefono, inglese come ripiego, senza selettore | Semplice; chi ha il telefono in una lingua non offerta non può scegliere |
+| `pt-BR` distinto da `pt`, con `app_pt.arb` vuoto imposto dal generatore | Una classe generata in inglese che conta nella copertura |
+| Valori salvati indipendenti dalla lingua (codice ISO, nome canonico, chiavi enum) | Cambiare lingua non richiede migrazioni dei dati |
+| Regole Firestore come unica autorizzazione, cancellazione account senza Functions | Le Functions restano facoltative per il funzionamento di base |
+| Copertura all'80% su tutto, generato compreso | Ogni file generato aggiunto pesa sulla soglia |
+| Build E2E sempre in italiano | I test end-to-end non dipendono dalla lingua dell'emulatore |
 
 ### Improvement Opportunities
 
-- Introdurre un'astrazione dei diritti/capacità unica (oggi assente) da cui
-  dipendano `CellarActions`, schermate e regole, come chiede lo studio §9.1.
-- Instrumentare gli snapshot prima del mapping in `WineRepository`,
-  `DrinkingRecordRepository`, `SharingRepository`, `readServerOrCache` per un
-  misuratore d'uso: oggi i metadati restano solo `hasPendingWrites` e
-  `isFromCache` (`SnapshotMeta`).
-- Estendere `tool/check_release_build.sh` a marker di cheat di sviluppo.
-- Ridurre i file di UI oltre 1000 righe (`add_wine_screen.dart`,
-  `guided_confirm_sheet.dart`).
+- Una sola fonte per l'elenco delle lingue, da cui derivare risoluzione, harness dei test, strumenti dello store e del web.
+- Separare i dati di `wine_origins.dart` (paesi, regioni) dalla logica, e renderne i nomi estendibili per lingua senza un campo per ogni lingua.
+- Un controllo di CI che confronti i file di localizzazione versionati con quelli rigenerati, e un file dei messaggi non tradotti.
+- Un test che eserciti tutti i messaggi di ogni lingua, per coprire il codice generato.
 
 ## Interaction Diagrams
 
-### Aggiunta di un vino (offline-first)
+### Risoluzione della lingua all'avvio
 
 ```mermaid
 sequenceDiagram
-  participant UI as AddWineScreen
-  participant A as CellarActions
-  participant W as WineRepository
-  participant L as LocalLedger
-  participant F as Firestore
-  participant B as SyncErrorBus
-  participant S as SyncWatcher
-  UI->>A: saveNewWine(cellar, user, draft)
-  A->>W: findByMatchKey (server 1 s, poi cache)
-  W-->>A: duplicati
-  alt duplicato trovato
-    A-->>UI: AddDuplicate
-  else nessun duplicato
-    A->>A: WineEstimator.estimate
-    A->>W: addWine(draft, estimate)
-    W->>L: beginWrite + JournalEntry open
-    W->>F: batch.set(wine) senza attendere
-    W->>S: trigger()
-    W-->>A: SaveAccepted
-    A-->>UI: AddSaved
-    F-->>W: conferma o rifiuto
-    alt rifiutato dalle regole
-      W->>L: markRejected
-      W->>B: WriteRejected
-    else confermato
-      W->>L: markConfirmed
-    end
-  end
+  participant Phone as Telefono
+  participant App as VinoozyApp
+  participant Res as resolveAppLocale
+  participant Del as AppLocalizations.delegate
+  participant UI as Schermata
+
+  Phone->>App: lista delle lingue preferite
+  App->>Res: localeListResolutionCallback
+  Res-->>App: it, en, pt_BR oppure en come ripiego
+  App->>Del: load della lingua scelta
+  Del-->>App: classe di lingua generata
+  App->>UI: build
+  UI->>Del: AppLocalizations.of(context)
+  Del-->>UI: testi tradotti
 ```
 
-<!-- Text fallback: il modulo chiama CellarActions.saveNewWine; si cercano i
-duplicati con matchKey (server entro 1 s, altrimenti cache). Senza duplicati si
-calcola la stima, WineRepository scrive prima nel ledger e poi avvia il batch
-Firestore senza attenderlo, e risponde SaveAccepted. L'esito del server marca
-la voce confermata o rifiutata e, se rifiutata, pubblica WriteRejected. -->
+<!-- Text fallback: il telefono passa la lista delle lingue preferite a VinoozyApp; VinoozyApp chiama resolveAppLocale, che restituisce it, en o pt_BR, oppure en come ripiego; il delegate generato carica la classe della lingua; ogni schermata chiede i testi con AppLocalizations.of(context). -->
 
-### "Bevuto" e riattivazione dall'archivio
+### Aggiunta di un vino con rete assente
 
 ```mermaid
 sequenceDiagram
-  participant UI as WineDetailScreen
-  participant A as CellarActions
-  participant R as DrinkingRecordRepository
-  participant W as WineRepository
-  participant F as Firestore
-  UI->>A: drink(cellar, user, wine, rating)
-  A->>R: drink
-  R->>F: batch quantity increment -1 e set drinkingRecord
-  R-->>UI: DrinkAccepted
-  Note over F: quantity scende a 0, la scheda esce dal listener quantity > 0 ed entra in archivio
-  UI->>A: addBottles(wine archiviato, n)
-  A->>W: addBottles
-  W->>F: update quantity increment n - stored
-  Note over F: quantity torna maggiore di 0, la scheda torna attiva
+  participant User as Persona
+  participant Form as AddWineScreen
+  participant Est as Estimation Package
+  participant Repo as WineRepository
+  participant Ledger as LocalLedger
+  participant FS as Firestore
+  participant Watch as SyncWatcher
+  participant Root as SyncEventListener
+
+  User->>Form: salva il vino
+  Form->>Est: stima la finestra
+  Est-->>Form: finestra e fiducia
+  Form->>Repo: crea il vino
+  Repo->>Ledger: beginWrite
+  Ledger-->>Repo: ticket
+  Repo->>FS: set nella coda offline
+  Repo->>Watch: trigger
+  Watch->>FS: verifica al ritorno della rete
+  FS-->>Watch: accettato oppure rifiutato
+  Watch->>Root: evento di rifiuto, se c'è
+  Root->>User: messaggio tradotto
 ```
 
-<!-- Text fallback: "Bevuto" scrive in un solo batch il decremento della
-quantità e la bevuta; a quantità zero la scheda esce dal listener attivo e
-passa all'archivio. Aggiungere bottiglie a una scheda archiviata (anche dal
-dialogo duplicati o da Annulla) la riporta attiva: è il punto in cui il limite
-di 15 schede attive dovrà intervenire. -->
+<!-- Text fallback: la persona salva il vino; il modulo chiede la stima al pacchetto estimation; WineRepository apre una scrittura nel registro locale, scrive in Firestore nella coda offline e avvisa SyncWatcher; al ritorno della rete SyncWatcher verifica l'esito; un rifiuto arriva a SyncEventListener alla radice dell'app, che mostra un messaggio tradotto. -->
 
-### Avvio e accesso
+### Lettura di un'etichetta
 
 ```mermaid
 sequenceDiagram
-  participant M as main
-  participant Bo as AppBootstrap
-  participant E as FirebaseEnvConfig
-  participant G as AccountGate
-  participant U as UserRepository
-  participant C as CellarRepository
-  participant S as SyncWatcher
-  M->>Bo: start()
-  Bo->>E: fromEnvironment (FIREBASE_ENV, E2E, EMULATOR_HOST)
-  Bo->>Bo: Firebase.initializeApp, App Check se non emulatori
-  Bo->>Bo: ledger.read, emulatore Auth e Firestore in demo
-  Bo->>G: start()
-  G->>G: _admit: controllo proprietario del ledger
-  G->>U: ensureProfile (in background)
-  G->>C: ensurePersonalCellar
-  G->>S: start(uid)
-  G-->>M: GateCellar(user)
+  participant User as Persona
+  participant Flow as Label
+  participant Host as Android Host
+  participant ML as ML Kit sul telefono
+  participant Est as Estimation Package
+  participant Cat as Catalog
+  participant OFF as Open Food Facts
+
+  User->>Flow: scatta o sceglie la foto
+  Flow->>Host: prepara l'immagine
+  Host-->>Flow: copia temporanea
+  Flow->>ML: testo latino e codice a barre
+  ML-->>Flow: righe di testo e codice
+  Flow->>Est: estrai i campi dell'etichetta
+  Flow->>Cat: matchLabel con la lingua dell'app
+  Cat->>OFF: ricerca, solo con rete
+  OFF-->>Cat: prodotti
+  Cat-->>Flow: proposta sicura, candidati o nulla
+  Flow->>User: proposta da confermare
 ```
 
-<!-- Text fallback: main avvia AppBootstrap, che legge la configurazione di
-build, inizializza Firebase e App Check (solo fuori dagli emulatori), legge il
-ledger e collega gli emulatori in demo. AccountGate verifica il proprietario
-del ledger, crea profilo e cantina personale, avvia SyncWatcher e mostra la
-cantina. -->
-
-### Invito in una cantina
-
-```mermaid
-sequenceDiagram
-  participant UI as SharingScreen
-  participant SR as SharingRepository
-  participant V as InviteValidator
-  participant F as Firestore
-  UI->>SR: invite(cellar, owner, email, permission)
-  SR->>V: validate (max 2 posti, email, non se stessi)
-  SR->>SR: richiede rete
-  SR->>F: batch members set invited e cellar memberSlots +1 con memberOpKey
-  F-->>SR: commit confermato (max 10 s) o rifiuto regole
-  SR-->>UI: chiave invito o SharingException
-```
-
-<!-- Text fallback: l'invito è validato localmente (al massimo 2 posti),
-richiede la rete e scrive in un solo batch l'invito e il contatore memberSlots
-della cantina; le regole accettano solo se contatore e invito sono accoppiati.
-È il modello già presente per un contatore atomico verificato dal server. -->
+<!-- Text fallback: la persona scatta o sceglie una foto; Label chiede all'Android Host di preparare l'immagine; ML Kit legge sul telefono testo latino e codice a barre; il pacchetto estimation estrae i campi; Catalog cerca nel database offline, nel catalogo interno e, solo con rete, in Open Food Facts passando la lingua dell'app; Label mostra una proposta sicura, dei candidati o nessun risultato. -->

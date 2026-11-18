@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../catalog/platform/catalog_providers.dart';
 import '../../catalog/platform/wine_db_loader.dart';
 import '../../l10n/app_localizations.dart';
+import '../locale_resolution.dart';
 
 /// "Informazioni" (label-recognition BR6.3, FR2.2, NFR6.7, TS5; interaction
 /// spec R-03), opened from the cellar menu: the app version, the offline
@@ -31,7 +32,7 @@ class AboutScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final version = ref.watch(catalogAppVersionProvider).value;
     final db = ref.watch(wineDbStatusProvider);
-    final language = Localizations.localeOf(context).toLanguageTag();
+    final language = intlLocaleNameOf(Localizations.localeOf(context));
     final dbLines = switch (db) {
       // The hand-written sample says so in place of an export date: it is
       // not Open Food Facts data (review R-02).

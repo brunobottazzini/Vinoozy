@@ -21,7 +21,7 @@ Drinking windows are indicative estimates. Storage, style and the condition of e
 
 Vinoozy is intended for adults. It does not sell alcoholic drinks.
 
-Interface available in Italian, English and Brazilian Portuguese.
+Interface available in 25 languages, including English.
 
 Catalogue data from Open Food Facts under ODbL 1.0 and DbCL 1.0. Derived database and attribution: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
 Appellations from eAmbrosia and the national registers listed in the data documentation. Estimates are produced by Vinoozy.

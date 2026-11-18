@@ -1,0 +1,27 @@
+Din vinkällare, alltid nära till hands.
+
+Vinoozy hjälper dig att hålla ordning på flaskorna du äger och utforska uppskattningar av hur de kan utvecklas: början, toppen och det ungefärliga slutet på deras drickfönster.
+
+LÄGG TILL DINA VINER
+Skriv in uppgifterna själv, läs en etikett med kameran, använd en streckkod eller hämta text från Google Lens. Kontrollera alltid föreslagna uppgifter innan du sparar.
+
+HÅLL ORDNING I KÄLLAREN
+Håll koll på antal, årgångar och vinernas egenskaper. Utforska Översikt, filtrera dina viner och spara betyg och anteckningar i Historik. Hitta förslag på mat som passar till vinet.
+
+ARBETA OFFLINE
+Se och uppdatera de data som finns på din telefon. Ändringarna synkroniseras när anslutningen är tillbaka. Första inloggningen med Google kräver internet; vissa sökningar kräver också anslutning.
+
+DELA MED DEM DU VÄLJER
+Bjud in personer till din källare och välj om de bara får titta eller också får göra ändringar.
+
+LÄS ETIKETTER PÅ TELEFONEN
+Textigenkänningen körs på din enhet. Onlinesökningar kan skicka ord och streckkoder till Open Food Facts. Ett foto öppnas i Google Lens först när du har bekräftat det.
+
+Drickfönster är ungefärliga uppskattningar. Förvaring, stil och varje flaskas skick kan ändra resultatet. Uppskattningarna är ingen kvalitetsgaranti och ingen uppmaning att dricka alkohol.
+
+Vinoozy är avsett för vuxna. Appen säljer inte alkoholhaltiga drycker.
+
+Gränssnittet finns på 25 språk, bland annat svenska.
+
+Katalogdata från Open Food Facts enligt ODbL 1.0 och DbCL 1.0. Härledd databas och källhänvisning: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Appellationer från eAmbrosia och de nationella register som anges i datadokumentationen. Uppskattningarna görs av Vinoozy.

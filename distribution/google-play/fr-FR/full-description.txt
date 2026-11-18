@@ -1,0 +1,27 @@
+Votre cave à vin, toujours à portée de main.
+
+Vinoozy vous aide à organiser les bouteilles que vous possédez et à explorer des estimations de leur évolution : début, apogée et fin indicative de leur fenêtre de dégustation.
+
+AJOUTEZ VOS VINS
+Saisissez les informations à la main, lisez une étiquette avec l'appareil photo, utilisez un code-barres ou importez du texte depuis Google Lens. Vérifiez toujours les informations suggérées avant d'enregistrer.
+
+GARDEZ VOTRE CAVE EN ORDRE
+Gérez les quantités, les millésimes et les caractéristiques des vins. Explorez l'Aperçu, filtrez vos vins et conservez notes et commentaires dans l'Historique. Trouvez des suggestions d'accords mets-vins.
+
+UTILISEZ-LA HORS LIGNE
+Consultez et modifiez les données disponibles sur votre téléphone. Les modifications se synchronisent au retour de la connexion. La première connexion avec Google nécessite Internet ; certaines recherches ont aussi besoin d'une connexion.
+
+PARTAGEZ AVEC LES PERSONNES DE VOTRE CHOIX
+Invitez des personnes dans votre cave et choisissez si elles peuvent la consulter ou aussi la modifier.
+
+LISEZ LES ÉTIQUETTES SUR VOTRE TÉLÉPHONE
+La reconnaissance de texte s'effectue sur votre appareil. Les recherches en ligne peuvent envoyer des mots et des codes-barres à Open Food Facts. L'ouverture d'une photo dans Google Lens nécessite votre confirmation.
+
+Les fenêtres de dégustation sont des estimations indicatives. La conservation, le style et l'état de chaque bouteille peuvent modifier le résultat. Les estimations ne constituent ni une garantie de qualité ni une incitation à consommer de l'alcool.
+
+Vinoozy est destiné aux adultes. L'application ne vend pas de boissons alcoolisées.
+
+Interface disponible en 25 langues, dont le français.
+
+Données du catalogue issues d'Open Food Facts, sous licences ODbL 1.0 et DbCL 1.0. Base dérivée et attribution : https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Appellations issues d'eAmbrosia et des registres nationaux indiqués dans la documentation des données. Les estimations sont produites par Vinoozy.

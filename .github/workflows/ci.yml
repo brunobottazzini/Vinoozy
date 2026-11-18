@@ -186,6 +186,10 @@ jobs:
       - run: flutter pub get
       # NFR7.1: every file of lib/ counts, untested files as 0%.
       - run: dart run tool/gen_coverage_helper.dart
+      # wine-culture-languages NFR1, NFR4: the test that calls every message
+      # of every interface language, so the generated translations count as
+      # tested lines.
+      - run: dart run tool/gen_l10n_exercise.dart
       - run: flutter test --coverage
       # freemium-plus FR5.2: the hidden sequence of the developer tools is
       # compiled only with ENABLE_DEV_CHEATS=true (a constant, FR5.7), so its

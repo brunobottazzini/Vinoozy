@@ -5,6 +5,7 @@ import '../../app/ui/country_flag.dart';
 import '../../catalog/core/wine_catalog.dart';
 import '../../cellar/domain/wine_origins.dart';
 import '../../cellar/ui/add_wine_screen.dart' show guessOrigin, wineFamilyOf;
+import '../../cellar/ui/origin_language.dart';
 import '../../cellar/ui/wine_badges.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -119,7 +120,7 @@ class CandidateCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final language = Localizations.localeOf(context).languageCode;
+    final language = originLanguageTagOf(context);
     final origin = guessOrigin(candidate);
     final country = WineOrigins.country(origin.country);
     final family = WineTypeFamily.of(wineFamilyOf(candidate.wineType));

@@ -1,0 +1,27 @@
+Váš vinný sklep, vždy po ruce.
+
+Vinoozy vám pomůže uspořádat lahve, které máte, a prozkoumat odhady toho, jak se mohou vyvíjet: začátek, vrchol a orientační konec jejich okna pitelnosti.
+
+PŘIDÁVEJTE VÍNA
+Zadejte údaje ručně, přečtěte etiketu fotoaparátem, použijte čárový kód nebo importujte text z Google Lens. Navržené údaje před uložením vždy zkontrolujte.
+
+MĚJTE VE SKLEPĚ POŘÁDEK
+Spravujte množství, ročníky a vlastnosti vín. Projděte si Přehled, filtrujte vína a uchovávejte hodnocení a poznámky v Historii. Najděte tipy na párování s jídlem.
+
+PRACUJTE OFFLINE
+Prohlížejte a upravujte data dostupná v telefonu. Změny se synchronizují, až se připojení obnoví. První přihlášení přes Google vyžaduje internet; připojení vyžadují také některá hledání.
+
+SDÍLEJTE S LIDMI, KTERÉ SI VYBERETE
+Pozvěte lidi do svého sklepa a zvolte, zda si ho mohou jen prohlížet, nebo v něm i dělat změny.
+
+ČTĚTE ETIKETY V TELEFONU
+Rozpoznávání textu běží ve vašem zařízení. Hledání online může odesílat slova a čárové kódy do Open Food Facts. Otevření fotky v Google Lens vyžaduje vaše potvrzení.
+
+Okna pitelnosti jsou orientační odhady. Skladování, styl a stav každé lahve mohou výsledek změnit. Odhady nejsou zárukou kvality ani výzvou ke konzumaci alkoholu.
+
+Vinoozy je určeno dospělým. Neprodává alkoholické nápoje.
+
+Rozhraní je k dispozici ve 25 jazycích, včetně češtiny.
+
+Katalogová data z Open Food Facts pod licencemi ODbL 1.0 a DbCL 1.0. Odvozená databáze a uvedení zdroje: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Apelace z registru eAmbrosia a z národních registrů uvedených v dokumentaci k datům. Odhady vytváří Vinoozy.

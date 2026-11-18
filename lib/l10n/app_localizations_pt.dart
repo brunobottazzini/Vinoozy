@@ -13,47 +13,48 @@ class AppLocalizationsPt extends AppLocalizations {
   String get appTitle => 'Vinoozy';
 
   @override
-  String get signInTagline => 'Your cellar, at the right time';
+  String get signInTagline => 'A sua garrafeira, no momento certo';
 
   @override
-  String get signInWithGoogle => 'Continue with Google';
+  String get signInWithGoogle => 'Continuar com o Google';
 
   @override
-  String get signInInProgress => 'Signing in';
+  String get signInInProgress => 'A iniciar sessão';
 
   @override
-  String get signInFailed => 'Sign-in failed';
+  String get signInFailed => 'Falha ao iniciar sessão';
 
   @override
   String get signInNeedsNetwork =>
-      'You need a connection for the first sign-in';
+      'É necessária uma ligação para o primeiro início de sessão';
 
   @override
-  String get signInSessionExpired => 'Your session has expired: sign in again';
+  String get signInSessionExpired =>
+      'A sessão expirou: inicie sessão novamente';
 
   @override
-  String get retry => 'Try again';
+  String get retry => 'Tentar novamente';
 
   @override
-  String get cancel => 'Cancel';
+  String get cancel => 'Cancelar';
 
   @override
   String blockedMessage(String email) {
-    return 'There are changes by $email not yet saved to the cloud: sign in with that account and connect to the network';
+    return 'Há alterações de $email ainda não guardadas na nuvem: inicie sessão com essa conta e ligue-se à rede';
   }
 
   @override
   String blockedSignInWith(String email) {
-    return 'Sign in with $email';
+    return 'Iniciar sessão com $email';
   }
 
   @override
   String blockedDiscard(String email) {
-    return 'Delete unsaved changes by $email';
+    return 'Eliminar as alterações não guardadas de $email';
   }
 
   @override
-  String get discardDialogTitle => 'Delete the changes?';
+  String get discardDialogTitle => 'Eliminar as alterações?';
 
   @override
   String discardDialogBody(int count, String email) {
@@ -61,181 +62,186 @@ class AppLocalizationsPt extends AppLocalizations {
       count,
       locale: localeName,
       other:
-          '$count wines by $email are not in the cloud yet and will be deleted from this phone.',
+          '$count vinhos de $email ainda não estão na nuvem e serão eliminados deste telemóvel.',
       one:
-          '1 wine by $email is not in the cloud yet and will be deleted from this phone.',
+          '1 vinho de $email ainda não está na nuvem e será eliminado deste telemóvel.',
+      zero:
+          '$count vinhos de $email ainda não estão na nuvem e serão eliminados deste telemóvel.',
     );
     return '$_temp0';
   }
 
   @override
-  String get discardConfirm => 'Delete';
+  String get discardConfirm => 'Eliminar';
 
   @override
-  String get resetFailed => 'Could not clear the data on this phone';
+  String get resetFailed => 'Não foi possível apagar os dados deste telemóvel';
 
   @override
-  String get restartRequired => 'Restart the app to finish';
+  String get restartRequired => 'Reinicie a app para concluir';
 
   @override
-  String get restartCloseApp => 'Close the app';
+  String get restartCloseApp => 'Fechar a app';
 
   @override
-  String get startupFailed => 'The app could not start';
+  String get startupFailed => 'Não foi possível iniciar a app';
 
   @override
-  String get cellarTitle => 'Cellar';
+  String get cellarTitle => 'Garrafeira';
 
   @override
-  String get defaultCellarName => 'My cellar';
+  String get defaultCellarName => 'A minha garrafeira';
 
   @override
-  String get cellarLoading => 'Preparing the cellar';
+  String get cellarLoading => 'A preparar a garrafeira';
 
   @override
-  String get cellarSetupFailed => 'Could not prepare the cellar';
+  String get cellarSetupFailed => 'Não foi possível preparar a garrafeira';
 
   @override
-  String get cellarEmpty => 'Your cellar is empty';
+  String get cellarEmpty => 'A sua garrafeira está vazia';
 
   @override
-  String get addWine => 'Add';
+  String get addWine => 'Adicionar';
 
   @override
-  String get estimatePending => 'Estimate coming';
+  String get estimatePending => 'Estimativa a caminho';
 
   @override
-  String get noVintage => 'No vintage';
+  String get noVintage => 'Sem colheita';
 
   @override
   String bottleCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count bottles',
-      one: '1 bottle',
+      other: '$count garrafas',
+      one: '1 garrafa',
+      zero: '$count garrafas',
     );
     return '$_temp0';
   }
 
   @override
-  String get syncInProgress => 'Syncing';
+  String get syncInProgress => 'A sincronizar';
 
   @override
-  String get syncOffline => 'Offline - sync pending';
+  String get syncOffline => 'Offline - sincronização pendente';
 
   @override
   String writeRejected(String name) {
-    return 'Change not allowed: $name';
+    return 'Alteração não permitida: $name';
   }
 
   @override
-  String get saveFailed => 'Could not save, try again';
+  String get saveFailed => 'Não foi possível guardar, tente novamente';
 
   @override
   String wineNotSaved(String name) {
-    return 'The wine $name was not saved to the cloud';
+    return 'O vinho $name não foi guardado na nuvem';
   }
 
   @override
-  String get addAgain => 'Add again';
+  String get addAgain => 'Adicionar novamente';
 
   @override
-  String get ignore => 'Ignore';
+  String get ignore => 'Ignorar';
 
   @override
-  String get addWineTitle => 'Write';
+  String get addWineTitle => 'Escrever';
 
   @override
-  String get wineNameLabel => 'Wine';
+  String get wineNameLabel => 'Vinho';
 
   @override
-  String get vintageLabel => 'Vintage';
+  String get vintageLabel => 'Colheita';
 
   @override
-  String get quantityLabel => 'Quantity';
+  String get quantityLabel => 'Quantidade';
 
   @override
-  String get decreaseQuantity => 'Decrease quantity';
+  String get decreaseQuantity => 'Diminuir quantidade';
 
   @override
-  String get increaseQuantity => 'Increase quantity';
+  String get increaseQuantity => 'Aumentar quantidade';
 
   @override
-  String get save => 'Save';
+  String get save => 'Guardar';
 
   @override
-  String get nameRequired => 'Write the name of the wine';
+  String get nameRequired => 'Escreva o nome do vinho';
 
   @override
-  String get nameTooLong => 'Maximum 120 characters';
+  String get nameTooLong => 'Máximo de 120 carateres';
 
   @override
   String vintageRange(String year) {
-    return 'Vintage between 1900 and $year';
+    return 'Colheita entre 1900 e $year';
   }
 
   @override
-  String get offAttribution => 'Data from Open Food Facts (ODbL)';
+  String get offAttribution => 'Dados do Open Food Facts (ODbL)';
 
   @override
-  String get dashboardTitle => 'Dashboard';
+  String get dashboardTitle => 'Painel';
 
   @override
   String dashboardTotalBottles(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count bottles in the cellar',
-      one: '1 bottle in the cellar',
+      other: '$count garrafas na garrafeira',
+      one: '1 garrafa na garrafeira',
+      zero: '$count garrafas na garrafeira',
     );
     return '$_temp0';
   }
 
   @override
-  String get dashboardSyncing => 'Syncing the cellar…';
+  String get dashboardSyncing => 'A sincronizar a garrafeira…';
 
   @override
-  String get dashboardAddFirstWine => 'Add your first wine';
+  String get dashboardAddFirstWine => 'Adicionar o primeiro vinho';
 
   @override
-  String get drinkSoonTitle => 'Drink soon';
+  String get drinkSoonTitle => 'Beber em breve';
 
   @override
-  String get drinkSoonEmpty => 'No bottles due soon';
+  String get drinkSoonEmpty => 'Nenhuma garrafa para beber em breve';
 
   @override
   String drinkSoonUntil(String year) {
-    return 'by $year';
+    return 'até $year';
   }
 
   @override
   String drinkSoonSeeAll(int count) {
-    return 'See all ($count)';
+    return 'Ver todos ($count)';
   }
 
   @override
-  String get statusChartTitle => 'Bottle status';
+  String get statusChartTitle => 'Estado das garrafas';
 
   @override
-  String get statusWaiting => 'to wait';
+  String get statusWaiting => 'a aguardar';
 
   @override
-  String get statusReady => 'ready';
+  String get statusReady => 'prontas';
 
   @override
-  String get statusDrinkSoon => 'drink soon';
+  String get statusDrinkSoon => 'beber em breve';
 
   @override
-  String get statusPastWindow => 'past the window';
+  String get statusPastWindow => 'janela ultrapassada';
 
   @override
   String toEstimateNote(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count bottles to estimate',
-      one: '1 bottle to estimate',
+      other: '$count garrafas por estimar',
+      one: '1 garrafa por estimar',
+      zero: '$count garrafas por estimar',
     );
     return '$_temp0';
   }
@@ -245,8 +251,9 @@ class AppLocalizationsPt extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count bottles',
-      one: '1 bottle',
+      other: '$count garrafas',
+      one: '1 garrafa',
+      zero: '$count garrafas',
     );
     return '$label: $_temp0';
   }
@@ -257,130 +264,132 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get openListHint => 'Open the list';
+  String get openListHint => 'Abrir a lista';
 
   @override
-  String get peakChartTitle => 'Peak year';
+  String get peakChartTitle => 'Ano do apogeu';
 
   @override
-  String get peakPast => 'past peak';
+  String get peakPast => 'apogeu passado';
 
   @override
-  String get peakBeyond => 'later';
+  String get peakBeyond => 'mais tarde';
 
   @override
-  String get breakdownTypeTitle => 'Bottles by type';
+  String get breakdownTypeTitle => 'Garrafas por tipo';
 
   @override
-  String get breakdownRegionTitle => 'Bottles by region';
+  String get breakdownRegionTitle => 'Garrafas por região';
 
   @override
-  String get breakdownType => 'Type';
+  String get breakdownType => 'Tipo';
 
   @override
-  String get breakdownRegion => 'Region';
+  String get breakdownRegion => 'Região';
 
   @override
-  String get familyRed => 'red';
+  String get familyRed => 'tinto';
 
   @override
-  String get familyWhite => 'white';
+  String get familyWhite => 'branco';
 
   @override
   String get familyRose => 'rosé';
 
   @override
-  String get familySparkling => 'sparkling';
+  String get familySparkling => 'espumante';
 
   @override
-  String get familySweet => 'sweet';
+  String get familySweet => 'doce';
 
   @override
-  String get breakdownUnspecified => 'not specified';
+  String get breakdownUnspecified => 'não indicado';
 
   @override
-  String get breakdownOtherRegions => 'others';
+  String get breakdownOtherRegions => 'outras';
 
   @override
   String get ok => 'OK';
 
   @override
-  String get cellarMenu => 'Cellar menu';
+  String get cellarMenu => 'Menu da garrafeira';
 
   @override
-  String get sharingPeopleTitle => 'People';
+  String get sharingPeopleTitle => 'Pessoas';
 
   @override
-  String get sharingInviteTitle => 'Invite a person';
+  String get sharingInviteTitle => 'Convidar uma pessoa';
 
   @override
-  String get sharingEmailLabel => 'Google email address';
+  String get sharingEmailLabel => 'Endereço de email Google';
 
   @override
-  String get sharingPermissionRead => 'Read only';
+  String get sharingPermissionRead => 'Só de leitura';
 
   @override
   String get sharingPermissionReadHint =>
-      'Sees wines, estimates, dashboard and drinks';
+      'Vê vinhos, estimativas, painel e consumos';
 
   @override
-  String get sharingPermissionEdit => 'Can edit';
+  String get sharingPermissionEdit => 'Pode editar';
 
   @override
   String get sharingPermissionEditHint =>
-      'Also adds and changes wines and records drinks';
+      'Também adiciona e altera vinhos e regista consumos';
 
   @override
-  String get sharingRoleOwner => 'owner';
+  String get sharingRoleOwner => 'proprietário';
 
   @override
-  String get sharingInviteButton => 'Invite';
+  String get sharingInviteButton => 'Convidar';
 
   @override
   String sharingPlacesUsed(int used, int max) {
-    return '$used/$max people';
+    return '$used/$max pessoas';
   }
 
   @override
-  String get sharingInvalidEmail => 'Enter a valid email';
+  String get sharingInvalidEmail => 'Introduza um email válido';
 
   @override
-  String get sharingSelfInvite => 'You cannot invite yourself';
+  String get sharingSelfInvite => 'Não se pode convidar a si próprio';
 
   @override
-  String get sharingAlreadyInvited => 'This person is already invited';
+  String get sharingAlreadyInvited => 'Esta pessoa já foi convidada';
 
   @override
   String sharingLimitReached(int max) {
-    return 'You have reached the limit of $max people';
+    return 'Atingiu o limite de $max pessoas';
   }
 
   @override
-  String get sharingNotOwner => 'You cannot change the sharing of this cellar';
+  String get sharingNotOwner => 'Não pode alterar a partilha desta garrafeira';
 
   @override
-  String get sharingNotFound => 'This person is no longer in the list';
+  String get sharingNotFound => 'Esta pessoa já não está na lista';
 
   @override
-  String get sharingFailed => 'Could not complete, try again';
+  String get sharingFailed => 'Não foi possível concluir, tente novamente';
 
   @override
-  String get sharingInviteFailed => 'Invitation failed. Try again';
+  String get sharingInviteFailed =>
+      'Não foi possível convidar. Tente novamente';
 
   @override
-  String get sharingOfflineHint => 'You need a connection to manage sharing';
+  String get sharingOfflineHint =>
+      'É necessária uma ligação para gerir a partilha';
 
   @override
-  String get sharingStatusInvited => 'invited';
+  String get sharingStatusInvited => 'convidada';
 
   @override
-  String get sharingStatusActive => 'active';
+  String get sharingStatusActive => 'ativa';
 
   @override
-  String get sharingStatusRevoked => 'revoked';
+  String get sharingStatusRevoked => 'revogada';
 
   @override
-  String get sharingStatusLeft => 'left';
+  String get sharingStatusLeft => 'saiu';
 
   @override
   String sharingMemberSemantics(String name, String permission, String status) {
@@ -388,92 +397,92 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get sharingClosedSection => 'Closed access';
+  String get sharingClosedSection => 'Acessos encerrados';
 
   @override
-  String get sharingNobody => 'Nobody else sees this cellar yet';
+  String get sharingNobody => 'Ainda mais ninguém vê esta garrafeira';
 
   @override
   String sharingChangePermission(String name) {
-    return 'Change permission of $name';
+    return 'Alterar a permissão de $name';
   }
 
   @override
-  String get sharingRevoke => 'Revoke';
+  String get sharingRevoke => 'Revogar';
 
   @override
   String sharingRevokeTitle(String name) {
-    return 'Revoke the access of $name?';
+    return 'Revogar o acesso de $name?';
   }
 
   @override
   String sharingRevokeConfirmLabel(String name) {
-    return 'Type $name to confirm';
+    return 'Escreva $name para confirmar';
   }
 
   @override
-  String get sharingRevokeDisabledHint => 'Enabled when the name matches';
+  String get sharingRevokeDisabledHint => 'Fica ativo quando o nome coincidir';
 
   @override
-  String get sharingReinvite => 'Invite again';
+  String get sharingReinvite => 'Convidar novamente';
 
   @override
-  String get sharingDeleteForGood => 'Delete for good';
+  String get sharingDeleteForGood => 'Eliminar definitivamente';
 
   @override
   String sharingOwnedBy(String owner) {
-    return 'Cellar of $owner';
+    return 'Garrafeira de $owner';
   }
 
   @override
-  String get sharingYourCellar => 'Your cellar';
+  String get sharingYourCellar => 'A sua garrafeira';
 
   @override
   String sharingYourPermission(String permission) {
-    return 'Your permission: $permission';
+    return 'A sua permissão: $permission';
   }
 
   @override
   String sharingSwitcherSemantics(String cellar, String permission) {
-    return '$cellar, $permission. Tap to change cellar';
+    return '$cellar, $permission. Toque para mudar de garrafeira';
   }
 
   @override
-  String get sharingLeave => 'Leave this cellar';
+  String get sharingLeave => 'Sair desta garrafeira';
 
   @override
   String sharingLeaveTitle(String owner) {
-    return 'Leave the cellar of $owner?';
+    return 'Sair da garrafeira de $owner?';
   }
 
   @override
   String sharingLeaveBody(String owner) {
-    return 'You will no longer see it. $owner can invite you again.';
+    return 'Deixará de a ver. $owner poderá enviar-lhe um novo convite.';
   }
 
   @override
-  String get sharingLeaveConfirm => 'Leave';
+  String get sharingLeaveConfirm => 'Sair';
 
   @override
   String sharingSharedNotice(String owner) {
-    return '$owner shared their cellar with you';
+    return '$owner partilhou a garrafeira consigo';
   }
 
   @override
   String sharingAccessLost(String owner) {
-    return 'You no longer have access to the cellar of $owner';
+    return 'Já não tem acesso à garrafeira de $owner';
   }
 
   @override
   String sharingWritesLost(String owner) {
-    return 'Some changes to the cellar of $owner were not saved because you no longer have access';
+    return 'Algumas alterações à garrafeira de $owner não foram guardadas porque já não tem acesso';
   }
 
   @override
-  String get sharingSomeone => 'someone';
+  String get sharingSomeone => 'alguém';
 
   @override
-  String get sharingShareSubject => 'Invitation to Vinoozy';
+  String get sharingShareSubject => 'Convite para o Vinoozy';
 
   @override
   String sharingShareMessage(
@@ -482,147 +491,149 @@ class AppLocalizationsPt extends AppLocalizations {
     String link,
     String email,
   ) {
-    return '$owner invited you to the cellar \"$cellar\" on Vinoozy. Install the app from $link and sign in with the Google account $email: use exactly this address.';
+    return '$owner enviou-lhe um convite para a garrafeira «$cellar» no Vinoozy. Instale a app a partir de $link e inicie sessão com a conta Google $email: use exatamente este endereço.';
   }
 
   @override
-  String get cellarSearchHint => 'Search by name or producer';
+  String get cellarSearchHint => 'Pesquisar por nome ou produtor';
 
   @override
-  String get cellarFilterStatus => 'Status';
+  String get cellarFilterStatus => 'Estado';
 
   @override
-  String get cellarFilterType => 'Type';
+  String get cellarFilterType => 'Tipo';
 
   @override
-  String get statusToEstimate => 'To estimate';
+  String get statusToEstimate => 'Por estimar';
 
   @override
-  String get filterTypeUnspecified => 'Not specified';
+  String get filterTypeUnspecified => 'Não indicado';
 
   @override
-  String get cellarNoMatches => 'No wine with these filters';
+  String get cellarNoMatches => 'Nenhum vinho com estes filtros';
 
   @override
-  String get cellarClearFilters => 'Clear filters';
+  String get cellarClearFilters => 'Limpar filtros';
 
   @override
-  String get cellarArchiveTitle => 'Drunk';
+  String get cellarArchiveTitle => 'Bebidos';
 
   @override
-  String get cellarArchiveEmpty => 'No finished wines yet';
+  String get cellarArchiveEmpty => 'Ainda não há vinhos terminados';
 
   @override
-  String get cellarArchiveFailed => 'Could not load the finished wines';
+  String get cellarArchiveFailed =>
+      'Não foi possível carregar os vinhos terminados';
 
   @override
-  String get wineDrink => 'Drunk';
+  String get wineDrink => 'Bebida';
 
   @override
   String wineDrinkTooltip(String name) {
-    return 'Mark a bottle of $name as drunk';
+    return 'Marcar uma garrafa de $name como bebida';
   }
 
   @override
   String confidenceLabel(String level) {
-    return 'Confidence: $level';
+    return 'Confiança: $level';
   }
 
   @override
-  String get confidenceHigh => 'high';
+  String get confidenceHigh => 'alta';
 
   @override
-  String get confidenceMedium => 'medium';
+  String get confidenceMedium => 'média';
 
   @override
-  String get confidenceLow => 'low';
+  String get confidenceLow => 'baixa';
 
   @override
-  String get windowStartLabel => 'Start';
+  String get windowStartLabel => 'Início';
 
   @override
-  String get windowPeakLabel => 'Peak';
+  String get windowPeakLabel => 'Apogeu';
 
   @override
-  String get windowEndLabel => 'End';
+  String get windowEndLabel => 'Fim';
 
   @override
   String estimateSourceLabel(String source) {
-    return 'Source: $source';
+    return 'Fonte: $source';
   }
 
   @override
-  String get estimateSourceCatalog => 'wine database';
+  String get estimateSourceCatalog => 'base de dados de vinhos';
 
   @override
-  String get estimateSourceType => 'estimate for the type';
+  String get estimateSourceType => 'estimativa por tipo';
 
   @override
-  String get estimateSourceCorrected => 'estimate corrected by your drinks';
+  String get estimateSourceCorrected =>
+      'estimativa corrigida pelos seus consumos';
 
   @override
   String get estimateDisclaimer =>
-      'Indicative estimate: it also depends on how the bottle was stored';
+      'Estimativa indicativa: depende também da forma como a garrafa foi conservada';
 
   @override
-  String get estimateUnavailable => 'Estimate not available';
+  String get estimateUnavailable => 'Estimativa indisponível';
 
   @override
-  String get pairingsTitle => 'Pairings';
+  String get pairingsTitle => 'Harmonizações';
 
   @override
-  String get pairingsGeneric => 'generic pairings for the type';
+  String get pairingsGeneric => 'harmonizações genéricas para o tipo';
 
   @override
-  String get pairingBraisedRedMeat => 'Braised red meat';
+  String get pairingBraisedRedMeat => 'Carne vermelha estufada';
 
   @override
-  String get pairingGrilledRedMeat => 'Grilled red meat';
+  String get pairingGrilledRedMeat => 'Carne vermelha grelhada';
 
   @override
-  String get pairingGame => 'Game';
+  String get pairingGame => 'Caça';
 
   @override
-  String get pairingRoastPoultry => 'Roast poultry';
+  String get pairingRoastPoultry => 'Aves assadas';
 
   @override
-  String get pairingPoultry => 'Poultry';
+  String get pairingPoultry => 'Aves';
 
   @override
-  String get pairingPork => 'Pork';
+  String get pairingPork => 'Porco';
 
   @override
-  String get pairingCuredMeats => 'Cured meats';
+  String get pairingCuredMeats => 'Charcutaria';
 
   @override
-  String get pairingPastaMeatSauce => 'Pasta with meat sauce';
+  String get pairingPastaMeatSauce => 'Massa com molho de carne';
 
   @override
-  String get pairingMushroomsTruffle => 'Mushrooms and truffle';
+  String get pairingMushroomsTruffle => 'Cogumelos e trufa';
 
   @override
-  String get pairingAgedCheese => 'Aged cheese';
+  String get pairingAgedCheese => 'Queijos curados';
 
   @override
-  String get pairingFreshCheese => 'Fresh cheese';
+  String get pairingFreshCheese => 'Queijos frescos';
 
   @override
-  String get pairingBlueCheese => 'Blue cheese';
+  String get pairingBlueCheese => 'Queijos azuis';
 
   @override
-  String get pairingFish => 'Fish';
+  String get pairingFish => 'Peixe';
 
   @override
-  String get pairingSeafood => 'Seafood';
+  String get pairingSeafood => 'Marisco';
 
   @override
-  String get pairingRawSeafood => 'Raw seafood';
+  String get pairingRawSeafood => 'Marisco cru';
 
   @override
-  String get pairingFriedFood => 'Fried food';
+  String get pairingFriedFood => 'Fritos';
 
   @override
-  String get pairingVegetables => 'Vegetables';
+  String get pairingVegetables => 'Legumes';
 
   @override
   String get pairingRisotto => 'Risotto';
@@ -631,168 +642,168 @@ class AppLocalizationsPt extends AppLocalizations {
   String get pairingPizza => 'Pizza';
 
   @override
-  String get pairingAperitif => 'Aperitif';
+  String get pairingAperitif => 'Aperitivo';
 
   @override
-  String get pairingPastries => 'Pastries';
+  String get pairingPastries => 'Pastelaria';
 
   @override
-  String get pairingDryBiscuits => 'Dry biscuits';
+  String get pairingDryBiscuits => 'Biscoitos secos';
 
   @override
   String get pairingChocolate => 'Chocolate';
 
   @override
-  String get pairingDriedFruit => 'Dried fruit';
+  String get pairingDriedFruit => 'Frutos secos';
 
   @override
-  String get pairingSpicyDishes => 'Spicy dishes';
+  String get pairingSpicyDishes => 'Pratos condimentados';
 
   @override
-  String get recentDrinksTitle => 'Last drinks';
+  String get recentDrinksTitle => 'Últimos consumos';
 
   @override
-  String get noDrinksYet => 'No drinks yet';
+  String get noDrinksYet => 'Ainda sem consumos';
 
   @override
-  String get wineEdit => 'Edit';
+  String get wineEdit => 'Editar';
 
   @override
-  String get wineDelete => 'Delete';
+  String get wineDelete => 'Eliminar';
 
   @override
-  String get wineFinished => 'Finished: no bottles left';
+  String get wineFinished => 'Terminado: sem garrafas';
 
   @override
-  String get wineLoadFailed => 'Could not open the wine';
+  String get wineLoadFailed => 'Não foi possível abrir o vinho';
 
   @override
-  String get wineNotFound => 'This wine no longer exists';
+  String get wineNotFound => 'Este vinho já não existe';
 
   @override
   String drinkDone(String name) {
-    return 'Marked as drunk: $name';
+    return 'Marcada como bebida: $name';
   }
 
   @override
-  String get drinkUndo => 'Undo';
+  String get drinkUndo => 'Anular';
 
   @override
-  String get drinkAddNotes => 'Add rating and notes';
+  String get drinkAddNotes => 'Adicionar classificação e notas';
 
   @override
-  String get nothingToUndo => 'Nothing left to undo';
+  String get nothingToUndo => 'Já não há nada para anular';
 
   @override
   String get cellarUndoRejected =>
-      'Undo failed: the bottle stays marked as drunk';
+      'Não foi possível anular: a garrafa continua marcada como bebida';
 
   @override
   String get cellarDeleteFailed =>
-      'The deletion is not complete yet: it will finish as soon as possible';
+      'A eliminação ainda não está concluída: terminará assim que possível';
 
   @override
   String get duplicateFull =>
-      'This wine already has 99 bottles: no more can be added.';
+      'Este vinho já tem 99 garrafas: não é possível adicionar mais.';
 
   @override
-  String get recordSheetTitle => 'Rating and notes';
+  String get recordSheetTitle => 'Classificação e notas';
 
   @override
-  String get recordRatingLabel => 'Rating';
+  String get recordRatingLabel => 'Classificação';
 
   @override
   String ratingStar(int n) {
-    return 'Rating $n of 5';
+    return 'Classificação $n de 5';
   }
 
   @override
-  String get recordNotesLabel => 'Notes';
+  String get recordNotesLabel => 'Notas';
 
   @override
-  String get recordNotesTooLong => 'At most 1000 characters';
+  String get recordNotesTooLong => 'No máximo 1000 carateres';
 
   @override
   String recordDateLabel(String date) {
-    return 'Date: $date';
+    return 'Data: $date';
   }
 
   @override
   String get recordDateInvalid =>
-      'The date cannot be in the future or before the vintage';
+      'A data não pode ser futura nem anterior à colheita';
 
   @override
-  String get recordConditionTitle => 'How was it?';
+  String get recordConditionTitle => 'Como estava?';
 
   @override
-  String get conditionTooYoung => 'Still too young';
+  String get conditionTooYoung => 'Ainda demasiado jovem';
 
   @override
-  String get conditionJustRight => 'Just right';
+  String get conditionJustRight => 'No ponto certo';
 
   @override
-  String get conditionPastPeak => 'Past its best';
+  String get conditionPastPeak => 'Já em declínio';
 
   @override
-  String get recordNoCondition => 'No answer';
+  String get recordNoCondition => 'Sem resposta';
 
   @override
-  String get producerLabel => 'Producer (optional)';
+  String get producerLabel => 'Produtor (opcional)';
 
   @override
-  String get producerTooLong => 'At most 120 characters';
+  String get producerTooLong => 'No máximo 120 carateres';
 
   @override
   String producerAddNew(String name) {
-    return 'Add «$name» as a new producer';
+    return 'Adicionar «$name» como novo produtor';
   }
 
   @override
-  String get wineTypeLabel => 'Type';
+  String get wineTypeLabel => 'Tipo';
 
   @override
-  String get typeRedLight => 'Light red';
+  String get typeRedLight => 'Tinto ligeiro';
 
   @override
-  String get typeRedStructured => 'Full-bodied red';
+  String get typeRedStructured => 'Tinto encorpado';
 
   @override
-  String get typeWhite => 'White';
+  String get typeWhite => 'Branco';
 
   @override
   String get typeRose => 'Rosé';
 
   @override
-  String get typeSparklingClassic => 'Classic-method sparkling';
+  String get typeSparklingClassic => 'Espumante método clássico';
 
   @override
-  String get typeSparklingTank => 'Tank-method sparkling';
+  String get typeSparklingTank => 'Espumante método Charmat';
 
   @override
-  String get typeSweet => 'Sweet';
+  String get typeSweet => 'Doce';
 
   @override
-  String get typeFortified => 'Fortified';
+  String get typeFortified => 'Fortificado';
 
   @override
-  String get suggestionFromCellar => 'In your cellar';
+  String get suggestionFromCellar => 'Na sua garrafeira';
 
   @override
-  String get suggestionsLabel => 'Suggestions';
+  String get suggestionsLabel => 'Sugestões';
 
   @override
-  String get duplicateTitle => 'Already in the cellar';
+  String get duplicateTitle => 'Já está na garrafeira';
 
   @override
   String duplicateBody(String name, int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count bottles',
-      one: '1 bottle',
-      zero: 'no bottles',
+      other: '$count garrafas',
+      one: '1 garrafa',
+      zero: 'nenhuma garrafa',
     );
-    return '$name is already there with $_temp0. Add the new bottles to it?';
+    return '$name já lá está, com $_temp0. Adicionar-lhe as novas garrafas?';
   }
 
   @override
@@ -800,207 +811,208 @@ class AppLocalizationsPt extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Add $count bottles',
-      one: 'Add 1 bottle',
+      other: 'Adicionar $count garrafas',
+      one: 'Adicionar 1 garrafa',
+      zero: 'Adicionar $count garrafas',
     );
     return '$_temp0';
   }
 
   @override
-  String get duplicateBanner => 'Possible duplicate';
+  String get duplicateBanner => 'Possível duplicado';
 
   @override
-  String get duplicateMerge => 'Merge';
+  String get duplicateMerge => 'Unir';
 
   @override
-  String get duplicateDeleteHint => 'Delete this entry if it is a duplicate';
+  String get duplicateDeleteHint => 'Elimine esta entrada se for um duplicado';
 
   @override
-  String get mergeTitle => 'Merge the two entries?';
+  String get mergeTitle => 'Unir as duas entradas?';
 
   @override
   String get mergeBody =>
-      'The bottles of this entry move to the older one, then this entry is deleted.';
+      'As garrafas desta entrada passam para a mais antiga e, depois, esta entrada é eliminada.';
 
   @override
-  String get editWineTitle => 'Edit wine';
+  String get editWineTitle => 'Editar vinho';
 
   @override
   String get editDuplicate =>
-      'Another wine with the same name, producer and vintage exists';
+      'Já existe outro vinho com o mesmo nome, produtor e colheita';
 
   @override
   String deleteWineTitle(String name) {
-    return 'Delete $name?';
+    return 'Eliminar $name?';
   }
 
   @override
   String get deleteWineBody =>
-      'The wine and all its drinks are deleted. This cannot be undone.';
+      'O vinho e todos os seus consumos são eliminados. Não é possível anular.';
 
   @override
-  String get historyTitle => 'History';
+  String get historyTitle => 'Histórico';
 
   @override
-  String get historyEmpty => 'Here you will find the bottles you drank';
+  String get historyEmpty => 'Aqui encontrará as garrafas que bebeu';
 
   @override
-  String get historyLoadFailed => 'Could not load the history';
+  String get historyLoadFailed => 'Não foi possível carregar o histórico';
 
   @override
   String drankOnLabel(String date) {
-    return 'Drunk on $date';
+    return 'Bebida a $date';
   }
 
   @override
-  String get addChoiceTitle => 'Add a wine';
+  String get addChoiceTitle => 'Adicionar um vinho';
 
   @override
-  String get addChoicePhoto => 'Take a photo';
+  String get addChoicePhoto => 'Tirar foto';
 
   @override
-  String get addChoiceImport => 'Import a photo';
+  String get addChoiceImport => 'Importar uma foto';
 
   @override
-  String get addChoiceWrite => 'Write';
+  String get addChoiceWrite => 'Escrever';
 
   @override
-  String get labelReading => 'Reading the label…';
+  String get labelReading => 'A ler o rótulo…';
 
   @override
-  String get labelRecognized => 'I recognised:';
+  String get labelRecognized => 'Reconheci:';
 
   @override
-  String get labelCorrect => 'Correct';
+  String get labelCorrect => 'Corrigir';
 
   @override
-  String get labelConfirm => 'Confirm';
+  String get labelConfirm => 'Confirmar';
 
   @override
-  String get labelUnreadable => 'I can\'t read the label';
+  String get labelUnreadable => 'Não consigo ler o rótulo';
 
   @override
-  String get labelWriteByHand => 'Write by hand';
+  String get labelWriteByHand => 'Escrever à mão';
 
   @override
-  String get labelNotFound => 'I didn\'t find the wine: check the details';
+  String get labelNotFound => 'Não encontrei o vinho: verifique os dados';
 
   @override
   String get labelCameraDenied =>
-      'To read the label I need access to the camera';
+      'Para ler o rótulo, preciso de acesso à câmara';
 
   @override
   String get labelPhotosDenied =>
-      'To read the label I need access to the photos';
+      'Para ler o rótulo, preciso de acesso às fotos';
 
   @override
-  String get labelOpenSettings => 'Open settings';
+  String get labelOpenSettings => 'Abrir definições';
 
   @override
-  String get labelCameraUnavailable => 'Camera not available';
+  String get labelCameraUnavailable => 'Câmara indisponível';
 
   @override
   String get labelBarcodeNotFound =>
-      'I read the barcode but I can\'t find the wine';
+      'Li o código de barras, mas não encontro o vinho';
 
   @override
-  String get labelBarcodeFrontHint => 'Take a photo of the front of the label';
+  String get labelBarcodeFrontHint => 'Fotografe o rótulo da frente';
 
   @override
-  String get labelSharedNotAllowed => 'You can\'t add wines to this cellar';
+  String get labelSharedNotAllowed =>
+      'Não pode adicionar vinhos a esta garrafeira';
 
   @override
-  String get labelSharedFirstOnly => 'I used only the first photo';
+  String get labelSharedFirstOnly => 'Usei apenas a primeira foto';
 
   @override
   String get labelSharedExpired =>
-      'The shared photo could not be read: share it again';
+      'Não foi possível ler a foto partilhada: partilhe-a novamente';
 
   @override
-  String get labelReplaceTitle =>
-      'You have an unsaved wine. Read the new photo?';
+  String get labelReplaceTitle => 'Tem um vinho por guardar. Ler a nova foto?';
 
   @override
-  String get labelReplaceRead => 'Read the new photo';
+  String get labelReplaceRead => 'Ler a nova foto';
 
   @override
-  String get labelReplaceKeep => 'Continue with the open one';
+  String get labelReplaceKeep => 'Continuar com o que está aberto';
 
   @override
-  String get labelWineAdded => 'Wine added to the cellar';
+  String get labelWineAdded => 'Vinho adicionado à garrafeira';
 
   @override
-  String get onboardingPage1Title => 'Your cellar in your pocket';
+  String get onboardingPage1Title => 'A sua garrafeira no bolso';
 
   @override
   String get onboardingPage1Body =>
-      'Add your bottles by writing them or with a photo of the label, also without network.';
+      'Adicione as garrafas escrevendo-as ou com uma foto do rótulo, mesmo sem rede.';
 
   @override
-  String get onboardingPage2Title => 'At the right time';
+  String get onboardingPage2Title => 'No momento certo';
 
   @override
   String get onboardingPage2Body =>
-      'Vinoozy estimates when each wine is at its best and tells you which ones to open first.';
+      'O Vinoozy estima quando cada vinho está no seu melhor e diz-lhe quais abrir primeiro.';
 
   @override
-  String get onboardingPage3Title => 'Together';
+  String get onboardingPage3Title => 'Juntos';
 
   @override
   String get onboardingPage3Body =>
-      'Share your cellar with up to two people and keep the history of every bottle you drink.';
+      'Partilhe a garrafeira com até duas pessoas e guarde o histórico de cada garrafa que bebe.';
 
   @override
-  String get onboardingSkip => 'Skip';
+  String get onboardingSkip => 'Ignorar';
 
   @override
-  String get onboardingNext => 'Next';
+  String get onboardingNext => 'Seguinte';
 
   @override
-  String get onboardingStart => 'Start';
+  String get onboardingStart => 'Começar';
 
   @override
   String onboardingPageOf(int page) {
-    return 'Page $page of 3';
+    return 'Página $page de 3';
   }
 
   @override
-  String get profileTitle => 'Profile';
+  String get profileTitle => 'Perfil';
 
   @override
-  String get profilePhoto => 'Profile photo';
+  String get profilePhoto => 'Foto de perfil';
 
   @override
-  String get profileSignOut => 'Sign out';
+  String get profileSignOut => 'Terminar sessão';
 
   @override
-  String get profileDeleteAccount => 'Delete account';
+  String get profileDeleteAccount => 'Eliminar conta';
 
   @override
-  String get profilePrivacy => 'Privacy policy';
+  String get profilePrivacy => 'Política de privacidade';
 
   @override
   String get profilePrivacyBody =>
-      'You can read the privacy policy at this address:';
+      'Pode ler a política de privacidade neste endereço:';
 
   @override
-  String get profileOpenLink => 'Open in browser';
+  String get profileOpenLink => 'Abrir no navegador';
 
   @override
   String get profileOpenLinkFailed =>
-      'Could not open the page. You can copy the link and open it in your browser.';
+      'Não foi possível abrir a página. Pode copiar o link e abri-lo no navegador.';
 
   @override
-  String get profileCopyLink => 'Copy link';
+  String get profileCopyLink => 'Copiar link';
 
   @override
-  String get profileLinkCopied => 'Link copied';
+  String get profileLinkCopied => 'Link copiado';
 
   @override
-  String get close => 'Close';
+  String get close => 'Fechar';
 
   @override
-  String get signOutConfirmTitle => 'Do you want to sign out?';
+  String get signOutConfirmTitle => 'Quer terminar sessão?';
 
   @override
   String signOutPendingWarning(int count) {
@@ -1008,55 +1020,59 @@ class AppLocalizationsPt extends AppLocalizations {
       count,
       locale: localeName,
       other:
-          'You have $count changes not saved yet. If you sign out and another account signs in, they will be lost.',
-      one: 'You have 1 change not saved yet. If you sign out and another account signs in, it will be lost.',
+          'Tem $count alterações ainda por guardar. Se terminar sessão e outra conta iniciar sessão, serão perdidas.',
+      one: 'Tem 1 alteração ainda por guardar. Se terminar sessão e outra conta iniciar sessão, será perdida.',
+      zero:
+          'Tem $count alterações ainda por guardar. Se terminar sessão e outra conta iniciar sessão, serão perdidas.',
     );
     return '$_temp0';
   }
 
   @override
-  String get signOutStayAndSync => 'Stay and sync';
+  String get signOutStayAndSync => 'Ficar e sincronizar';
 
   @override
-  String get signOutAnyway => 'Sign out anyway';
+  String get signOutAnyway => 'Terminar sessão mesmo assim';
 
   @override
-  String get syncAllSaved => 'Everything saved';
+  String get syncAllSaved => 'Tudo guardado';
 
   @override
   String syncStillPending(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count changes still to save: check the network',
-      one: '1 change still to save: check the network',
+      other: 'Ainda $count alterações por guardar: verifique a rede',
+      one: 'Ainda 1 alteração por guardar: verifique a rede',
+      zero: 'Ainda $count alterações por guardar: verifique a rede',
     );
     return '$_temp0';
   }
 
   @override
-  String get signOutFailed => 'Could not sign out. Try again';
+  String get signOutFailed =>
+      'Não foi possível terminar sessão. Tente novamente';
 
   @override
-  String get signInAccountDeleted => 'Account deleted';
+  String get signInAccountDeleted => 'Conta eliminada';
 
   @override
-  String get deleteAccountIntro => 'This deletes for good:';
+  String get deleteAccountIntro => 'Será eliminado para sempre:';
 
   @override
   String get deleteAccountItemCellar =>
-      'Your cellar, with its wines and History';
+      'A sua garrafeira, com os vinhos e o Histórico';
 
   @override
   String get deleteAccountItemShares =>
-      'The shares you gave: the invited people lose access';
+      'As partilhas que concedeu: as pessoas convidadas perdem o acesso';
 
   @override
   String get deleteAccountItemMemberships =>
-      'Your participation in other people\'s cellars: your drinks stay there without your name';
+      'A sua participação nas garrafeiras de outras pessoas: os seus consumos ficam lá sem o seu nome';
 
   @override
-  String get deleteAccountItemProfile => 'Your profile';
+  String get deleteAccountItemProfile => 'O seu perfil';
 
   @override
   String deleteAccountPending(int count) {
@@ -1064,66 +1080,70 @@ class AppLocalizationsPt extends AppLocalizations {
       count,
       locale: localeName,
       other:
-          'You have $count changes not saved yet: they will be saved and then deleted with the rest',
-      one: 'You have 1 change not saved yet: it will be saved and then deleted with the rest',
+          'Tem $count alterações ainda por guardar: serão guardadas e depois eliminadas com o resto',
+      one: 'Tem 1 alteração ainda por guardar: será guardada e depois eliminada com o resto',
+      zero:
+          'Tem $count alterações ainda por guardar: serão guardadas e depois eliminadas com o resto',
     );
     return '$_temp0';
   }
 
   @override
-  String get deleteAccountConfirmWord => 'DELETE';
+  String get deleteAccountConfirmWord => 'ELIMINAR';
 
   @override
   String deleteAccountTypeWord(String word) {
-    return 'Type $word to confirm';
+    return 'Escreva $word para confirmar';
   }
 
   @override
   String get deleteAccountReauthHint =>
-      'Then you will sign in again with Google to confirm it is you.';
+      'Depois, iniciará sessão novamente com o Google para confirmar a sua identidade.';
 
   @override
-  String get deleteAccountForever => 'Delete forever';
+  String get deleteAccountForever => 'Eliminar para sempre';
 
   @override
   String get deleteAccountNeedsNetwork =>
-      'Connect to the internet to delete the account';
+      'Ligue-se à Internet para eliminar a conta';
 
   @override
   String get deleteAccountSameAccount =>
-      'The deletion requires signing in with the same account';
+      'A eliminação exige iniciar sessão com a mesma conta';
 
   @override
-  String get deletionTitle => 'Deleting the account';
+  String get deletionTitle => 'A eliminar a conta';
 
   @override
-  String get deletionStepPreparePhone => 'Saving the pending changes';
+  String get deletionStepPreparePhone => 'A guardar as alterações pendentes';
 
   @override
-  String get deletionStepMarkStarted => 'Starting the deletion';
+  String get deletionStepMarkStarted => 'A iniciar a eliminação';
 
   @override
-  String get deletionStepLeaveOtherCellars => 'Leaving other people\'s cellars';
+  String get deletionStepLeaveOtherCellars =>
+      'A sair das garrafeiras de outras pessoas';
 
   @override
-  String get deletionStepCloseOwnInvitations => 'Closing your shares';
+  String get deletionStepCloseOwnInvitations => 'A encerrar as suas partilhas';
 
   @override
-  String get deletionStepDeleteWinesAndRecords => 'Deleting wines and History';
+  String get deletionStepDeleteWinesAndRecords =>
+      'A eliminar vinhos e Histórico';
 
   @override
-  String get deletionStepDeleteCellar => 'Deleting the cellar';
+  String get deletionStepDeleteCellar => 'A eliminar a garrafeira';
 
   @override
   String get deletionStepDeleteProfileAndUser =>
-      'Deleting the profile and the account';
+      'A eliminar o perfil e a conta';
 
   @override
-  String get deletionStepCleanUpPhone => 'Cleaning this phone';
+  String get deletionStepCleanUpPhone => 'A limpar este telemóvel';
 
   @override
   String deletionStepAnnounce(int step, String label) {
-    return 'Step $step of 8: $label';
+    return 'Passo $step de 8: $label';
   }
 
   @override
@@ -1131,223 +1151,227 @@ class AppLocalizationsPt extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count wines and drinks deleted',
-      one: '1 wine or drink deleted',
+      other: '$count vinhos e consumos eliminados',
+      one: '1 vinho ou consumo eliminado',
+      zero: '$count vinhos e consumos eliminados',
     );
     return '$_temp0';
   }
 
   @override
   String get deletionResumeHint =>
-      'A deletion of this account is not finished. Sign in again with Google to complete it.';
+      'A eliminação desta conta não terminou. Inicie sessão novamente com o Google para a concluir.';
 
   @override
-  String get deletionContinue => 'Continue';
+  String get deletionContinue => 'Continuar';
 
   @override
   String get deletionOffline =>
-      'Connect to the internet to complete the deletion';
+      'Ligue-se à Internet para concluir a eliminação';
 
   @override
   String get deletionPendingWrites =>
-      'I can\'t save the pending changes. Try again';
+      'Não consigo guardar as alterações pendentes. Tente novamente';
 
   @override
-  String get deletionFailed => 'Could not complete the deletion. Try again';
+  String get deletionFailed =>
+      'Não foi possível concluir a eliminação. Tente novamente';
 
   @override
-  String get uxCountryLabel => 'Country';
+  String get uxCountryLabel => 'País';
 
   @override
-  String get uxCountryOther => 'Other country…';
+  String get uxCountryOther => 'Outro país…';
 
   @override
-  String get uxCountryNone => 'No country';
+  String get uxCountryNone => 'Nenhum país';
 
   @override
-  String get uxAllCountriesTitle => 'All countries and territories';
+  String get uxAllCountriesTitle => 'Todos os países e territórios';
 
   @override
-  String get uxAllCountriesSearch => 'Search a country';
+  String get uxAllCountriesSearch => 'Pesquisar um país';
 
   @override
-  String get uxAllCountriesRare => 'Rare for wine';
+  String get uxAllCountriesRare => 'Raros no vinho';
 
   @override
-  String get uxAllCountriesAll => 'All, from A to Z';
+  String get uxAllCountriesAll => 'Todos, de A a Z';
 
   @override
-  String get uxAllCountriesNone => 'No country found';
+  String get uxAllCountriesNone => 'Nenhum país encontrado';
 
   @override
-  String get uxRegionLabel => 'Region';
+  String get uxRegionLabel => 'Região';
 
   @override
   String uxRegionOf(String country) {
-    return 'Region · $country';
+    return 'Região · $country';
   }
 
   @override
-  String get uxRegionOther => 'Other region';
+  String get uxRegionOther => 'Outra região';
 
   @override
-  String get uxRegionFieldLabel => 'Write the region';
+  String get uxRegionFieldLabel => 'Escreva a região';
 
   @override
-  String get uxRegionTooLong => 'At most 120 characters';
+  String get uxRegionTooLong => 'No máximo 120 carateres';
 
   @override
-  String get uxDrinkAction => 'I drank one';
+  String get uxDrinkAction => 'Bebi uma';
 
   @override
   String uxDrinkActionTooltip(String name) {
-    return 'I drank a bottle of $name';
+    return 'Bebi uma garrafa de $name';
   }
 
   @override
-  String get uxDrinkActionDetail => 'I drank a bottle';
+  String get uxDrinkActionDetail => 'Bebi uma garrafa';
 
   @override
-  String get uxDrinkSheetLabel => 'Confirm the drink';
+  String get uxDrinkSheetLabel => 'Confirmar o consumo';
 
   @override
-  String get uxDrinkSheetBottles => 'Bottles';
+  String get uxDrinkSheetBottles => 'Garrafas';
 
   @override
   String uxDrinkSheetBottlesChange(int before, int after) {
-    return 'Bottles: from $before to $after';
+    return 'Garrafas: de $before para $after';
   }
 
   @override
-  String get uxDrinkSheetRating => 'How was it? (optional)';
+  String get uxDrinkSheetRating => 'Como estava? (opcional)';
 
   @override
   String uxDrinkSheetStars(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count stars of 5',
-      one: '1 star of 5',
+      other: '$count estrelas de 5',
+      one: '1 estrela de 5',
+      zero: '$count estrelas de 5',
     );
     return '$_temp0';
   }
 
   @override
-  String get uxDrinkSheetConfirm => 'Yes, I drank it';
+  String get uxDrinkSheetConfirm => 'Sim, bebi-a';
 
   @override
-  String get uxRemoveBottle => 'Remove a bottle without a drink';
+  String get uxRemoveBottle => 'Retirar uma garrafa sem registar consumo';
 
   @override
-  String get uxRemoveBottleTitle => 'Remove a bottle?';
+  String get uxRemoveBottleTitle => 'Retirar uma garrafa?';
 
   @override
   String uxRemoveBottleBody(String name) {
-    return 'One bottle of $name is removed without recording a drink.';
+    return 'É retirada uma garrafa de $name sem registar um consumo.';
   }
 
   @override
-  String get uxRemoveBottleConfirm => 'Remove';
+  String get uxRemoveBottleConfirm => 'Retirar';
 
   @override
-  String get uxIdealTitle => 'Ideal moment';
+  String get uxIdealTitle => 'Momento ideal';
 
   @override
   String uxIdealUntil(String year) {
-    return 'Recommended until $year';
+    return 'Recomendado até $year';
   }
 
   @override
   String uxIdealUntilPast(String year) {
-    return 'Recommended until $year: it has passed';
+    return 'Recomendado até $year: já passou';
   }
 
   @override
   String uxIdealBest(String start, String end) {
-    return 'At its best from $start to $end';
+    return 'No seu melhor de $start a $end';
   }
 
   @override
   String uxIdealBar(String start, String end) {
-    return 'Drinking window from $start to $end';
+    return 'Janela de consumo de $start a $end';
   }
 
   @override
   String get uxIdealDisclaimer =>
-      '⚠︎ Indicative: an estimate based on type, denomination and vintage. Storage and the single bottle can change it.';
+      '⚠︎ Indicativo: é uma estimativa baseada no tipo, na denominação e na colheita. A conservação e cada garrafa podem alterá-la.';
 
   @override
   String get uxIdealUnavailableHint =>
-      'Add the vintage and the type to get an estimate.';
+      'Indique a colheita e o tipo para obter uma estimativa.';
 
   @override
   String uxDashboardDrinkNow(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count to drink now',
-      one: '1 to drink now',
+      other: '$count para beber agora',
+      one: '1 para beber agora',
+      zero: '$count para beber agora',
     );
     return '$_temp0';
   }
 
   @override
-  String get uxFamilyRed => 'Red';
+  String get uxFamilyRed => 'Tinto';
 
   @override
-  String get uxFamilyWhite => 'White';
+  String get uxFamilyWhite => 'Branco';
 
   @override
   String get uxFamilyRose => 'Rosé';
 
   @override
-  String get uxFamilySparkling => 'Sparkling';
+  String get uxFamilySparkling => 'Espumante';
 
   @override
-  String get uxFamilySweet => 'Sweet';
+  String get uxFamilySweet => 'Doce';
 
   @override
-  String get labelBackTitle => 'Now the back';
+  String get labelBackTitle => 'Agora o contrarrótulo';
 
   @override
   String get labelBackHint =>
-      'The back usually has the barcode, the producer and the vintage: they help find the wine.';
+      'No contrarrótulo costumam estar o código de barras, o produtor e a colheita: ajudam a encontrar o vinho.';
 
   @override
-  String get labelBackTake => 'Take the back';
+  String get labelBackTake => 'Fotografar o contrarrótulo';
 
   @override
-  String get labelBackGallery => 'Choose from the gallery';
+  String get labelBackGallery => 'Escolher da galeria';
 
   @override
-  String get labelBackSkip => 'Skip';
+  String get labelBackSkip => 'Ignorar';
 
   @override
-  String get labelStepFront => 'Front';
+  String get labelStepFront => 'Frente';
 
   @override
-  String get labelStepBack => 'Back';
+  String get labelStepBack => 'Contrarrótulo';
 
   @override
-  String get labelStepBarcode => 'Barcode';
+  String get labelStepBarcode => 'Código de barras';
 
   @override
-  String get labelStepDatabase => 'Wine database on the phone';
+  String get labelStepDatabase => 'Base de vinhos no telemóvel';
 
   @override
-  String get labelStepPending => 'Waiting';
+  String get labelStepPending => 'A aguardar';
 
   @override
-  String get labelStepRunning => 'Working…';
+  String get labelStepRunning => 'Em curso…';
 
   @override
-  String get labelStepDone => 'Done';
+  String get labelStepDone => 'Concluído';
 
   @override
-  String get labelStepSkipped => 'Skipped';
+  String get labelStepSkipped => 'Ignorado';
 
   @override
-  String get labelStepFailed => 'Not readable';
+  String get labelStepFailed => 'Ilegível';
 
   @override
   String labelStepStatus(String step, String status) {
@@ -1356,42 +1380,43 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get labelOnPhoneNote =>
-      'Everything happens on the phone: the photos are not sent to anyone.';
+      'Tudo acontece no telemóvel: as fotos não são enviadas a ninguém.';
 
   @override
-  String get labelBackUnreadable => 'Back not readable';
+  String get labelBackUnreadable => 'Contrarrótulo ilegível';
 
   @override
-  String get labelSourceOffline => 'From the database on the phone · offline';
+  String get labelSourceOffline => 'Da base no telemóvel · offline';
 
   @override
-  String get labelSourceCatalog => 'From the catalog';
+  String get labelSourceCatalog => 'Do catálogo';
 
   @override
-  String get labelSourceOnline => 'From Open Food Facts · online';
+  String get labelSourceOnline => 'Do Open Food Facts · online';
 
   @override
-  String get labelNotThis => 'Not this one';
+  String get labelNotThis => 'Não é este';
 
   @override
-  String get labelOffAttribution => 'Data from Open Food Facts, ODbL licence';
+  String get labelOffAttribution => 'Dados do Open Food Facts, licença ODbL';
 
   @override
-  String get labelCandidatesTitle => 'Which of these?';
+  String get labelCandidatesTitle => 'Qual destes?';
 
   @override
   String labelCandidatesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count similar wines',
-      one: '1 similar wine',
+      other: '$count vinhos semelhantes',
+      one: '1 vinho semelhante',
+      zero: '$count vinhos semelhantes',
     );
     return '$_temp0';
   }
 
   @override
-  String get labelCandidatesNone => 'None of these';
+  String get labelCandidatesNone => 'Nenhum destes';
 
   @override
   String get labelChipOffline => 'offline';
@@ -1400,658 +1425,666 @@ class AppLocalizationsPt extends AppLocalizations {
   String get labelChipOnline => 'online';
 
   @override
-  String get labelChipCatalog => 'catalog';
+  String get labelChipCatalog => 'catálogo';
 
   @override
-  String get labelNoProducer => 'producer not given';
+  String get labelNoProducer => 'produtor não indicado';
 
   @override
-  String get labelNoMatch => 'I read the label but I don\'t recognise the wine';
+  String get labelNoMatch => 'Li o rótulo, mas não reconheço o vinho';
 
   @override
-  String get labelReadText => 'Text read';
+  String get labelReadText => 'Texto lido';
 
   @override
-  String get labelSearchOnline => 'Search online';
+  String get labelSearchOnline => 'Pesquisar online';
 
   @override
-  String get labelOpenLens => 'Open in Google Lens';
+  String get labelOpenLens => 'Abrir no Google Lens';
 
   @override
   String get labelLensLastResort =>
-      'Google Lens is the last resort: the photo goes to the Google app only if you confirm.';
+      'O Google Lens é o último recurso: a foto só passa para a app Google se confirmar.';
 
   @override
-  String get labelLensTitle => 'Open in Google Lens?';
+  String get labelLensTitle => 'Abrir no Google Lens?';
 
   @override
   String get labelLensBody =>
-      'The photo of the front will go to the Google app on your phone, or to the app you choose, which may keep a copy under its own rules. Vinoozy does not receive the results: come back here to choose or write the wine.';
+      'A foto da frente passará para a app Google no seu telemóvel, ou para a app que escolher, que pode guardar uma cópia segundo as suas próprias regras. O Vinoozy não recebe os resultados: volte aqui para escolher ou escrever o vinho.';
 
   @override
-  String get labelLensConfirm => 'Open Google Lens';
+  String get labelLensConfirm => 'Abrir o Google Lens';
 
   @override
-  String get labelLensFailed => 'I can\'t open Google Lens or the share menu';
+  String get labelLensFailed =>
+      'Não consigo abrir o Google Lens nem o menu de partilha';
 
   @override
-  String get onlineSearchTitle => 'Search online';
+  String get onlineSearchTitle => 'Pesquisar online';
 
   @override
-  String get onlineSearchSubtitle => 'Open Food Facts · wines only';
+  String get onlineSearchSubtitle => 'Open Food Facts · só vinhos';
 
   @override
-  String get onlineSearchField => 'Words to search';
+  String get onlineSearchField => 'Palavras a pesquisar';
 
   @override
-  String get onlineSearchHint => 'You can change the words before searching.';
+  String get onlineSearchHint => 'Pode alterar as palavras antes de pesquisar.';
 
   @override
-  String get onlineSearchEmptyField => 'Write at least one word';
+  String get onlineSearchEmptyField => 'Escreva pelo menos uma palavra';
 
   @override
-  String get onlineSearchButton => 'Search';
+  String get onlineSearchButton => 'Pesquisar';
 
   @override
-  String get onlineSearchLoading => 'Searching…';
+  String get onlineSearchLoading => 'A pesquisar…';
 
   @override
   String onlineSearchResults(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count results',
-      one: '1 result',
+      other: '$count resultados',
+      one: '1 resultado',
+      zero: '$count resultados',
     );
     return '$_temp0';
   }
 
   @override
   String get onlineSearchEmpty =>
-      'No wine found: try other words or \"Write by hand\".';
+      'Nenhum vinho encontrado: experimente outras palavras ou «Escrever à mão».';
 
   @override
   String get onlineSearchOffline =>
-      'No network: I only search the database on the phone.';
+      'Sem rede: pesquiso apenas na base do telemóvel.';
 
   @override
   String get onlineSearchRateLimited =>
-      'Online search is not available now, try again in a few minutes.';
+      'A pesquisa online não está disponível agora, tente novamente dentro de alguns minutos.';
 
   @override
   String get onlineSearchUnavailable =>
-      'Online search is not active in this version of the app: I only search the database on the phone.';
+      'A pesquisa online não está ativa nesta versão da app: pesquiso apenas na base do telemóvel.';
 
   @override
-  String get aboutTitle => 'About';
+  String get aboutTitle => 'Acerca';
 
   @override
   String aboutVersion(String version) {
-    return 'Version $version';
+    return 'Versão $version';
   }
 
   @override
-  String get aboutDbTitle => 'Wine database';
+  String get aboutDbTitle => 'Base de vinhos';
 
   @override
   String aboutDbCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count wines',
-      one: '1 wine',
+      other: '$count vinhos',
+      one: '1 vinho',
+      zero: '$count vinhos',
     );
     return '$_temp0';
   }
 
   @override
   String aboutDbDate(String date) {
-    return 'Open Food Facts export of $date';
+    return 'Exportação do Open Food Facts de $date';
   }
 
   @override
   String get aboutDbSample =>
-      'Sample database: a few hand-written test wines, not Open Food Facts data.';
+      'Base de exemplo: alguns vinhos de teste escritos à mão, não dados do Open Food Facts.';
 
   @override
-  String get aboutDbLoading => 'Opening the wine database…';
+  String get aboutDbLoading => 'A abrir a base de vinhos…';
 
   @override
   String get aboutDbUnavailable =>
-      'The wine database is not available in this version';
+      'A base de vinhos não está disponível nesta versão';
 
   @override
   String aboutDbSource(String url) {
-    return 'The derived database and the tool that builds it are in the public repository: $url';
+    return 'A base derivada e a ferramenta que a gera estão no repositório público: $url';
   }
 
   @override
-  String get aboutLicenseTitle => 'Licences';
+  String get aboutLicenseTitle => 'Licenças';
 
   @override
   String get aboutLicense =>
-      'Contains information from Open Food Facts, made available under the Open Database License (ODbL). Individual contents are under the Database Contents License (DbCL).';
+      'Contém informações do Open Food Facts, disponibilizadas ao abrigo da Open Database License (ODbL). Os conteúdos individuais estão ao abrigo da Database Contents License (DbCL).';
 
   @override
-  String get aboutPrivacyTitle => 'Label photos';
+  String get aboutPrivacyTitle => 'Fotos dos rótulos';
 
   @override
   String get aboutPrivacy =>
-      'Label photos are read on the phone and deleted when you leave the outcome. They leave the phone only if you tap \"Open in Google Lens\" and confirm.';
+      'As fotos dos rótulos são lidas no telemóvel e apagadas quando sai do resultado. Só saem do telemóvel se tocar em «Abrir no Google Lens» e confirmar.';
 
   @override
-  String get aboutAppellationsTitle => 'Appellations';
+  String get aboutAppellationsTitle => 'Denominações';
 
   @override
   String get aboutAppellationsSource =>
-      'Appellations: eAmbrosia register (EU) and official national registers.';
+      'Denominações: registo eAmbrosia (UE) e registos oficiais nacionais.';
 
   @override
   String get aboutAppellationsSample =>
-      'Sample table: a hand-written extract of the registers, until the real registers are downloaded.';
+      'Tabela de exemplo: um extrato dos registos escrito à mão, até serem transferidos os registos reais.';
 
   @override
-  String get denominationLabel => 'Appellation';
+  String get denominationLabel => 'Denominação';
 
   @override
-  String get denominationTooLong => 'At most 120 characters';
+  String get denominationTooLong => 'No máximo 120 carateres';
 
   @override
-  String get autofillFilledNotice => 'Filled from the label: check and save';
+  String get autofillFilledNotice =>
+      'Preenchido a partir do rótulo: verifique e guarde';
 
   @override
-  String get autofillPastedNotice => 'Filled from the text: check and save';
+  String get autofillPastedNotice =>
+      'Preenchido a partir do texto: verifique e guarde';
 
   @override
-  String get autofillFromText => '✦ from the text';
+  String get autofillFromText => '✦ do texto';
 
   @override
-  String get autofillFromTextSemantics => 'filled from the label';
+  String get autofillFromTextSemantics => 'preenchido a partir do rótulo';
 
   @override
-  String get autofillClear => 'Clear';
+  String get autofillClear => 'Limpar';
 
   @override
   String get autofillLens => 'Lens';
 
   @override
-  String get autofillClearTitle => 'Clear the form?';
+  String get autofillClearTitle => 'Limpar o formulário?';
 
   @override
   String get autofillClearBody =>
-      'You also wrote in some fields. \"Clear\" empties name, producer, appellation, vintage, type, country, region and level. The quantity stays.';
+      'Também escreveu em alguns campos. «Limpar» esvazia nome, produtor, denominação, colheita, tipo, país, região e nível. A quantidade mantém-se.';
 
   @override
-  String get autofillClearConfirm => 'Clear';
+  String get autofillClearConfirm => 'Limpar';
 
   @override
-  String get autofillCleared => 'Form cleared';
+  String get autofillCleared => 'Formulário limpo';
 
   @override
-  String get autofillPasteTitle => 'Do you have the text from Google Lens?';
+  String get autofillPasteTitle => 'Tem o texto do Google Lens?';
 
   @override
   String get autofillPasteHint =>
-      'In Lens select the text of the label and tap \"Copy\", then come back here.';
+      'No Lens, selecione o texto do rótulo e toque em «Copiar»; depois volte aqui.';
 
   @override
-  String get autofillPaste => 'Paste from Lens';
+  String get autofillPaste => 'Colar do Lens';
 
   @override
-  String get autofillOpenLens => 'From Google Lens';
+  String get autofillOpenLens => 'Do Google Lens';
 
   @override
-  String get autofillOpenLensSemantics => 'opens Google Lens';
+  String get autofillOpenLensSemantics => 'abre o Google Lens';
 
   @override
-  String get autofillClipboardEmpty => 'There is no text on the clipboard';
+  String get autofillClipboardEmpty => 'Não há texto na área de transferência';
 
   @override
-  String get autofillNoNewFields => 'I found no data to add in the text';
+  String get autofillNoNewFields =>
+      'Não encontrei no texto dados para adicionar';
 
   @override
-  String get autofillFromLens => 'Form filled from the Lens text';
+  String get autofillFromLens => 'Formulário preenchido com o texto do Lens';
 
   @override
-  String get autofillShareEmpty => 'No text received';
+  String get autofillShareEmpty => 'Nenhum texto recebido';
 
   @override
-  String get autofillShareUseTitle => 'Use the text for the empty fields?';
+  String get autofillShareUseTitle => 'Usar o texto nos campos vazios?';
 
   @override
-  String get autofillShareUse => 'Use';
+  String get autofillShareUse => 'Usar';
 
   @override
-  String get autofillShareIgnore => 'Ignore';
+  String get autofillShareIgnore => 'Ignorar';
 
   @override
-  String get addChoiceLens => 'From Google Lens';
+  String get addChoiceLens => 'Do Google Lens';
 
   @override
-  String get addChoicePhotoHint => 'Front and back: Vinoozy reads the label.';
+  String get addChoicePhotoHint =>
+      'Frente e contrarrótulo: o Vinoozy lê o rótulo.';
 
   @override
   String get addChoiceLensHint =>
-      'Opens Lens: frame, select the text and tap Share → Vinoozy.';
+      'Abre o Lens: enquadre, selecione o texto e toque em Partilhar → Vinoozy.';
 
   @override
-  String get addChoiceImportHint => 'A photo of the label you already took.';
+  String get addChoiceImportHint => 'Uma foto do rótulo que já tirou.';
 
   @override
-  String get addChoiceWriteHint => 'Empty form, with \"Paste from Lens\".';
+  String get addChoiceWriteHint => 'Formulário vazio, com «Colar do Lens».';
 
   @override
-  String get lensInstructionsTitle => 'Google Lens can\'t be opened from here';
+  String get lensInstructionsTitle =>
+      'Não é possível abrir o Google Lens a partir daqui';
 
   @override
-  String get lensInstructionsStep1 => 'Open Google Lens and frame the label';
+  String get lensInstructionsStep1 => 'Abra o Google Lens e enquadre o rótulo';
 
   @override
-  String get lensInstructionsStep2 => 'Select the text of the label';
+  String get lensInstructionsStep2 => 'Selecione o texto do rótulo';
 
   @override
-  String get lensInstructionsStep3 => 'Tap Share → Vinoozy';
+  String get lensInstructionsStep3 => 'Toque em Partilhar → Vinoozy';
 
   @override
-  String get lensInstructionsOk => 'Got it';
+  String get lensInstructionsOk => 'Percebi';
 
   @override
-  String get levelLabel => 'Level';
+  String get levelLabel => 'Nível';
 
   @override
-  String get levelEveryday => 'Everyday (inexpensive)';
+  String get levelEveryday => 'Dia a dia (económico)';
 
   @override
-  String get levelGood => 'Good';
+  String get levelGood => 'Bom';
 
   @override
-  String get levelAging => 'For ageing';
+  String get levelAging => 'De guarda';
 
   @override
-  String get levelNone => 'None';
+  String get levelNone => 'Nenhum';
 
   @override
-  String get levelEverydayShort => 'drink early';
+  String get levelEverydayShort => 'beber jovem';
 
   @override
-  String get levelGoodShort => 'normal estimate';
+  String get levelGoodShort => 'estimativa normal';
 
   @override
-  String get levelAgingShort => 'lasts longer';
+  String get levelAgingShort => 'dura mais';
 
   @override
-  String get levelSuggested => 'suggested';
+  String get levelSuggested => 'sugerido';
 
   @override
   String levelSuggestedReason(String qualifier) {
-    return 'Suggested because the name says \"$qualifier\": it is saved like this unless you change it. Choose another one or tap \"None\".';
+    return 'Sugerido porque o nome contém «$qualifier»: fica guardado assim se não o alterar. Escolha outro ou toque em «Nenhum».';
   }
 
   @override
   String levelSuggestedSemantics(String qualifier) {
-    return 'suggested, because the name says $qualifier';
+    return 'sugerido, porque o nome contém $qualifier';
   }
 
   @override
   String levelOptionSemantics(String option, int index, int count) {
-    return 'Level, $option, $index of $count';
+    return 'Nível, $option, $index de $count';
   }
 
   @override
-  String get levelWhatChanges => 'What changes';
+  String get levelWhatChanges => 'O que muda';
 
   @override
   String get levelEverydayExamples =>
-      'The window gets shorter. E.g. house wine, Lambrusco, basic Prosecco, Bardolino, Vinho Verde.';
+      'A janela fica mais curta. Ex.: vinho da casa, Lambrusco, Prosecco básico, Bardolino, Vinho Verde.';
 
   @override
   String get levelGoodExamples =>
-      'The normal estimate, and the value when you choose nothing. E.g. Chianti Classico, Barbera d\'Asti Superiore, Rioja Crianza, Côtes du Rhône.';
+      'A estimativa normal, e o valor se não escolher nada. Ex.: Chianti Classico, Barbera d\'Asti Superiore, Rioja Crianza, Côtes du Rhône.';
 
   @override
   String get levelAgingExamples =>
-      'The window gets longer. E.g. Barolo, Brunello, Amarone, Bordeaux Grand Cru, Rioja Gran Reserva, Vintage Port.';
+      'A janela fica mais longa. Ex.: Barolo, Brunello, Amarone, Bordeaux Grand Cru, Rioja Gran Reserva, Porto Vintage.';
 
   @override
   String levelPreviewBefore(String start, String end) {
-    return 'Before $start – $end';
+    return 'Antes $start – $end';
   }
 
   @override
   String levelPreviewWith(String level, String start, String end) {
-    return 'With \"$level\" $start – $end';
+    return 'Com «$level» $start – $end';
   }
 
   @override
   String levelPreviewNow(String start, String end) {
-    return 'Ready $start – until $end';
+    return 'Pronto $start – até $end';
   }
 
   @override
   String levelDetail(String level) {
-    return 'Level: $level';
+    return 'Nível: $level';
   }
 
   @override
-  String get overrideCorrect => 'Correct';
+  String get overrideCorrect => 'Corrigir';
 
   @override
-  String get overrideRestore => 'Restore estimate';
+  String get overrideRestore => 'Repor estimativa';
 
   @override
-  String get overrideCorrectedByYou => 'corrected by you';
+  String get overrideCorrectedByYou => 'corrigido por si';
 
   @override
   String overrideAppEstimate(String year) {
-    return 'App estimate: until $year';
+    return 'Estimativa da app: até $year';
   }
 
   @override
-  String get overrideSheetTitle => 'Recommended until';
+  String get overrideSheetTitle => 'Recomendado até';
 
   @override
   String overrideSheetHint(String start) {
-    return 'Choose the year. It cannot be before \"Ready from $start\".';
+    return 'Escolha o ano. Não pode ser anterior a «Pronto a partir de $start».';
   }
 
   @override
   String overridePeakNotice(String peak) {
-    return 'If you choose a year before $peak (at its best), \"at its best\" moves to the same year too.';
+    return 'Se escolher um ano anterior a $peak (no seu melhor), «no seu melhor» passa também para esse ano.';
   }
 
   @override
-  String get overrideMore => 'more…';
+  String get overrideMore => 'mais…';
 
   @override
-  String get overrideSave => 'Save correction';
+  String get overrideSave => 'Guardar correção';
 
   @override
   String overrideRestoreTitle(String year) {
-    return 'Go back to the app estimate (until $year)?';
+    return 'Voltar à estimativa da app (até $year)?';
   }
 
   @override
-  String get overrideRestoreConfirm => 'Restore';
+  String get overrideRestoreConfirm => 'Repor';
 
   @override
-  String get overrideSaved => 'Correction saved';
+  String get overrideSaved => 'Correção guardada';
 
   @override
-  String get overrideRestored => 'Estimate restored';
+  String get overrideRestored => 'Estimativa reposta';
 
   @override
-  String get estimateSourceCorrectedByYou => 'corrected by you';
+  String get estimateSourceCorrectedByYou => 'corrigida por si';
 
   @override
   String estimateFromDenomination(String name) {
-    return 'Estimate from the appellation $name';
+    return 'Estimativa pela denominação $name';
   }
 
   @override
   String estimateFromDenominationQualifier(String name, String qualifier) {
-    return 'Estimate from the appellation $name, $qualifier';
+    return 'Estimativa pela denominação $name, $qualifier';
   }
 
   @override
   String estimateFromGrape(String name) {
-    return 'Estimate from the grape $name';
+    return 'Estimativa pela casta $name';
   }
 
   @override
-  String get estimateFromType => 'Estimate from the type of wine';
+  String get estimateFromType => 'Estimativa pelo tipo de vinho';
 
   @override
-  String get autofillReading => 'Reading the text…';
+  String get autofillReading => 'A ler o texto…';
 
   @override
-  String get guideChip => 'Guided check';
+  String get guideChip => 'Verificação guiada';
 
   @override
   String guideProgress(int n, int total) {
-    return 'Question $n of $total';
+    return 'Pergunta $n de $total';
   }
 
   @override
-  String get guideClose => 'Close';
+  String get guideClose => 'Fechar';
 
   @override
-  String get guideIsDenomination => 'is it the appellation?';
+  String get guideIsDenomination => 'é a denominação?';
 
   @override
-  String get guideIsProducer => 'is it the producer?';
+  String get guideIsProducer => 'é o produtor?';
 
   @override
-  String get guideIsName => 'is it the wine name?';
+  String get guideIsName => 'é o nome do vinho?';
 
   @override
-  String get guideIsVintage => 'Vintage';
+  String get guideIsVintage => 'Colheita';
 
   @override
   String guideAskDenomination(String value) {
-    return 'Is $value the appellation?';
+    return '$value é a denominação?';
   }
 
   @override
   String guideAskProducer(String value) {
-    return 'Is $value the producer?';
+    return '$value é o produtor?';
   }
 
   @override
   String guideAskName(String value) {
-    return 'Is $value the wine name?';
+    return '$value é o nome do vinho?';
   }
 
   @override
-  String get guideAskVintage => 'What is the vintage?';
+  String get guideAskVintage => 'Qual é a colheita?';
 
   @override
   String guideQuestionSemantics(int n, int total, String question) {
-    return 'Question $n of $total: $question';
+    return 'Pergunta $n de $total: $question';
   }
 
   @override
-  String get guideNoProposal => 'I couldn\'t find it in the text';
+  String get guideNoProposal => 'Não o encontrei no texto';
 
   @override
-  String get guideYes => 'Yes';
+  String get guideYes => 'Sim';
 
   @override
-  String get guideNo => 'No, another';
+  String get guideNo => 'Não, outra';
 
   @override
-  String get guideEdit => 'Edit';
+  String get guideEdit => 'Editar';
 
   @override
-  String get guideSkip => 'Skip';
+  String get guideSkip => 'Ignorar';
 
   @override
-  String get guideConfirm => 'Confirm';
+  String get guideConfirm => 'Confirmar';
 
   @override
-  String get guideCancel => 'Cancel';
+  String get guideCancel => 'Cancelar';
 
   @override
   String guideRejected(String value) {
-    return 'Not \"$value\": here\'s the next one';
+    return '«$value» não: eis a seguinte';
   }
 
   @override
-  String get guideNoMore => 'No other suggestion: compose it or skip';
+  String get guideNoMore => 'Não há mais sugestões: componha-a ou ignore';
 
   @override
   String guideProposalAnnounce(String value) {
-    return 'Suggestion: $value';
+    return 'Sugestão: $value';
   }
 
   @override
-  String get guideComposeLabel => 'Or build it by tapping words of the text';
+  String get guideComposeLabel => 'Ou componha-a tocando nas palavras do texto';
 
   @override
-  String get guideComposePreview => 'Preview';
+  String get guideComposePreview => 'Pré-visualização';
 
   @override
-  String get guideComposeEmpty => 'Tap one or more words';
+  String get guideComposeEmpty => 'Toque numa ou em várias palavras';
 
   @override
-  String get guideComposeLimit => 'Up to 8 words and 80 characters';
+  String get guideComposeLimit => 'No máximo 8 palavras e 80 carateres';
 
   @override
   String guideTableMatchSemantics(String name) {
-    return 'matches $name';
+    return 'corresponde a $name';
   }
 
   @override
   String guideLine(int n, int total) {
-    return 'Line $n of $total';
+    return 'Linha $n de $total';
   }
 
   @override
   String guideWordSelected(String word, int order) {
-    return '$word, selected, $order';
+    return '$word, selecionada, $order';
   }
 
   @override
   String guideWordUnavailable(String word) {
-    return '$word, unavailable';
+    return '$word, indisponível';
   }
 
   @override
   String guideWordUsedFor(String word, String field) {
     String _temp0 = intl.Intl.selectLogic(field, {
-      'denomination': 'appellation',
-      'producer': 'producer',
-      'other': 'name',
+      'denomination': 'na denominação',
+      'producer': 'no produtor',
+      'other': 'no nome',
     });
-    return '$word, used for the $_temp0';
+    return '$word, usada $_temp0';
   }
 
   @override
   String guideUsedMark(String field) {
     String _temp0 = intl.Intl.selectLogic(field, {
-      'denomination': 'appellation',
-      'producer': 'producer',
-      'other': 'name',
+      'denomination': 'denominação',
+      'producer': 'produtor',
+      'other': 'nome',
     });
     return '$_temp0';
   }
 
   @override
   String guideOtherYears(String years) {
-    return 'Also in the text: $years';
+    return 'Também no texto: $years';
   }
 
   @override
-  String get guideWheelFromText => 'year found in the text';
+  String get guideWheelFromText => 'ano encontrado no texto';
 
   @override
-  String get guideWheelTypeYear => 'Type the year';
+  String get guideWheelTypeYear => 'Escreva o ano';
 
   @override
   String guideWheelConfirm(String year) {
-    return 'Confirm $year';
+    return 'Confirmar $year';
   }
 
   @override
-  String get guideNoVintage => 'No vintage';
+  String get guideNoVintage => 'Sem colheita';
 
   @override
   String guideSkippedNotice(String field) {
     String _temp0 = intl.Intl.selectLogic(field, {
-      'denomination': 'Appellation skipped',
-      'producer': 'Producer skipped',
-      'vintage': 'Vintage skipped',
-      'other': 'Name skipped',
+      'denomination': 'Denominação ignorada',
+      'producer': 'Produtor ignorado',
+      'vintage': 'Colheita ignorada',
+      'other': 'Nome ignorado',
     });
-    return '$_temp0: type it or resume the guide';
+    return '$_temp0: escreva o dado ou retome o guia';
   }
 
   @override
   String guideSkippedMany(int count) {
-    return '$count fields skipped: type them or resume the guide';
+    return '$count campos ignorados: escreva-os ou retome o guia';
   }
 
   @override
   String get guideInvalidValue =>
-      'This text contains characters that cannot be saved';
+      'Este texto contém carateres que não podem ser guardados';
 
   @override
   String get brandStudio => 'Bottazzini Softworks';
 
   @override
-  String get suggestedMark => '✦ suggested';
+  String get suggestedMark => '✦ sugerido';
 
   @override
   String suggestedSemantics(String field, String value) {
-    return '$field, $value, suggested';
+    return '$field, $value, sugerido';
   }
 
   @override
-  String get restoreSuggestion => 'Restore suggestion';
+  String get restoreSuggestion => 'Repor sugestão';
 
   @override
-  String get restoreSuggestionDone => 'Suggestion restored';
+  String get restoreSuggestionDone => 'Sugestão reposta';
 
   @override
-  String get styleLabel => 'Style';
+  String get styleLabel => 'Estilo';
 
   @override
   String styleGroupSemantics(String value, int index, int count) {
-    return 'Style, $value, $index of $count';
+    return 'Estilo, $value, $index de $count';
   }
 
   @override
-  String get styleRedFresh => 'Fresh';
+  String get styleRedFresh => 'Fresco';
 
   @override
-  String get styleRedMedium => 'Medium';
+  String get styleRedMedium => 'Médio';
 
   @override
-  String get styleRedAge => 'For ageing';
+  String get styleRedAge => 'De guarda';
 
   @override
-  String get styleRedLong => 'Long ageing';
+  String get styleRedLong => 'Longa guarda';
 
   @override
-  String get styleWhiteFresh => 'Fresh';
+  String get styleWhiteFresh => 'Fresco';
 
   @override
-  String get styleWhiteMedium => 'Medium';
+  String get styleWhiteMedium => 'Médio';
 
   @override
-  String get styleWhiteAge => 'For ageing';
+  String get styleWhiteAge => 'De guarda';
 
   @override
-  String get styleRoseFresh => 'Fresh';
+  String get styleRoseFresh => 'Fresco';
 
   @override
-  String get styleClassicFresh => 'Fresh';
+  String get styleClassicFresh => 'Fresco';
 
   @override
-  String get styleClassicAge => 'For ageing';
+  String get styleClassicAge => 'De guarda';
 
   @override
-  String get styleTankFresh => 'Fresh';
+  String get styleTankFresh => 'Fresco';
 
   @override
   String get styleLambrusco => 'Lambrusco';
 
   @override
-  String get styleSweetAromatic => 'Aromatic';
+  String get styleSweetAromatic => 'Aromático';
 
   @override
-  String get styleSweetPassito => 'Dried-grape';
+  String get styleSweetPassito => 'Uvas passas';
 
   @override
-  String get styleSweetBotrytis => 'Botrytised';
+  String get styleSweetBotrytis => 'Botritizado';
 
   @override
-  String get stylePortVintage => 'Vintage Port';
+  String get stylePortVintage => 'Porto Vintage';
 
   @override
-  String get stylePortLbv => 'LBV/Ruby Port';
+  String get stylePortLbv => 'Porto LBV/Ruby';
 
   @override
-  String get stylePortTawny => 'Tawny/Colheita Port';
+  String get stylePortTawny => 'Porto Tawny/Colheita';
 
   @override
   String get styleSherryFino => 'Fino/Manzanilla';
@@ -2069,62 +2102,61 @@ class AppLocalizationsPt extends AppLocalizations {
   String get styleMadeira => 'Madeira';
 
   @override
-  String get styleFortifiedOther => 'Other';
+  String get styleFortifiedOther => 'Outro';
 
   @override
-  String get profileNameRFresh => 'Fruit-forward red';
+  String get profileNameRFresh => 'Tinto frutado';
 
   @override
-  String get profileNameRMedium => 'Medium-bodied red';
+  String get profileNameRMedium => 'Tinto de corpo médio';
 
   @override
-  String get profileNameRAge => 'Red for ageing';
+  String get profileNameRAge => 'Tinto de guarda';
 
   @override
-  String get profileNameRLong => 'Long-ageing red';
+  String get profileNameRLong => 'Tinto de longa guarda';
 
   @override
-  String get profileNameWFresh => 'Fresh aromatic white';
+  String get profileNameWFresh => 'Branco fresco e aromático';
 
   @override
-  String get profileNameWMedium => 'Medium-bodied white';
+  String get profileNameWMedium => 'Branco de corpo médio';
 
   @override
-  String get profileNameWAge => 'White for ageing';
+  String get profileNameWAge => 'Branco de guarda';
 
   @override
-  String get profileNameRoseFresh => 'Fresh rosé';
+  String get profileNameRoseFresh => 'Rosé fresco';
 
   @override
-  String get profileNameSpTank => 'Fresh tank-method sparkling';
+  String get profileNameSpTank => 'Espumante Charmat fresco';
 
   @override
-  String get profileNameLamFresh => 'Fresh Lambrusco';
+  String get profileNameLamFresh => 'Lambrusco fresco';
 
   @override
-  String get profileNameSpClassic => 'Fresh traditional-method sparkling';
+  String get profileNameSpClassic => 'Método clássico fresco';
 
   @override
-  String get profileNameSpClassicAge =>
-      'Traditional-method sparkling for ageing';
+  String get profileNameSpClassicAge => 'Método clássico de guarda';
 
   @override
-  String get profileNameSwAromatic => 'Young aromatic sweet wine';
+  String get profileNameSwAromatic => 'Doce aromático jovem';
 
   @override
-  String get profileNameSwPassito => 'Dried-grape sweet wine';
+  String get profileNameSwPassito => 'Doce de uvas passas';
 
   @override
-  String get profileNameSwBotrytis => 'Botrytised sweet wine';
+  String get profileNameSwBotrytis => 'Doce botritizado';
 
   @override
-  String get profileNamePortVintage => 'Vintage Port';
+  String get profileNamePortVintage => 'Porto Vintage';
 
   @override
-  String get profileNamePortLbv => 'LBV/Ruby Port';
+  String get profileNamePortLbv => 'Porto LBV/Ruby';
 
   @override
-  String get profileNamePortOx => 'Tawny/Colheita Port';
+  String get profileNamePortOx => 'Porto Tawny/Colheita';
 
   @override
   String get profileNameShFino => 'Fino/Manzanilla';
@@ -2136,316 +2168,318 @@ class AppLocalizationsPt extends AppLocalizations {
   String get profileNameShOloroso => 'Oloroso/Cream';
 
   @override
-  String get profileNameShPx => 'Pedro Ximénez Sherry';
+  String get profileNameShPx => 'Xerez Pedro Ximénez';
 
   @override
-  String get profileNameFortUnknown => 'Fortified, style unknown';
+  String get profileNameFortUnknown => 'Fortificado, estilo desconhecido';
 
   @override
-  String get profileNameUnknown => 'Style not identified';
+  String get profileNameUnknown => 'Estilo não identificado';
 
   @override
   String estimateFromProfile(String profile, String denomination) {
-    return 'Estimate from the $profile profile ($denomination)';
+    return 'Estimativa pelo perfil $profile ($denomination)';
   }
 
   @override
   String estimateFromProfileType(String profile) {
-    return 'Estimate from the $profile profile, by type';
+    return 'Estimativa pelo perfil $profile, segundo o tipo';
   }
 
   @override
   String estimateFromProfileGrape(String profile, String grape) {
-    return 'Estimate from the $profile profile, by the grape $grape';
+    return 'Estimativa pelo perfil $profile, segundo a casta $grape';
   }
 
   @override
   String get estimateFromEntryDateDisgorgement =>
-      'From the date added: add the disgorgement date for a better estimate';
+      'Pela data de registo: adicione a data de dégorgement para uma estimativa melhor';
 
   @override
   String get estimateFromEntryDateBottling =>
-      'From the date added: add the bottling date for a better estimate';
+      'Pela data de registo: adicione a data de engarrafamento para uma estimativa melhor';
 
   @override
   String get styleToConfirmBanner =>
-      '⚠︎ Style to confirm: the estimate is indicative';
+      '⚠︎ Estilo por confirmar: a estimativa é indicativa';
 
   @override
-  String get chooseTypePrompt => 'Choose the type';
+  String get chooseTypePrompt => 'Escolha o tipo';
 
   @override
   String estimateUpdatedAnnouncement(String summary) {
-    return 'Estimate updated: $summary';
+    return 'Estimativa atualizada: $summary';
   }
 
   @override
-  String get agingStartDisgorgement => 'Disgorgement';
+  String get agingStartDisgorgement => 'Dégorgement';
 
   @override
-  String get agingStartBottling => 'Bottling';
+  String get agingStartBottling => 'Engarrafamento';
 
   @override
-  String get agingStartMonth => 'Month';
+  String get agingStartMonth => 'Mês';
 
   @override
-  String get agingStartYear => 'Year';
+  String get agingStartYear => 'Ano';
 
   @override
-  String get agingStartHint => 'It is usually on the back label.';
+  String get agingStartHint => 'Costuma estar no contrarrótulo.';
 
   @override
-  String get agingStartIncomplete => 'Enter month and year';
+  String get agingStartIncomplete => 'Indique o mês e o ano';
 
   @override
-  String get agingStartFuture => 'The date cannot be in the future';
+  String get agingStartFuture => 'A data não pode ser futura';
 
   @override
-  String get agingStartBeforeVintage => 'It cannot be before the vintage';
+  String get agingStartBeforeVintage => 'Não pode ser anterior à colheita';
 
   @override
-  String get windowNoEnd => 'Ready, no end estimated';
+  String get windowNoEnd => 'Pronto, sem fim estimado';
 
   @override
-  String get windowNoEndShort => 'no end estimated';
+  String get windowNoEndShort => 'sem fim estimado';
 
   @override
   String windowDrinkWithin(String date) {
-    return 'by $date';
+    return 'até $date';
   }
 
   @override
-  String get levelNoEffect => 'The level does not change this estimate';
+  String get levelNoEffect => 'O nível não altera esta estimativa';
 
   @override
-  String get dashboardToConfirmTitle => 'To confirm';
+  String get dashboardToConfirmTitle => 'Por confirmar';
 
   @override
   String dashboardToConfirmCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count wines',
-      one: '1 wine',
+      other: '$count vinhos',
+      one: '1 vinho',
+      zero: '$count vinhos',
     );
     return '$_temp0';
   }
 
   @override
   String aboutDbClassified(String percent) {
-    return '$percent% of the wines with a recognised type';
+    return '$percent% dos vinhos com tipo reconhecido';
   }
 
   @override
-  String get planTitle => 'Plan';
+  String get planTitle => 'Plano';
 
   @override
-  String get planFree => 'Free';
+  String get planFree => 'Gratuito';
 
   @override
   String get planPlus => 'Plus';
 
   @override
-  String get planPlusGift => 'Plus (gift)';
+  String get planPlusGift => 'Plus (oferta)';
 
   @override
-  String get planDevUnlockAll => 'DEV · Test Plus';
+  String get planDevUnlockAll => 'DEV · Plus de teste';
 
   @override
-  String get planDevSimulateFree => 'DEV · Simulated free plan';
+  String get planDevSimulateFree => 'DEV · Plano gratuito simulado';
 
   @override
-  String get planDevSimulateExpired => 'DEV · Simulated expired Plus';
+  String get planDevSimulateExpired => 'DEV · Plus expirado simulado';
 
   @override
-  String get planDiscoverPlus => 'Discover Plus';
+  String get planDiscoverPlus => 'Descobrir o Plus';
 
   @override
   String get plusTitle => 'Vinoozy Plus';
 
   @override
-  String get plusBenefitsTitle => 'With Plus';
+  String get plusBenefitsTitle => 'Com o Plus';
 
   @override
-  String get plusBenefitNoAds => 'No ads';
+  String get plusBenefitNoAds => 'Sem anúncios';
 
   @override
-  String get plusBenefitNoLimit => 'No limit on the wines in your cellar';
+  String get plusBenefitNoLimit => 'Sem limite de vinhos na sua garrafeira';
 
   @override
-  String get plusComingSoon => 'Plus is coming soon';
+  String get plusComingSoon => 'O Plus chega em breve';
 
   @override
-  String get plusLoading => 'Reading the prices from Google Play';
+  String get plusLoading => 'A ler os preços no Google Play';
 
   @override
   String get plusStoreUnavailable =>
-      'Could not read the prices from Google Play. Try again later.';
+      'Não foi possível ler os preços no Google Play. Tente novamente mais tarde.';
 
   @override
   String plusPriceMonthly(String price) {
-    return '$price per month';
+    return '$price por mês';
   }
 
   @override
   String plusPriceAnnual(String price) {
-    return '$price per year';
+    return '$price por ano';
   }
 
   @override
   String get plusRenewal =>
-      'The subscription renews automatically at the price shown until you cancel it on Google Play.';
+      'A subscrição é renovada automaticamente ao preço indicado até a cancelar no Google Play.';
 
   @override
   String get plusTerms =>
-      'Payment is charged to your Google Play account when you confirm the purchase. You can cancel at any time: Plus stays active until the end of the period already paid. When Plus ends, all your wines stay.';
+      'O pagamento é debitado na sua conta do Google Play quando confirma a compra. Pode cancelar em qualquer altura: o Plus mantém-se ativo até ao fim do período já pago. Quando o Plus termina, todos os seus vinhos se mantêm.';
 
   @override
-  String get plusRestore => 'Restore purchases';
+  String get plusRestore => 'Restaurar compras';
 
   @override
-  String get plusManage => 'Manage or cancel the subscription on Google Play';
+  String get plusManage => 'Gerir ou cancelar a subscrição no Google Play';
 
   @override
-  String get plusActive => 'Plus is active on this account';
+  String get plusActive => 'O Plus está ativo nesta conta';
 
   @override
   String get plusActiveGift =>
-      'You have Plus as a gift: no charges and no renewals.';
+      'Tem o Plus como oferta: sem débitos e sem renovações.';
 
   @override
   String get plusPending =>
-      'Payment pending: Plus will be active when Google Play confirms it.';
+      'Pagamento pendente: o Plus fica ativo quando o Google Play o confirmar.';
 
   @override
-  String get plusVerifying => 'Verifying the purchase';
+  String get plusVerifying => 'A verificar a compra';
 
   @override
   String get plusVerified =>
-      'Purchase verified: Plus will be active in a few seconds.';
+      'Compra verificada: o Plus fica ativo dentro de alguns segundos.';
 
   @override
-  String get plusPurchaseFailed => 'The purchase was not completed. Try again.';
+  String get plusPurchaseFailed =>
+      'A compra não foi concluída. Tente novamente.';
 
   @override
   String get plusInvalidPurchase =>
-      'Google Play did not confirm this purchase for Vinoozy.';
+      'O Google Play não confirmou esta compra para o Vinoozy.';
 
   @override
   String get plusOwnedByOther =>
-      'This subscription already belongs to another Vinoozy account.';
+      'Esta subscrição já pertence a outra conta do Vinoozy.';
 
   @override
   String get plusVerificationUnavailable =>
-      'The purchase could not be verified now. Try again later: the subscription stays on Google Play.';
+      'Não foi possível verificar a compra agora. Tente novamente mais tarde: a subscrição mantém-se no Google Play.';
 
   @override
-  String get capacityLimitTitle => 'You reached the limit of the free plan';
+  String get capacityLimitTitle => 'Atingiu o limite do plano gratuito';
 
   @override
   String capacityLimitBody(int limit) {
-    return 'The free plan includes up to $limit different wines in your cellar. You can always edit, drink and add bottles to the wines you already have. To add a new one, finish or delete a wine, or switch to Plus.';
+    return 'O plano gratuito inclui até $limit vinhos diferentes na sua garrafeira. Pode sempre editar, beber e adicionar garrafas aos vinhos que já tem. Para adicionar um novo, termine ou elimine um vinho, ou mude para o Plus.';
   }
 
   @override
   String capacityLimitBodyComingSoon(int limit) {
-    return 'The free plan includes up to $limit different wines in your cellar. You can always edit, drink and add bottles to the wines you already have. To add a new one, finish or delete a wine. Plus is coming soon.';
+    return 'O plano gratuito inclui até $limit vinhos diferentes na sua garrafeira. Pode sempre editar, beber e adicionar garrafas aos vinhos que já tem. Para adicionar um novo, termine ou elimine um vinho. O Plus chega em breve.';
   }
 
   @override
   String get rejectedCapacityLimit =>
-      'Not synced: it goes over the wine limit of the free plan. The change stays on this phone.';
+      'Não sincronizado: ultrapassa o limite de vinhos do plano gratuito. A alteração fica neste telemóvel.';
 
   @override
   String get rejectedCapacityConflict =>
-      'Not synced: the cellar changed on another device at the same time. The change stays on this phone: try again.';
+      'Não sincronizado: a garrafeira mudou noutro dispositivo ao mesmo tempo. A alteração fica neste telemóvel: tente novamente.';
 
   @override
   String writeRejectedCapacityLimit(String name) {
-    return '$name: not synced, over the limit of the free plan';
+    return '$name: não sincronizado, ultrapassa o limite do plano gratuito';
   }
 
   @override
   String writeRejectedCapacityConflict(String name) {
-    return '$name: not synced, the cellar changed on another device';
+    return '$name: não sincronizado, a garrafeira mudou noutro dispositivo';
   }
 
   @override
-  String get freeIntroTitle => 'The free plan';
+  String get freeIntroTitle => 'O plano gratuito';
 
   @override
   String freeIntroLimit(int limit) {
-    return 'You can manage up to $limit different wines for free.';
+    return 'Pode gerir gratuitamente até $limit vinhos diferentes.';
   }
 
   @override
   String get freeIntroAds =>
-      'Light use is ad-free. If you go over the monthly usage threshold of the service, you may see occasional ads that help cover the costs of servers and sync.';
+      'A utilização ligeira não tem anúncios. Se ultrapassar o limiar mensal de utilização do serviço, poderá ver anúncios ocasionais que ajudam a cobrir os custos dos servidores e da sincronização.';
 
   @override
-  String get freeIntroNoAds => 'No ads in the launch version.';
+  String get freeIntroNoAds => 'Sem anúncios na versão de lançamento.';
 
   @override
   String get freeIntroPlus =>
-      'With Plus you remove the ads and the cellar limit.';
+      'Com o Plus, remove os anúncios e o limite da garrafeira.';
 
   @override
-  String get noticeGotIt => 'Got it';
+  String get noticeGotIt => 'Percebi';
 
   @override
-  String get thresholdTitle => 'Ads help keep Vinoozy free';
+  String get thresholdTitle => 'Os anúncios ajudam a manter o Vinoozy gratuito';
 
   @override
   String get thresholdBody =>
-      'You reached the monthly ad-free usage threshold. From now on you may see occasional ads: they help us cover the costs of servers and sync, keeping Vinoozy free.';
+      'Atingiu o limiar mensal de utilização sem anúncios. A partir de agora, poderá ver anúncios ocasionais: ajudam-nos a cobrir os custos dos servidores e da sincronização, mantendo o Vinoozy gratuito.';
 
   @override
   String get thresholdReset =>
-      'The count starts again next month. With Plus you can use the app without ads and without the cellar limit.';
+      'A contagem recomeça no próximo mês. Com o Plus, pode usar a app sem anúncios e sem o limite da garrafeira.';
 
   @override
   String thresholdNextReset(String date) {
-    return 'Next reset: $date';
+    return 'Próxima reposição: $date';
   }
 
   @override
-  String get thresholdHowItWorks => 'How it works';
+  String get thresholdHowItWorks => 'Como funciona';
 
   @override
   String get thresholdHowItWorksBody =>
-      'The threshold depends on an estimate of the syncs with the cloud made by this account during the month. Offline use alone does not create new cloud operations. Ads appear at most once a day, only on the Dashboard, and never while you save or export your data.';
+      'O limiar depende de uma estimativa das sincronizações com a nuvem feitas por esta conta durante o mês. A utilização offline, por si só, não gera novas operações na nuvem. Os anúncios aparecem, no máximo, uma vez por dia, apenas no Painel, e nunca enquanto guarda ou exporta os seus dados.';
 
   @override
-  String get adLabel => 'Advertisement';
+  String get adLabel => 'Publicidade';
 
   @override
-  String get devToolsTitle => 'Developer tools';
+  String get devToolsTitle => 'Ferramentas de programador';
 
   @override
-  String get devUnlockAll => 'Unlock everything — test Plus';
+  String get devUnlockAll => 'Desbloquear tudo — Plus de teste';
 
   @override
-  String get devSimulateFree => 'Simulate free plan';
+  String get devSimulateFree => 'Simular plano gratuito';
 
   @override
-  String get devSimulateExpired => 'Simulate expired Plus';
+  String get devSimulateExpired => 'Simular Plus expirado';
 
   @override
-  String get devRestore => 'Restore normal state';
+  String get devRestore => 'Repor estado normal';
 
   @override
-  String get devNoOverride => 'No simulation active';
+  String get devNoOverride => 'Nenhuma simulação ativa';
 
   @override
-  String get devApplied => 'Scenario applied in the Firestore emulator too';
+  String get devApplied => 'Cenário aplicado também no emulador do Firestore';
 
   @override
   String get devIncomplete =>
-      'Incomplete simulation: the Firestore emulator did not confirm the test entitlement. The server rules do not see this scenario.';
+      'Simulação incompleta: o emulador do Firestore não confirmou o direito de teste. As regras do servidor não veem este cenário.';
 
   @override
   String get devNotice =>
-      'Development builds with the emulator only: no payments, tokens or receipts.';
+      'Apenas compilações de desenvolvimento com o emulador: sem pagamentos, tokens ou recibos.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -2506,6 +2540,8 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
           '$count vinhos de $email ainda não estão na nuvem e serão excluídos deste telefone.',
       one:
           '1 vinho de $email ainda não está na nuvem e será excluído deste telefone.',
+      zero:
+          '$count vinhos de $email ainda não estão na nuvem e serão excluídos deste telefone.',
     );
     return '$_temp0';
   }
@@ -2556,6 +2592,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       locale: localeName,
       other: '$count garrafas',
       one: '1 garrafa',
+      zero: '$count garrafas',
     );
     return '$_temp0';
   }
@@ -2630,6 +2667,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       locale: localeName,
       other: '$count garrafas na adega',
       one: '1 garrafa na adega',
+      zero: '$count garrafas na adega',
     );
     return '$_temp0';
   }
@@ -2678,6 +2716,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       locale: localeName,
       other: '$count garrafas a estimar',
       one: '1 garrafa a estimar',
+      zero: '$count garrafas a estimar',
     );
     return '$_temp0';
   }
@@ -2689,6 +2728,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       locale: localeName,
       other: '$count garrafas',
       one: '1 garrafa',
+      zero: '$count garrafas',
     );
     return '$label: $_temp0';
   }
@@ -3248,6 +3288,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       locale: localeName,
       other: 'Adicionar $count garrafas',
       one: 'Adicionar 1 garrafa',
+      zero: 'Adicionar $count garrafas',
     );
     return '$_temp0';
   }
@@ -3457,6 +3498,8 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       other:
           'Você tem $count alterações ainda não salvas. Se sair e outra conta entrar, elas serão perdidas.',
       one: 'Você tem 1 alteração ainda não salva. Se sair e outra conta entrar, ela será perdida.',
+      zero:
+          'Você tem $count alterações ainda não salvas. Se sair e outra conta entrar, elas serão perdidas.',
     );
     return '$_temp0';
   }
@@ -3477,6 +3520,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       locale: localeName,
       other: 'Ainda $count alterações para salvar: verifique a internet',
       one: 'Ainda 1 alteração para salvar: verifique a internet',
+      zero: 'Ainda $count alterações para salvar: verifique a internet',
     );
     return '$_temp0';
   }
@@ -3513,6 +3557,8 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       other:
           'Você tem $count alterações ainda não salvas: elas serão salvas e depois excluídas com o resto',
       one: 'Você tem 1 alteração ainda não salva: ela será salva e depois excluída com o resto',
+      zero:
+          'Você tem $count alterações ainda não salvas: elas serão salvas e depois excluídas com o resto',
     );
     return '$_temp0';
   }
@@ -3582,6 +3628,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       locale: localeName,
       other: '$count vinhos e degustações excluídos',
       one: '1 vinho ou degustação excluído',
+      zero: '$count vinhos e degustações excluídos',
     );
     return '$_temp0';
   }
@@ -3678,6 +3725,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       locale: localeName,
       other: '$count estrelas de 5',
       one: '1 estrela de 5',
+      zero: '$count estrelas de 5',
     );
     return '$_temp0';
   }
@@ -3737,6 +3785,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       locale: localeName,
       other: '$count para beber agora',
       one: '1 para beber agora',
+      zero: '$count para beber agora',
     );
     return '$_temp0';
   }
@@ -3836,6 +3885,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       locale: localeName,
       other: '$count vinhos parecidos',
       one: '1 vinho parecido',
+      zero: '$count vinhos parecidos',
     );
     return '$_temp0';
   }
@@ -3913,6 +3963,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       locale: localeName,
       other: '$count resultados',
       one: '1 resultado',
+      zero: '$count resultados',
     );
     return '$_temp0';
   }
@@ -3950,6 +4001,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       locale: localeName,
       other: '$count vinhos',
       one: '1 vinho',
+      zero: '$count vinhos',
     );
     return '$_temp0';
   }
@@ -4677,6 +4729,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       locale: localeName,
       other: '$count vinhos',
       one: '1 vinho',
+      zero: '$count vinhos',
     );
     return '$_temp0';
   }

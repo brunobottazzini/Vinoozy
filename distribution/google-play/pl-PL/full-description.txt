@@ -1,0 +1,27 @@
+Twoja piwniczka z winem, zawsze pod ręką.
+
+Vinoozy pomaga uporządkować butelki, które masz, i sprawdzić szacunki tego, jak mogą się rozwijać: początek, szczyt i orientacyjny koniec ich okna picia.
+
+DODAWAJ WINA
+Wpisuj dane ręcznie, odczytaj etykietę aparatem, użyj kodu kreskowego lub zaimportuj tekst z Google Lens. Przed zapisaniem zawsze sprawdź podpowiedziane dane.
+
+MIEJ PORZĄDEK W PIWNICZCE
+Zarządzaj ilościami, rocznikami i cechami win. Przeglądaj Pulpit, filtruj wina i przechowuj oceny oraz notatki w Historii. Znajdź propozycje łączenia z potrawami.
+
+DZIAŁAJ OFFLINE
+Przeglądaj i aktualizuj dane dostępne w telefonie. Zmiany synchronizują się, gdy wróci połączenie. Pierwsze logowanie przez Google wymaga internetu; niektóre wyszukiwania również wymagają połączenia.
+
+UDOSTĘPNIAJ WYBRANYM OSOBOM
+Zaproś osoby do swojej piwniczki i zdecyduj, czy mogą ją tylko oglądać, czy także wprowadzać zmiany.
+
+ODCZYTUJ ETYKIETY W TELEFONIE
+Rozpoznawanie tekstu działa na Twoim urządzeniu. Wyszukiwanie online może wysyłać słowa i kody kreskowe do Open Food Facts. Otwarcie zdjęcia w Google Lens wymaga Twojego potwierdzenia.
+
+Okna picia to orientacyjne szacunki. Przechowywanie, styl i stan każdej butelki mogą zmienić wynik. Szacunki nie są gwarancją jakości ani zachętą do spożywania alkoholu.
+
+Vinoozy jest przeznaczone dla osób dorosłych. Nie sprzedaje napojów alkoholowych.
+
+Interfejs dostępny w 25 językach, w tym po polsku.
+
+Dane katalogowe z Open Food Facts na licencjach ODbL 1.0 i DbCL 1.0. Pochodna baza danych i informacje o autorstwie: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Apelacje z rejestru eAmbrosia i rejestrów krajowych wymienionych w dokumentacji danych. Szacunki opracowuje Vinoozy.

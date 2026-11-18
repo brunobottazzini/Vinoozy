@@ -1,0 +1,27 @@
+Je wijnkelder, altijd bij de hand.
+
+Vinoozy helpt je de flessen die je hebt te ordenen en schattingen te bekijken van hoe ze zich kunnen ontwikkelen: het begin, het hoogtepunt en het indicatieve einde van hun drinkvenster.
+
+VOEG JE WIJNEN TOE
+Voer de gegevens handmatig in, lees een etiket met je camera, gebruik een streepjescode of neem tekst over uit Google Lens. Controleer voorgestelde gegevens altijd voordat je opslaat.
+
+HOUD JE KELDER OP ORDE
+Beheer aantallen, jaargangen en eigenschappen van je wijnen. Bekijk het Overzicht, filter je wijnen en bewaar beoordelingen en notities in de Geschiedenis. Vind suggesties voor wijn-spijscombinaties.
+
+WERK OFFLINE
+Bekijk en wijzig de gegevens die op je telefoon staan. Wijzigingen worden gesynchroniseerd zodra je weer verbinding hebt. Voor de eerste keer inloggen met Google is internet nodig; ook sommige zoekopdrachten vragen een verbinding.
+
+DEEL MET WIE JIJ KIEST
+Nodig mensen uit in je kelder en kies of ze alleen mogen meekijken of ook wijzigingen mogen maken.
+
+LEES ETIKETTEN OP JE TELEFOON
+Tekstherkenning gebeurt op je toestel. Online zoekopdrachten kunnen woorden en streepjescodes naar Open Food Facts sturen. Een foto openen in Google Lens vraagt altijd je bevestiging.
+
+Drinkvensters zijn indicatieve schattingen. Bewaring, stijl en de staat van elke fles kunnen het resultaat veranderen. Schattingen zijn geen kwaliteitsgarantie en geen uitnodiging om alcohol te drinken.
+
+Vinoozy is bedoeld voor volwassenen. De app verkoopt geen alcoholische dranken.
+
+Interface beschikbaar in 25 talen, waaronder het Nederlands.
+
+Catalogusgegevens van Open Food Facts onder ODbL 1.0 en DbCL 1.0. Afgeleide database en naamsvermelding: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Appellaties uit eAmbrosia en de nationale registers die in de datadocumentatie staan. De schattingen worden gemaakt door Vinoozy.

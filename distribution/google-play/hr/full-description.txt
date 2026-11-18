@@ -1,0 +1,27 @@
+Vaš vinski podrum, uvijek pri ruci.
+
+Vinoozy vam pomaže organizirati boce koje imate i istražiti procjene njihova mogućeg razvoja: početak, vrhunac i okvirni kraj njihova prozora pitkosti.
+
+DODAJTE SVOJA VINA
+Unesite podatke ručno, pročitajte etiketu kamerom, upotrijebite crtični kod ili uvezite tekst iz aplikacije Google Lens. Prije spremanja uvijek provjerite predložene podatke.
+
+ODRŽAVAJTE RED U PODRUMU
+Upravljajte količinama, berbama i značajkama vina. Istražite Pregled, filtrirajte vina i čuvajte ocjene i bilješke u Povijesti. Pronađite prijedloge za sljubljivanje s hranom.
+
+RADITE IZVAN MREŽE
+Pregledavajte i ažurirajte podatke dostupne na telefonu. Promjene se sinkroniziraju kad se veza vrati. Prva prijava Google računom zahtijeva internet; i neke pretrage zahtijevaju vezu.
+
+DIJELITE S OSOBAMA KOJE ODABERETE
+Pozovite osobe u svoj podrum i odaberite mogu li ga samo pregledavati ili i unositi promjene.
+
+ČITAJTE ETIKETE NA TELEFONU
+Prepoznavanje teksta odvija se na vašem uređaju. Pretrage na internetu mogu slati riječi i crtične kodove servisu Open Food Facts. Otvaranje fotografije u aplikaciji Google Lens zahtijeva vašu potvrdu.
+
+Prozori pitkosti okvirne su procjene. Čuvanje, stil i stanje svake boce mogu promijeniti rezultat. Procjene nisu jamstvo kvalitete ni poziv na konzumaciju alkohola.
+
+Vinoozy je namijenjen odraslima. Ne prodaje alkoholna pića.
+
+Sučelje je dostupno na 25 jezika, uključujući hrvatski.
+
+Kataloški podaci iz Open Food Facts pod licencama ODbL 1.0 i DbCL 1.0. Izvedena baza i navođenje izvora: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Apelacije iz registra eAmbrosia i nacionalnih registara navedenih u dokumentaciji podataka. Procjene izrađuje Vinoozy.

@@ -1,0 +1,27 @@
+A sua garrafeira, sempre à mão.
+
+O Vinoozy ajuda a organizar as garrafas que tem e a consultar estimativas da sua evolução: início, apogeu e fim indicativo da janela de consumo.
+
+ADICIONE OS SEUS VINHOS
+Introduza os dados manualmente, leia um rótulo com a câmara, use um código de barras ou importe texto do Google Lens. Verifique sempre os dados sugeridos antes de guardar.
+
+MANTENHA A GARRAFEIRA ORGANIZADA
+Faça a gestão de quantidades, colheitas e características dos vinhos. Consulte o Painel, filtre os seus vinhos e guarde classificações e notas no Histórico. Encontre sugestões de harmonização.
+
+USE-A SEM LIGAÇÃO
+Consulte e atualize os dados disponíveis no telemóvel. As alterações são sincronizadas quando a ligação voltar. O primeiro início de sessão com o Google requer Internet; algumas pesquisas também precisam de ligação.
+
+PARTILHE COM QUEM ESCOLHER
+Convide outras pessoas para a sua garrafeira e escolha se podem apenas consultá-la ou também fazer alterações.
+
+LEIA OS RÓTULOS NO TELEMÓVEL
+O reconhecimento de texto é feito no seu dispositivo. As pesquisas online podem enviar palavras e códigos de barras para o Open Food Facts. Abrir uma foto no Google Lens requer a sua confirmação.
+
+As janelas de consumo são estimativas indicativas. A conservação, o estilo e o estado de cada garrafa podem alterar o resultado. As estimativas não são uma garantia de qualidade nem um convite ao consumo de álcool.
+
+O Vinoozy destina-se a pessoas adultas. Não vende bebidas alcoólicas.
+
+Interface disponível em 25 idiomas, incluindo o português europeu.
+
+Dados do catálogo do Open Food Facts, ao abrigo das licenças ODbL 1.0 e DbCL 1.0. Base de dados derivada e atribuição: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Denominações do eAmbrosia e dos registos nacionais indicados na documentação dos dados. As estimativas são elaboradas pelo Vinoozy.

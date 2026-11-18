@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The 25 interface languages, declared to Android so that from Android 13
+     the language of Vinoozy can be chosen in the system settings of the app
+     (wine-culture-languages FR2.2). The list must equal appLocales in
+     lib/app/locale_resolution.dart, the single source of the language set,
+     through androidLocaleTagOf: test/app/language_consistency_test.dart
+     fails when they differ.
+     Names are BCP 47 tags (language, optional script, optional region,
+     separated by "-"), not resource qualifiers such as b+sr+Cyrl. A bare "pt"
+     is expanded by Android to pt-BR and merged with it, so European
+     Portuguese is "pt-PT"; Serbian carries its script, "sr-Cyrl". -->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en"/>
+    <locale android:name="it"/>
+    <locale android:name="pt-BR"/>
+    <locale android:name="pt-PT"/>
+    <locale android:name="fr"/>
+    <locale android:name="es"/>
+    <locale android:name="de"/>
+    <locale android:name="ca"/>
+    <locale android:name="el"/>
+    <locale android:name="ro"/>
+    <locale android:name="hu"/>
+    <locale android:name="hr"/>
+    <locale android:name="sl"/>
+    <locale android:name="cs"/>
+    <locale android:name="sk"/>
+    <locale android:name="bg"/>
+    <locale android:name="sr-Cyrl"/>
+    <locale android:name="ka"/>
+    <locale android:name="nl"/>
+    <locale android:name="pl"/>
+    <locale android:name="uk"/>
+    <locale android:name="da"/>
+    <locale android:name="sv"/>
+    <locale android:name="nb"/>
+    <locale android:name="fi"/>
+</locale-config>

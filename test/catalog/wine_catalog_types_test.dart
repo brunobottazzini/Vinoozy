@@ -99,7 +99,8 @@ void main() {
       expect(CatalogLocale.fromLanguageTag('pt-BR'), CatalogLocale.ptBR);
       expect(CatalogLocale.fromLanguageTag('pt_BR'), CatalogLocale.ptBR);
       expect(CatalogLocale.fromLanguageTag('EN'), CatalogLocale.en);
-      expect(CatalogLocale.fromLanguageTag('fr'), CatalogLocale.en);
+      expect(CatalogLocale.fromLanguageTag('fr').offLanguage, 'fr');
+      expect(CatalogLocale.fromLanguageTag(''), CatalogLocale.en);
       expect(CatalogLocale.ptBR.offLanguage, 'pt');
     });
   });

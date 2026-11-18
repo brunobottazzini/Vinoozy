@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../account/app_user.dart';
 import '../../ads/ad_eligibility.dart';
+import '../../app/locale_resolution.dart';
 import '../../l10n/app_localizations.dart';
 import '../../usage/usage_providers.dart';
 import '../plan_notices.dart';
@@ -155,7 +156,7 @@ class ThresholdNoticeCard extends StatelessWidget {
 
   /// [instant] in the phone's time zone, with date and time.
   static String formatReset(DateTime instant, Locale locale) =>
-      DateFormat.yMMMMd(locale.toLanguageTag())
+      DateFormat.yMMMMd(intlLocaleNameOf(locale))
           .add_Hm()
           .format(instant.toLocal());
 

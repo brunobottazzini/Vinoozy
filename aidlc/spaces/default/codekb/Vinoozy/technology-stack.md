@@ -1,84 +1,101 @@
-# Stack tecnologico
+# Technology Stack
 
-## Linguaggi e runtime
+Le versioni dell'app sono i vincoli di `pubspec.yaml` (il lockfile `pubspec.lock` è versionato); quelle Node sono fissate esatte nei rispettivi `package.json`.
 
-| Elemento | Versione | Fonte |
+## Languages
+
+| Linguaggio | Dove | Versione |
 |---|---|---|
-| Dart SDK | `^3.13.7` (lock: `>=3.13.7 <4.0.0`) | `pubspec.yaml`, `pubspec.lock` |
-| Flutter | 3.47.9 (canale stable; lock `>=3.47.0`) | `.flutter-version` |
-| Kotlin / Java | JVM target 17 | `android/app/build.gradle.kts` |
-| Android | `minSdk 24`, `compileSdk`/`targetSdk` da Flutter, `applicationId com.vinoozy.app` | `android/app/build.gradle.kts` |
-| Node.js | 22 (`engines >=22`) | `.nvmrc`, `package.json` |
-| Python | 3, solo `tool/convert_study.py` (strumento una tantum) | `tool/` |
+| Dart | `lib/`, `packages/estimation/`, `test/`, `tool/*.dart`, `benchmark/` | SDK `^3.13.7` |
+| Kotlin | `android/app/src/` | Dal plugin Gradle di Flutter |
+| TypeScript | `functions/` | 5.9.3, `tsc` strict |
+| JavaScript (ESM) | `tool/*.mjs`, `tool/admin/`, `test/rules/`, `test/admin/`, `test/web/`, `docs/account-deletion/` | Node 22 (`.nvmrc`) |
+| Bash | `tool/*.sh` | — |
+| Python | `tool/convert_study.py` | Script occasionale |
+| HTML/CSS | `docs/privacy/`, `docs/account-deletion/` | — |
 
-## Dipendenze dell'app (`pubspec.yaml`, versioni bloccate in `pubspec.lock`)
+## Frameworks and Runtime
 
-| Pacchetto | Versione | Uso |
+| Tecnologia | Versione | Uso |
 |---|---|---|
-| flutter_riverpod | 3.4.3 | Stato e DI |
-| cloud_firestore | 7.1.0 | Dati offline-first |
-| firebase_core | 5.1.0 | Inizializzazione |
-| firebase_auth | 7.0.1 | Accesso |
-| firebase_app_check | 0.5.1 | Play Integrity |
-| firebase_crashlytics | 6.0.1 | Errori in produzione |
-| google_sign_in | 7.2.0 | Accesso Google |
-| google_mlkit_text_recognition | 1.0.0 | Testo etichetta sul telefono |
-| google_mlkit_barcode_scanning | 1.0.0 | Codici a barre sul telefono |
-| shared_preferences | 2.5.6 | Ledger, flag, preferenze |
-| connectivity_plus | 7.3.2 | Stato rete |
-| http | 1.6.0 | Open Food Facts |
-| image_picker | 1.2.4 | Fotocamera e galleria senza permessi |
-| share_plus | 13.3.1 | Messaggio d'invito |
-| package_info_plus | 10.2.2 | Versione app |
-| path_provider | 2.1.6 | Cache del catalogo |
-| intl | 0.20.3 | Date e numeri |
-| crypto | 3.0.8 | Hash del file di cache |
-| flutter_localizations | SDK | it, en, pt_BR |
-| estimation | path `packages/estimation` | Stima (nessuna dipendenza di produzione) |
+| Flutter | 3.47.9 (`.flutter-version`, fissata in ogni workflow) | Framework dell'app |
+| Android | `minSdk` 24; `compileSdk` e `targetSdk` da Flutter; `applicationId` `com.vinoozy.app` | Unica piattaforma |
+| Firebase | Auth, Firestore, App Check (Play Integrity), Crashlytics, Functions 2nd gen in `europe-west8` | Backend |
+| Node.js | 22 | Functions e strumenti |
+| JDK | 17 per la build Android; 21 nei job `rules` ed `e2e` | Build e emulatori |
 
-Dev: `flutter_test`, `integration_test`, `flutter_driver` (SDK),
-`flutter_lints` 6.0.0, `mocktail` 1.0.5. Pacchetto `estimation` dev:
-`benchmark_harness` ^2.4.0, `coverage` ^1.16.0, `lints` ^6.1.0, `test` ^1.33.0.
+## App Libraries (`pubspec.yaml`)
 
-**Assenti e richiesti dall'intent**: nessun plugin di Billing
-(`in_app_purchase` o equivalente), nessun SDK pubblicitario
-(`google_mobile_ads`), nessun CMP, nessun `cloud_functions`.
+| Pacchetto | Vincolo | Uso |
+|---|---|---|
+| `flutter_localizations` | SDK | Localizzazioni Material, Cupertino, Widgets |
+| `intl` | ^0.20.3 | Date, numeri, plurali |
+| `flutter_riverpod` | ^3.4.3 | Stato e dipendenze |
+| `cloud_firestore` | ^7.1.0 | Dati |
+| `firebase_core` | ^5.1.0 | Avvio di Firebase |
+| `firebase_auth` | ^7.0.1 | Autenticazione |
+| `firebase_app_check` | ^0.5.1 | Attestazione |
+| `firebase_crashlytics` | ^6.0.1 | Errori in produzione |
+| `cloud_functions` | ^7.0.1 | Callable |
+| `google_sign_in` | ^7.2.0 | Accesso con Google |
+| `google_mlkit_text_recognition` | ^1.0.0 | Testo dell'etichetta, modello latino incluso nell'app |
+| `google_mlkit_barcode_scanning` | ^1.0.0 | Codici EAN-13, EAN-8, UPC-A |
+| `in_app_purchase` | ^3.3.1 | Acquisto Plus |
+| `google_mobile_ads` | ^9.2.0 | Annuncio del Cruscotto |
+| `http` | ^1.6.0 | Open Food Facts |
+| `connectivity_plus` | ^7.3.2 | Stato della rete |
+| `shared_preferences` | ^2.5.6 | Registro locale e preferenze |
+| `path_provider` | ^2.1.6 | Cache del catalogo |
+| `package_info_plus` | ^10.2.2 | Versione dell'app |
+| `share_plus` | ^13.3.1 | Messaggio d'invito |
+| `image_picker` | ^1.2.4 | Fotocamera e selettore foto di sistema |
+| `crypto` | ^3.0.8 | Hash del proprietario della cache |
+| `estimation` | path `packages/estimation` | Stima |
 
-## Android nativo
+Sviluppo: `flutter_test`, `integration_test`, `flutter_driver` (SDK), `flutter_lints` ^6.0.0, `mocktail` ^1.0.5. Pacchetto `estimation`: `test` ^1.33.0, `coverage` ^1.16.0, `lints` ^6.1.0, `benchmark_harness` ^2.4.0.
 
-| Libreria | Versione |
+## Functions Libraries (`functions/package.json`)
+
+| Pacchetto | Versione |
 |---|---|
-| androidx.exifinterface | 1.4.2 |
-| JUnit | 4.13.2 (test) |
-| Robolectric | 4.17 (test) |
-| androidx.test:core | 1.7.0 (test) |
-| JaCoCo | 0.8.14 |
+| `firebase-functions` | 7.4.0 |
+| `firebase-admin` | 13.10.0 |
+| `googleapis` | 189.0.0 |
+| `@google-cloud/billing` | 6.2.0 |
+| `mocha` | 12.0.3 |
+| `firebase-functions-test` | 3.5.0 |
 
-## Strumenti Node (`package.json`, lock in `package-lock.json`)
+## Tooling (`package.json`)
 
-| Pacchetto | Versione | Uso |
+| Strumento | Versione | Uso |
 |---|---|---|
-| firebase-tools | 14.27.0 | Emulator Suite, deploy regole (bloccato per JDK 17) |
-| @firebase/rules-unit-testing | 6.0.0 | Test delle regole |
-| firebase | 13.2.0 | Web SDK della pagina di cancellazione |
-| esbuild | 0.28.2 | Bundle della pagina web |
-| c8 | 12.0.0 | Copertura JS |
-| playwright | 1.65.0 | Test della pagina nel browser |
+| `firebase-tools` | 14.27.0 | Emulatori e distribuzione; la 15 richiede Java 21 |
+| `@firebase/rules-unit-testing` | 6.0.0 | Test delle regole |
+| `firebase` (SDK web) | 13.2.0 | Pagina di cancellazione account |
+| `esbuild` | 0.28.2 | Bundle della pagina |
+| `playwright` | 1.65.0 | Prova del bundle in Chromium |
+| `c8` | 12.0.0 | Copertura del codice web |
+| actionlint | 1.7.12 | Validazione dei workflow |
+| gitleaks | 8.30.1 | Ricerca di segreti nella cronologia |
+| JaCoCo, Robolectric | Da Gradle | Test e copertura Kotlin |
 
-## Servizi esterni
+## Localization Toolchain
 
-- Firebase: Auth (Google), Firestore, App Check (Play Integrity), Crashlytics;
-  progetto demo `demo-vinoozy` per emulatori e un solo progetto di produzione
-  (`.firebaserc`). Piano attuale Spark.
-- Google Play (canale interno come staging, produzione con rilascio graduale),
-  Play Developer API (`tool/play_api.sh`).
-- GitHub Actions e GitHub Pages (privacy e cancellazione account).
-- Open Food Facts (catalogo e base dati offline derivata, licenza ODbL).
-- Google Lens (app esterna, tramite intent).
+| Elemento | Valore |
+|---|---|
+| Generatore | `flutter gen-l10n`, attivato da `generate: true` e configurato in `l10n.yaml` |
+| Formato dei testi | ARB con sintassi ICU (`plural`, `select`, segnaposto tipizzati `String` e `int`) |
+| Modello | `lib/l10n/app_en.arb` |
+| Uscita | `lib/l10n/app_localizations*.dart`, versionati, classe `AppLocalizations` |
+| Formati | `intl` 0.20.x (`DateFormat`, `NumberFormat`) e `MaterialLocalizations` |
+| Lingue dei widget di sistema | Quelle fornite da `flutter_localizations` |
+| Lingue oggi | `en` (modello e ripiego), `it`, `pt_BR`; `pt` solo come base richiesta dal generatore |
 
-## Configurazione di qualità
+## Hosting and Delivery
 
-`analysis_options.yaml` include `package:flutter_lints/flutter.yaml` senza
-regole aggiuntive ed esclude `build/**`, `android/**`, `packages/**`,
-`tool/fixtures/**`. Formattazione `dart format`. Dettagli dei gate in
-`code-quality-assessment.md`.
+| Servizio | Uso |
+|---|---|
+| GitHub e GitHub Actions | Repository e CI/CD nel piano gratuito |
+| Google Play | Canale di test interno a ogni merge, produzione con approvazione manuale e rilascio graduale |
+| GitHub Pages | Pagine di privacy e cancellazione account |
+| Firebase Emulator Suite | Sviluppo e test, progetto `demo-vinoozy` |

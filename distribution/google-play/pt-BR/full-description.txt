@@ -21,7 +21,7 @@ As janelas são estimativas indicativas: armazenamento, estilo e condições de 
 
 O Vinoozy é destinado a pessoas adultas. Não vende bebidas alcoólicas.
 
-Interface em italiano, inglês e português do Brasil.
+Interface disponível em 25 idiomas, incluindo o português do Brasil.
 
 Dados do catálogo do Open Food Facts, sob as licenças ODbL 1.0 e DbCL 1.0. Banco derivado e atribuições: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
 Denominações do eAmbrosia e dos registros nacionais listados na documentação dos dados. As estimativas são elaboradas pelo Vinoozy.

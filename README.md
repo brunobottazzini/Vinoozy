@@ -12,7 +12,7 @@ npm ci                                   # firebase-tools e test delle regole, v
 
 dart format --output=none --set-exit-if-changed .
 flutter analyze --fatal-infos
-dart run tool/gen_coverage_helper.dart && flutter test --coverage && tool/check_coverage.sh 80
+dart run tool/gen_coverage_helper.dart && dart run tool/gen_l10n_exercise.dart && flutter test --coverage && tool/check_coverage.sh 80
 
 # Regole Firestore, prova di riavvio, test end-to-end e prova con adb force-stop
 # (emulatore Android avviato):

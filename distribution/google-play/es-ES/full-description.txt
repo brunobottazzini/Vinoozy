@@ -1,0 +1,27 @@
+Tu bodega, siempre a mano.
+
+Vinoozy te ayuda a organizar las botellas que tienes y a consultar estimaciones de su evolución: inicio, apogeo y final orientativo de su ventana de consumo.
+
+AÑADE TUS VINOS
+Introduce los datos a mano, lee una etiqueta con la cámara, usa un código de barras o importa texto desde Google Lens. Revisa siempre los datos sugeridos antes de guardar.
+
+MANTÉN TU BODEGA EN ORDEN
+Gestiona cantidades, añadas y características de los vinos. Consulta el Panel, filtra tus vinos y guarda valoraciones y notas en el Historial. Encuentra sugerencias de maridaje.
+
+ÚSALA SIN CONEXIÓN
+Consulta y actualiza los datos disponibles en tu teléfono. Los cambios se sincronizan cuando vuelve la conexión. El primer inicio de sesión con Google necesita Internet; algunas búsquedas también requieren conexión.
+
+COMPARTE CON QUIEN TÚ ELIJAS
+Invita a otras personas a tu bodega y elige si pueden solo consultarla o también hacer cambios.
+
+LEE LAS ETIQUETAS EN TU TELÉFONO
+El reconocimiento de texto se hace en tu dispositivo. Las búsquedas en línea pueden enviar palabras y códigos de barras a Open Food Facts. Abrir una foto en Google Lens requiere tu confirmación.
+
+Las ventanas de consumo son estimaciones orientativas. La conservación, el estilo y el estado de cada botella pueden cambiar el resultado. Las estimaciones no son una garantía de calidad ni una invitación a consumir alcohol.
+
+Vinoozy está dirigida a personas adultas. No vende bebidas alcohólicas.
+
+Interfaz disponible en 25 idiomas, entre ellos el español.
+
+Datos del catálogo de Open Food Facts, bajo las licencias ODbL 1.0 y DbCL 1.0. Base de datos derivada y atribución: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Denominaciones de eAmbrosia y de los registros nacionales indicados en la documentación de los datos. Las estimaciones las elabora Vinoozy.

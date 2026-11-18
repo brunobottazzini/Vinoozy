@@ -33,27 +33,45 @@ enum CandidateSource {
   final int rank;
 }
 
-/// App language of a request: `it`, `en` or `pt-BR`. Open Food Facts
-/// receives only the language code [offLanguage] (NFR4.2).
-enum CatalogLocale {
-  it('it'),
-  en('en'),
-  ptBR('pt');
+/// App language of a request. Open Food Facts receives only the language
+/// code [offLanguage] (NFR4.2), never the country.
+///
+/// The catalog keeps no list of languages: any interface language of the
+/// app (`lib/app/locale_resolution.dart`) is passed on by its code, and a
+/// product without texts in that language shows the English ones
+/// (wine-culture-languages FR3.4).
+final class CatalogLocale {
+  const CatalogLocale._(this.offLanguage);
 
-  const CatalogLocale(this.offLanguage);
+  static const CatalogLocale it = CatalogLocale._('it');
+  static const CatalogLocale en = CatalogLocale._('en');
 
+  /// Brazilian Portuguese: Open Food Facts knows one Portuguese, `pt`, so
+  /// this is the value of every Portuguese.
+  static const CatalogLocale ptBR = CatalogLocale._('pt');
+
+  /// ISO 639 language code in lower case, e.g. `fr`, `el`, `nb`.
   final String offLanguage;
 
-  /// Maps a language tag such as `pt-BR`, `pt_BR` or `it-IT`; any other
-  /// language falls back to English.
+  static final RegExp _languageCode = RegExp(r'^[a-z]{2,3}$');
+
+  /// Maps a language tag such as `fr`, `pt-BR`, `pt_BR` or `it-IT` to its
+  /// language; a tag that does not start with a language code falls back to
+  /// English.
   static CatalogLocale fromLanguageTag(String tag) {
     final language = tag.split(RegExp('[-_]')).first.toLowerCase();
-    return switch (language) {
-      'it' => CatalogLocale.it,
-      'pt' => CatalogLocale.ptBR,
-      _ => CatalogLocale.en,
-    };
+    return _languageCode.hasMatch(language) ? CatalogLocale._(language) : en;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      other is CatalogLocale && other.offLanguage == offLanguage;
+
+  @override
+  int get hashCode => offLanguage.hashCode;
+
+  @override
+  String toString() => 'CatalogLocale($offLanguage)';
 }
 
 /// A wine proposed to the user (C1 `WineCandidate`). No personal data.

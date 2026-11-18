@@ -5,6 +5,7 @@ import '../../l10n/app_localizations.dart';
 import '../domain/drinking_record.dart';
 import '../domain/wine.dart';
 import '../domain/wine_origins.dart';
+import 'origin_language.dart';
 import 'wine_badges.dart';
 import 'wine_labels.dart';
 
@@ -52,7 +53,7 @@ class _DrinkConfirmSheetState extends State<DrinkConfirmSheet> {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final wine = widget.wine;
-    final language = Localizations.localeOf(context).languageCode;
+    final language = originLanguageTagOf(context);
     final country = wine.displayCountry;
     final region = wine.region;
     final family = WineTypeFamily.of(wine.wineType);

@@ -1,0 +1,169 @@
+#!/usr/bin/env node
+// Generates lib/cellar/domain/origin_country_names.g.dart: the names of the
+// ISO 3166-1 countries of lib/cellar/domain/wine_origins.dart in the
+// interface languages added by the wine-culture-languages intent (FR3.1).
+//
+// The names come from the public Unicode CLDR data, npm package
+// `cldr-localenames-modern`. The package is not a dependency of the project:
+// download it once into the git-ignored cache and run the generator.
+//
+//   mkdir -p .cache/cldr && (cd .cache/cldr && npm pack cldr-localenames-modern)
+//   node tool/gen_origin_names.mjs
+//
+// The generator never invents a name: it stops when the CLDR data is not
+// there or when a country has no name in a language.
+
+import { execFileSync } from 'node:child_process';
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+} from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const cacheDir = join(root, '.cache', 'cldr');
+const originsFile = join(root, 'lib', 'cellar', 'domain', 'wine_origins.dart');
+const outputFile = join(
+  root,
+  'lib',
+  'cellar',
+  'domain',
+  'origin_country_names.g.dart',
+);
+
+const localesFile = join(root, 'lib', 'app', 'locale_resolution.dart');
+
+// The languages whose names are written by hand in wine_origins.dart and
+// stay as they are: Italian, English and Brazilian Portuguese.
+const handWritten = new Set(['it', 'en', 'pt-BR']);
+
+// Interface language whose origin language tag and CLDR folder are not its
+// code: `pt` is European Portuguese, and the origin tag `pt` is already the
+// Brazilian one (lib/cellar/ui/origin_language.dart).
+const renamed = { pt: 'pt-PT' };
+
+// Origin language tag (the key of the generated map) -> CLDR locale folder,
+// derived from appLocales, the single list of the interface languages. For
+// Serbian the CLDR folder `sr` is the Cyrillic script.
+function languagesFromAppLocales() {
+  const source = readFileSync(localesFile, 'utf8');
+  const start = source.indexOf('const List<Locale> appLocales = [');
+  const end = source.indexOf('];', start);
+  if (start < 0 || end < 0) {
+    fail('the appLocales list was not found in locale_resolution.dart');
+  }
+  const languages = {};
+  const pattern = /Locale\('([a-z]{2,3})'(?:,\s*'([A-Z]{2})')?\)/g;
+  for (const match of source.slice(start, end).matchAll(pattern)) {
+    const code = match[2] ? `${match[1]}-${match[2]}` : match[1];
+    if (handWritten.has(code)) continue;
+    const tag = renamed[code] ?? code;
+    languages[tag] = tag;
+  }
+  if (Object.keys(languages).length === 0) {
+    fail('no language found in appLocales');
+  }
+  return languages;
+}
+
+// Territories whose CLDR main name is the long administrative one: the short
+// form is used, as the hand-written names do ("Hong Kong", "Palestine").
+const shortForm = new Set(['HK', 'MO', 'PS']);
+
+function fail(message) {
+  console.error(`gen_origin_names: ${message}`);
+  process.exit(1);
+}
+
+function cldrMainDir() {
+  const main = join(cacheDir, 'package', 'main');
+  if (existsSync(main)) return main;
+  const archive = existsSync(cacheDir)
+    ? readdirSync(cacheDir).find((name) =>
+        /^cldr-localenames-modern-.*\.tgz$/.test(name),
+      )
+    : undefined;
+  if (!archive) {
+    fail(
+      'CLDR data not found. Run: mkdir -p .cache/cldr && ' +
+        '(cd .cache/cldr && npm pack cldr-localenames-modern)',
+    );
+  }
+  mkdirSync(cacheDir, { recursive: true });
+  execFileSync('tar', ['-xzf', archive], { cwd: cacheDir, stdio: 'inherit' });
+  if (!existsSync(main)) fail(`${archive} has no package/main folder`);
+  return main;
+}
+
+function cldrVersion() {
+  const manifest = join(cacheDir, 'package', 'package.json');
+  return JSON.parse(readFileSync(manifest, 'utf8')).version;
+}
+
+function countryCodes() {
+  const source = readFileSync(originsFile, 'utf8');
+  const start = source.indexOf('const List<OriginCountry> _countries = [');
+  if (start < 0) fail('the _countries list was not found in wine_origins.dart');
+  const codes = [
+    ...source.slice(start).matchAll(/OriginCountry\(\s*'([A-Z]{2})'/g),
+  ].map((match) => match[1]);
+  if (codes.length === 0) fail('no country code found in wine_origins.dart');
+  return codes;
+}
+
+function territoriesOf(mainDir, locale) {
+  const file = join(mainDir, locale, 'territories.json');
+  if (!existsSync(file)) fail(`CLDR has no territories for ${locale}`);
+  return JSON.parse(readFileSync(file, 'utf8')).main[locale].localeDisplayNames
+    .territories;
+}
+
+function dartString(text) {
+  const escaped = text
+    .replaceAll('\\', '\\\\')
+    .replaceAll('$', '\\$')
+    .replaceAll("'", "\\'");
+  return `'${escaped}'`;
+}
+
+const mainDir = cldrMainDir();
+const codes = countryCodes();
+const languages = languagesFromAppLocales();
+const lines = [
+  '// GENERATED by tool/gen_origin_names.mjs from Unicode CLDR',
+  `// (cldr-localenames-modern ${cldrVersion()}). Do not edit by hand: run the`,
+  '// generator again.',
+  '//',
+  '// Unicode CLDR data is published under the Unicode License v3',
+  '// (https://www.unicode.org/license.txt).',
+  '',
+  '/// Names of the ISO 3166-1 countries by origin language tag, then by',
+  '/// alpha-2 code, for the languages that have no hand-written name in',
+  '/// `wine_origins.dart` (FR3.1). `pt-PT` is European Portuguese.',
+  'const Map<String, Map<String, String>> originCountryNames = {',
+];
+for (const [tag, locale] of Object.entries(languages)) {
+  const territories = territoriesOf(mainDir, locale);
+  lines.push(`  ${dartString(tag)}: {`);
+  for (const code of codes) {
+    const name =
+      (shortForm.has(code) ? territories[`${code}-alt-short`] : undefined) ??
+      territories[code];
+    if (typeof name !== 'string' || name.trim() === '' || name === code) {
+      fail(`CLDR has no name for ${code} in ${locale}`);
+    }
+    lines.push(`    ${dartString(code)}: ${dartString(name)},`);
+  }
+  lines.push('  },');
+}
+lines.push('};', '');
+writeFileSync(outputFile, lines.join('\n'));
+execFileSync('dart', ['format', outputFile], { stdio: 'inherit' });
+console.log(
+  `gen_origin_names: ${codes.length} countries x ` +
+    `${Object.keys(languages).length} languages -> ${outputFile}`,
+);

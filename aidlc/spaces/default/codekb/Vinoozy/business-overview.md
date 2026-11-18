@@ -1,61 +1,47 @@
-# Panoramica di business
+# Business Overview
 
-## Scopo
+## Business Domain
 
-Vinoozy è un'app Android (Flutter) per gestire la propria cantina di vini: si
-inseriscono le bottiglie (a mano, dalla foto dell'etichetta, da testo condiviso
-da Google Lens), l'app stima la finestra ideale di consumo e mostra quando
-bere cosa. I dati vivono prima sul telefono e si sincronizzano su Firebase
-(Firestore) quando c'è rete. Interfaccia in italiano, inglese e portoghese
-brasiliano; package Google Play `com.vinoozy.app`.
+Vinoozy è un'app Android per chi tiene una cantina di vini in casa. Il suo motto è "la tua cantina, al momento giusto": per ogni vino stima quando conviene berlo e avvisa quando quel momento si avvicina o è passato.
 
-## Dominio e concetti chiave
+## Purpose
 
-| Concetto | Significato nel codice |
+- Tenere l'inventario delle bottiglie, anche senza rete, con sincronizzazione sul cloud al ritorno della connessione.
+- Stimare per ogni vino la finestra di consumo (inizio, apice, fine), con un indice di fiducia e l'origine della stima.
+- Ridurre la fatica di inserimento: foto dell'etichetta, codice a barre, testo incollato o condiviso da Google Lens.
+- Condividere una cantina con altre persone.
+
+## Key Functionality
+
+| Area | Cosa fa per la persona |
 |---|---|
-| Cantina personale | `cellars/{uid}`: una per account, creata all'accesso (`CellarRepository.ensurePersonalCellar`). |
-| Cantina condivisa | Cantina di un altro proprietario visibile tramite un invito `active` (`AccessibleCellar.shared`), con ruolo `read` o `edit`. |
-| Scheda vino | `cellars/{id}/wines/{wineId}`: nome, produttore, annata, tipo, regione, denominazione, paese, livello, stile, finestra, abbinamenti, `quantity`. |
-| Scheda attiva / archiviata | Attiva se `quantity > 0` (listener quotidiano); archiviata ("Bevuti") se `quantity <= 0`. Il valore memorizzato può essere negativo per decrementi concorrenti e si mostra come 0. |
-| Bevuta (drinking record) | `cellars/{id}/drinkingRecords/{id}`: data, voto 1-5, note, "Com'era?" (`tooYoung`/`justRight`/`pastPeak`), che corregge la finestra. |
-| Invito | `cellars/{id}/members/{email}`: stati `invited` → `active` → `revoked`; al massimo 2 posti aperti per cantina (`memberSlots`). |
-| Stima | Pacchetto puro `estimation`: finestra, stato (`WineStatus`), abbinamenti, livello e stile; correggibile dal proprietario (`windowOverride`). |
+| Account | Accesso con Google, onboarding, profilo, uscita, cancellazione dell'account dall'app e da una pagina web pubblica |
+| Cantina | Aggiunta, modifica, archiviazione dei vini; quantità; filtro per stato e tipo; paese e regione d'origine |
+| Momento ideale | Finestra di consumo per denominazione, vitigno, tipo o stile; livello del vino; correzione manuale; correzione dalle bevute registrate |
+| Bevute e storico | Registrazione di una bevuta con giudizio e stelle; storico delle bottiglie bevute |
+| Etichetta | Lettura sul telefono di testo e codice a barre, proposte dal database offline dei vini e da Open Food Facts, conferma guidata dei campi |
+| Cruscotto | Totale bottiglie, vini da bere presto, grafici per stato, tipo e regione, vini da confermare |
+| Condivisione | Invito per email, permessi degli invitati, cambio di cantina attiva |
+| Piano Plus | Limite di capienza del piano senza costi, acquisto Plus su Google Play, un annuncio al giorno nel Cruscotto per il piano senza costi |
+| Abbinamenti | Categorie di cibo suggerite per il vino |
 
-## Funzionalità principali
+## Users and Markets
 
-- Accesso solo con Google; presentazione al primo avvio; profilo con uscita,
-  eliminazione account e informativa privacy.
-- Cantina: elenco con ricerca e filtri, aggiunta (tre vie: modulo, foto
-  etichetta, testo condiviso), modifica, +/− bottiglie, "Bevuto" con annulla,
-  archivio, duplicati e unione, eliminazione (solo proprietario).
-- Dashboard di sola lettura: totale, "da bere presto", da confermare, grafici
-  per stato, anno di picco e tipo/regione; in fondo il footer del marchio che
-  apre "Informazioni".
-- Storico delle bevute a pagine.
-- Condivisione con fino a 2 persone, permessi lettura/modifica, uscita e revoca.
-- Informazioni: versione dell'app (riga `about-version`), base dati offline dei
-  vini, licenze, tabella delle denominazioni, privacy della foto.
-- Eliminazione dell'account in-app e pagina web di cancellazione (GitHub Pages).
+- Un solo tipo di utente: la persona che possiede o condivide una cantina. Il proprietario del progetto è anche l'unico sviluppatore.
+- Lingue dell'interfaccia oggi: italiano, inglese, portoghese del Brasile. La lingua segue quella del telefono; ogni altra lingua riceve l'inglese. Non esiste un selettore di lingua nell'app.
+- Scheda Google Play preparata in tre lingue (it-IT predefinita, en-US, pt-BR). Versione corrente `0.2.1+3`, distribuita sul canale di test interno; la produzione richiede l'approvazione manuale del proprietario.
+- Pagine pubbliche di privacy e cancellazione dell'account nelle stesse tre lingue.
 
-## Stato rispetto all'intent freemium/Plus
+## Domain Knowledge in the Code
 
-Lo studio `docs/vinoozy-studio-monetizzazione.md` (sezioni 4, 5, 7, 9) chiede:
-repository dei diritti e risoluzione delle capacità, limite gratuito di 15
-schede attive con migrazione `legacyActiveWineLimit`, `CloudUsageMeter`,
-soglia pubblicitaria, Play Billing con verifica server, menu sviluppatore
-nascosto (7 tocchi su `about-version`), gating tramite `firebase_env.dart` e
-controllo dei marker in `tool/check_release_build.sh`. **Nel codice attuale
-non esiste nessuno di questi elementi**: niente piani, diritti, contatori
-d'uso, Billing, annunci o backend. Oggi tutte le funzioni sono gratuite e
-senza limiti, salvo il tetto di 99 bottiglie per scheda e di 2 invitati per
-cantina. Le superfici su cui l'intent si innesta sono indicate in
-`component-inventory.md` e `architecture.md`.
+- Le conoscenze enologiche (finestre di consumo, soglie, abbinamenti, elenchi di regioni) sono decise nel codice e motivate nei commenti, come chiede la regola di progetto del 2026-11-04.
+- Paesi (249, ISO 3166-1) e regioni vinicole di 21 paesi hanno nomi in italiano, inglese e portoghese; il valore salvato è il codice del paese o il nome canonico della regione, mai la traduzione.
+- Denominazioni e vitigni vengono da tabelle scritte a mano e da tabelle generate dai registri pubblici (eAmbrosia e registri extra UE). I termini di legge del vino (Riserva, Grand Cru, Spätlese) restano uguali in ogni lingua.
 
-## Vincoli di business rilevanti
+## Constraints Visible in the Repository
 
-- Budget Firebase 0 €/mese con avviso a 1 € (team.md); progetto su Spark:
-  un backend Cloud Functions richiederebbe Blaze.
-- Le chiavi di produzione stanno solo nei segreti di GitHub Actions; le build
-  senza `FIREBASE_ENV=prod` usano sempre l'emulatore `demo-vinoozy`.
-- Ogni regola Firestore nuova deve continuare ad accettare le scritture della
-  versione già in produzione (`test/rules/compat/`).
+- Budget cloud di 0 €/mese: emulatori Firebase per sviluppo e test, un solo progetto di produzione, le Cloud Functions non sono mai distribuite dalla CI.
+- Le foto delle etichette non lasciano il telefono, salvo l'apertura esplicita in Google Lens.
+- Nessun segreto nel repository: configurazione di produzione e chiavi di firma arrivano dai segreti di GitHub Actions.
+
+Dettagli tecnici: vedi `architecture.md` e `component-inventory.md`.

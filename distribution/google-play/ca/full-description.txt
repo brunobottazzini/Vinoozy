@@ -1,0 +1,27 @@
+El teu celler, sempre a mà.
+
+Vinoozy t'ajuda a organitzar les ampolles que tens i a consultar estimacions de la seva evolució: inici, apogeu i final orientatiu de la finestra de consum.
+
+AFEGEIX ELS TEUS VINS
+Introdueix les dades a mà, llegeix una etiqueta amb la càmera, fes servir un codi de barres o importa text des de Google Lens. Revisa sempre les dades suggerides abans de desar.
+
+MANTÉN EL CELLER ENDREÇAT
+Gestiona quantitats, anyades i característiques dels vins. Consulta el Tauler, filtra els teus vins i desa valoracions i notes a l'Historial. Troba suggeriments de maridatge.
+
+FES-LA SERVIR SENSE CONNEXIÓ
+Consulta i actualitza les dades disponibles al telèfon. Els canvis se sincronitzen quan torna la connexió. El primer inici de sessió amb Google necessita Internet; algunes cerques també requereixen connexió.
+
+COMPARTEIX AMB QUI TU TRIÏS
+Convida altres persones al teu celler i tria si només el poden consultar o també fer-hi canvis.
+
+LLEGEIX LES ETIQUETES AL TELÈFON
+El reconeixement de text es fa al teu dispositiu. Les cerques en línia poden enviar paraules i codis de barres a Open Food Facts. Obrir una foto a Google Lens requereix la teva confirmació.
+
+Les finestres de consum són estimacions orientatives. La conservació, l'estil i l'estat de cada ampolla poden canviar el resultat. Les estimacions no són cap garantia de qualitat ni una invitació a consumir alcohol.
+
+Vinoozy s'adreça a persones adultes. No ven begudes alcohòliques.
+
+Interfície disponible en 25 llengües, entre les quals el català.
+
+Dades del catàleg d'Open Food Facts, sota les llicències ODbL 1.0 i DbCL 1.0. Base de dades derivada i atribució: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Denominacions d'eAmbrosia i dels registres nacionals indicats a la documentació de les dades. Les estimacions les elabora Vinoozy.

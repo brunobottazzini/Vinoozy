@@ -37,8 +37,56 @@ for (const [suffix, lang] of [['', 'it'], ['en/', 'en'], ['pt-BR/', 'pt-BR']]) {
   }
 }
 
+// The store listing languages (wine-culture-languages FR4.1): every folder of
+// distribution/google-play/languages.json, with its three texts within the
+// Google Play limits, and one release-notes block per folder.
+const RELEASE_NOTES_LIMIT = 500;
+
+function storeFolders() {
+  const file = 'distribution/google-play/languages.json';
+  const text = read(file);
+  if (!text) return [];
+  let languages;
+  try { languages = JSON.parse(text).languages; }
+  catch (error) { problems.push(`${file}: invalid JSON (${error.message})`); return []; }
+  if (!languages || typeof languages !== 'object' || Array.isArray(languages)) {
+    problems.push(`${file}: "languages" must map each app language to a store folder`);
+    return [];
+  }
+  const folders = Object.values(languages);
+  const invalid = folders.filter((folder) => typeof folder !== 'string' || !/^[a-z]{2,3}(-[A-Z]{2})?$/.test(folder));
+  for (const folder of invalid) problems.push(`${file}: invalid store folder ${JSON.stringify(folder)}`);
+  const duplicated = folders.filter((folder, index) => folders.indexOf(folder) !== index);
+  for (const folder of new Set(duplicated)) problems.push(`${file}: store folder ${folder} listed twice`);
+  return folders.filter((folder) => !invalid.includes(folder));
+}
+
+function checkReleaseNotes(folders) {
+  const file = 'distribution/google-play/release-notes.txt';
+  const text = read(file);
+  if (!text) return;
+  const blocks = new Map();
+  for (const [, tag, body] of text.matchAll(/<([A-Za-z-]+)>\n?([\s\S]*?)\n?<\/\1>/g)) {
+    if (blocks.has(tag)) problems.push(`${file}: <${tag}> appears twice`);
+    blocks.set(tag, body.trim());
+  }
+  for (const folder of folders) {
+    const notes = blocks.get(folder);
+    const count = notes === undefined ? 0 : [...notes].length;
+    if (!count || count > RELEASE_NOTES_LIMIT) {
+      problems.push(`${file}: <${folder}> ${count} characters (required 1–${RELEASE_NOTES_LIMIT})`);
+    } else {
+      console.log(`${folder} release-notes: ${count}/${RELEASE_NOTES_LIMIT}`);
+    }
+  }
+  for (const tag of blocks.keys()) {
+    if (!folders.includes(tag)) problems.push(`${file}: <${tag}> is not a folder of languages.json`);
+  }
+}
+
 if (!webOnly) {
-  for (const locale of ['it-IT', 'en-US', 'pt-BR']) {
+  const folders = storeFolders();
+  for (const locale of folders) {
     for (const [name, limit] of [['title', 30], ['short-description', 80], ['full-description', 4000]]) {
       const file = `distribution/google-play/${locale}/${name}.txt`;
       const value = read(file).trim();
@@ -47,6 +95,7 @@ if (!webOnly) {
       else console.log(`${locale} ${name}: ${count}/${limit}`);
     }
   }
+  checkReleaseNotes(folders);
 }
 
 const config = spawnSync(process.execPath, ['tool/check_web_config.mjs'], { cwd: root, encoding: 'utf8' });

@@ -69,7 +69,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Future<void> _privacy() async {
     final l10n = AppLocalizations.of(context);
-    final url = ref.read(privacyPolicyUrlProvider);
+    final url = ref.read(
+      privacyPolicyUrlProvider(Localizations.localeOf(context).toLanguageTag()),
+    );
     await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(

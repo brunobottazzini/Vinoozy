@@ -21,7 +21,7 @@ Le finestre sono stime indicative: conservazione, stile e condizioni della singo
 
 Vinoozy è destinata a persone maggiorenni. Non vende bevande alcoliche.
 
-Interfaccia in italiano, inglese e portoghese brasiliano.
+Interfaccia disponibile in 25 lingue, tra cui l'italiano.
 
 Dati del catalogo da Open Food Facts, con licenze ODbL 1.0 e DbCL 1.0. Database derivato e attribuzioni: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
 Denominazioni da eAmbrosia e dai registri nazionali indicati nella documentazione dei dati. Le stime sono elaborate da Vinoozy.

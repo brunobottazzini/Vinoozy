@@ -1,0 +1,27 @@
+Vaša vinska klet, vedno pri roki.
+
+Vinoozy vam pomaga urediti steklenice, ki jih imate, in raziskati napovedi njihovega možnega razvoja: začetek, vrhunec in okvirni konec njihovega okna pitnosti.
+
+DODAJTE SVOJA VINA
+Podatke vnesite ročno, etiketo preberite s fotoaparatom, uporabite črtno kodo ali uvozite besedilo iz aplikacije Google Lens. Pred shranjevanjem vedno preverite predlagane podatke.
+
+IMEJTE KLET UREJENO
+Upravljajte količine, letnike in lastnosti vin. Raziščite Pregled, filtrirajte vina ter hranite ocene in opombe v Zgodovini. Poiščite predloge za ujemanje s hrano.
+
+DELAJTE BREZ POVEZAVE
+Pregledujte in posodabljajte podatke, ki so na voljo v telefonu. Spremembe se sinhronizirajo, ko se povezava vrne. Prva prijava z računom Google zahteva internet; povezavo zahtevajo tudi nekatera iskanja.
+
+DELITE Z OSEBAMI, KI JIH IZBERETE
+Povabite osebe v svojo klet in izberite, ali si jo lahko le ogledujejo ali jo tudi spreminjajo.
+
+BERITE ETIKETE V TELEFONU
+Prepoznavanje besedila poteka v vaši napravi. Iskanja na spletu lahko pošiljajo besede in črtne kode storitvi Open Food Facts. Odpiranje fotografije v aplikaciji Google Lens zahteva vašo potrditev.
+
+Okna pitnosti so okvirne napovedi. Hramba, slog in stanje posamezne steklenice lahko spremenijo rezultat. Napovedi niso jamstvo kakovosti niti povabilo k uživanju alkohola.
+
+Vinoozy je namenjen odraslim. Ne prodaja alkoholnih pijač.
+
+Vmesnik je na voljo v 25 jezikih, tudi v slovenščini.
+
+Kataloški podatki iz Open Food Facts pod licencama ODbL 1.0 in DbCL 1.0. Izpeljana zbirka in navedba vira: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Apelacije iz registra eAmbrosia in nacionalnih registrov, navedenih v dokumentaciji podatkov. Napovedi pripravlja Vinoozy.

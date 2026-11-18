@@ -1,110 +1,107 @@
-# Dipendenze
+# Dependencies
 
-Le versioni delle librerie esterne sono elencate una sola volta in
-`technology-stack.md`. Qui si descrivono le relazioni.
+Versioni e scopo di ogni libreria: `technology-stack.md`. Qui stanno le relazioni.
 
-## Dipendenze esterne per modulo
+## External Dependencies
 
-| Modulo | Dipendenze esterne dirette |
-|---|---|
-| `lib/app/` | firebase_core, firebase_app_check, firebase_auth, firebase_crashlytics, cloud_firestore, google_sign_in, shared_preferences, package_info_plus, flutter_riverpod |
-| `lib/firebase/` | firebase_core, cloud_firestore |
-| `lib/account/` | firebase_auth, google_sign_in, cloud_firestore, shared_preferences, connectivity_plus |
-| `lib/cellar/` | cloud_firestore, shared_preferences, estimation, flutter_riverpod, intl |
-| `lib/sharing/` | cloud_firestore, share_plus, shared_preferences |
-| `lib/sync/` | cloud_firestore, shared_preferences |
-| `lib/dashboard/` | estimation, flutter_riverpod, shared_preferences (solo preferenza del grafico) |
-| `lib/label/` | google_mlkit_*, image_picker, path_provider, estimation (nessun import cloud: gate `tool/check_label_imports.sh`) |
-| `lib/catalog/` | http, crypto, path_provider, connectivity_plus, firebase_crashlytics (adattatore), estimation |
-| `packages/estimation/` | nessuna (gate `tool/check_estimation_purity.sh`) |
+### Runtime services
 
-## Dipendenze interne tra moduli
+| Servizio | Usato da | Note |
+|---|---|---|
+| Firebase Auth | Account, Account Deletion Web, Cloud Functions | Accesso con Google |
+| Cloud Firestore | Cellar, Sharing, Account, Sync, Plan, Cloud Functions, Account Deletion Web | Coda offline sul telefono; regole nel repository |
+| Firebase App Check | App Shell, Cloud Functions | Play Integrity in rilascio; obbligatorio per le callable |
+| Firebase Crashlytics | App Shell | Solo build di rilascio del progetto reale |
+| Cloud Functions | Plan, Ads, Usage | Mai distribuite dalla CI |
+| Google Play Billing | Plan, Cloud Functions | Acquisto e verifica di Plus |
+| Google Mobile Ads | Ads | Un tentativo al giorno |
+| ML Kit sul telefono | Label | Modelli inclusi nell'app; testo solo in scrittura latina |
+| Google Lens (app Google) | Label | Avviato su richiesta esplicita |
+| Open Food Facts | Catalog | Solo con rete; licenza ODbL, attribuzione obbligatoria |
+| Google Play Developer API | CI/CD Workflows | Rilascio e promozione |
+| GitHub Pages | CI/CD Workflows | Pagine pubbliche |
+
+### Build-time data sources
+
+| Fonte | Usata da | Risultato |
+|---|---|---|
+| Esportazione di Open Food Facts, scaricata a mano | `tool/build_wine_db.dart` | `assets/wine_db/wines.jsonl.gz`, `manifest.json` |
+| Registro eAmbrosia e file CSV in `tool/data/appellations/` | `tool/build_appellations.dart` | `packages/estimation/lib/src/generated/appellations.g.dart` |
+| File ARB | `flutter gen-l10n` | `lib/l10n/app_localizations*.dart` |
+
+### Package manifests
+
+| Manifest | Gestore | Aggiornamenti |
+|---|---|---|
+| `pubspec.yaml`, `pubspec.lock` | pub | Dependabot settimanale |
+| `packages/estimation/pubspec.yaml` | pub | Nessuna dipendenza di produzione, verificato in CI |
+| `package.json`, `package-lock.json` | npm | Versioni esatte |
+| `functions/package.json`, `tool/admin/package.json`, `test/rules/package.json` | npm | Pacchetti separati |
+| `android/**/*.kts` | Gradle | Plugin di Flutter e di Firebase |
+| `.github/workflows/*.yml` | GitHub Actions | Azioni fissate per SHA, Dependabot settimanale |
+
+## Internal Dependencies
 
 ```mermaid
 flowchart LR
-  app["lib/app"] --> account["lib/account"]
-  app --> cellar["lib/cellar"]
-  app --> sharing["lib/sharing"]
-  app --> sync["lib/sync"]
-  app --> dashboard["lib/dashboard"]
-  app --> label["lib/label"]
-  app --> firebase["lib/firebase"]
-  app --> e2e["lib/e2e"]
-  account --> cellar
-  account --> sync
-  account --> sharing
-  cellar --> sync
-  cellar --> sharing
-  cellar --> catalog["lib/catalog"]
-  cellar --> estimation["packages/estimation"]
-  sharing --> cellar
-  dashboard --> cellar
-  dashboard --> sharing
-  dashboard --> firebase
-  label --> catalog
-  label --> cellar
-  catalog --> estimation
-  sync --> cellar
-  firebase --> sync
+  Shell["App Shell"] --> Account
+  Shell --> Cellar
+  Shell --> Dashboard
+  Shell --> Sharing
+  Shell --> Label
+  Shell --> Plan
+  Shell --> Ads
+  Shell --> L10n["Localization"]
+  Account --> Sync
+  Account --> Cellar
+  Cellar --> Estimation["Estimation Package"]
+  Cellar --> Catalog
+  Cellar --> Sync
+  Cellar --> Usage
+  Catalog --> Estimation
+  Label --> Catalog
+  Label --> Estimation
+  Dashboard --> Cellar
+  Dashboard --> Estimation
+  Sharing --> Cellar
+  Sharing --> Account
+  Sharing --> Usage
+  Plan --> Usage
+  Plan --> Dev["Dev Tools"]
+  Ads --> Sync
 ```
 
-<!-- Text fallback: lib/app collega tutti i moduli. account dipende da cellar,
-sync e sharing; cellar da sync, sharing, catalog ed estimation; sharing usa i
-percorsi e il modello Cellar di cellar; dashboard legge cellar e sharing e il
-flag PERF di firebase; label usa catalog e cellar; catalog usa estimation;
-sync usa i percorsi Firestore di cellar; firebase usa il ledger di sync. -->
+<!-- Text fallback: App Shell dipende da Account, Cellar, Dashboard, Sharing, Label, Plan, Ads e Localization. Account dipende da Sync e Cellar. Cellar dipende da Estimation Package, Catalog, Sync e Usage. Catalog dipende da Estimation Package. Label dipende da Catalog ed Estimation Package. Dashboard dipende da Cellar ed Estimation Package. Sharing dipende da Cellar, Account e Usage. Plan dipende da Usage e Dev Tools. Ads dipende da Sync per l'archivio chiave-valore. -->
 
-Il diagramma mostra gli archi principali. Il grafo reale degli import è più
-denso: quasi tutti i moduli importano `lib/app` (provider di servizio,
-`ErrorReporter`) e `lib/l10n`; la UI di `lib/cellar` importa anche
-`lib/label`, `lib/dashboard` e `lib/account`; `lib/account` importa anche
-`lib/firebase` e `lib/label` (pulizia delle foto in eliminazione).
+Osservazioni:
 
-Riferimenti incrociati notevoli (dipendenze circolari a livello di cartella,
-non di file):
+- `Estimation Package` è una foglia: non importa nulla del resto.
+- `Localization` è importata da tutte le cartelle `ui/` e da `lib/app/bootstrap.dart`; non importa nessun modulo.
+- `lib/cellar/domain/wine_origins.dart` è importato da Cellar, Dashboard, Label e App Shell: è il punto condiviso dei nomi di paesi e regioni.
+- `lib/sync/ledger/key_value_store.dart` è l'archivio chiave-valore riusato da Plan, Ads, Usage e Dev Tools.
+- Dipendenze incrociate tra moduli pari esistono (per esempio Account importa il repository delle cantine, Sharing importa Account); nessun ciclo tra file è stato cercato in questa scansione.
 
-- `lib/cellar` ↔ `lib/sharing`: `CellarActions` riceve `AccessibleCellar`
-  (`lib/sharing/domain/membership.dart`); `SharingRepository` usa `Cellar` e
-  `cellarPath` di `lib/cellar`.
-- `lib/cellar` ↔ `lib/sync`: `WineRepository` usa `LocalLedger` e
-  `SyncErrorBus`; `FirestoreSyncGateway` usa `winePath` di
-  `lib/cellar/data/firestore_codec.dart`.
-- `lib/app/providers.dart` ↔ `lib/cellar/cellar_providers.dart` e
-  `lib/sharing/sharing_providers.dart`: provider di invalidazione reciproca.
-- `lib/firebase/firestore_bootstrap.dart` importa `LocalLedger` per il piano B
-  del reset.
+## Dependency Rules Enforced by CI
 
-Un nuovo modulo di diritti/capacità dovrebbe essere letto da `lib/cellar`,
-`lib/sharing`, `lib/dashboard`, `lib/account` e `lib/app` senza dipendere da
-loro, per non allargare i cicli esistenti.
+| Regola | Controllo |
+|---|---|
+| `packages/estimation` senza dipendenze di produzione, senza Flutter | `tool/check_estimation_purity.sh` |
+| `lib/dashboard/` sola lettura, `domain/` in Dart puro | `tool/check_dashboard_readonly.sh` |
+| `lib/label/` senza Firestore né Storage | `tool/check_label_imports.sh` |
+| `lib/catalog/` senza Firestore, `core/` in Dart puro, nessun contatto Open Food Facts nel repository | `tool/check_off_config.sh` |
+| Bundle web ricostruibile identico, solo script locali | `tool/check_web_pins.sh` |
 
-## Dipendenze di build e consegna
+## Localization Dependencies
 
-- `pubspec.yaml` → `packages/estimation` (path); `l10n.yaml` genera
-  `lib/l10n/app_localizations*.dart` (`flutter gen-l10n`, eseguito in CI
-  prima di `flutter analyze`).
-- `tool/build_wine_db.dart` → `assets/wine_db/` (manifest verificato da
-  `tool/check_wine_db_release.sh`); `tool/build_appellations.dart` e
-  `tool/build_profile_map.dart` → `packages/estimation/lib/src/generated/`.
-- `tool/gen_coverage_helper.dart` → `test/coverage_helper_test.dart`
-  (ignorato da git) prima di `flutter test --coverage`.
-- `release.yml` dipende da `ci` riuscito su `main`, da `tool/play_api.sh` e
-  dai segreti `FIREBASE_PROD_*`, `ANDROID_UPLOAD_*`, `PLAY_INTERNAL_SA_JSON`.
-- `firebase-deploy.yml` esegue `npm run test:rules` e il controllo degli
-  indici prima del deploy in produzione con approvazione.
-- `pages.yml` → `tool/build_web_bundle.sh`, `tool/check_web_pins.sh`,
-  `tool/check_publication.mjs --web-only`.
-
-## Dipendenze di dati (Firestore)
-
-```text
-users/{uid}
-cellars/{cellarId}                 cellarId == uid del proprietario
-  ├── wines/{wineId}               letto/scritto via canReadCellar/canEditCellar
-  ├── drinkingRecords/{recordId}   wineId -> wines/{wineId}
-  └── members/{emailLowercase}     memberSlots della cantina accoppiato
-```
-
-Le regole leggono `cellars/{id}` (proprietario) e `members/{email}` (invitato)
-per ogni richiesta su vini e bevute; `users/{uid}` solo per la cancellazione
-della cantina.
+| Chi dipende | Da cosa |
+|---|---|
+| Ogni schermata | `AppLocalizations` generato |
+| `VinoozyApp`, `AppBootstrap` | `appLocales`, `resolveAppLocale` |
+| Cellar, Dashboard, Label, App Shell | `OriginCountry.nameIn`, `WineRegion.nameIn` con il codice di lingua |
+| Catalog | `CatalogLocale` e il parametro `lc` di Open Food Facts |
+| Test dei widget | `testLocales` e `pumpScreen` di `test/helpers/ui_harness.dart` |
+| Test end-to-end | Build E2E in italiano |
+| Store Listing | Cartelle `it-IT`, `en-US`, `pt-BR` e `tool/check_publication.mjs` |
+| Account Deletion Web | Pagine `it`, `en`, `pt-BR` e `tool/check_web_pins.sh`, `tool/prepare_static_pages.mjs` |
+| Copertura di CI | Numero di righe del codice di localizzazione generato |
+| Lingue disponibili per date e widget di sistema | `intl` e `flutter_localizations` |

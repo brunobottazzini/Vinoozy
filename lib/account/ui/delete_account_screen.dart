@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/providers.dart';
+import '../../core/text_folding.dart';
 import '../../l10n/app_localizations.dart';
 import '../app_user.dart';
 import '../auth_service.dart';
@@ -59,7 +60,13 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
     super.dispose();
   }
 
-  bool _matches(String word) => _word.text.trim().toUpperCase() == word;
+  /// The typed text is the confirmation word whatever its case and accents
+  /// (wine-culture-languages): `sterge` is `ȘTERGE`, `diagrafi` is not
+  /// `ΔΙΑΓΡΑΦΗ` but `διαγραφη` is, and `წაშლა` has no case.
+  bool _matches(String word) {
+    final typed = foldText(_word.text);
+    return typed.isNotEmpty && typed == foldText(word);
+  }
 
   Future<void> _delete() async {
     final l10n = AppLocalizations.of(context);

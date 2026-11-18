@@ -1,0 +1,27 @@
+A borospincéd, mindig kéznél.
+
+A Vinoozy segít rendszerezni a palackjaidat, és becsléseket mutat arról, hogyan fejlődhetnek: az ivási ablak kezdetét, csúcsát és tájékoztató végét.
+
+ADD HOZZÁ A BORAIDAT
+Írd be az adatokat kézzel, olvasd be a címkét a kamerával, használj vonalkódot, vagy importálj szöveget a Google Lensből. Mentés előtt mindig ellenőrizd a javasolt adatokat.
+
+TARTSD RENDBEN A PINCÉDET
+Kezeld a mennyiségeket, az évjáratokat és a borok jellemzőit. Fedezd fel az Áttekintést, szűrd a boraidat, és őrizd meg az értékeléseket és a jegyzeteket az Előzményekben. Találj ételpárosítási javaslatokat.
+
+HASZNÁLD OFFLINE
+Megnézheted és frissítheted a telefonodon elérhető adatokat. A módosítások szinkronizálódnak, amint visszatér a kapcsolat. Az első Google-bejelentkezéshez internet kell; néhány kereséshez is kapcsolat szükséges.
+
+OSZD MEG AZZAL, AKIVEL SZERETNÉD
+Hívj meg másokat a pincédbe, és döntsd el, hogy csak megnézhetik, vagy módosíthatják is.
+
+OLVASD BE A CÍMKÉKET A TELEFONODON
+A szövegfelismerés az eszközödön fut. Az online keresések szavakat és vonalkódokat küldhetnek az Open Food Facts szolgáltatásnak. Egy fotó megnyitásához a Google Lensben a megerősítésed kell.
+
+Az ivási ablakok tájékoztató becslések. A tárolás, a stílus és az egyes palackok állapota módosíthatja az eredményt. A becslések nem jelentenek minőségi garanciát, és nem ösztönöznek alkoholfogyasztásra.
+
+A Vinoozy felnőtteknek készült. Nem árusít alkoholos italokat.
+
+A felület 25 nyelven érhető el, köztük magyarul.
+
+Katalógusadatok: Open Food Facts, ODbL 1.0 és DbCL 1.0 licenc alatt. Származtatott adatbázis és forrásmegjelölés: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Eredetmegjelölések: eAmbrosia és az adatdokumentációban felsorolt nemzeti nyilvántartások. A becsléseket a Vinoozy készíti.

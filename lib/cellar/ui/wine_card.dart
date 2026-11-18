@@ -7,6 +7,7 @@ import '../domain/cellar_filter.dart';
 import '../domain/quantity_delta.dart';
 import '../domain/wine.dart';
 import '../domain/wine_origins.dart';
+import 'origin_language.dart';
 import 'wine_badges.dart';
 import 'wine_labels.dart';
 
@@ -43,7 +44,7 @@ class WineCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final language = Localizations.localeOf(context).languageCode;
+    final language = originLanguageTagOf(context);
     final country = wine.displayCountry;
     final region = wine.region;
     final family = WineTypeFamily.of(wine.wineType);

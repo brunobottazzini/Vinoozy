@@ -1,0 +1,27 @@
+Dein Weinkeller, immer griffbereit.
+
+Vinoozy hilft dir, deine Flaschen zu ordnen und Schätzungen zu ihrer Entwicklung zu erkunden: Beginn, Höhepunkt und voraussichtliches Ende ihres Trinkfensters.
+
+WEINE HINZUFÜGEN
+Gib die Angaben von Hand ein, lies ein Etikett mit der Kamera, nutze einen Barcode oder übernimm Text aus Google Lens. Prüfe vorgeschlagene Angaben immer, bevor du speicherst.
+
+DEN KELLER IN ORDNUNG HALTEN
+Verwalte Anzahl, Jahrgänge und Eigenschaften deiner Weine. Erkunde die Übersicht, filtere deine Weine und halte Bewertungen und Notizen im Verlauf fest. Finde Speiseempfehlungen.
+
+OFFLINE ARBEITEN
+Sieh dir die Daten auf deinem Telefon an und ändere sie. Änderungen werden synchronisiert, sobald die Verbindung zurück ist. Die erste Anmeldung mit Google erfordert Internet; auch manche Suchen brauchen eine Verbindung.
+
+MIT AUSGEWÄHLTEN PERSONEN TEILEN
+Lade Personen in deinen Keller ein und lege fest, ob sie ihn nur ansehen oder auch ändern dürfen.
+
+ETIKETTEN AUF DEM TELEFON LESEN
+Die Texterkennung läuft auf deinem Gerät. Online-Suchen können Wörter und Barcodes an Open Food Facts senden. Ein Foto in Google Lens zu öffnen, erfordert deine Bestätigung.
+
+Trinkfenster sind Richtwerte. Lagerung, Stil und der Zustand jeder Flasche können das Ergebnis verändern. Schätzungen sind keine Qualitätsgarantie und keine Aufforderung zum Alkoholkonsum.
+
+Vinoozy richtet sich an Erwachsene. Die App verkauft keine alkoholischen Getränke.
+
+Oberfläche in 25 Sprachen verfügbar, darunter Deutsch.
+
+Katalogdaten von Open Food Facts unter ODbL 1.0 und DbCL 1.0. Abgeleitete Datenbank und Namensnennung: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Appellationen aus eAmbrosia und den nationalen Registern, die in der Datendokumentation aufgeführt sind. Die Schätzungen stammen von Vinoozy.

@@ -1,0 +1,27 @@
+Viinikellarisi, aina käden ulottuvilla.
+
+Vinoozy auttaa järjestämään omistamasi pullot ja tutkimaan arvioita siitä, miten ne voivat kehittyä: juonti-ikkunan alku, huippu ja suuntaa antava loppu.
+
+LISÄÄ VIINISI
+Kirjoita tiedot käsin, lue etiketti kameralla, käytä viivakoodia tai tuo tekstiä Google Lensistä. Tarkista ehdotetut tiedot aina ennen tallentamista.
+
+PIDÄ KELLARISI JÄRJESTYKSESSÄ
+Hallitse määriä, vuosikertoja ja viinien ominaisuuksia. Tutki Yleiskuvaa, suodata viinejäsi ja säilytä arvosanat ja muistiinpanot Historiassa. Löydä ehdotuksia ruokapareiksi.
+
+KÄYTÄ OFFLINE-TILASSA
+Katsele ja päivitä puhelimessasi olevia tietoja. Muutokset synkronoituvat, kun yhteys palaa. Ensimmäinen Google-kirjautuminen vaatii internetyhteyden; myös osa hauista vaatii yhteyden.
+
+JAA VALITSEMIESI IHMISTEN KANSSA
+Kutsu ihmisiä kellariisi ja valitse, voivatko he vain katsella sitä vai myös tehdä muutoksia.
+
+LUE ETIKETIT PUHELIMELLASI
+Tekstintunnistus toimii laitteessasi. Verkkohaut voivat lähettää sanoja ja viivakoodeja Open Food Facts -palveluun. Kuvan avaaminen Google Lensissä vaatii vahvistuksesi.
+
+Juonti-ikkunat ovat suuntaa antavia arvioita. Säilytys, tyyli ja kunkin pullon kunto voivat muuttaa tulosta. Arviot eivät ole laatutakuu eivätkä kehotus käyttää alkoholia.
+
+Vinoozy on tarkoitettu aikuisille. Se ei myy alkoholijuomia.
+
+Käyttöliittymä on saatavilla 25 kielellä, myös suomeksi.
+
+Luettelotiedot: Open Food Facts, lisenssit ODbL 1.0 ja DbCL 1.0. Johdettu tietokanta ja lähdemerkinnät: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Appellaatiot: eAmbrosia ja tietojen dokumentaatiossa luetellut kansalliset rekisterit. Arviot tuottaa Vinoozy.

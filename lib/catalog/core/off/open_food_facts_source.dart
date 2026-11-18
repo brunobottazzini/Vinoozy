@@ -85,6 +85,22 @@ class OpenFoodFactsSource {
   final CatalogConfig _config;
   final CatalogTimerFactory _timerFactory;
 
+  /// Language of the texts used when a product has none in the language of
+  /// the request (wine-culture-languages FR3.4).
+  static const String fallbackLanguage = 'en';
+
+  /// The fields of a search in [locale]: [fields] plus the product name in
+  /// that language and in English, the fallback.
+  static String searchFields(CatalogLocale locale) => [
+    'code',
+    'product_name',
+    for (final language in {locale.offLanguage, fallbackLanguage})
+      'product_name_$language',
+    'brands',
+    'categories_tags',
+    'origins',
+  ].join(',');
+
   /// Search in the wine category, preferring names in [locale].
   static Uri searchUri(String terms, CatalogLocale locale) =>
       Uri.https(CatalogConfig.offHost, '/cgi/search.pl', {
@@ -95,7 +111,7 @@ class OpenFoodFactsSource {
         'json': '1',
         'page_size': '$pageSize',
         'lc': locale.offLanguage,
-        'fields': fields,
+        'fields': searchFields(locale),
       });
 
   /// Product read; [barcode] is already normalised (digits only).
@@ -107,7 +123,7 @@ class OpenFoodFactsSource {
 
   /// Wines matching [terms] (BR1.2, BR1.3).
   Future<OffOutcome> search(String terms, CatalogLocale locale) =>
-      _fetch(searchUri(terms, locale), _parseSearch);
+      _fetch(searchUri(terms, locale), (json) => _parseSearch(json, locale));
 
   /// The product with the normalised [barcode] (BR1.5).
   Future<OffOutcome> product(String barcode) =>
@@ -190,12 +206,12 @@ class OpenFoodFactsSource {
     }
   }
 
-  static OffOutcome _parseSearch(Object? json) {
+  static OffOutcome _parseSearch(Object? json, CatalogLocale locale) {
     if (json is! Map || json['products'] is! List) {
       return const OffFailed(OffFailure(OffFailureKind.invalidJson));
     }
     final candidates = (json['products'] as List)
-        .map(mapProduct)
+        .map((product) => mapProduct(product, locale: locale))
         .nonNulls
         .take(pageSize)
         .toList(growable: false);
@@ -219,14 +235,18 @@ class OpenFoodFactsSource {
   /// not a wine or has no usable name. Fields of the wrong type count as
   /// absent; texts are cleaned of control characters and shortened
   /// (NFR4.4).
-  static WineCandidate? mapProduct(Object? product) {
+  ///
+  /// With a [locale] the name is the one in that language, else the English
+  /// one, else the name without a language (FR3.4); without a [locale] (a
+  /// product read by barcode) it is the name without a language.
+  static WineCandidate? mapProduct(Object? product, {CatalogLocale? locale}) {
     if (product is! Map) return null;
     final rawTags = product['categories_tags'];
     final tags = rawTags is List
         ? rawTags.whereType<String>().toSet()
         : const <String>{};
     if (!tags.contains('en:wines')) return null;
-    final name = cleanText(product['product_name'], maxName);
+    final name = _productName(product, locale);
     if (name == null) return null;
     final denomination = recognizeDenomination(name)?.displayName;
     final code = product['code'];
@@ -239,6 +259,24 @@ class OpenFoodFactsSource {
       denomination: cleanText(denomination, maxDenomination),
       barcode: code is String ? normalizeBarcode(code) : null,
     );
+  }
+
+  static String? _productName(
+    Map<Object?, Object?> product,
+    CatalogLocale? locale,
+  ) {
+    final keys = [
+      if (locale != null) ...{
+        'product_name_${locale.offLanguage}',
+        'product_name_$fallbackLanguage',
+      },
+      'product_name',
+    ];
+    for (final key in keys) {
+      final name = cleanText(product[key], maxName);
+      if (name != null) return name;
+    }
+    return null;
   }
 
   /// C1 type from the English category tags. The style (sparkling, sweet)

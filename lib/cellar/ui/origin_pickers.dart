@@ -4,6 +4,7 @@ import '../../app/ui/country_flag.dart';
 import '../../l10n/app_localizations.dart';
 import '../domain/wine_origins.dart';
 import '../domain/wine_validator.dart';
+import 'origin_language.dart';
 
 /// The country grid of the wine form (ux-redesign FR1.1): the 21 wine
 /// countries with flag and name in the app language, Old World then New
@@ -42,7 +43,7 @@ class CountryPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final language = Localizations.localeOf(context).languageCode;
+    final language = originLanguageTagOf(context);
     final scaler = MediaQuery.textScalerOf(context);
     return Column(
       key: const Key('country-picker'),
@@ -170,8 +171,9 @@ class _CountryCell extends StatelessWidget {
 
 /// "Other country…" (FR1.1, owner request 2f5fe44e): every ISO 3166-1
 /// country and territory with its flag; on top "Rare for wine" and the
-/// search, which works offline in it, en and pt-BR ignoring case and
-/// accents. [show] returns the chosen code, or `null`.
+/// search, which works offline in the language of the app (and in Italian,
+/// English and Brazilian Portuguese) ignoring case and accents
+/// (wine-culture-languages FR3.3). [show] returns the chosen code, or `null`.
 class AllCountriesSheet extends StatefulWidget {
   const AllCountriesSheet({super.key});
 
@@ -197,7 +199,7 @@ class _AllCountriesSheetState extends State<AllCountriesSheet> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final language = Localizations.localeOf(context).languageCode;
+    final language = originLanguageTagOf(context);
     final searching = _query.trim().isNotEmpty;
     final countries = WineOrigins.searchCountries(
       _query,
@@ -288,7 +290,7 @@ class _CountryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final language = Localizations.localeOf(context).languageCode;
+    final language = originLanguageTagOf(context);
     final name = country.nameIn(language);
     return ListTile(
       leading: CountryFlag(code: country.code, size: 26),
@@ -382,7 +384,7 @@ class _RegionPickerState extends State<RegionPicker> {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final language = Localizations.localeOf(context).languageCode;
+    final language = originLanguageTagOf(context);
     final country = WineOrigins.country(widget.country);
     final regions = WineOrigins.regionsOf(widget.country);
     final listed = _listed;

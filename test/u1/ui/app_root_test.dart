@@ -21,15 +21,14 @@ void main() {
       );
     });
 
-    test('other languages and Portuguese of Portugal fall back to English', () {
-      expect(resolveAppLocale([const Locale('de')]), const Locale('en'));
-      expect(resolveAppLocale([const Locale('pt', 'PT')]), const Locale('en'));
+    test('languages that are not offered fall back to English', () {
+      expect(resolveAppLocale([const Locale('ja')]), const Locale('en'));
       expect(resolveAppLocale(null), const Locale('en'));
     });
 
     test('the first supported language in the phone order wins', () {
       expect(
-        resolveAppLocale([const Locale('fr'), const Locale('it')]),
+        resolveAppLocale([const Locale('ja'), const Locale('it')]),
         const Locale('it'),
       );
     });

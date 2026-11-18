@@ -1,0 +1,31 @@
+{
+  "$comment": "Interface language of the app (appLocales in lib/app/locale_resolution.dart) -> Google Play listing folder under distribution/google-play/ and tag of its block in release-notes.txt. Checked by tool/check_publication.mjs and test/app/language_consistency_test.dart. See docs/store-languages.md.",
+  "defaultListing": "it-IT",
+  "languages": {
+    "en": "en-US",
+    "it": "it-IT",
+    "pt-BR": "pt-BR",
+    "pt": "pt-PT",
+    "fr": "fr-FR",
+    "es": "es-ES",
+    "de": "de-DE",
+    "ca": "ca",
+    "el": "el-GR",
+    "ro": "ro",
+    "hu": "hu-HU",
+    "hr": "hr",
+    "sl": "sl",
+    "cs": "cs-CZ",
+    "sk": "sk",
+    "bg": "bg",
+    "sr": "sr",
+    "ka": "ka-GE",
+    "nl": "nl-NL",
+    "pl": "pl-PL",
+    "uk": "uk",
+    "da": "da-DK",
+    "sv": "sv-SE",
+    "nb": "no-NO",
+    "fi": "fi-FI"
+  }
+}

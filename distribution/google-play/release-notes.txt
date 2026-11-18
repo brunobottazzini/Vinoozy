@@ -7,3 +7,69 @@ Version 0.2.1: fixes the crash at start of 0.2.0. Your plan (Free) now shows in 
 <pt-BR>
 Versão 0.2.1: corrige o fechamento ao abrir da 0.2.0. O seu plano (Gratuito) aparece no Perfil; o Vinoozy Plus chega em breve. As estimativas de espumantes e Champagne usam o estilo e a data de dégorgement. Página online para excluir a conta e várias correções.
 </pt-BR>
+<pt-PT>
+Versão 0.2.1: corrige o encerramento inesperado ao iniciar da 0.2.0. O seu plano (Gratuito) aparece agora no Perfil; o Vinoozy Plus chega em breve. As estimativas de espumantes e Champagne têm em conta o estilo e a data de dégorgement. Página online para eliminar a conta e várias correções.
+</pt-PT>
+<fr-FR>
+Version 0.2.1 : corrige le plantage au démarrage de la 0.2.0. Votre formule (Gratuite) apparaît désormais dans le Profil ; Vinoozy Plus arrive bientôt. Les estimations des effervescents et du Champagne tiennent compte du style et de la date de dégorgement. Page de suppression du compte en ligne et corrections diverses.
+</fr-FR>
+<es-ES>
+Versión 0.2.1: corrige el cierre inesperado al iniciar de la 0.2.0. Tu plan (Gratuito) aparece ahora en el Perfil; Vinoozy Plus llegará pronto. Las estimaciones de espumosos y Champagne tienen en cuenta el estilo y la fecha de degüelle. Página para eliminar la cuenta en línea y varias correcciones.
+</es-ES>
+<de-DE>
+Version 0.2.1: behebt den Absturz beim Start von 0.2.0. Dein Tarif (Kostenlos) steht jetzt im Profil; Vinoozy Plus kommt bald. Schätzungen für Schaumwein und Champagner berücksichtigen jetzt Stil und Degorgierdatum. Seite zum Löschen des Kontos im Web und verschiedene Korrekturen.
+</de-DE>
+<ca>
+Versió 0.2.1: corregeix el tancament inesperat en iniciar de la 0.2.0. El teu pla (Gratuït) ara apareix al Perfil; Vinoozy Plus arribarà aviat. Les estimacions d'escumosos i Champagne tenen en compte l'estil i la data de desgorjament. Pàgina per suprimir el compte en línia i diverses correccions.
+</ca>
+<el-GR>
+Έκδοση 0.2.1: διορθώνει το κλείσιμο κατά την εκκίνηση της 0.2.0. Το πρόγραμμά σας (Δωρεάν) εμφανίζεται πλέον στο Προφίλ· το Vinoozy Plus έρχεται σύντομα. Οι εκτιμήσεις για αφρώδη κρασιά και σαμπάνιες λαμβάνουν πλέον υπόψη το στιλ και την ημερομηνία ντεγκορζαρίσματος. Σελίδα στο διαδίκτυο για τη διαγραφή του λογαριασμού και διάφορες διορθώσεις.
+</el-GR>
+<ro>
+Versiunea 0.2.1: corectează oprirea la pornire din 0.2.0. Planul tău (Gratuit) apare acum în Profil; Vinoozy Plus vine în curând. Estimările pentru spumante și Champagne țin cont de stil și de data degorjării. Pagină online pentru ștergerea contului și diverse corecții.
+</ro>
+<hu-HU>
+0.2.1-es verzió: javítja a 0.2.0 indításkori összeomlását. A csomagod (Ingyenes) mostantól látszik a Profilban; a Vinoozy Plus hamarosan érkezik. A pezsgők és a Champagne becslése figyelembe veszi a stílust és a degorzsálás dátumát. Online oldal a fiók törléséhez és különféle javítások.
+</hu-HU>
+<hr>
+Verzija 0.2.1: ispravlja rušenje pri pokretanju verzije 0.2.0. U Profilu se sada prikazuje vaš plan (Besplatni); Vinoozy Plus stiže uskoro. Procjene za pjenušava vina i Champagne sada uzimaju u obzir stil i datum degoržiranja. Stranica za brisanje računa na internetu i razni ispravci.
+</hr>
+<sl>
+Različica 0.2.1: odpravlja sesutje ob zagonu različice 0.2.0. V Profilu je zdaj prikazan vaš paket (Brezplačni); Vinoozy Plus prihaja kmalu. Napovedi za peneča vina in Champagne zdaj upoštevajo slog in datum degoržiranja. Spletna stran za izbris računa in različni popravki.
+</sl>
+<cs-CZ>
+Verze 0.2.1: opravuje pád při spuštění verze 0.2.0. V Profilu se nově zobrazuje váš tarif (Bezplatný); Vinoozy Plus bude brzy. Odhady šumivých vín a Champagne nově zohledňují styl a datum degoržáže. Stránka pro smazání účtu online a různé opravy.
+</cs-CZ>
+<sk>
+Verzia 0.2.1: opravuje pád pri spustení verzie 0.2.0. V Profile sa po novom zobrazuje váš plán (Bezplatný); Vinoozy Plus bude čoskoro. Odhady šumivých vín a Champagne po novom zohľadňujú štýl a dátum degoržáže. Stránka na odstránenie účtu online a rôzne opravy.
+</sk>
+<bg>
+Версия 0.2.1: отстранен е сривът при стартиране от 0.2.0. Вашият план (Безплатен) вече се показва в Профил; Vinoozy Plus идва скоро. Прогнозите за пенливи вина и шампанско вече отчитат стила и датата на дегоржиране. Онлайн страница за изтриване на акаунта и различни поправки.
+</bg>
+<sr>
+Верзија 0.2.1: исправљено је рушење при покретању верзије 0.2.0. Ваш план (Бесплатан) сада се види у Профилу; Vinoozy Plus стиже ускоро. Процене за пенушава вина и шампањац сада узимају у обзир стил и датум дегоржирања. Страница за брисање налога на интернету и разне исправке.
+</sr>
+<ka-GE>
+ვერსია 0.2.1: გასწორდა 0.2.0 ვერსიის გაშვებისას გათიშვა. თქვენი გეგმა (უფასო) ახლა პროფილში ჩანს; Vinoozy Plus მალე გამოჩნდება. ცქრიალა ღვინოებისა და შამპანურის პროგნოზები ახლა ითვალისწინებს სტილსა და დეგორჟაჟის თარიღს. ანგარიშის ონლაინ წაშლის გვერდი და სხვადასხვა შესწორება.
+</ka-GE>
+<nl-NL>
+Versie 0.2.1: verhelpt de crash bij het opstarten van 0.2.0. Je pakket (Gratis) staat nu in je Profiel; Vinoozy Plus komt eraan. Schattingen voor mousserende wijn en Champagne houden nu rekening met de stijl en de datum van dégorgement. Online pagina om je account te verwijderen en diverse verbeteringen.
+</nl-NL>
+<pl-PL>
+Wersja 0.2.1: naprawia awarię przy uruchamianiu wersji 0.2.0. W Profilu widać teraz Twój plan (Bezpłatny); Vinoozy Plus już wkrótce. Szacunki dla win musujących i Champagne uwzględniają styl i datę degorżowania. Strona do usuwania konta online i różne poprawki.
+</pl-PL>
+<uk>
+Версія 0.2.1: виправлено збій під час запуску у версії 0.2.0. Ваш план (Безплатний) тепер видно в Профілі; Vinoozy Plus незабаром з’явиться. Прогнози для ігристих вин і шампанського тепер враховують стиль і дату дегоржажу. Онлайн-сторінка для видалення облікового запису та різні виправлення.
+</uk>
+<da-DK>
+Version 0.2.1: retter nedbruddet ved start i 0.2.0. Din pakke (Gratis) vises nu i Profil; Vinoozy Plus er på vej. Estimater for mousserende vin og Champagne tager nu højde for stil og degorgeringsdato. Onlineside til sletning af kontoen og diverse rettelser.
+</da-DK>
+<sv-SE>
+Version 0.2.1: åtgärdar kraschen vid start i 0.2.0. Ditt abonnemang (Gratis) visas nu i Profil; Vinoozy Plus är på väg. Uppskattningar för mousserande vin och Champagne tar nu hänsyn till stil och degorgeringsdatum. Webbsida för att radera kontot och diverse rättningar.
+</sv-SE>
+<no-NO>
+Versjon 0.2.1: retter krasjen ved oppstart i 0.2.0. Pakken din (Gratis) vises nå i Profil; Vinoozy Plus er på vei. Anslag for musserende vin og Champagne tar nå hensyn til stil og degorgeringsdato. Nettside for å slette kontoen og diverse rettelser.
+</no-NO>
+<fi-FI>
+Versio 0.2.1: korjaa version 0.2.0 kaatumisen käynnistyksessä. Pakettisi (Ilmainen) näkyy nyt Profiilissa; Vinoozy Plus on tulossa pian. Kuohuviinien ja Champagnen arviot huomioivat nyt tyylin ja degorgointipäivän. Verkkosivu tilin poistamiseen ja useita korjauksia.
+</fi-FI>

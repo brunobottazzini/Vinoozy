@@ -1,5 +1,8 @@
 import 'package:estimation/estimation.dart';
 
+import '../../core/text_folding.dart';
+import 'origin_country_names.g.dart';
+
 // Countries and wine regions of the ux-redesign intent (FR1.1-FR1.5): every
 // list lives in the app code, so the pickers and the search work offline
 // and cost no Firestore read (NFR3). The region lists, the canonical names
@@ -7,8 +10,21 @@ import 'package:estimation/estimation.dart';
 // (project.md correction of 2026-11-04); the reasons are in code-summary.md
 // of the intent. Pure Dart: no Flutter import.
 
-/// A country or territory of ISO 3166-1 with its names in the three
-/// interface languages (it, en, pt-BR).
+/// The origin language tags that have a name for every country: `it`, `en`
+/// and `pt` (Brazilian Portuguese, the tag used since the first release)
+/// written by hand below, then the generated ones (`pt-PT` is European
+/// Portuguese). `lib/cellar/ui/origin_language.dart` maps a locale to its tag.
+final List<String> originLanguageTags = List.unmodifiable([
+  'it',
+  'en',
+  'pt',
+  ...originCountryNames.keys,
+]);
+
+/// A country or territory of ISO 3166-1 with its hand-written names in
+/// Italian, English and Brazilian Portuguese; the names in the other
+/// interface languages are generated from Unicode CLDR
+/// (`origin_country_names.g.dart`).
 class OriginCountry {
   const OriginCountry(this.code, this.it, this.en, this.pt);
 
@@ -18,11 +34,13 @@ class OriginCountry {
   final String en;
   final String pt;
 
-  /// The name in [languageCode] (`it`, `en` or `pt`); English otherwise.
+  /// The name in the origin language tag [languageCode] (one of
+  /// [originLanguageTags]); English for any other value.
   String nameIn(String languageCode) => switch (languageCode) {
     'it' => it,
     'pt' => pt,
-    _ => en,
+    'en' => en,
+    _ => originCountryNames[languageCode]?[code] ?? en,
   };
 
   /// The flag emoji built from the two regional indicator symbols.
@@ -36,29 +54,53 @@ class OriginCountry {
 /// never depends on the language, review R-02), the translations are only
 /// shown.
 class WineRegion {
-  const WineRegion(this.canonical, {this.it, this.en, this.pt, this.aliases});
+  const WineRegion(
+    this.canonical, {
+    this.it,
+    this.en,
+    this.pt,
+    this.names,
+    this.aliases,
+  });
 
   /// Stored value, e.g. `Bourgogne`, `Piemonte`, `Serra Gaúcha`.
   final String canonical;
   final String? it;
   final String? en;
+
+  /// Brazilian Portuguese (origin language tag `pt`).
   final String? pt;
+
+  /// Names by origin language tag for the other interface languages, only
+  /// where the language has a name in common use (`Burgund`, `Borgoña`);
+  /// a language without an entry shows the canonical name (FR3.2).
+  final Map<String, String>? names;
 
   /// Other written forms recognised as this region (e.g. `Alto Adige`).
   final List<String>? aliases;
 
-  /// The shown name in [languageCode], the canonical one when there is no
-  /// translation.
+  /// The shown name in the origin language tag [languageCode], the canonical
+  /// one when there is no translation. European Portuguese (`pt-PT`) uses
+  /// the Brazilian form unless its spelling differs.
   String nameIn(String languageCode) =>
       switch (languageCode) {
         'it' => it,
         'pt' => pt,
-        _ => en,
+        'en' => en,
+        'pt-PT' => names?['pt-PT'] ?? pt,
+        _ => names?[languageCode],
       } ??
       canonical;
 
   /// Every written form: canonical, translations and aliases.
-  Iterable<String> get forms => [canonical, ?it, ?en, ?pt, ...?aliases];
+  Iterable<String> get forms => [
+    canonical,
+    ?it,
+    ?en,
+    ?pt,
+    ...?names?.values,
+    ...?aliases,
+  ];
 
   @override
   String toString() => 'WineRegion($canonical)';
@@ -123,43 +165,9 @@ class OriginSelection {
 }
 
 /// Lower case, accents removed, every other character a single space: the
-/// form used to compare names in it, en and pt-BR (search and matching).
-String foldOriginText(String text) {
-  final buffer = StringBuffer();
-  var pendingSpace = false;
-  for (final rune in text.toLowerCase().runes) {
-    final folded = _folding[rune] ?? _plain(rune);
-    if (folded == null) {
-      pendingSpace = buffer.isNotEmpty;
-      continue;
-    }
-    if (pendingSpace) buffer.write(' ');
-    pendingSpace = false;
-    buffer.write(folded);
-  }
-  return buffer.toString();
-}
-
-String? _plain(int rune) {
-  final isLetter = rune >= 0x61 && rune <= 0x7A;
-  final isDigit = rune >= 0x30 && rune <= 0x39;
-  return isLetter || isDigit ? String.fromCharCode(rune) : null;
-}
-
-/// Latin-1 and Latin Extended-A letters of the country and region names.
-const Map<int, String> _folding = {
-  0xE0: 'a', 0xE1: 'a', 0xE2: 'a', 0xE3: 'a', 0xE4: 'a', 0xE5: 'a', //
-  0xE6: 'ae', 0xE7: 'c', 0xE8: 'e', 0xE9: 'e', 0xEA: 'e', 0xEB: 'e', //
-  0xEC: 'i', 0xED: 'i', 0xEE: 'i', 0xEF: 'i', 0xF1: 'n', 0xF2: 'o', //
-  0xF3: 'o', 0xF4: 'o', 0xF5: 'o', 0xF6: 'o', 0xF8: 'o', 0xF9: 'u', //
-  0xFA: 'u', 0xFB: 'u', 0xFC: 'u', 0xFD: 'y', 0xFF: 'y', 0xDF: 'ss', //
-  0x101: 'a', 0x103: 'a', 0x105: 'a', 0x107: 'c', 0x10D: 'c', 0x111: 'd', //
-  0x113: 'e', 0x117: 'e', 0x119: 'e', 0x11B: 'e', 0x11F: 'g', 0x12B: 'i', //
-  0x131: 'i', 0x142: 'l', 0x144: 'n', 0x148: 'n', 0x14D: 'o', 0x151: 'o', //
-  0x153: 'oe', 0x159: 'r', 0x15B: 's', 0x15F: 's', 0x161: 's', 0x163: 't', //
-  0x165: 't', 0x16B: 'u', 0x16F: 'u', 0x171: 'u', 0x17A: 'z', 0x17C: 'z', //
-  0x17E: 'z', 0x219: 's', 0x21B: 't',
-};
+/// form used to compare names in every interface language (search and
+/// matching). See [foldText].
+String foldOriginText(String text) => foldText(text);
 
 /// Countries, regions, flags and the matching rules of FR1.
 abstract final class WineOrigins {
@@ -222,10 +230,10 @@ abstract final class WineOrigins {
     return [for (final entry in keyed) entry.country];
   }
 
-  /// Countries whose name in any of the three languages contains [query],
-  /// ignoring case and accents, or whose code equals it; the country of the
-  /// code first, then by name in [languageCode]. An empty query returns
-  /// every country.
+  /// Countries whose name in [languageCode], Italian, English or Brazilian
+  /// Portuguese contains [query], ignoring case and accents, or whose code
+  /// equals it; the country of the code first, then by name in
+  /// [languageCode]. An empty query returns every country.
   static List<OriginCountry> searchCountries(
     String query, {
     String languageCode = 'en',
@@ -238,7 +246,8 @@ abstract final class WineOrigins {
       ?byCode,
       for (final country in sorted)
         if (country != byCode &&
-            (foldOriginText(country.it).contains(needle) ||
+            (foldOriginText(country.nameIn(languageCode)).contains(needle) ||
+                foldOriginText(country.it).contains(needle) ||
                 foldOriginText(country.en).contains(needle) ||
                 foldOriginText(country.pt).contains(needle)))
           country,
@@ -462,42 +471,242 @@ const Map<String, List<WineRegion>> _regions = {
   // mockup 3, then the others. Canonical names are the Italian ones, the
   // same strings as the denomination catalog of the estimation package.
   'IT': [
-    WineRegion('Piemonte', en: 'Piedmont'),
-    WineRegion('Toscana', en: 'Tuscany'),
-    WineRegion('Veneto'),
-    WineRegion('Sicilia', en: 'Sicily', pt: 'Sicília'),
-    WineRegion('Puglia', en: 'Apulia', pt: 'Apúlia'),
-    WineRegion('Campania', pt: 'Campânia'),
-    WineRegion('Friuli-Venezia Giulia', aliases: ['Friuli']),
+    WineRegion(
+      'Piemonte',
+      en: 'Piedmont',
+      names: {
+        'fr': 'Piémont', 'es': 'Piamonte', 'de': 'Piemont', 'ca': 'Piemont', //
+        'el': 'Πεδεμόντιο', 'ro': 'Piemont', 'hu': 'Piemont', //
+        'hr': 'Pijemont', 'sl': 'Piemont', 'cs': 'Piemont', 'sk': 'Piemont', //
+        'bg': 'Пиемонт', 'sr': 'Пијемонт', 'ka': 'პიემონტი', //
+        'nl': 'Piëmont', 'pl': 'Piemont', 'uk': 'Пʼємонт',
+      },
+    ),
+    WineRegion(
+      'Toscana',
+      en: 'Tuscany',
+      names: {
+        'fr': 'Toscane', 'de': 'Toskana', 'el': 'Τοσκάνη', 'hu': 'Toszkána', //
+        'hr': 'Toskana', 'sl': 'Toskana', 'cs': 'Toskánsko', //
+        'sk': 'Toskánsko', 'bg': 'Тоскана', 'sr': 'Тоскана', //
+        'ka': 'ტოსკანა', 'pl': 'Toskania', 'uk': 'Тоскана',
+      },
+    ),
+    WineRegion(
+      'Veneto',
+      names: {
+        'pt-PT': 'Véneto', 'fr': 'Vénétie', 'es': 'Véneto', //
+        'de': 'Venetien', 'ca': 'Vèneto', 'el': 'Βένετο', 'cs': 'Benátsko', //
+        'sk': 'Benátsko', 'bg': 'Венето', 'sr': 'Венето', 'ka': 'ვენეტო', //
+        'uk': 'Венето',
+      },
+    ),
+    WineRegion(
+      'Sicilia',
+      en: 'Sicily',
+      pt: 'Sicília',
+      names: {
+        'fr': 'Sicile', 'de': 'Sizilien', 'ca': 'Sicília', 'el': 'Σικελία', //
+        'hu': 'Szicília', 'hr': 'Sicilija', 'sl': 'Sicilija', //
+        'cs': 'Sicílie', 'sk': 'Sicília', 'bg': 'Сицилия', //
+        'sr': 'Сицилија', 'ka': 'სიცილია', 'nl': 'Sicilië', //
+        'pl': 'Sycylia', 'uk': 'Сицилія', 'da': 'Sicilien', //
+        'sv': 'Sicilien', 'fi': 'Sisilia',
+      },
+    ),
+    WineRegion(
+      'Puglia',
+      en: 'Apulia',
+      pt: 'Apúlia',
+      names: {
+        'fr': 'Pouilles', 'es': 'Apulia', 'de': 'Apulien', 'ca': 'Pulla', //
+        'el': 'Απουλία', 'ro': 'Apulia', 'hr': 'Apulija', 'sl': 'Apulija', //
+        'cs': 'Apulie', 'sk': 'Apúlia', 'bg': 'Апулия', 'sr': 'Апулија', //
+        'ka': 'აპულია', 'nl': 'Apulië', 'pl': 'Apulia', 'uk': 'Апулія', //
+        'da': 'Apulien', 'sv': 'Apulien', 'fi': 'Apulia',
+      },
+    ),
+    WineRegion(
+      'Campania',
+      pt: 'Campânia',
+      names: {
+        'fr': 'Campanie', 'de': 'Kampanien', 'ca': 'Campània', //
+        'hr': 'Kampanija', 'sl': 'Kampanija', 'cs': 'Kampánie', //
+        'sk': 'Kampánia', 'bg': 'Кампания', 'sr': 'Кампанија', //
+        'ka': 'კამპანია', 'nl': 'Campanië', 'pl': 'Kampania', //
+        'uk': 'Кампанія', 'sv': 'Kampanien',
+      },
+    ),
+    WineRegion(
+      'Friuli-Venezia Giulia',
+      names: {
+        'fr': 'Frioul-Vénétie Julienne', 'es': 'Friul-Venecia Julia', //
+        'de': 'Friaul-Julisch Venetien', //
+        'hr': 'Furlanija-Julijska krajina', //
+        'sl': 'Furlanija - Julijska krajina',
+      },
+      aliases: ['Friuli'],
+    ),
     WineRegion(
       'Trentino-Alto Adige',
       en: 'Trentino-South Tyrol',
       pt: 'Trentino-Alto Ádige',
+      names: {
+        'fr': 'Trentin-Haut-Adige', 'es': 'Trentino-Alto Adigio', //
+        'de': 'Trentino-Südtirol',
+      },
       aliases: ['Trentino', 'Alto Adige', 'Südtirol', 'South Tyrol'],
     ),
-    WineRegion('Lombardia', en: 'Lombardy'),
-    WineRegion('Sardegna', en: 'Sardinia', pt: 'Sardenha'),
-    WineRegion('Abruzzo', pt: 'Abruzos'),
-    WineRegion('Marche', pt: 'Marcas'),
-    WineRegion('Umbria', pt: 'Úmbria'),
-    WineRegion('Emilia-Romagna'),
-    WineRegion('Lazio', pt: 'Lácio'),
-    WineRegion('Basilicata'),
-    WineRegion('Calabria', pt: 'Calábria'),
-    WineRegion('Liguria', pt: 'Ligúria'),
-    WineRegion("Valle d'Aosta", en: 'Aosta Valley', pt: 'Vale de Aosta'),
+    WineRegion(
+      'Lombardia',
+      en: 'Lombardy',
+      names: {
+        'fr': 'Lombardie', 'es': 'Lombardía', 'de': 'Lombardei', //
+        'el': 'Λομβαρδία', 'hr': 'Lombardija', 'sl': 'Lombardija', //
+        'cs': 'Lombardie', 'sk': 'Lombardsko', 'bg': 'Ломбардия', //
+        'sr': 'Ломбардија', 'ka': 'ლომბარდია', 'nl': 'Lombardije', //
+        'uk': 'Ломбардія', 'da': 'Lombardiet', 'sv': 'Lombardiet',
+      },
+    ),
+    WineRegion(
+      'Sardegna',
+      en: 'Sardinia',
+      pt: 'Sardenha',
+      names: {
+        'fr': 'Sardaigne', 'es': 'Cerdeña', 'de': 'Sardinien', //
+        'ca': 'Sardenya', 'el': 'Σαρδηνία', 'ro': 'Sardinia', //
+        'hu': 'Szardínia', 'hr': 'Sardinija', 'sl': 'Sardinija', //
+        'cs': 'Sardinie', 'sk': 'Sardínia', 'bg': 'Сардиния', //
+        'sr': 'Сардинија', 'ka': 'სარდინია', 'nl': 'Sardinië', //
+        'pl': 'Sardynia', 'uk': 'Сардинія', 'da': 'Sardinien', //
+        'sv': 'Sardinien', 'nb': 'Sardinia', 'fi': 'Sardinia',
+      },
+    ),
+    WineRegion(
+      'Abruzzo',
+      pt: 'Abruzos',
+      names: {
+        'fr': 'Abruzzes', 'es': 'Abruzos', 'de': 'Abruzzen', //
+        'ca': 'Abruços', 'nl': 'Abruzzen', 'pl': 'Abruzja',
+      },
+    ),
+    WineRegion(
+      'Marche',
+      pt: 'Marcas',
+      names: {
+        'fr': 'Marches', 'es': 'Marcas', 'de': 'Marken', 'ca': 'Marques', //
+        'nl': 'Marken',
+      },
+    ),
+    WineRegion(
+      'Umbria',
+      pt: 'Úmbria',
+      names: {
+        'fr': 'Ombrie', 'de': 'Umbrien', 'ca': 'Úmbria', 'el': 'Ούμβρια', //
+        'hr': 'Umbrija', 'sl': 'Umbrija', 'cs': 'Umbrie', 'bg': 'Умбрия', //
+        'sr': 'Умбрија', 'nl': 'Umbrië', 'uk': 'Умбрія', 'da': 'Umbrien', //
+        'sv': 'Umbrien',
+      },
+    ),
+    WineRegion(
+      'Emilia-Romagna',
+      names: {
+        'pt-PT': 'Emília-Romanha', 'fr': 'Émilie-Romagne', //
+        'es': 'Emilia-Romaña', 'ca': 'Emília-Romanya', //
+        'pl': 'Emilia-Romania',
+      },
+    ),
+    WineRegion(
+      'Lazio',
+      pt: 'Lácio',
+      names: {
+        'fr': 'Latium', 'es': 'Lacio', 'de': 'Latium', 'ca': 'Laci', //
+        'nl': 'Latium', 'pl': 'Lacjum',
+      },
+    ),
+    WineRegion('Basilicata', names: {'fr': 'Basilicate'}),
+    WineRegion(
+      'Calabria',
+      pt: 'Calábria',
+      names: {
+        'fr': 'Calabre', 'de': 'Kalabrien', 'ca': 'Calàbria', //
+        'el': 'Καλαβρία', 'hr': 'Kalabrija', 'sl': 'Kalabrija', //
+        'cs': 'Kalábrie', 'sk': 'Kalábria', 'bg': 'Калабрия', //
+        'sr': 'Калабрија', 'nl': 'Calabrië', 'pl': 'Kalabria', //
+        'uk': 'Калабрія', 'da': 'Calabrien', 'sv': 'Kalabrien',
+      },
+    ),
+    WineRegion(
+      'Liguria',
+      pt: 'Ligúria',
+      names: {
+        'fr': 'Ligurie', 'de': 'Ligurien', 'ca': 'Ligúria', //
+        'el': 'Λιγουρία', 'hr': 'Ligurija', 'sl': 'Ligurija', //
+        'cs': 'Ligurie', 'bg': 'Лигурия', 'sr': 'Лигурија', //
+        'nl': 'Ligurië', 'uk': 'Лігурія', 'da': 'Ligurien', //
+        'sv': 'Ligurien',
+      },
+    ),
+    WineRegion(
+      "Valle d'Aosta",
+      en: 'Aosta Valley',
+      pt: 'Vale de Aosta',
+      names: {
+        'fr': "Vallée d'Aoste", 'es': 'Valle de Aosta', 'de': 'Aostatal', //
+        'ca': "Vall d'Aosta", 'hr': 'Dolina Aoste', 'sl': 'Dolina Aoste', //
+        'cs': 'Údolí Aosty', 'pl': 'Dolina Aosty', 'da': 'Aostadalen', //
+        'sv': 'Aostadalen', 'nb': 'Aostadalen', 'fi': 'Aostanlaakso',
+      },
+    ),
     WineRegion('Molise'),
   ],
   // The 11 regions named by FR1.2, French canonical names.
   'FR': [
-    WineRegion('Bordeaux'),
-    WineRegion('Bourgogne', it: 'Borgogna', en: 'Burgundy', pt: 'Borgonha'),
-    WineRegion('Champagne'),
+    WineRegion(
+      'Bordeaux',
+      names: {
+        'pt-PT': 'Bordéus', 'es': 'Burdeos', 'ca': 'Bordeus', //
+        'el': 'Μπορντό', 'bg': 'Бордо', 'sr': 'Бордо', 'ka': 'ბორდო', //
+        'uk': 'Бордо',
+      },
+    ),
+    WineRegion(
+      'Bourgogne',
+      it: 'Borgogna',
+      en: 'Burgundy',
+      pt: 'Borgonha',
+      names: {
+        'es': 'Borgoña', 'de': 'Burgund', 'ca': 'Borgonya', //
+        'el': 'Βουργουνδία', 'ro': 'Burgundia', 'hu': 'Burgundia', //
+        'hr': 'Burgundija', 'sl': 'Burgundija', 'cs': 'Burgundsko', //
+        'sk': 'Burgundsko', 'bg': 'Бургундия', 'sr': 'Бургундија', //
+        'ka': 'ბურგუნდია', 'pl': 'Burgundia', 'uk': 'Бургундія', //
+        'nb': 'Burgund', 'fi': 'Burgundi',
+      },
+    ),
+    WineRegion(
+      'Champagne',
+      names: {
+        'es': 'Champaña', 'ca': 'Xampanya', 'hr': 'Šampanja', //
+        'sl': 'Šampanja', 'bg': 'Шампан', 'sr': 'Шампања', //
+        'ka': 'შამპანი', 'pl': 'Szampania', 'uk': 'Шампань',
+      },
+    ),
     WineRegion(
       'Vallée du Rhône',
       it: 'Valle del Rodano',
       en: 'Rhône Valley',
       pt: 'Vale do Ródano',
+      names: {
+        'es': 'Valle del Ródano', 'de': 'Rhônetal', //
+        'ca': 'Vall del Roine', 'el': 'Κοιλάδα του Ροδανού', //
+        'ro': 'Valea Ronului', 'hu': 'Rhône-völgy', 'hr': 'Dolina Rhône', //
+        'sl': 'Dolina Rone', 'cs': 'Údolí Rhôny', 'sk': 'Údolie Rhôny', //
+        'bg': 'Долината на Рона', 'sr': 'Долина Роне', //
+        'ka': 'რონის ველი', 'nl': 'Rhônedal', 'pl': 'Dolina Rodanu', //
+        'uk': 'Долина Рони', 'da': 'Rhônedalen', 'sv': 'Rhônedalen', //
+        'nb': 'Rhônedalen', 'fi': 'Rhônen laakso',
+      },
       aliases: ['Rhône'],
     ),
     WineRegion(
@@ -505,35 +714,86 @@ const Map<String, List<WineRegion>> _regions = {
       it: 'Valle della Loira',
       en: 'Loire Valley',
       pt: 'Vale do Loire',
+      names: {
+        'es': 'Valle del Loira', 'de': 'Loiretal', 'ca': 'Vall del Loira', //
+        'el': 'Κοιλάδα του Λίγηρα', 'ro': 'Valea Loarei', //
+        'hu': 'Loire-völgy', 'hr': 'Dolina Loire', 'sl': 'Dolina Loare', //
+        'cs': 'Údolí Loiry', 'sk': 'Údolie Loiry', //
+        'bg': 'Долината на Лоара', 'sr': 'Долина Лоаре', //
+        'ka': 'ლუარის ველი', 'nl': 'Loiredal', 'pl': 'Dolina Loary', //
+        'uk': 'Долина Луари', 'da': 'Loiredalen', 'sv': 'Loiredalen', //
+        'nb': 'Loiredalen', 'fi': 'Loiren laakso',
+      },
       aliases: ['Loire'],
     ),
-    WineRegion('Alsace', it: 'Alsazia', pt: 'Alsácia'),
+    WineRegion(
+      'Alsace',
+      it: 'Alsazia',
+      pt: 'Alsácia',
+      names: {
+        'es': 'Alsacia', 'de': 'Elsass', 'ca': 'Alsàcia', 'el': 'Αλσατία', //
+        'ro': 'Alsacia', 'hu': 'Elzász', 'hr': 'Alzas', 'sl': 'Alzacija', //
+        'cs': 'Alsasko', 'sk': 'Alsasko', 'bg': 'Елзас', 'sr': 'Алзас', //
+        'ka': 'ელზასი', 'nl': 'Elzas', 'pl': 'Alzacja', 'uk': 'Ельзас',
+      },
+    ),
     WineRegion(
       'Languedoc-Roussillon',
       it: 'Linguadoca-Rossiglione',
+      names: {'es': 'Languedoc-Rosellón', 'ca': 'Llenguadoc-Rosselló'},
       aliases: ['Languedoc'],
     ),
-    WineRegion('Provence', it: 'Provenza', pt: 'Provença'),
-    WineRegion('Beaujolais'),
+    WineRegion(
+      'Provence',
+      it: 'Provenza',
+      pt: 'Provença',
+      names: {
+        'es': 'Provenza', 'ca': 'Provença', 'el': 'Προβηγκία', //
+        'hr': 'Provansa', 'sl': 'Provansa', 'bg': 'Прованс', //
+        'sr': 'Прованса', 'ka': 'პროვანსი', 'pl': 'Prowansja', //
+        'uk': 'Прованс',
+      },
+    ),
+    WineRegion(
+      'Beaujolais',
+      names: {'bg': 'Божоле', 'sr': 'Божоле', 'uk': 'Божоле'},
+    ),
     WineRegion('Jura'),
     WineRegion(
       'Sud-Ouest',
       it: 'Sud-Ovest',
       en: 'South West France',
       pt: 'Sudoeste',
+      names: {
+        'es': 'Suroeste', 'de': 'Südwestfrankreich', 'ca': 'Sud-oest', //
+      },
     ),
   ],
   'ES': [
-    WineRegion('Rioja'),
+    WineRegion(
+      'Rioja',
+      names: {
+        'el': 'Ριόχα', 'bg': 'Риоха', 'sr': 'Риоха', 'ka': 'რიოხა', //
+        'uk': 'Ріоха',
+      },
+    ),
     WineRegion('Ribera del Duero'),
-    WineRegion('Priorat', aliases: ['Priorato']),
-    WineRegion('Penedès'),
+    WineRegion('Priorat', names: {'es': 'Priorato'}, aliases: ['Priorato']),
+    WineRegion('Penedès', names: {'es': 'Penedés'}),
     WineRegion('Rías Baixas'),
     WineRegion('Rueda'),
     WineRegion('Toro'),
-    WineRegion('Jerez', en: 'Jerez (Sherry)', aliases: ['Sherry']),
+    WineRegion(
+      'Jerez',
+      en: 'Jerez (Sherry)',
+      names: {
+        'fr': 'Xérès', 'ca': 'Xerès', 'bg': 'Херес', 'sr': 'Херес', //
+        'uk': 'Херес',
+      },
+      aliases: ['Sherry'],
+    ),
     WineRegion('La Mancha'),
-    WineRegion('Navarra', en: 'Navarre'),
+    WineRegion('Navarra', en: 'Navarre', names: {'fr': 'Navarre'}),
     WineRegion('Bierzo'),
   ],
   'PT': [
@@ -542,30 +802,98 @@ const Map<String, List<WineRegion>> _regions = {
     WineRegion('Alentejo'),
     WineRegion('Dão'),
     WineRegion('Bairrada'),
-    WineRegion('Lisboa', it: 'Lisbona', en: 'Lisbon'),
-    WineRegion('Tejo', it: 'Tago', en: 'Tagus'),
+    WineRegion(
+      'Lisboa',
+      it: 'Lisbona',
+      en: 'Lisbon',
+      names: {
+        'fr': 'Lisbonne', 'de': 'Lissabon', 'el': 'Λισαβόνα', //
+        'ro': 'Lisabona', 'hu': 'Lisszabon', 'hr': 'Lisabon', //
+        'sl': 'Lizbona', 'cs': 'Lisabon', 'sk': 'Lisabon', //
+        'bg': 'Лисабон', 'sr': 'Лисабон', 'ka': 'ლისაბონი', //
+        'nl': 'Lissabon', 'pl': 'Lizbona', 'uk': 'Лісабон', //
+        'da': 'Lissabon', 'sv': 'Lissabon', 'fi': 'Lissabon',
+      },
+    ),
+    WineRegion(
+      'Tejo',
+      it: 'Tago',
+      en: 'Tagus',
+      names: {'fr': 'Tage', 'es': 'Tajo'},
+    ),
     WineRegion(
       'Península de Setúbal',
       it: 'Penisola di Setúbal',
       en: 'Setúbal Peninsula',
+      names: {'fr': 'Péninsule de Setúbal', 'de': 'Halbinsel Setúbal'},
     ),
-    WineRegion('Madeira'),
-    WineRegion('Açores', it: 'Azzorre', en: 'Azores'),
+    WineRegion(
+      'Madeira',
+      names: {
+        'fr': 'Madère', 'el': 'Μαδέρα', 'bg': 'Мадейра', 'sr': 'Мадеира', //
+        'ka': 'მადეირა', 'uk': 'Мадейра',
+      },
+    ),
+    WineRegion(
+      'Açores',
+      it: 'Azzorre',
+      en: 'Azores',
+      names: {
+        'es': 'Azores', 'de': 'Azoren', 'el': 'Αζόρες', 'ro': 'Azore', //
+        'hu': 'Azori-szigetek', 'hr': 'Azori', 'sl': 'Azori', //
+        'cs': 'Azory', 'sk': 'Azory', 'bg': 'Азорски острови', //
+        'sr': 'Азори', 'ka': 'აზორის კუნძულები', 'nl': 'Azoren', //
+        'pl': 'Azory', 'uk': 'Азорські острови', 'da': 'Azorerne', //
+        'sv': 'Azorerna', 'nb': 'Azorene', 'fi': 'Azorit',
+      },
+    ),
   ],
   // The 13 German Anbaugebiete.
   'DE': [
-    WineRegion('Mosel', it: 'Mosella', pt: 'Mosela'),
+    WineRegion(
+      'Mosel',
+      it: 'Mosella',
+      pt: 'Mosela',
+      names: {
+        'fr': 'Moselle', 'es': 'Mosela', 'ca': 'Mosel·la', 'cs': 'Mosela', //
+        'sk': 'Mosela', 'bg': 'Мозел', 'sr': 'Мозел', 'nl': 'Moezel', //
+        'pl': 'Mozela', 'uk': 'Мозель',
+      },
+    ),
     WineRegion('Rheingau'),
-    WineRegion('Pfalz', it: 'Palatinato', en: 'Palatinate', pt: 'Palatinado'),
+    WineRegion(
+      'Pfalz',
+      it: 'Palatinato',
+      en: 'Palatinate',
+      pt: 'Palatinado',
+      names: {
+        'fr': 'Palatinat', 'es': 'Palatinado', 'ca': 'Palatinat', //
+        'cs': 'Falc', 'sk': 'Falcko', 'nl': 'Palts', 'pl': 'Palatynat',
+      },
+    ),
     WineRegion(
       'Rheinhessen',
       it: 'Assia Renana',
       en: 'Rhinehesse',
       pt: 'Hesse Renana',
+      names: {
+        'fr': 'Hesse rhénane', 'es': 'Hesse Renano', //
+        'cs': 'Rýnské Hesensko', 'nl': 'Rijn-Hessen', //
+        'pl': 'Hesja Nadreńska',
+      },
     ),
     WineRegion('Nahe'),
-    WineRegion('Baden'),
-    WineRegion('Franken', it: 'Franconia', en: 'Franconia', pt: 'Francônia'),
+    WineRegion('Baden', names: {'fr': 'Bade'}),
+    WineRegion(
+      'Franken',
+      it: 'Franconia',
+      en: 'Franconia',
+      pt: 'Francônia',
+      names: {
+        'pt-PT': 'Francónia', 'fr': 'Franconie', 'es': 'Franconia', //
+        'ca': 'Francònia', 'cs': 'Franky', 'pl': 'Frankonia',
+      },
+    ),
     WineRegion('Württemberg'),
     WineRegion('Ahr'),
     WineRegion(
@@ -573,9 +901,22 @@ const Map<String, List<WineRegion>> _regions = {
       it: 'Medio Reno',
       en: 'Middle Rhine',
       pt: 'Médio Reno',
+      names: {'fr': 'Rhin moyen', 'es': 'Rin Medio', 'nl': 'Middenrijn'},
     ),
     WineRegion('Saale-Unstrut'),
-    WineRegion('Sachsen', it: 'Sassonia', en: 'Saxony', pt: 'Saxônia'),
+    WineRegion(
+      'Sachsen',
+      it: 'Sassonia',
+      en: 'Saxony',
+      pt: 'Saxônia',
+      names: {
+        'pt-PT': 'Saxónia', 'fr': 'Saxe', 'es': 'Sajonia', //
+        'ca': 'Saxònia', 'el': 'Σαξονία', 'hu': 'Szászország', //
+        'hr': 'Saska', 'sl': 'Saška', 'cs': 'Sasko', 'sk': 'Sasko', //
+        'bg': 'Саксония', 'sr': 'Саксонија', 'nl': 'Saksen', //
+        'pl': 'Saksonia', 'uk': 'Саксонія', 'fi': 'Saksi',
+      },
+    ),
     WineRegion('Hessische Bergstraße'),
   ],
   'AT': [
@@ -587,36 +928,157 @@ const Map<String, List<WineRegion>> _regions = {
     WineRegion('Carnuntum'),
     WineRegion('Thermenregion'),
     WineRegion('Burgenland'),
-    WineRegion('Steiermark', it: 'Stiria', en: 'Styria', pt: 'Estíria'),
-    WineRegion('Wien', it: 'Vienna', en: 'Vienna', pt: 'Viena'),
+    // Slovenian and Croatian call Austrian Styria "Štajerska", the canonical
+    // name of the Slovenian region: Slovenian gets the qualified form and
+    // Croatian the canonical one, so a region text never matches both.
+    WineRegion(
+      'Steiermark',
+      it: 'Stiria',
+      en: 'Styria',
+      pt: 'Estíria',
+      names: {
+        'fr': 'Styrie', 'es': 'Estiria', 'ca': 'Estíria', //
+        'hu': 'Stájerország', 'sl': 'Avstrijska Štajerska', //
+        'cs': 'Štýrsko', 'sk': 'Štajersko', 'bg': 'Щирия', //
+        'nl': 'Stiermarken', 'pl': 'Styria', 'uk': 'Штирія',
+      },
+    ),
+    WineRegion(
+      'Wien',
+      it: 'Vienna',
+      en: 'Vienna',
+      pt: 'Viena',
+      names: {
+        'fr': 'Vienne', 'es': 'Viena', 'ca': 'Viena', 'el': 'Βιέννη', //
+        'ro': 'Viena', 'hu': 'Bécs', 'hr': 'Beč', 'sl': 'Dunaj', //
+        'cs': 'Vídeň', 'sk': 'Viedeň', 'bg': 'Виена', 'sr': 'Беч', //
+        'ka': 'ვენა', 'nl': 'Wenen', 'pl': 'Wiedeń', 'uk': 'Відень',
+      },
+    ),
   ],
   'CH': [
-    WineRegion('Valais', it: 'Vallese', aliases: ['Wallis']),
-    WineRegion('Vaud'),
-    WineRegion('Genève', it: 'Ginevra', en: 'Geneva', pt: 'Genebra'),
-    WineRegion('Ticino'),
-    WineRegion('Neuchâtel'),
-    WineRegion('Graubünden', it: 'Grigioni', en: 'Grisons', pt: 'Grisões'),
-    WineRegion('Schaffhausen', it: 'Sciaffusa'),
+    WineRegion(
+      'Valais',
+      it: 'Vallese',
+      names: {'de': 'Wallis', 'nl': 'Wallis'},
+      aliases: ['Wallis'],
+    ),
+    WineRegion('Vaud', names: {'de': 'Waadt'}),
+    WineRegion(
+      'Genève',
+      it: 'Ginevra',
+      en: 'Geneva',
+      pt: 'Genebra',
+      names: {
+        'es': 'Ginebra', 'de': 'Genf', 'ca': 'Ginebra', 'el': 'Γενεύη', //
+        'ro': 'Geneva', 'hu': 'Genf', 'hr': 'Ženeva', 'sl': 'Ženeva', //
+        'cs': 'Ženeva', 'sk': 'Ženeva', 'bg': 'Женева', 'sr': 'Женева', //
+        'ka': 'ჟენევა', 'pl': 'Genewa', 'uk': 'Женева', 'fi': 'Geneve',
+      },
+    ),
+    WineRegion('Ticino', names: {'fr': 'Tessin', 'de': 'Tessin'}),
+    WineRegion('Neuchâtel', names: {'de': 'Neuenburg'}),
+    WineRegion(
+      'Graubünden',
+      it: 'Grigioni',
+      en: 'Grisons',
+      pt: 'Grisões',
+      names: {'fr': 'Grisons', 'es': 'Grisones', 'ca': 'Grisons'},
+    ),
+    WineRegion('Schaffhausen', it: 'Sciaffusa', names: {'fr': 'Schaffhouse'}),
   ],
+  // Canonical names are the Latin transliterations; Greek shows the names
+  // in its own script.
   'GR': [
-    WineRegion('Santorini'),
-    WineRegion('Naoussa'),
-    WineRegion('Nemea'),
-    WineRegion('Amyntaio'),
-    WineRegion('Makedonia', it: 'Macedonia', en: 'Macedonia', pt: 'Macedônia'),
+    WineRegion(
+      'Santorini',
+      names: {
+        'fr': 'Santorin', 'de': 'Santorin', 'el': 'Σαντορίνη', //
+        'bg': 'Санторини', 'sr': 'Санторини', 'ka': 'სანტორინი', //
+        'uk': 'Санторіні',
+      },
+    ),
+    WineRegion('Naoussa', names: {'el': 'Νάουσα'}),
+    WineRegion('Nemea', names: {'el': 'Νεμέα'}),
+    WineRegion('Amyntaio', names: {'el': 'Αμύνταιο'}),
+    WineRegion(
+      'Makedonia',
+      it: 'Macedonia',
+      en: 'Macedonia',
+      pt: 'Macedônia',
+      names: {
+        'pt-PT': 'Macedónia', 'fr': 'Macédoine', 'es': 'Macedonia', //
+        'de': 'Makedonien', 'ca': 'Macedònia', 'el': 'Μακεδονία', //
+        'ro': 'Macedonia', 'hu': 'Makedónia', 'hr': 'Makedonija', //
+        'sl': 'Makedonija', 'cs': 'Makedonie', 'sk': 'Macedónsko', //
+        'bg': 'Македония', 'sr': 'Македонија', 'ka': 'მაკედონია', //
+        'nl': 'Macedonië', 'pl': 'Macedonia', 'uk': 'Македонія', //
+        'da': 'Makedonien', 'sv': 'Makedonien',
+      },
+    ),
     WineRegion(
       'Peloponnisos',
       it: 'Peloponneso',
       en: 'Peloponnese',
       pt: 'Peloponeso',
+      names: {
+        'fr': 'Péloponnèse', 'es': 'Peloponeso', 'de': 'Peloponnes', //
+        'ca': 'Peloponès', 'el': 'Πελοπόννησος', 'ro': 'Peloponez', //
+        'hu': 'Peloponnészosz', 'hr': 'Peloponez', 'sl': 'Peloponez', //
+        'cs': 'Peloponés', 'sk': 'Peloponéz', 'bg': 'Пелопонес', //
+        'sr': 'Пелопонез', 'ka': 'პელოპონესი', 'nl': 'Peloponnesos', //
+        'pl': 'Peloponez', 'uk': 'Пелопоннес', 'da': 'Peloponnes', //
+        'sv': 'Peloponnesos', 'nb': 'Peloponnes', 'fi': 'Peloponnesos',
+      },
     ),
-    WineRegion('Kriti', it: 'Creta', en: 'Crete', pt: 'Creta'),
-    WineRegion('Attiki', it: 'Attica', en: 'Attica', pt: 'Ática'),
-    WineRegion('Kefalonia', it: 'Cefalonia', en: 'Cephalonia', pt: 'Cefalônia'),
+    WineRegion(
+      'Kriti',
+      it: 'Creta',
+      en: 'Crete',
+      pt: 'Creta',
+      names: {
+        'fr': 'Crète', 'es': 'Creta', 'de': 'Kreta', 'ca': 'Creta', //
+        'el': 'Κρήτη', 'ro': 'Creta', 'hu': 'Kréta', 'hr': 'Kreta', //
+        'sl': 'Kreta', 'cs': 'Kréta', 'sk': 'Kréta', 'bg': 'Крит', //
+        'sr': 'Крит', 'ka': 'კრეტა', 'nl': 'Kreta', 'pl': 'Kreta', //
+        'uk': 'Крит', 'da': 'Kreta', 'sv': 'Kreta', 'nb': 'Kreta', //
+        'fi': 'Kreeta',
+      },
+    ),
+    WineRegion(
+      'Attiki',
+      it: 'Attica',
+      en: 'Attica',
+      pt: 'Ática',
+      names: {
+        'fr': 'Attique', 'es': 'Ática', 'de': 'Attika', 'ca': 'Àtica', //
+        'el': 'Αττική', 'ro': 'Attica', 'hu': 'Attika', 'hr': 'Atika', //
+        'sl': 'Atika', 'cs': 'Attika', 'sk': 'Atika', 'bg': 'Атика', //
+        'sr': 'Атика', 'ka': 'ატიკა', 'nl': 'Attica', 'pl': 'Attyka', //
+        'uk': 'Аттика', 'da': 'Attika', 'sv': 'Attika', 'nb': 'Attika', //
+        'fi': 'Attika',
+      },
+    ),
+    WineRegion(
+      'Kefalonia',
+      it: 'Cefalonia',
+      en: 'Cephalonia',
+      pt: 'Cefalônia',
+      names: {
+        'pt-PT': 'Cefalónia', 'fr': 'Céphalonie', 'es': 'Cefalonia', //
+        'ca': 'Cefalònia', 'el': 'Κεφαλονιά', 'bg': 'Кефалония', //
+        'sr': 'Кефалонија', 'uk': 'Кефалонія',
+      },
+    ),
   ],
   'HU': [
-    WineRegion('Tokaj'),
+    WineRegion(
+      'Tokaj',
+      names: {
+        'el': 'Τοκάι', 'bg': 'Токай', 'sr': 'Токај', 'ka': 'ტოკაი', //
+        'uk': 'Токай',
+      },
+    ),
     WineRegion('Eger'),
     WineRegion('Villány'),
     WineRegion('Szekszárd'),
@@ -656,9 +1118,47 @@ const Map<String, List<WineRegion>> _regions = {
     WineRegion('Posavje'),
   ],
   'HR': [
-    WineRegion('Istra', it: 'Istria', en: 'Istria', pt: 'Ístria'),
-    WineRegion('Dalmacija', it: 'Dalmazia', en: 'Dalmatia', pt: 'Dalmácia'),
-    WineRegion('Slavonija', it: 'Slavonia', en: 'Slavonia', pt: 'Eslavônia'),
+    WineRegion(
+      'Istra',
+      it: 'Istria',
+      en: 'Istria',
+      pt: 'Ístria',
+      names: {
+        'fr': 'Istrie', 'es': 'Istria', 'de': 'Istrien', 'ca': 'Ístria', //
+        'el': 'Ίστρια', 'ro': 'Istria', 'hu': 'Isztria', 'cs': 'Istrie', //
+        'sk': 'Istria', 'bg': 'Истрия', 'sr': 'Истра', 'nl': 'Istrië', //
+        'pl': 'Istria', 'uk': 'Істрія', 'da': 'Istrien', 'sv': 'Istrien', //
+        'nb': 'Istria', 'fi': 'Istria',
+      },
+    ),
+    WineRegion(
+      'Dalmacija',
+      it: 'Dalmazia',
+      en: 'Dalmatia',
+      pt: 'Dalmácia',
+      names: {
+        'fr': 'Dalmatie', 'es': 'Dalmacia', 'de': 'Dalmatien', //
+        'ca': 'Dalmàcia', 'el': 'Δαλματία', 'ro': 'Dalmația', //
+        'hu': 'Dalmácia', 'cs': 'Dalmácie', 'sk': 'Dalmácia', //
+        'bg': 'Далмация', 'sr': 'Далмација', 'nl': 'Dalmatië', //
+        'pl': 'Dalmacja', 'uk': 'Далмація', 'da': 'Dalmatien', //
+        'sv': 'Dalmatien', 'nb': 'Dalmatia', 'fi': 'Dalmatia',
+      },
+    ),
+    WineRegion(
+      'Slavonija',
+      it: 'Slavonia',
+      en: 'Slavonia',
+      pt: 'Eslavônia',
+      names: {
+        'pt-PT': 'Eslavónia', 'fr': 'Slavonie', 'es': 'Eslavonia', //
+        'de': 'Slawonien', 'ca': 'Eslavònia', 'ro': 'Slavonia', //
+        'hu': 'Szlavónia', 'cs': 'Slavonie', 'sk': 'Slavónia', //
+        'bg': 'Славония', 'sr': 'Славонија', 'nl': 'Slavonië', //
+        'pl': 'Slawonia', 'uk': 'Славонія', 'da': 'Slavonien', //
+        'sv': 'Slavonien', 'nb': 'Slavonia', 'fi': 'Slavonia',
+      },
+    ),
     WineRegion('Plešivica'),
     WineRegion('Moslavina'),
     WineRegion(
@@ -668,40 +1168,132 @@ const Map<String, List<WineRegion>> _regions = {
       pt: 'Litoral croata',
     ),
   ],
+  // Canonical names are the Latin transliterations; Georgian shows the
+  // names in its own script.
   'GE': [
-    WineRegion('Kakheti', it: 'Cachezia', pt: 'Caquécia'),
-    WineRegion('Kartli'),
-    WineRegion('Imereti', it: 'Imerezia'),
-    WineRegion('Racha-Lechkhumi'),
+    WineRegion(
+      'Kakheti',
+      it: 'Cachezia',
+      pt: 'Caquécia',
+      names: {
+        'fr': 'Kakhétie', 'es': 'Kajetia', 'de': 'Kachetien', //
+        'ca': 'Kakhètia', 'ro': 'Kahetia', 'cs': 'Kachetie', //
+        'sk': 'Kachetia', 'bg': 'Кахетия', 'sr': 'Кахетија', //
+        'ka': 'კახეთი', 'nl': 'Kachetië', 'pl': 'Kachetia', //
+        'uk': 'Кахетія', 'sv': 'Kachetien', 'fi': 'Kahetia',
+      },
+    ),
+    WineRegion(
+      'Kartli',
+      names: {'bg': 'Картли', 'sr': 'Картли', 'ka': 'ქართლი', 'uk': 'Картлі'},
+    ),
+    WineRegion(
+      'Imereti',
+      it: 'Imerezia',
+      names: {
+        'fr': 'Iméréthie', 'de': 'Imeretien', 'bg': 'Имеретия', //
+        'sr': 'Имеретија', 'ka': 'იმერეთი', 'pl': 'Imeretia', //
+        'uk': 'Імеретія',
+      },
+    ),
+    WineRegion('Racha-Lechkhumi', names: {'ka': 'რაჭა-ლეჩხუმი'}),
   ],
   'US': [
     WineRegion('Napa Valley', aliases: ['Napa']),
     WineRegion('Sonoma', aliases: ['Sonoma County']),
-    WineRegion('California', pt: 'Califórnia'),
+    WineRegion(
+      'California',
+      pt: 'Califórnia',
+      names: {
+        'fr': 'Californie', 'de': 'Kalifornien', 'ca': 'Califòrnia', //
+        'el': 'Καλιφόρνια', 'hu': 'Kalifornia', 'hr': 'Kalifornija', //
+        'sl': 'Kalifornija', 'cs': 'Kalifornie', 'sk': 'Kalifornia', //
+        'bg': 'Калифорния', 'sr': 'Калифорнија', 'ka': 'კალიფორნია', //
+        'nl': 'Californië', 'pl': 'Kalifornia', 'uk': 'Каліфорнія', //
+        'da': 'Californien', 'sv': 'Kalifornien', 'fi': 'Kalifornia',
+      },
+    ),
     WineRegion('Oregon'),
     WineRegion('Washington', aliases: ['Washington State']),
-    WineRegion('New York', pt: 'Nova York'),
-    WineRegion('Virginia', pt: 'Virgínia'),
+    WineRegion(
+      'New York',
+      pt: 'Nova York',
+      names: {
+        'pt-PT': 'Nova Iorque', 'es': 'Nueva York', 'ca': 'Nova York', //
+        'el': 'Νέα Υόρκη', 'bg': 'Ню Йорк', 'sr': 'Њујорк', //
+        'ka': 'ნიუ-იორკი', 'pl': 'Nowy Jork', 'uk': 'Нью-Йорк',
+      },
+    ),
+    WineRegion(
+      'Virginia',
+      pt: 'Virgínia',
+      names: {'fr': 'Virginie', 'cs': 'Virginie', 'pl': 'Wirginia'},
+    ),
   ],
   'CA': [
-    WineRegion('Ontario', pt: 'Ontário', aliases: ['Niagara Peninsula']),
+    WineRegion(
+      'Ontario',
+      pt: 'Ontário',
+      names: {'bg': 'Онтарио', 'sr': 'Онтарио', 'uk': 'Онтаріо'},
+      aliases: ['Niagara Peninsula'],
+    ),
     WineRegion(
       'British Columbia',
       it: 'Columbia Britannica',
       pt: 'Colúmbia Britânica',
+      names: {
+        'fr': 'Colombie-Britannique', 'es': 'Columbia Británica', //
+        'ca': 'Colúmbia Britànica', 'hr': 'Britanska Kolumbija', //
+        'sl': 'Britanska Kolumbija', 'cs': 'Britská Kolumbie', //
+        'sk': 'Britská Kolumbia', 'bg': 'Британска Колумбия', //
+        'sr': 'Британска Колумбија', 'pl': 'Kolumbia Brytyjska', //
+        'uk': 'Британська Колумбія',
+      },
       aliases: ['Okanagan Valley'],
     ),
-    WineRegion('Québec', en: 'Quebec', pt: 'Quebec'),
-    WineRegion('Nova Scotia', it: 'Nuova Scozia', pt: 'Nova Escócia'),
+    WineRegion(
+      'Québec',
+      en: 'Quebec',
+      pt: 'Quebec',
+      names: {
+        'es': 'Quebec', 'ca': 'Quebec', 'bg': 'Квебек', 'sr': 'Квебек', //
+        'nl': 'Quebec', 'pl': 'Quebec', 'uk': 'Квебек',
+      },
+    ),
+    WineRegion(
+      'Nova Scotia',
+      it: 'Nuova Scozia',
+      pt: 'Nova Escócia',
+      names: {
+        'fr': 'Nouvelle-Écosse', 'es': 'Nueva Escocia', //
+        'de': 'Neuschottland', 'ca': 'Nova Escòcia', //
+        'cs': 'Nové Skotsko', 'sk': 'Nové Škótsko', 'pl': 'Nowa Szkocja',
+      },
+    ),
   ],
   // FR1.2 example plus La Rioja and Catamarca (mockup 2).
   'AR': [
-    WineRegion('Mendoza'),
+    WineRegion(
+      'Mendoza',
+      names: {'bg': 'Мендоса', 'sr': 'Мендоса', 'uk': 'Мендоса'},
+    ),
     WineRegion('Salta'),
     WineRegion('San Juan'),
     WineRegion('La Rioja'),
     WineRegion('Catamarca'),
-    WineRegion('Patagonia', pt: 'Patagônia', aliases: ['Neuquén']),
+    WineRegion(
+      'Patagonia',
+      pt: 'Patagônia',
+      names: {
+        'pt-PT': 'Patagónia', 'fr': 'Patagonie', 'de': 'Patagonien', //
+        'ca': 'Patagònia', 'el': 'Παταγονία', 'hu': 'Patagónia', //
+        'hr': 'Patagonija', 'sl': 'Patagonija', 'cs': 'Patagonie', //
+        'sk': 'Patagónia', 'bg': 'Патагония', 'sr': 'Патагонија', //
+        'nl': 'Patagonië', 'uk': 'Патагонія', 'da': 'Patagonien', //
+        'sv': 'Patagonien',
+      },
+      aliases: ['Neuquén'],
+    ),
   ],
   'CL': [
     WineRegion(
@@ -773,9 +1365,9 @@ const Map<String, List<WineRegion>> _regions = {
   ],
   'UY': [
     WineRegion('Canelones'),
-    WineRegion('Montevideo', pt: 'Montevidéu'),
+    WineRegion('Montevideo', pt: 'Montevidéu', names: {'pt-PT': 'Montevideu'}),
     WineRegion('Maldonado'),
-    WineRegion('Colonia', pt: 'Colônia'),
+    WineRegion('Colonia', pt: 'Colônia', names: {'pt-PT': 'Colónia'}),
     WineRegion('Rivera'),
     WineRegion('San José', pt: 'São José'),
   ],
@@ -788,7 +1380,17 @@ const Map<String, List<WineRegion>> _regions = {
     WineRegion('Hunter Valley'),
     WineRegion('Yarra Valley'),
     WineRegion('Margaret River'),
-    WineRegion('Tasmania', pt: 'Tasmânia'),
+    WineRegion(
+      'Tasmania',
+      pt: 'Tasmânia',
+      names: {
+        'fr': 'Tasmanie', 'de': 'Tasmanien', 'ca': 'Tasmània', //
+        'el': 'Τασμανία', 'hr': 'Tasmanija', 'sl': 'Tasmanija', //
+        'cs': 'Tasmánie', 'sk': 'Tasmánia', 'bg': 'Тасмания', //
+        'sr': 'Тасманија', 'nl': 'Tasmanië', 'uk': 'Тасманія', //
+        'da': 'Tasmanien', 'sv': 'Tasmanien',
+      },
+    ),
   ],
   'NZ': [
     WineRegion('Marlborough'),

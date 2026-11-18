@@ -31,6 +31,7 @@ import 'drinking_record_sheet.dart';
 import 'duplicate_banner.dart';
 import 'edit_wine_screen.dart';
 import 'ideal_moment_card.dart';
+import 'origin_language.dart';
 import 'style_widgets.dart';
 import 'window_card.dart';
 import 'window_override_widgets.dart';
@@ -466,7 +467,7 @@ class _DetailHero extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final language = Localizations.localeOf(context).languageCode;
+    final language = originLanguageTagOf(context);
     final country = WineOrigins.country(wine.displayCountry);
     final region = wine.region;
     final family = WineTypeFamily.of(wine.wineType);

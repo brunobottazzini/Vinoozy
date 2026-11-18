@@ -11,6 +11,12 @@
 #
 # The threshold is an input from team.md (80% of lines, no exclusions): never
 # lower it to make a build pass.
+#
+# The lcov file must come from a run that includes the two generated tests,
+# or untested files and the generated translations are missing from it:
+#   dart run tool/gen_coverage_helper.dart   # every file of lib/ counts
+#   dart run tool/gen_l10n_exercise.dart     # every message, every language
+#   flutter test --coverage
 set -euo pipefail
 
 if [[ $# -lt 1 ]]; then

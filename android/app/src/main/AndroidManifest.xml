@@ -23,12 +23,17 @@
     <!-- allowBackup=false and the data extraction rules keep the pending-writes
          ledger and the Firestore cache off backups and device transfers (NFR8.4).
          usesCleartextTraffic=false: only the debug variant opens 10.0.2.2 for the
-         emulators, through its own network security config (NFR4.8). -->
+         emulators, through its own network security config (NFR4.8).
+         localeConfig declares the interface languages: from Android 13 the
+         language of the app can be chosen in its system settings
+         (wine-culture-languages FR2.2); older versions ignore it. -->
     <application
         android:label="Vinoozy"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:localeConfig="@xml/locales_config"
+        tools:targetApi="33"
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:dataExtractionRules="@xml/data_extraction_rules"

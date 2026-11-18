@@ -1,0 +1,27 @@
+Vaša vínna pivnica, vždy poruke.
+
+Vinoozy vám pomôže usporiadať fľaše, ktoré máte, a preskúmať odhady toho, ako sa môžu vyvíjať: začiatok, vrchol a orientačný koniec ich okna pitnosti.
+
+PRIDÁVAJTE VÍNA
+Zadajte údaje ručne, prečítajte etiketu fotoaparátom, použite čiarový kód alebo importujte text z Google Lens. Navrhnuté údaje pred uložením vždy skontrolujte.
+
+MAJTE V PIVNICI PORIADOK
+Spravujte množstvá, ročníky a vlastnosti vín. Prezrite si Prehľad, filtrujte vína a uchovávajte hodnotenia a poznámky v Histórii. Nájdite tipy na párovanie s jedlom.
+
+PRACUJTE OFFLINE
+Prezerajte a upravujte údaje dostupné v telefóne. Zmeny sa synchronizujú, keď sa pripojenie obnoví. Prvé prihlásenie cez Google vyžaduje internet; pripojenie vyžadujú aj niektoré hľadania.
+
+ZDIEĽAJTE S ĽUĎMI, KTORÝCH SI VYBERIETE
+Pozvite ľudí do svojej pivnice a zvoľte, či si ju môžu len prezerať, alebo v nej aj robiť zmeny.
+
+ČÍTAJTE ETIKETY V TELEFÓNE
+Rozpoznávanie textu beží vo vašom zariadení. Hľadanie online môže odosielať slová a čiarové kódy do Open Food Facts. Otvorenie fotky v Google Lens vyžaduje vaše potvrdenie.
+
+Okná pitnosti sú orientačné odhady. Skladovanie, štýl a stav každej fľaše môžu výsledok zmeniť. Odhady nie sú zárukou kvality ani výzvou na konzumáciu alkoholu.
+
+Vinoozy je určené dospelým. Nepredáva alkoholické nápoje.
+
+Rozhranie je k dispozícii v 25 jazykoch vrátane slovenčiny.
+
+Katalógové údaje z Open Food Facts pod licenciami ODbL 1.0 a DbCL 1.0. Odvodená databáza a uvedenie zdroja: https://github.com/brunobottazzini/Vinoozy/tree/main/assets/wine_db
+Apelácie z registra eAmbrosia a z národných registrov uvedených v dokumentácii k údajom. Odhady vytvára Vinoozy.

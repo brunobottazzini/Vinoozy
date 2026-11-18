@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../cellar/domain/wine_origins.dart';
+import '../../cellar/ui/origin_language.dart';
 
 /// The flag of a country as the phone's emoji (NFR3: no library, works
 /// offline), read by the screen reader as the country name, never as the
@@ -17,7 +18,7 @@ class CountryFlag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final language = Localizations.localeOf(context).languageCode;
+    final language = originLanguageTagOf(context);
     final country = WineOrigins.country(code);
     final emoji = country == null ? null : WineOrigins.flagEmoji(code);
     return Semantics(

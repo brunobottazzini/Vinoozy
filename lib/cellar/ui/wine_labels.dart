@@ -2,6 +2,7 @@ import 'package:estimation/estimation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../app/locale_resolution.dart';
 import '../../dashboard/ui/status_icons.dart';
 import '../../l10n/app_localizations.dart';
 import '../domain/cellar_filter.dart';
@@ -9,7 +10,7 @@ import '../domain/drinking_record.dart';
 import '../domain/window_adjuster.dart';
 
 // Translated labels of the cellar values. Every text comes from the
-// translation files (it, en, pt-BR); the status is always icon plus text
+// translation files (`lib/l10n/`); the status is always icon plus text
 // (FR4.5, NFR3.1), with the icons of the Dashboard.
 
 /// Icon of a status filter; "to estimate" has its own.
@@ -163,7 +164,7 @@ String? agingStartLabel(AppLocalizations l10n, WineStyle? style) =>
 
 /// The language of [context] in the form intl expects ("pt_BR").
 String intlLocaleOf(BuildContext context) =>
-    Localizations.localeOf(context).toString();
+    intlLocaleNameOf(Localizations.localeOf(context));
 
 /// "marzo 2027" / "March 2027" / "março de 2027" (BR6.6).
 String formatMonthLong(BuildContext context, int year, int month) =>

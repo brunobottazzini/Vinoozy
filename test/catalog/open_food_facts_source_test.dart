@@ -269,7 +269,9 @@ void main() {
           'json': '1',
           'page_size': '10',
           'lc': 'pt',
-          'fields': 'code,product_name,brands,categories_tags,origins',
+          'fields':
+              'code,product_name,product_name_pt,product_name_en,brands,'
+              'categories_tags,origins',
         });
         expect(request.followRedirects, isFalse);
         expect(request.headers.keys.map((k) => k.toLowerCase()).toSet(), {
@@ -402,7 +404,7 @@ void main() {
         'json': '1',
         'page_size': '10',
         'lc': 'pt',
-        'fields': OpenFoodFactsSource.fields,
+        'fields': OpenFoodFactsSource.searchFields(CatalogLocale.ptBR),
       });
     });
 

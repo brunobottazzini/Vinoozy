@@ -1,270 +1,129 @@
-# Inventario dei componenti
+# Component Inventory
 
-Ogni titolo di terzo livello è il nome del componente usato nel blocco
-`## Scope of Analysis` di `reverse-engineering-timestamp.md`. Le dipendenze
-esterne con versione sono in `technology-stack.md`; il grafo tra moduli è in
-`dependencies.md`.
+Un componente per riga logica del sistema. Le dipendenze tra pacchetti e le versioni sono in `dependencies.md` e `technology-stack.md`; i punti toccati dalle lingue sono in `code-structure.md`.
 
-## Avvio e configurazione
+## Application Components
 
-### AppBootstrap
-- **File**: `lib/app/bootstrap.dart`, `lib/main.dart`
-- **Responsabilità**: ordine di avvio (Firebase, App Check, Crashlytics e
-  ledger in parallelo, emulatori in demo, completamento reset pendente),
-  creazione e collegamento di tutti i servizi, override dei provider.
-- **Dipende da**: FirebaseEnvConfig, FirestoreBootstrap, AccountGate,
-  WineRepository, DrinkingRecordRepository, SharingRepository, LocalLedger,
-  SyncWatcher, ErrorReporter.
+### App Shell
+- **Percorso**: `lib/main.dart`, `lib/app/`, `lib/core/`
+- **Responsabilità**: avvio (`AppBootstrap`), collegamento dei servizi, `VinoozyApp` (`MaterialApp`, tema, lingua), guscio con le schede, ascolto degli eventi di sincronizzazione alla radice, schermata delle informazioni, apertura di link esterni, segnalazione degli errori.
+- **Dipende da**: tutti i moduli dell'app, Localization, Firebase Bootstrap.
 
-### FirebaseEnvConfig
-- **File**: `lib/firebase/firebase_env.dart`, `options_demo.dart`, `options_prod.dart`
-- **Responsabilità**: ambiente da `FIREBASE_ENV` (default `demo`),
-  `usesEmulators`, host emulatori, opzioni Firebase; costanti `kIsE2EBuild` e
-  `kIsPerfBuild`; `demoProjectId = 'demo-vinoozy'`;
-  `MissingProductionOptionsError` per build prod incomplete.
-- **Rilevanza intent**: punto previsto per `devCheatsAvailable` e
-  `ENABLE_DEV_CHEATS` (studio §9.3), oggi assenti.
+### Localization
+- **Percorso**: `lib/l10n/`, `l10n.yaml`, `lib/app/locale_resolution.dart`
+- **Responsabilità**: testi dell'interfaccia in ARB, codice generato `AppLocalizations`, elenco delle lingue offerte, scelta della lingua dalla lista del telefono, ripiego sull'inglese.
+- **Dipende da**: `flutter_localizations`, `intl`.
+- **Usato da**: ogni schermata; `AppBootstrap` per il nome della cantina predefinita.
 
-### FirestoreBootstrap
-- **File**: `lib/firebase/firestore_bootstrap.dart`
-- **Responsabilità**: persistenza offline con cache illimitata, emulatore in
-  demo, reset in-process (`terminate` + `clearPersistence`) e piano B.
+### Account
+- **Percorso**: `lib/account/`
+- **Responsabilità**: accesso con Google, stato della sessione (`AccountGate`), blocco e cambio account, onboarding, profilo, cancellazione dell'account in passi ripetibili.
+- **Dipende da**: Sync, Cellar (repository delle cantine), Firebase Auth.
 
-### ErrorReporter
-- **File**: `lib/app/error_reporter.dart`, `crashlytics_sink.dart`, `app_event_logger.dart`
-- **Responsabilità**: report con ragione fissa e valori sensibili oscurati;
-  Crashlytics solo in release produzione; `ConsoleAppEventLogger` solo log
-  locale (lo studio vieta di usarlo come misuratore remoto).
+### Cellar
+- **Percorso**: `lib/cellar/`
+- **Responsabilità**: modello del vino e della bevuta, repository Firestore, stima salvata e suo aggiornamento, filtri, origini (`WineOrigins`: paesi, regioni, bandiere), schermate di cantina, dettaglio, aggiunta, modifica, storico, conferma guidata.
+- **Dipende da**: Estimation Package, Catalog, Sync, Usage, Localization.
 
-## Account
+### Catalog
+- **Percorso**: `lib/catalog/`
+- **Responsabilità**: contratto C1; ordine e fusione delle fonti (cantina, database offline dei vini, catalogo interno, Open Food Facts), cache su file, interruttore di circuito, budget di richieste.
+- **Dipende da**: Estimation Package (normalizzazione e denominazioni), `http`, `assets/wine_db/`.
 
-### AccountGate
-- **File**: `lib/account/account_gate.dart`, `gate_state.dart`
-- **Responsabilità**: macchina a stati dell'accesso (`GateSignIn`,
-  `GateBlocked`, `GateEnsureCellar`, `GateCellar`, `GateDeleting`...),
-  controllo del proprietario del ledger, profilo e cantina personale, uscita,
-  scritture pendenti, eliminazione account.
-- **Rilevanza intent**: punto naturale per azzerare un override di diritti al
-  cambio di account/uscita (studio §9.2).
+### Label
+- **Percorso**: `lib/label/`
+- **Responsabilità**: acquisizione della foto, lettura di testo e codice a barre sul telefono, sessione di lettura, ricerca online, Google Lens, immagini e testi condivisi, file temporanei.
+- **Dipende da**: Catalog, Estimation Package, Android Host, ML Kit.
 
-### AuthService
-- **File**: `lib/account/auth_service.dart`, `google_auth_service.dart`, `lib/e2e/emulator_google_auth_service.dart`
-- **Responsabilità**: accesso Google, riautenticazione, `photoUrl`,
-  cancellazione utente; implementazione emulata compilata solo con `E2E`.
+### Dashboard
+- **Percorso**: `lib/dashboard/`
+- **Responsabilità**: riepilogo calcolato in un solo passaggio, grafici a barre, elenco "da bere presto", vini da confermare. Sola lettura.
+- **Dipende da**: Cellar (modello e origini), Estimation Package. Plan e Ads forniscono gli avvisi e l'annuncio mostrati nel Cruscotto.
 
-### UserRepository
-- **File**: `lib/account/data/user_repository.dart`
-- **Responsabilità**: `users/{uid}` (crea o aggiorna nome/email in
-  transazione, `deletionStartedAt`, cancellazione del profilo).
+### Sharing
+- **Percorso**: `lib/sharing/`
+- **Responsabilità**: inviti per email, appartenenze, cambio della cantina attiva, avvisi di accesso concesso o perso.
+- **Dipende da**: Cellar, Account, Usage.
 
-### AccountDeletionRunner
-- **File**: `lib/account/deletion/*.dart`
-- **Responsabilità**: eliminazione account in passi ripetibili (uscita dalle
-  cantine altrui, chiusura inviti, cancellazione vini e bevute a pagine,
-  cantina, profilo, utente Auth, pulizia del telefono).
-- **Rilevanza intent**: dovrà includere eventuali nuovi documenti per utente
-  (`usage`, contatori) o lasciarli al backend.
+### Sync
+- **Percorso**: `lib/sync/`
+- **Responsabilità**: registro locale delle scritture in attesa, verifica in background, bus degli errori, stato di sincronizzazione, banner offline, avviso del vino rifiutato.
+- **Dipende da**: `shared_preferences`, Firestore.
 
-### ProfileScreen
-- **File**: `lib/account/ui/profile_screen.dart`
-- **Responsabilità**: foto, nome, email, "Esci" con avviso scritture
-  pendenti, "Elimina account", dialogo privacy (apri/copia link; "apri" è una
-  modifica non committata).
-- **Rilevanza intent**: sede dell'indicatore "DEV · Plus di test" e dello
-  stato del piano.
+### Plan
+- **Percorso**: `lib/plan/`
+- **Responsabilità**: diritti Plus, politica del piano, risoluzione delle capacità, limite di capienza, acquisto su Google Play e sua verifica, schermata Plus.
+- **Dipende da**: Cloud Functions, Usage, Dev Tools (sovrascritture di sviluppo).
 
-## App e navigazione
+### Ads
+- **Percorso**: `lib/ads/`
+- **Responsabilità**: idoneità, consenso, riserva dello slot e caricamento dell'annuncio giornaliero del Cruscotto.
+- **Dipende da**: Cloud Functions, `google_mobile_ads`, Plan.
 
-### HomeShell
-- **File**: `lib/app/home_shell.dart`
-- **Responsabilità**: tre tab (Dashboard, Cantina, Storico) in un
-  `IndexedStack`, condivisione dei listener, manutenzione della cantina,
-  immagini e testi condivisi, apertura dell'aggiunta.
+### Usage
+- **Percorso**: `lib/usage/`
+- **Responsabilità**: conteggio delle operazioni Firestore per account, distinto tra uso personale e di sistema, stima del costo, invio periodico.
+- **Dipende da**: Cloud Functions, `shared_preferences`.
 
-### AboutScreen
-- **File**: `lib/app/ui/about_screen.dart`
-- **Responsabilità**: schermata "Informazioni" aperta dal menu della Cantina;
-  tile `about-version` (versione da `catalogAppVersionProvider`), base dati
-  offline, licenze, denominazioni, privacy della foto.
-- **Rilevanza intent**: la riga `about-version` è il trigger dei 7 tocchi in 5
-  secondi; oggi è un `_Tile` senza gesti.
+### Firebase Bootstrap
+- **Percorso**: `lib/firebase/`
+- **Responsabilità**: scelta dell'ambiente (`demo` con emulatori, `prod`), opzioni Firebase da `--dart-define`, configurazione e reset di Firestore.
 
-### BrandFooter
-- **File**: `lib/app/ui/brand_footer.dart`
-- **Responsabilità**: footer in fondo alla Dashboard con logo, studio e
-  versione (`appVersionLabelProvider`, `brand-footer-version`); un tocco apre
-  AboutScreen. Lo studio vieta di usarlo come trigger del cheat.
+### Dev Tools
+- **Percorso**: `lib/dev/`
+- **Responsabilità**: pannello di sviluppo nascosto, presente solo nelle build non di rilascio con `ENABLE_DEV_CHEATS` ed emulatori.
 
-## Cantina
+### E2E Hooks
+- **Percorso**: `lib/e2e/`
+- **Responsabilità**: lingua italiana forzata, accesso Google simulato con l'emulatore, controllo della rete per i test end-to-end. Assenti dalle build di rilascio (`tool/check_release_build.sh`).
 
-### CellarRepository
-- **File**: `lib/cellar/data/cellar_repository.dart`, `lib/cellar/domain/cellar.dart`
-- **Responsabilità**: `ensurePersonalCellar`, `isCached`, `watchCellar`;
-  modello `Cellar` con `memberSlots`.
+## Libraries and Services
 
-### WineRepository
-- **File**: `lib/cellar/data/wine_repository.dart`
-- **Responsabilità**: tutte le scritture e letture dei vini (vedi
-  `api-documentation.md` §5); ledger prima, batch dopo; classificazione degli
-  errori (`rejected`, `unauthenticated`, `transient`).
-- **Rilevanza intent**: i percorsi che aumentano le schede attive sono
-  `create`, `addWine`, `addBottles` su una scheda con `quantity <= 0`,
-  `updateWine` con `targetQuantity > 0` da 0, `undo` della bevuta; `mergeInto`
-  e `deleteWineWithRecords` le riducono.
+### Estimation Package
+- **Percorso**: `packages/estimation/`
+- **Responsabilità**: contratto C2; finestre di consumo, stato, abbinamenti, profili di stile, livello, tabelle di denominazioni (Italia, Francia, Europa, Nuovo Mondo, generate dai registri) e vitigni, estrazione dei campi dal testo d'etichetta, nomi dei paesi sulle etichette.
+- **Dipende da**: nulla in produzione.
 
-### DrinkingRecordRepository
-- **File**: `lib/cellar/data/drinking_record_repository.dart`, `lib/cellar/domain/drinking_record.dart`
-- **Responsabilità**: "Bevuto" (quantità −1 + bevuta in un batch),
-  "Annulla", aggiornamento voto/note/condizione, pagine dello storico, bevute
-  di un vino da server/cache.
+### Cloud Functions
+- **Percorso**: `functions/`
+- **Responsabilità**: verifica degli acquisti, notifiche Play, misura d'uso, slot annunci, guardia del budget, pulizia dopo la cancellazione di un account.
+- **Dipende da**: `firebase-functions`, `firebase-admin`, `googleapis`, `@google-cloud/billing`.
 
-### readServerOrCache
-- **File**: `lib/cellar/data/server_or_cache.dart`
-- **Responsabilità**: lettura dal server con timeout, poi dalla cache;
-  restituisce `fromServer`. Lo studio chiede di contare la richiesta server
-  prima del timeout.
+### Firestore Rules
+- **Percorso**: `firestore.rules`, `firestore.indexes.json`, `test/rules/`
+- **Responsabilità**: autorizzazione e validazione dei documenti, indici; test su emulatore, compresa la compatibilità con le versioni già distribuite.
 
-### CellarActions
-- **File**: `lib/cellar/cellar_actions.dart`
-- **Responsabilità**: operazioni dietro le schermate, con controllo dei
-  permessi (`canEdit`, `isOwner`), stima, duplicati, unione, coda di recupero.
-- **Rilevanza intent**: punto unico lato client per il controllo di capacità
-  prima di `saveNewWine`, `addBottles`, `saveEdit`, `merge`.
+### Android Host
+- **Percorso**: `android/`
+- **Responsabilità**: `MainActivity` e canali di piattaforma, `LabelImagePreparer`, `LensIntentLauncher`, `SharedImageReceiver`, manifest e permessi, firma e configurazione di build.
 
-### CellarMaintenance
-- **File**: `lib/cellar/cellar_maintenance.dart`, `match_key_backfill.dart`, `estimates_migration.dart`, `estimate_refresher.dart`
-- **Responsabilità**: backfill `matchKey`, migrazioni di stima/stile,
-  raffinamento da catalogo, all'apertura della cantina e al ritorno della rete.
-  Lo studio attribuisce questi consumi al contatore di sistema.
+### Account Deletion Web
+- **Percorso**: `docs/account-deletion/`, `docs/privacy/`, `test/web/`
+- **Responsabilità**: pagine pubbliche di cancellazione dell'account e di privacy in it, en, pt-BR.
 
-### RecordReconciler
-- **File**: `lib/cellar/data/record_reconciler.dart`
-- **Responsabilità**: coda persistente per utente (`purgeRecords`,
-  `reapplyAdjustment`) da completare al ritorno della rete.
+## Delivery Components
 
-### QuantityDelta
-- **File**: `lib/cellar/domain/quantity_delta.dart`, `quantity.dart`
-- **Responsabilità**: regole pure degli incrementi (`forIncrease`,
-  `forEdit`, `canIncrease`, `canDecrease`), tetto 99, `displayQuantity` =
-  `max(0, stored)`.
+### Store Listing
+- **Percorso**: `distribution/google-play/`
+- **Responsabilità**: titolo, descrizione breve ed estesa per `it-IT`, `en-US`, `pt-BR`; note di rilascio; catture per lingua; icona e feature graphic; dichiarazioni sulla sicurezza dei dati; istruzioni per revisori e tester.
 
-### CellarScreen
-- **File**: `lib/cellar/ui/cellar_screen.dart` e le altre schermate in `lib/cellar/ui/`
-- **Responsabilità**: elenco, menu (Profilo, Persone, Archivio, Informazioni),
-  pulsante "Aggiungi" solo con `canEdit`, banner offline e vini rifiutati;
-  `AddWineScreen`, `EditWineScreen`, `WineDetailScreen`,
-  `ArchivedWinesScreen`, `HistoryScreen`, flussi "Bevuto".
+### Tooling
+- **Percorso**: `tool/`, `benchmark/`, `package.json`
+- **Responsabilità**: controlli di CI con il rispettivo test, copertura, generatori (`build_wine_db.dart`, `build_appellations.dart`, `build_profile_map.dart`, `gen_coverage_helper.dart`), script Play, script del proprietario in `tool/admin/`, soglie di velocità.
 
-## Sincronizzazione
+### CI/CD Workflows
+- **Percorso**: `.github/workflows/`, `.github/dependabot.yml`
+- **Responsabilità**: controlli prima del merge, rilascio sul canale di test interno, promozione in produzione, distribuzione di regole, Functions e pagine web.
 
-### LocalLedger
-- **File**: `lib/sync/ledger/local_ledger.dart`, `ledger_state.dart`, `key_value_store.dart`
-- **Responsabilità**: JSON `ledger.v1` in SharedPreferences con coda seriale;
-  proprietario delle scritture pendenti, `seq`, `generation`, journal delle
-  creazioni (`open`/`rejected`), `lastUid`, `resetPending`.
+### Test Suites
+- **Percorso**: `test/`, `integration_test/`, `integration_test_perf/`, `test_driver/`, `packages/estimation/test/`, `functions/test/`, `android/app/src/test/`
+- **Responsabilità**: test unitari, dei widget (con matrice di accessibilità per lingua), delle regole, end-to-end e di prestazioni.
 
-### SyncWatcher
-- **File**: `lib/sync/sync_watcher.dart`
-- **Responsabilità**: verifica in background delle creazioni (drain 30 s,
-  controllo server 10 s), rilascio del proprietario del ledger, nessun loop.
+## Component Counts
 
-### FirestoreSyncGateway
-- **File**: `lib/sync/sync_gateway.dart`
-- **Responsabilità**: `waitForPendingWrites`, `checkWine` (server),
-  `checkLocal` (cache) dietro l'interfaccia `SyncGateway`.
-
-### SyncErrorBus
-- **File**: `lib/sync/sync_error_bus.dart`, `sync_status.dart`, `lib/sync/ui/*`
-- **Responsabilità**: eventi `WriteRejected`, `WriteFailed`,
-  `SessionExpired`, `CellarAccessLost`, `CellarNotice`; stato del banner
-  (`SyncStatusTracker`); avviso dei vini rifiutati.
-
-## Condivisione
-
-### SharingRepository
-- **File**: `lib/sharing/data/sharing_repository.dart`, `lib/sharing/sharing_providers.dart`
-- **Responsabilità**: inviti e transizioni con contatore `memberSlots`
-  accoppiato, listener degli inviti propri (collection group) e dei membri,
-  cantina attiva (`activeCellarProvider`), cantine accessibili.
-
-### InviteValidator
-- **File**: `lib/sharing/domain/invite_validator.dart`
-- **Responsabilità**: `maxInvitees = 2`, email normalizzata, posti usati =
-  max(contatore, inviti aperti). Lo studio prevede fino a 5 con Plus.
-
-### AccessibleCellar
-- **File**: `lib/sharing/domain/membership.dart`
-- **Responsabilità**: cantina apribile con `CellarRole` (`owner`, `edit`,
-  `read`); `isPersonal`, `canEdit`, `isOwner`.
-
-## Dashboard
-
-### DashboardScreen
-- **File**: `lib/dashboard/ui/*.dart`, `lib/dashboard/dashboard_providers.dart`
-- **Responsabilità**: stati (skeleton, errore, syncing, vuoto, contenuto),
-  `DashboardContent` con riepilogo, "da bere presto", grafici e `BrandFooter`;
-  sola lettura (gate `tool/check_dashboard_readonly.sh`).
-- **Rilevanza intent**: sede prevista del banner pubblicitario e della
-  spiegazione al superamento della soglia.
-
-### DashboardCalculator
-- **File**: `lib/dashboard/domain/*.dart`, `today_provider.dart`
-- **Responsabilità**: calcolo puro del riepilogo dalle schede attive.
-
-## Etichetta e catalogo
-
-### LabelSessionController
-- **File**: `lib/label/**`
-- **Responsabilità**: foto fronte/retro, ML Kit sul telefono, codici a barre,
-  Google Lens, testo condiviso, conferma guidata; nessun import cloud (gate
-  `tool/check_label_imports.sh`). Nessun costo Firestore.
-
-### WineCatalog
-- **File**: `lib/catalog/**`
-- **Responsabilità**: catalogo interno, base offline `assets/wine_db/`, Open
-  Food Facts con budget e circuit breaker, cache su file.
-
-### estimation
-- **File**: `packages/estimation/`
-- **Responsabilità**: libreria pura di stima (finestre, stato, abbinamenti,
-  stili, classificazione, analisi testo etichetta); nessuna dipendenza.
-
-## Localizzazione
-
-### AppLocalizations
-- **File**: `lib/l10n/app_en.arb` (template), `app_it.arb`, `app_pt_BR.arb`, `app_pt.arb` (solo `@@locale`), classi generate
-- **Responsabilità**: 611 chiavi per lingua; `nullable-getter: false`; i
-  testi UI dello studio §7.8 andranno aggiunti nelle tre lingue.
-
-## Piattaforma Android e sicurezza dati
-
-### MainActivity
-- **File**: `android/app/src/main/kotlin/com/vinoozy/vinoozy/*.kt`, `AndroidManifest.xml`
-- **Responsabilità**: canali `com.vinoozy.app/label`, `vinoozy/lens`,
-  `com.vinoozy.app/links`; filtri `SEND`/`SEND_MULTIPLE` `image/*` e `SEND`
-  `text/plain`; permessi `CAMERA` e lettura media rimossi.
-
-### firestore.rules
-- **File**: `firestore.rules`, `firestore.indexes.json`, `test/rules/`
-- **Responsabilità**: autorizzazione e validazione di tutti i documenti
-  (dettaglio in `api-documentation.md` §1); compatibilità con la versione in
-  produzione.
-
-## Strumenti e consegna
-
-### check_release_build.sh
-- **File**: `tool/check_release_build.sh`
-- **Responsabilità**: due build AAB arm64 (normale e `E2E=true PERF=true`);
-  marker `EmulatorGoogleAuthService`, `VINOOZY_DASHBOARD_READY`,
-  `VINOOZY_E2E_LOCALE` assenti nella prima e presenti nella seconda; controllo
-  del manifest unito. Da estendere con il perimetro dei cheat (studio §9.5).
-
-### CI workflows
-- **File**: `.github/workflows/ci.yml`, `release.yml`, `promote.yml`, `pages.yml`, `firebase-deploy.yml`
-- **Responsabilità**: gate prima del merge e consegna (dettaglio in
-  `code-quality-assessment.md`).
-
-### AccountDeletionWebPage
-- **File**: `docs/account-deletion/`, `tool/build_web_bundle.sh`, `test/web/`
-- **Responsabilità**: pagina pubblica di cancellazione dell'account con
-  Firebase web SDK, pubblicata da `pages.yml`; `docs/privacy/` è l'informativa.
+| Tipo | Numero |
+|---|---|
+| Componenti dell'applicazione | 15 |
+| Librerie e servizi | 5 |
+| Componenti di consegna | 4 |
+| Totale | 24 |

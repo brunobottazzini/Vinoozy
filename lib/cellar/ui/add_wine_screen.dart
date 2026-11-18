@@ -38,6 +38,7 @@ import 'cellar_dialogs.dart';
 import 'classification_state.dart';
 import 'style_widgets.dart';
 import 'origin_pickers.dart';
+import 'reveal_with_anchor.dart';
 import 'quantity_stepper.dart';
 import 'wine_badges.dart';
 import 'wine_labels.dart';
@@ -271,6 +272,10 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
   final TextEditingController _vintage = TextEditingController();
   final TextEditingController _denomination = TextEditingController();
   final FocusNode _nameFocus = FocusNode();
+
+  /// The autofill bar, kept in view when the name takes the focus on open
+  /// ([RevealWithAnchor]).
+  final GlobalKey _toolbarKey = GlobalKey();
   final FocusNode _producerFocus = FocusNode();
   final FocusNode _vintageFocus = FocusNode();
   bool _noVintage = false;
@@ -1227,6 +1232,7 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
             ],
             if (_toolbar) ...[
               AutofillToolbar(
+                key: _toolbarKey,
                 onClear: _clear,
                 onSearchOnline: widget.onSearchOnline == null
                     ? null
@@ -1254,21 +1260,26 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
               ),
               const SizedBox(height: 12),
             ],
-            TextField(
-              key: const Key('add-wine-name-field'),
-              controller: _name,
-              focusNode: _nameFocus,
-              autofocus: true,
-              textCapitalization: TextCapitalization.words,
-              textInputAction: TextInputAction.next,
-              onChanged: (text) {
-                setState(() => _edited(LabelFieldKeys.name));
-                _onNameChanged(text);
-              },
-              decoration: InputDecoration(
-                labelText: l10n.wineNameLabel,
-                errorText: _nameErrorText(l10n),
-                errorMaxLines: 3,
+            // The name takes the focus on open (BR1.18); its first scroll
+            // into view keeps the autofill bar visible too.
+            RevealWithAnchor(
+              anchorKey: _toolbarKey,
+              child: TextField(
+                key: const Key('add-wine-name-field'),
+                controller: _name,
+                focusNode: _nameFocus,
+                autofocus: true,
+                textCapitalization: TextCapitalization.words,
+                textInputAction: TextInputAction.next,
+                onChanged: (text) {
+                  setState(() => _edited(LabelFieldKeys.name));
+                  _onNameChanged(text);
+                },
+                decoration: InputDecoration(
+                  labelText: l10n.wineNameLabel,
+                  errorText: _nameErrorText(l10n),
+                  errorMaxLines: 3,
+                ),
               ),
             ),
             FilledFromTextBadge(
