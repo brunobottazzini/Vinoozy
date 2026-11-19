@@ -1,18 +1,18 @@
-Vaš vinski podrum, uvijek pri ruci.
+Vinoozy je aplikacija za upravljanje vinskim podrumom za boce koje imate: vodite inventar vina, saznajte kada popiti koje vino i pronađite sljubljivanje s hranom, čak i bez interneta.
 
-Vinoozy vam pomaže organizirati boce koje imate i istražiti procjene njihova mogućeg razvoja: početak, vrhunac i okvirni kraj njihova prozora pitkosti.
+Svako vino dobiva okvirni prozor pitkosti (početak, vrhunac i kraj), procijenjen prema vrsti, oznaci podrijetla, berbi i razini. Pregled vam pokazuje koja vina otvoriti sada, a koja je bolje još čuvati.
 
-DODAJTE SVOJA VINA
-Unesite podatke ručno, pročitajte etiketu kamerom, upotrijebite crtični kod ili uvezite tekst iz aplikacije Google Lens. Prije spremanja uvijek provjerite predložene podatke.
+ŠTO MOŽETE RADITI
+• Inventar podruma i bez veze: dodajte, uređujte i bilježite popijeno bez interneta; sve se sinkronizira kad se mreža vrati.
+• Kada popiti koje vino: prozor pitkosti s početkom, vrhuncem i krajem, koji možete ispraviti kad god želite.
+• Čitanje etikete na telefonu: fotografirajte prednju i stražnju stranu, upotrijebite crtični kod ili uvezite tekst iz aplikacije Google Lens. Podatke uvijek provjerite prije spremanja.
+• Pregled: vina spremna za pijenje, za čuvanje i za skoro pijenje, na prvi pogled.
+• Povijest s ocjenama i bilješkama: recite kakva je boca bila i procjena za isto vino se ispravlja.
+• Sljubljivanje s hranom za svako vino.
+• Zajednički podrum: pozovite osobe, samo za čitanje ili s uređivanjem.
+• Vinoozy Plus: bez ograničenja broja vina i bez oglasa.
 
-ODRŽAVAJTE RED U PODRUMU
-Upravljajte količinama, berbama i značajkama vina. Istražite Pregled, filtrirajte vina i čuvajte ocjene i bilješke u Povijesti. Pronađite prijedloge za sljubljivanje s hranom.
-
-RADITE IZVAN MREŽE
-Pregledavajte i ažurirajte podatke dostupne na telefonu. Promjene se sinkroniziraju kad se veza vrati. Prva prijava Google računom zahtijeva internet; i neke pretrage zahtijevaju vezu.
-
-DIJELITE S OSOBAMA KOJE ODABERETE
-Pozovite osobe u svoj podrum i odaberite mogu li ga samo pregledavati ili i unositi promjene.
+Prva prijava Google računom zahtijeva internet; i neke pretrage zahtijevaju vezu.
 
 ČITAJTE ETIKETE NA TELEFONU
 Prepoznavanje teksta odvija se na vašem uređaju. Pretrage na internetu mogu slati riječi i crtične kodove servisu Open Food Facts. Otvaranje fotografije u aplikaciji Google Lens zahtijeva vašu potvrdu.

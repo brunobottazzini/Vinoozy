@@ -12,6 +12,8 @@ import '../../app/providers.dart';
 import '../../plan/ui/capacity_limit_sheet.dart';
 import '../../catalog/core/wine_catalog.dart';
 import '../../catalog/platform/catalog_providers.dart';
+import '../../guide/guide_state_store.dart' show GuideScreen;
+import '../../guide/ui/first_visit_hint.dart';
 import '../../l10n/app_localizations.dart';
 import '../../label/autofill_providers.dart';
 import '../../label/core/guided_session.dart';
@@ -1146,7 +1148,15 @@ class _AddWineScreenState extends ConsumerState<AddWineScreen>
       appBar: AppBar(title: Text(l10n.addWineTitle)),
       body: Stack(
         children: [
-          _form(context, l10n, theme, suggestions, pending),
+          Column(
+            children: [
+              // tester-feedback FR2.3: shown once, after the guided tour.
+              const FirstVisitHint(screen: GuideScreen.addWine),
+              Expanded(
+                child: _form(context, l10n, theme, suggestions, pending),
+              ),
+            ],
+          ),
           if (guideOpen) ...[
             // The form under the sheet is covered: the screen reader does
             // not reach it (D10).

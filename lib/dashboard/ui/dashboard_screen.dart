@@ -10,6 +10,8 @@ import '../../account/app_user.dart';
 import '../../ads/ui/dashboard_ad_slot.dart';
 import '../../cellar/ui/cellar_screen.dart' show CellarSetup;
 import '../../firebase/firebase_env.dart';
+import '../../guide/guide_state_store.dart' show GuideScreen;
+import '../../guide/ui/first_visit_hint.dart';
 import '../../l10n/app_localizations.dart';
 import '../../plan/ui/dashboard_plan_notices.dart';
 import '../../sharing/domain/membership.dart';
@@ -60,6 +62,8 @@ class DashboardScreen extends ConsumerWidget {
       body: Column(
         children: [
           CellarSwitcher(user: user),
+          // tester-feedback FR2.3: shown once, after the guided tour.
+          const FirstVisitHint(screen: GuideScreen.dashboard),
           // The banner explains a wait for the first sync (BR1.9).
           if (!preparing) OfflineBanner(cellarId: active.cellarId),
           Expanded(child: _body(context, ref, l10n, active)),

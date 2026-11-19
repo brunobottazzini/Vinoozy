@@ -1,18 +1,18 @@
-Je wijnkelder, altijd bij de hand.
+Vinoozy is de app voor wijnkelderbeheer voor de flessen die je hebt: houd je wijnvoorraad bij, weet wanneer je elke wijn drinkt en vind wijn-spijscombinaties, ook offline.
 
-Vinoozy helpt je de flessen die je hebt te ordenen en schattingen te bekijken van hoe ze zich kunnen ontwikkelen: het begin, het hoogtepunt en het indicatieve einde van hun drinkvenster.
+Elke wijn krijgt een indicatief drinkvenster (begin, hoogtepunt en einde), geschat op basis van type, herkomstbenaming, jaargang en niveau. Het Overzicht laat zien welke wijnen je nu kunt openen en welke beter nog kunnen wachten.
 
-VOEG JE WIJNEN TOE
-Voer de gegevens handmatig in, lees een etiket met je camera, gebruik een streepjescode of neem tekst over uit Google Lens. Controleer voorgestelde gegevens altijd voordat je opslaat.
+WAT JE KUNT DOEN
+• Kelderinventaris ook offline: wijnen toevoegen, bewerken en bijhouden wat je drinkt zonder verbinding; alles wordt gesynchroniseerd zodra het netwerk terug is.
+• Wanneer drink je welke wijn: een drinkvenster met begin, hoogtepunt en einde, dat je op elk moment kunt corrigeren.
+• Etiket lezen op je telefoon: fotografeer voor- en achterkant, gebruik een streepjescode of neem tekst over uit Google Lens. Je controleert de gegevens altijd zelf voordat je opslaat.
+• Overzicht: wijnen die klaar zijn, wijnen om op te wachten en wijnen om snel te drinken, in één oogopslag.
+• Geschiedenis met beoordelingen en notities: geef aan hoe de fles was en de schatting voor dezelfde wijn wordt gecorrigeerd.
+• Wijn-spijscombinaties bij elke wijn.
+• Gedeelde kelder: nodig mensen uit, alleen lezen of met bewerken.
+• Vinoozy Plus: geen wijnlimiet en geen advertenties.
 
-HOUD JE KELDER OP ORDE
-Beheer aantallen, jaargangen en eigenschappen van je wijnen. Bekijk het Overzicht, filter je wijnen en bewaar beoordelingen en notities in de Geschiedenis. Vind suggesties voor wijn-spijscombinaties.
-
-WERK OFFLINE
-Bekijk en wijzig de gegevens die op je telefoon staan. Wijzigingen worden gesynchroniseerd zodra je weer verbinding hebt. Voor de eerste keer inloggen met Google is internet nodig; ook sommige zoekopdrachten vragen een verbinding.
-
-DEEL MET WIE JIJ KIEST
-Nodig mensen uit in je kelder en kies of ze alleen mogen meekijken of ook wijzigingen mogen maken.
+Voor de eerste keer inloggen met Google is internet nodig; ook sommige zoekopdrachten vragen een verbinding.
 
 LEES ETIKETTEN OP JE TELEFOON
 Tekstherkenning gebeurt op je toestel. Online zoekopdrachten kunnen woorden en streepjescodes naar Open Food Facts sturen. Een foto openen in Google Lens vraagt altijd je bevestiging.

@@ -5,7 +5,7 @@ publish_to: 'none'
 
 # versionName (semver) is read from here by release.yml; the build number is
 # replaced in CI with the next Google Play versionCode (--build-number).
-version: 0.3.0+3
+version: 0.4.0+3
 
 environment:
   sdk: ^3.13.7
@@ -56,6 +56,10 @@ dependencies:
   in_app_purchase: ^3.3.1
   google_mobile_ads: ^9.2.0
   cloud_functions: ^7.0.1
+  # tester-feedback FR5: the Google Play In-App Review window ("Rate the
+  # app" and the automatic prompt after a 4-5 star drink). The only new
+  # dependency of that work; it brings url_launcher as a transitive one.
+  in_app_review: ^2.0.12
 
 dev_dependencies:
   flutter_test:

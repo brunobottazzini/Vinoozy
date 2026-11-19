@@ -2460,4 +2460,168 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get devNotice =>
       'Només compilacions de desenvolupament amb l\'emulador: sense pagaments, tokens ni rebuts.';
+
+  @override
+  String get settingsTitle => 'Configuració';
+
+  @override
+  String get settingsGuide => 'Torna a veure la guia';
+
+  @override
+  String get settingsShare => 'Comparteix l\'app';
+
+  @override
+  String get settingsRate => 'Valora l\'app';
+
+  @override
+  String get settingsFeedback => 'Envia comentaris';
+
+  @override
+  String get settingsFaq => 'Preguntes freqüents';
+
+  @override
+  String get settingsShareFailed =>
+      'No s\'ha pogut obrir el menú per compartir. Torna-ho a provar';
+
+  @override
+  String get settingsRateFailed =>
+      'No s\'ha pogut obrir Google Play. Torna-ho a provar';
+
+  @override
+  String get guideAddTitle => 'Afegeix un vi';
+
+  @override
+  String get guideAddBody =>
+      'Toca Afegeix per desar una ampolla al teu celler. Per començar n\'hi ha prou amb el nom.';
+
+  @override
+  String get guideLabelTitle => 'Llegeix l\'etiqueta';
+
+  @override
+  String get guideLabelBody =>
+      'Des d\'Afegeix també pots fotografiar l\'etiqueta: Vinoozy llegeix el nom, l\'anyada i la denominació, i tu els comproves abans de desar.';
+
+  @override
+  String get guideTabsTitle => 'Tauler, Celler, Historial';
+
+  @override
+  String get guideTabsBody =>
+      'El Tauler et diu quins vins obrir ara, el Celler llista les teves ampolles i l\'Historial guarda les que has begut.';
+
+  @override
+  String get guideMenuTitle => 'El menú del celler';
+
+  @override
+  String get guideMenuBody =>
+      'Aquí trobes el teu perfil, les persones amb qui comparteixes el celler, els vins beguts i la Configuració, on pots tornar a veure aquesta guia.';
+
+  @override
+  String get guideDone => 'Fet';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Pas $step de $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Aquí veus quins vins estan a punt per beure ara i quins val més guardar una mica més.';
+
+  @override
+  String get hintHistory =>
+      'Cada ampolla que beus arriba aquí, amb la teva valoració i les teves notes.';
+
+  @override
+  String get hintAddWine =>
+      'Comença pel nom: l\'anyada, el tipus i la denominació fan més precisa la finestra de consum.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, el teu celler';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Porto el meu celler amb Vinoozy: em diu quan cada ampolla és al seu millor moment. Prova-la: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Comentaris sobre Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Dades tècniques (no les esborris):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Cap app de correu';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'Aquest telèfon no té cap app de correu. Escriu-nos a $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Copia';
+
+  @override
+  String get feedbackCopied => 'Adreça copiada';
+
+  @override
+  String get faqAddQuestion => 'Com afegeixo un vi a mà?';
+
+  @override
+  String get faqAddAnswer =>
+      'Al Celler toca Afegeix i després Escriu. Només el nom és obligatori; l\'anyada, el tipus, el país i la denominació milloren l\'estimació. Desa i el vi ja és al teu celler.';
+
+  @override
+  String get faqLabelQuestion =>
+      'Com llegeixo una etiqueta, també amb Google Lens?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Toca Afegeix i fotografia la part davantera i la del darrere: Vinoozy llegeix l\'etiqueta al mateix telèfon. Amb Google Lens selecciona el text i comparteix-lo amb Vinoozy, o copia\'l i fes servir Enganxa des de Lens al formulari. Comprova sempre els camps abans de desar.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Com es calcula el millor moment per beure, i el puc canviar?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy estima una finestra (inici, plenitud, final) a partir del tipus, la denominació, l\'anyada i el nivell del vi. És orientativa: també compta com s\'ha conservat l\'ampolla. Obre el vi i toca Corregeix per posar la teva data, o canvia\'n el Nivell.';
+
+  @override
+  String get faqOfflineQuestion => 'Funciona sense internet?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Sí. Pots afegir, editar i beure vins sense connexió: tot es desa al telèfon i se sincronitza amb el teu compte tan bon punt torna la connexió.';
+
+  @override
+  String get faqShareQuestion => 'Com comparteixo el meu celler?';
+
+  @override
+  String get faqShareAnswer =>
+      'Al menú del Celler obre Persones i convida algú amb la seva adreça de correu de Google, només lectura o amb edició. Aquesta persona instal·la Vinoozy i inicia la sessió amb aquest compte.';
+
+  @override
+  String get faqPlusQuestion => 'Què inclou el pla gratuït, i què és Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'El pla gratuït inclou fins a $limit vins diferents al celler, amb algun anunci només al Tauler. Vinoozy Plus treu el límit i els anuncis.';
+  }
+
+  @override
+  String get faqDrinkQuestion => 'Per què registrar el que bec i com era?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'L\'Historial guarda el que has begut i com t\'ha agradat. Quan dius com era l\'ampolla (massa jove, al punt, ja en declivi), Vinoozy corregeix l\'estimació del mateix vi.';
+
+  @override
+  String get faqDeleteQuestion => 'Com suprimeixo el meu compte?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Obre Perfil i toca Suprimeix el compte. Cal connexió i després tornes a iniciar la sessió amb Google per confirmar. El celler, l\'Historial i el que has compartit se suprimeixen per sempre.';
+
+  @override
+  String get faqNotFound => 'No has trobat la resposta? Escriu-nos';
 }

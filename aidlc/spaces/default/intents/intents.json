@@ -68,7 +68,15 @@
     "slug": "wine-culture-languages",
     "dirName": "261118-wine-culture-languages",
     "scope": "express",
-    "status": "in-flight",
+    "status": "complete",
     "request": "11bc9550"
+  },
+  {
+    "uuid": "01a1f2c5-5f8d-7dfd-8d09-b48d3ed1ef1d",
+    "slug": "tester-feedback",
+    "dirName": "261119-tester-feedback",
+    "scope": "express",
+    "status": "in-flight",
+    "request": "6cdc8387"
   }
 ]

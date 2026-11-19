@@ -1,18 +1,18 @@
-A sua garrafeira, sempre à mão.
+O Vinoozy é a app de gestão de garrafeira para as garrafas que tem: faça o inventário dos seus vinhos, saiba quando beber cada vinho e encontre harmonizações, mesmo sem ligação.
 
-O Vinoozy ajuda a organizar as garrafas que tem e a consultar estimativas da sua evolução: início, apogeu e fim indicativo da janela de consumo.
+Cada vinho recebe uma janela de consumo indicativa (início, apogeu e fim), estimada a partir do tipo, da denominação, da colheita e do nível. O Painel mostra que vinhos abrir agora e quais convém guardar.
 
-ADICIONE OS SEUS VINHOS
-Introduza os dados manualmente, leia um rótulo com a câmara, use um código de barras ou importe texto do Google Lens. Verifique sempre os dados sugeridos antes de guardar.
+O QUE PODE FAZER
+• Inventário da garrafeira mesmo sem ligação: adicione, edite e registe o que bebeu; tudo é sincronizado quando a ligação voltar.
+• Quando beber cada vinho: uma janela de consumo com início, apogeu e fim, que pode corrigir quando quiser.
+• Leitura do rótulo no telemóvel: fotografe a frente e o verso, use o código de barras ou importe texto do Google Lens. Confirma sempre os dados antes de guardar.
+• Painel: vinhos prontos, a guardar e a beber em breve, num relance.
+• Histórico com classificações e notas: indique como estava a garrafa e a estimativa do mesmo vinho é corrigida.
+• Harmonização com comida para cada vinho.
+• Garrafeira partilhada: convide outras pessoas, só de leitura ou com edição.
+• Vinoozy Plus: sem limite de vinhos e sem anúncios.
 
-MANTENHA A GARRAFEIRA ORGANIZADA
-Faça a gestão de quantidades, colheitas e características dos vinhos. Consulte o Painel, filtre os seus vinhos e guarde classificações e notas no Histórico. Encontre sugestões de harmonização.
-
-USE-A SEM LIGAÇÃO
-Consulte e atualize os dados disponíveis no telemóvel. As alterações são sincronizadas quando a ligação voltar. O primeiro início de sessão com o Google requer Internet; algumas pesquisas também precisam de ligação.
-
-PARTILHE COM QUEM ESCOLHER
-Convide outras pessoas para a sua garrafeira e escolha se podem apenas consultá-la ou também fazer alterações.
+O primeiro início de sessão com o Google requer Internet; algumas pesquisas também precisam de ligação.
 
 LEIA OS RÓTULOS NO TELEMÓVEL
 O reconhecimento de texto é feito no seu dispositivo. As pesquisas online podem enviar palavras e códigos de barras para o Open Food Facts. Abrir uma foto no Google Lens requer a sua confirmação.

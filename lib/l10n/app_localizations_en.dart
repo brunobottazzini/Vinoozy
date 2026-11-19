@@ -2446,4 +2446,167 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get devNotice =>
       'Development builds with the emulator only: no payments, tokens or receipts.';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsGuide => 'Show the guide again';
+
+  @override
+  String get settingsShare => 'Share the app';
+
+  @override
+  String get settingsRate => 'Rate the app';
+
+  @override
+  String get settingsFeedback => 'Send feedback';
+
+  @override
+  String get settingsFaq => 'Frequently asked questions';
+
+  @override
+  String get settingsShareFailed => 'Could not open sharing. Try again';
+
+  @override
+  String get settingsRateFailed => 'Could not open Google Play. Try again';
+
+  @override
+  String get guideAddTitle => 'Add a wine';
+
+  @override
+  String get guideAddBody =>
+      'Tap Add to put a bottle in your cellar. Only the name is needed to start.';
+
+  @override
+  String get guideLabelTitle => 'Read the label';
+
+  @override
+  String get guideLabelBody =>
+      'Under Add you can also photograph the label: Vinoozy reads name, vintage and appellation, and you check them before saving.';
+
+  @override
+  String get guideTabsTitle => 'Dashboard, Cellar, History';
+
+  @override
+  String get guideTabsBody =>
+      'The Dashboard tells you which wines to open now, the Cellar lists your bottles and the History keeps the ones you drank.';
+
+  @override
+  String get guideMenuTitle => 'The cellar menu';
+
+  @override
+  String get guideMenuBody =>
+      'Here you find your profile, the people you share the cellar with, the wines you drank and the Settings, where you can see this guide again.';
+
+  @override
+  String get guideDone => 'Done';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Step $step of $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Here you see which wines are ready to drink now and which ones are better kept for later.';
+
+  @override
+  String get hintHistory =>
+      'Every bottle you drink ends up here, with your rating and notes.';
+
+  @override
+  String get hintAddWine =>
+      'Start with the name: vintage, type and appellation make the drinking window more precise.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, your wine cellar';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'I keep my wine cellar with Vinoozy: it tells me when each bottle is at its best. Try it: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Feedback on Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Technical data (please keep):';
+
+  @override
+  String get feedbackNoEmailTitle => 'No email app';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'There is no email app on this phone. Write to us at $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Copy';
+
+  @override
+  String get feedbackCopied => 'Address copied';
+
+  @override
+  String get faqAddQuestion => 'How do I add a wine by hand?';
+
+  @override
+  String get faqAddAnswer =>
+      'In the Cellar tap Add, then Write. Only the name is required; vintage, type, country and appellation make the estimate better. Save, and the wine is in your cellar.';
+
+  @override
+  String get faqLabelQuestion =>
+      'How do I read a label, also with Google Lens?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Tap Add and take a photo of the front and back: Vinoozy reads the label on the phone. With Google Lens select the text and share it to Vinoozy, or copy it and use Paste from Lens in the form. Always check the fields before saving.';
+
+  @override
+  String get faqWindowQuestion =>
+      'How is the right moment to drink calculated, and can I change it?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy estimates a window (start, peak, end) from type, appellation, vintage and level of the wine. It is an indication: storage matters too. Open the wine and tap Correct to set your own date, or change its Level.';
+
+  @override
+  String get faqOfflineQuestion => 'Does it work without internet?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Yes. You can add, edit and drink wines offline: everything is saved on the phone and synced with your account as soon as the connection is back.';
+
+  @override
+  String get faqShareQuestion => 'How do I share my cellar?';
+
+  @override
+  String get faqShareAnswer =>
+      'From the Cellar menu open People and invite someone with their Google email address, read only or with editing. They install Vinoozy and sign in with that account.';
+
+  @override
+  String get faqPlusQuestion =>
+      'What does the free plan include, and what is Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'The free plan includes up to $limit different wines in your cellar, with occasional ads only on the Dashboard. Vinoozy Plus removes the limit and the ads.';
+  }
+
+  @override
+  String get faqDrinkQuestion => 'Why record the drinks and how they were?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'The History keeps what you drank and how you liked it. When you say how the bottle was (too young, just right, past its best), Vinoozy corrects the estimate of the same wine.';
+
+  @override
+  String get faqDeleteQuestion => 'How do I delete my account?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Open Profile and tap Delete account. You need a connection, then you sign in again with Google to confirm. Your cellar, History and shares are deleted for good.';
+
+  @override
+  String get faqNotFound => 'Didn\'t find the answer? Write to us';
 }

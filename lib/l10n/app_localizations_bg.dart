@@ -2459,4 +2459,169 @@ class AppLocalizationsBg extends AppLocalizations {
   @override
   String get devNotice =>
       'Само за версии за разработка с емулатора: без плащания, токени или разписки.';
+
+  @override
+  String get settingsTitle => 'Настройки';
+
+  @override
+  String get settingsGuide => 'Вижте ръководството отново';
+
+  @override
+  String get settingsShare => 'Споделяне на приложението';
+
+  @override
+  String get settingsRate => 'Оценка на приложението';
+
+  @override
+  String get settingsFeedback => 'Изпращане на отзив';
+
+  @override
+  String get settingsFaq => 'Често задавани въпроси';
+
+  @override
+  String get settingsShareFailed =>
+      'Споделянето не можа да се отвори. Опитайте отново';
+
+  @override
+  String get settingsRateFailed =>
+      'Google Play не можа да се отвори. Опитайте отново';
+
+  @override
+  String get guideAddTitle => 'Добавете вино';
+
+  @override
+  String get guideAddBody =>
+      'Докоснете Добавяне, за да сложите бутилка в избата си. За начало стига името.';
+
+  @override
+  String get guideLabelTitle => 'Прочетете етикета';
+
+  @override
+  String get guideLabelBody =>
+      'От Добавяне можете и да снимате етикета: Vinoozy чете името, реколтата и наименованието за произход, а вие ги проверявате, преди да запазите.';
+
+  @override
+  String get guideTabsTitle => 'Табло, Изба, История';
+
+  @override
+  String get guideTabsBody =>
+      'Таблото ви казва кои вина да отворите сега, Избата показва бутилките ви, а Историята пази изпитите.';
+
+  @override
+  String get guideMenuTitle => 'Менюто на избата';
+
+  @override
+  String get guideMenuBody =>
+      'Тук са профилът ви, хората, с които споделяте избата, изпитите вина и Настройките, където можете да видите това ръководство отново.';
+
+  @override
+  String get guideDone => 'Готово';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Стъпка $step от $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Тук виждате кои вина са готови за пиене сега и кои е по-добре да почакат.';
+
+  @override
+  String get hintHistory =>
+      'Всяка бутилка, която изпиете, идва тук, с вашата оценка и бележки.';
+
+  @override
+  String get hintAddWine =>
+      'Започнете с името: реколтата, видът и наименованието за произход правят прозореца за консумация по-точен.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, вашата винена изба';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Водя винената си изба с Vinoozy: казва ми кога всяка бутилка е в най-добрата си форма. Опитайте го: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Отзив за Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Технически данни (не ги изтривайте):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Няма приложение за имейл';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'На този телефон няма приложение за имейл. Пишете ни на $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Копиране';
+
+  @override
+  String get feedbackCopied => 'Адресът е копиран';
+
+  @override
+  String get faqAddQuestion => 'Как да добавя вино ръчно?';
+
+  @override
+  String get faqAddAnswer =>
+      'В Избата докоснете Добавяне, после Въвеждане. Задължително е само името; реколтата, видът, държавата и наименованието за произход подобряват оценката. Запазете и виното е в избата.';
+
+  @override
+  String get faqLabelQuestion => 'Как да прочета етикет, и с Google Lens?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Докоснете Добавяне и снимайте предната и задната страна: Vinoozy чете етикета направо на телефона. В Google Lens изберете текста и го споделете с Vinoozy или го копирайте и във формуляра използвайте Поставяне от Lens. Винаги проверявайте полетата, преди да запазите.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Как се изчислява най-подходящият момент за пиене и мога ли да го променя?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy оценява прозорец (начало, връх, край) по вида, наименованието за произход, реколтата и нивото на виното. Това е ориентир: значение има и как е съхранявана бутилката. Отворете виното и докоснете Поправка, за да зададете своя дата, или сменете Нивото.';
+
+  @override
+  String get faqOfflineQuestion => 'Работи ли без интернет?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Да. Можете да добавяте, редактирате и пиете вина без връзка: всичко се запазва на телефона и се синхронизира с акаунта ви, щом връзката се възстанови.';
+
+  @override
+  String get faqShareQuestion => 'Как да споделя избата си?';
+
+  @override
+  String get faqShareAnswer =>
+      'От менюто на Избата отворете Хора и поканете някого с неговия имейл адрес в Google, само за преглед или с редактиране. Човекът инсталира Vinoozy и влиза с този акаунт.';
+
+  @override
+  String get faqPlusQuestion =>
+      'Какво включва безплатният план и какво е Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'Безплатният план включва до $limit различни вина в избата, с реклами от време на време само в Таблото. Vinoozy Plus премахва ограничението и рекламите.';
+  }
+
+  @override
+  String get faqDrinkQuestion =>
+      'Защо да записвам какво съм изпил и какво е било?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'Историята пази какво сте изпили и колко ви е харесало. Когато кажете каква е била бутилката (още твърде младо, точно навреме, вече след върха си), Vinoozy поправя оценката за същото вино.';
+
+  @override
+  String get faqDeleteQuestion => 'Как да изтрия акаунта си?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Отворете Профил и докоснете Изтриване на акаунта. Нужна е връзка, след което влизате отново с Google за потвърждение. Избата, Историята и споделянията се изтриват завинаги.';
+
+  @override
+  String get faqNotFound => 'Не намерихте отговора? Пишете ни';
 }

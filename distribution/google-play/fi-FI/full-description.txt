@@ -1,18 +1,18 @@
-Viinikellarisi, aina käden ulottuvilla.
+Vinoozy on viinikellarin hallintasovellus omille pulloillesi: pidä kirjaa viineistäsi, tiedä milloin kukin viini kannattaa juoda ja löydä ruokapareja, myös ilman verkkoa.
 
-Vinoozy auttaa järjestämään omistamasi pullot ja tutkimaan arvioita siitä, miten ne voivat kehittyä: juonti-ikkunan alku, huippu ja suuntaa antava loppu.
+Jokainen viini saa suuntaa antavan juonti-ikkunan (alku, huippu ja loppu), joka arvioidaan tyypin, alkuperänimityksen, vuosikerran ja tason perusteella. Yleiskuva näyttää, mitkä viinit voit avata nyt ja mitkä kannattaa vielä säästää.
 
-LISÄÄ VIINISI
-Kirjoita tiedot käsin, lue etiketti kameralla, käytä viivakoodia tai tuo tekstiä Google Lensistä. Tarkista ehdotetut tiedot aina ennen tallentamista.
+MITÄ VOIT TEHDÄ
+• Kellarin kirjanpito myös offline: lisää, muokkaa ja kirjaa juomasi ilman yhteyttä; kaikki synkronoituu, kun verkko palaa.
+• Milloin juoda kukin viini: juonti-ikkuna, jossa on alku, huippu ja loppu ja jota voit korjata milloin tahansa.
+• Etiketin luku puhelimessa: kuvaa etu- ja takapuoli, käytä viivakoodia tai tuo tekstiä Google Lensistä. Tarkistat tiedot aina itse ennen tallennusta.
+• Yleiskuva: juotavat, odottavat ja pian juotavat viinit yhdellä silmäyksellä.
+• Historia arvosanoineen ja muistiinpanoineen: kerro, millainen pullo oli, niin saman viinin arvio korjautuu.
+• Ruokaparit jokaiselle viinille.
+• Jaettu kellari: kutsu ihmisiä, vain luku tai muokkausoikeus.
+• Vinoozy Plus: ei viinirajaa eikä mainoksia.
 
-PIDÄ KELLARISI JÄRJESTYKSESSÄ
-Hallitse määriä, vuosikertoja ja viinien ominaisuuksia. Tutki Yleiskuvaa, suodata viinejäsi ja säilytä arvosanat ja muistiinpanot Historiassa. Löydä ehdotuksia ruokapareiksi.
-
-KÄYTÄ OFFLINE-TILASSA
-Katsele ja päivitä puhelimessasi olevia tietoja. Muutokset synkronoituvat, kun yhteys palaa. Ensimmäinen Google-kirjautuminen vaatii internetyhteyden; myös osa hauista vaatii yhteyden.
-
-JAA VALITSEMIESI IHMISTEN KANSSA
-Kutsu ihmisiä kellariisi ja valitse, voivatko he vain katsella sitä vai myös tehdä muutoksia.
+Ensimmäinen Google-kirjautuminen vaatii internetyhteyden; myös osa hauista vaatii yhteyden.
 
 LUE ETIKETIT PUHELIMELLASI
 Tekstintunnistus toimii laitteessasi. Verkkohaut voivat lähettää sanoja ja viivakoodeja Open Food Facts -palveluun. Kuvan avaaminen Google Lensissä vaatii vahvistuksesi.

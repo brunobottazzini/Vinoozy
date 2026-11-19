@@ -1,18 +1,18 @@
-Twoja piwniczka z winem, zawsze pod ręką.
+Vinoozy to aplikacja do zarządzania piwniczką z winem dla butelek, które masz: prowadź spis win, wiedz, kiedy pić każde wino, i znajdź połączenia z potrawami, także bez internetu.
 
-Vinoozy pomaga uporządkować butelki, które masz, i sprawdzić szacunki tego, jak mogą się rozwijać: początek, szczyt i orientacyjny koniec ich okna picia.
+Każde wino dostaje orientacyjne okno picia (początek, szczyt i koniec), szacowane na podstawie rodzaju, apelacji, rocznika i poziomu. Pulpit pokazuje, które wina otworzyć teraz, a na które lepiej poczekać.
 
-DODAWAJ WINA
-Wpisuj dane ręcznie, odczytaj etykietę aparatem, użyj kodu kreskowego lub zaimportuj tekst z Google Lens. Przed zapisaniem zawsze sprawdź podpowiedziane dane.
+CO MOŻESZ ROBIĆ
+• Spis piwniczki także offline: dodawaj, edytuj i zapisuj wypite wina bez połączenia; wszystko synchronizuje się, gdy wróci sieć.
+• Kiedy pić każde wino: okno picia z początkiem, szczytem i końcem, które możesz poprawić w każdej chwili.
+• Odczyt etykiety w telefonie: sfotografuj przód i tył, użyj kodu kreskowego lub zaimportuj tekst z Google Lens. Przed zapisaniem zawsze sam sprawdzasz dane.
+• Pulpit: wina gotowe do picia, do odłożenia i do szybkiego wypicia, na pierwszy rzut oka.
+• Historia z ocenami i notatkami: powiedz, jaka była butelka, a szacunek dla tego samego wina zostanie poprawiony.
+• Połączenia z potrawami dla każdego wina.
+• Wspólna piwniczka: zaproś osoby, tylko do odczytu lub z edycją.
+• Vinoozy Plus: bez limitu win i bez reklam.
 
-MIEJ PORZĄDEK W PIWNICZCE
-Zarządzaj ilościami, rocznikami i cechami win. Przeglądaj Pulpit, filtruj wina i przechowuj oceny oraz notatki w Historii. Znajdź propozycje łączenia z potrawami.
-
-DZIAŁAJ OFFLINE
-Przeglądaj i aktualizuj dane dostępne w telefonie. Zmiany synchronizują się, gdy wróci połączenie. Pierwsze logowanie przez Google wymaga internetu; niektóre wyszukiwania również wymagają połączenia.
-
-UDOSTĘPNIAJ WYBRANYM OSOBOM
-Zaproś osoby do swojej piwniczki i zdecyduj, czy mogą ją tylko oglądać, czy także wprowadzać zmiany.
+Pierwsze logowanie przez Google wymaga internetu; niektóre wyszukiwania również wymagają połączenia.
 
 ODCZYTUJ ETYKIETY W TELEFONIE
 Rozpoznawanie tekstu działa na Twoim urządzeniu. Wyszukiwanie online może wysyłać słowa i kody kreskowe do Open Food Facts. Otwarcie zdjęcia w Google Lens wymaga Twojego potwierdzenia.

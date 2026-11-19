@@ -1,1 +1,1 @@
-Järjestä viinisi, tutki kypsymisarvioita ja jaa kellarisi.
+Viinien kirjanpito, milloin juoda kukin viini ja etiketin luku, myös offline.

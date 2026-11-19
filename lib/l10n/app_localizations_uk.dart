@@ -2498,4 +2498,170 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get devNotice =>
       'Лише для збірок розробки з емулятором: без платежів, токенів і квитанцій.';
+
+  @override
+  String get settingsTitle => 'Налаштування';
+
+  @override
+  String get settingsGuide => 'Переглянути посібник знову';
+
+  @override
+  String get settingsShare => 'Поділитися застосунком';
+
+  @override
+  String get settingsRate => 'Оцінити застосунок';
+
+  @override
+  String get settingsFeedback => 'Надіслати відгук';
+
+  @override
+  String get settingsFaq => 'Поширені запитання';
+
+  @override
+  String get settingsShareFailed =>
+      'Не вдалося відкрити меню поширення. Спробуйте ще раз';
+
+  @override
+  String get settingsRateFailed =>
+      'Не вдалося відкрити Google Play. Спробуйте ще раз';
+
+  @override
+  String get guideAddTitle => 'Додайте вино';
+
+  @override
+  String get guideAddBody =>
+      'Торкніться Додати, щоб покласти пляшку до льоху. Для початку досить назви.';
+
+  @override
+  String get guideLabelTitle => 'Прочитайте етикетку';
+
+  @override
+  String get guideLabelBody =>
+      'У Додати можна також сфотографувати етикетку: Vinoozy прочитає назву, рік урожаю та найменування, а ви перевірите їх перед збереженням.';
+
+  @override
+  String get guideTabsTitle => 'Огляд, Льох, Історія';
+
+  @override
+  String get guideTabsBody =>
+      'Огляд підказує, які вина відкрити зараз, Льох показує ваші пляшки, а Історія зберігає випиті.';
+
+  @override
+  String get guideMenuTitle => 'Меню льоху';
+
+  @override
+  String get guideMenuBody =>
+      'Тут ваш профіль, люди, з якими ви ділитеся льохом, випиті вина та Налаштування, де можна знову переглянути цей посібник.';
+
+  @override
+  String get guideDone => 'Готово';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Крок $step з $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Тут видно, які вина готові до вживання зараз, а які краще ще потримати.';
+
+  @override
+  String get hintHistory =>
+      'Кожна випита пляшка потрапляє сюди, з вашою оцінкою та нотатками.';
+
+  @override
+  String get hintAddWine =>
+      'Почніть із назви: рік урожаю, тип і найменування роблять вікно споживання точнішим.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, ваш винний льох';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Я веду свій винний льох у Vinoozy: застосунок підказує, коли кожна пляшка в найкращій формі. Спробуйте: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Відгук про Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Технічні дані (не видаляйте):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Немає поштового застосунку';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'На цьому телефоні немає поштового застосунку. Напишіть нам на $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Копіювати';
+
+  @override
+  String get feedbackCopied => 'Адресу скопійовано';
+
+  @override
+  String get faqAddQuestion => 'Як додати вино вручну?';
+
+  @override
+  String get faqAddAnswer =>
+      'У Льоху торкніться Додати, а потім Ввести. Обов’язкова лише назва; рік урожаю, тип, країна та найменування покращують оцінку. Збережіть, і вино вже в льоху.';
+
+  @override
+  String get faqLabelQuestion =>
+      'Як прочитати етикетку, зокрема через Google Lens?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Торкніться Додати й сфотографуйте лицьовий і зворотний бік: Vinoozy читає етикетку прямо на телефоні. У Google Lens виділіть текст і поділіться ним із Vinoozy або скопіюйте його й скористайтеся Вставити з Lens у формі. Завжди перевіряйте поля перед збереженням.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Як обчислюється найкращий час для вживання і чи можна його змінити?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy оцінює вікно (початок, пік, кінець) за типом, найменуванням, роком урожаю та рівнем вина. Це орієнтир: важить і те, як зберігалася пляшка. Відкрийте вино й торкніться Виправити, щоб задати свою дату, або змініть Рівень.';
+
+  @override
+  String get faqOfflineQuestion => 'Чи працює без інтернету?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Так. Ви можете додавати, редагувати й випивати вина без з’єднання: усе зберігається на телефоні та синхронізується з вашим обліковим записом, щойно з’єднання повернеться.';
+
+  @override
+  String get faqShareQuestion => 'Як поділитися своїм льохом?';
+
+  @override
+  String get faqShareAnswer =>
+      'У меню Льоху відкрийте Люди й запросіть когось за його адресою Google, лише перегляд або з редагуванням. Ця людина встановлює Vinoozy і входить із цим обліковим записом.';
+
+  @override
+  String get faqPlusQuestion =>
+      'Що входить у безкоштовний план і що таке Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'Безкоштовний план охоплює до $limit різних вин у льоху, з рідкою рекламою лише в Огляді. Vinoozy Plus знімає ліміт і рекламу.';
+  }
+
+  @override
+  String get faqDrinkQuestion =>
+      'Навіщо записувати, що я випив і яким воно було?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'Історія зберігає, що ви випили і наскільки вам сподобалося. Коли ви вказуєте, якою була пляшка (ще занадто молоде, саме вчасно, пік уже минув), Vinoozy виправляє оцінку для того самого вина.';
+
+  @override
+  String get faqDeleteQuestion => 'Як видалити обліковий запис?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Відкрийте Профіль і торкніться Видалити обліковий запис. Потрібне з’єднання, а потім ви знову входите через Google для підтвердження. Льох, Історія та спільні доступи видаляються назавжди.';
+
+  @override
+  String get faqNotFound => 'Не знайшли відповіді? Напишіть нам';
 }

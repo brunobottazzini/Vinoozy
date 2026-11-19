@@ -1,18 +1,18 @@
-Vaša vínna pivnica, vždy poruke.
+Vinoozy je aplikácia na správu vínnej pivnice pre fľaše, ktoré máte: veďte evidenciu vín, zistite, kedy ktoré víno piť, a nájdite párovanie s jedlom, aj bez internetu.
 
-Vinoozy vám pomôže usporiadať fľaše, ktoré máte, a preskúmať odhady toho, ako sa môžu vyvíjať: začiatok, vrchol a orientačný koniec ich okna pitnosti.
+Každé víno dostane orientačné okno pitnosti (začiatok, vrchol a koniec), odhadnuté podľa typu, označenia pôvodu, ročníka a úrovne. Prehľad vám ukáže, ktoré vína otvoriť teraz a na ktoré je lepšie ešte počkať.
 
-PRIDÁVAJTE VÍNA
-Zadajte údaje ručne, prečítajte etiketu fotoaparátom, použite čiarový kód alebo importujte text z Google Lens. Navrhnuté údaje pred uložením vždy skontrolujte.
+ČO MÔŽETE ROBIŤ
+• Evidencia pivnice aj offline: pridávajte, upravujte a zapisujte vypité vína bez pripojenia; všetko sa synchronizuje, keď sa sieť vráti.
+• Kedy ktoré víno piť: okno pitnosti so začiatkom, vrcholom a koncom, ktoré môžete kedykoľvek opraviť.
+• Čítanie etikety v telefóne: odfoťte prednú aj zadnú stranu, použite čiarový kód alebo importujte text z Google Lens. Údaje pred uložením vždy sami skontrolujete.
+• Prehľad: vína pripravené na pitie, na čakanie a na skoré vypitie na prvý pohľad.
+• História s hodnotením a poznámkami: povedzte, aká fľaša bola, a odhad pri tom istom víne sa opraví.
+• Párovanie s jedlom ku každému vínu.
+• Zdieľaná pivnica: pozvite ľudí, len na čítanie alebo s úpravami.
+• Vinoozy Plus: bez limitu vín a bez reklám.
 
-MAJTE V PIVNICI PORIADOK
-Spravujte množstvá, ročníky a vlastnosti vín. Prezrite si Prehľad, filtrujte vína a uchovávajte hodnotenia a poznámky v Histórii. Nájdite tipy na párovanie s jedlom.
-
-PRACUJTE OFFLINE
-Prezerajte a upravujte údaje dostupné v telefóne. Zmeny sa synchronizujú, keď sa pripojenie obnoví. Prvé prihlásenie cez Google vyžaduje internet; pripojenie vyžadujú aj niektoré hľadania.
-
-ZDIEĽAJTE S ĽUĎMI, KTORÝCH SI VYBERIETE
-Pozvite ľudí do svojej pivnice a zvoľte, či si ju môžu len prezerať, alebo v nej aj robiť zmeny.
+Prvé prihlásenie cez Google vyžaduje internet; pripojenie vyžadujú aj niektoré hľadania.
 
 ČÍTAJTE ETIKETY V TELEFÓNE
 Rozpoznávanie textu beží vo vašom zariadení. Hľadanie online môže odosielať slová a čiarové kódy do Open Food Facts. Otvorenie fotky v Google Lens vyžaduje vaše potvrdenie.

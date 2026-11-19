@@ -2447,4 +2447,167 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get devNotice =>
       'Vain kehitysversiot emulaattorilla: ei maksuja, tokeneita eikä kuitteja.';
+
+  @override
+  String get settingsTitle => 'Asetukset';
+
+  @override
+  String get settingsGuide => 'Katso opas uudelleen';
+
+  @override
+  String get settingsShare => 'Jaa sovellus';
+
+  @override
+  String get settingsRate => 'Arvioi sovellus';
+
+  @override
+  String get settingsFeedback => 'Lähetä palautetta';
+
+  @override
+  String get settingsFaq => 'Usein kysytyt kysymykset';
+
+  @override
+  String get settingsShareFailed => 'Jakamista ei voitu avata. Yritä uudelleen';
+
+  @override
+  String get settingsRateFailed =>
+      'Google Playta ei voitu avata. Yritä uudelleen';
+
+  @override
+  String get guideAddTitle => 'Lisää viini';
+
+  @override
+  String get guideAddBody =>
+      'Napauta Lisää ja vie pullo kellariisi. Alkuun riittää nimi.';
+
+  @override
+  String get guideLabelTitle => 'Lue etiketti';
+
+  @override
+  String get guideLabelBody =>
+      'Lisää-kohdassa voit myös kuvata etiketin: Vinoozy lukee nimen, vuosikerran ja alkuperänimityksen, ja tarkistat ne ennen tallennusta.';
+
+  @override
+  String get guideTabsTitle => 'Yleiskuva, Kellari, Historia';
+
+  @override
+  String get guideTabsBody =>
+      'Yleiskuva kertoo, mitkä viinit avata nyt, Kellari näyttää pullosi ja Historia säilyttää juomasi pullot.';
+
+  @override
+  String get guideMenuTitle => 'Kellarin valikko';
+
+  @override
+  String get guideMenuBody =>
+      'Täältä löydät profiilisi, henkilöt, joiden kanssa jaat kellarin, juodut viinit ja Asetukset, joissa voit katsoa tämän oppaan uudelleen.';
+
+  @override
+  String get guideDone => 'Valmis';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Vaihe $step/$count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Täällä näet, mitkä viinit ovat juotavissa nyt ja mitkä kannattaa vielä säästää.';
+
+  @override
+  String get hintHistory =>
+      'Jokainen juomasi pullo päätyy tänne arvosanasi ja muistiinpanojesi kanssa.';
+
+  @override
+  String get hintAddWine =>
+      'Aloita nimestä: vuosikerta, tyyppi ja alkuperänimitys tarkentavat juoma-ajankohtaa.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, viinikellarisi';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Pidän viinikellariani Vinoozylla: se kertoo, milloin kukin pullo on parhaimmillaan. Kokeile: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Palautetta Vinoozysta';
+
+  @override
+  String get feedbackTechHeader => 'Tekniset tiedot (älä poista):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Ei sähköpostisovellusta';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'Tässä puhelimessa ei ole sähköpostisovellusta. Kirjoita meille osoitteeseen $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Kopioi';
+
+  @override
+  String get feedbackCopied => 'Osoite kopioitu';
+
+  @override
+  String get faqAddQuestion => 'Miten lisään viinin käsin?';
+
+  @override
+  String get faqAddAnswer =>
+      'Napauta Kellarissa Lisää ja sitten Kirjoita. Vain nimi on pakollinen; vuosikerta, tyyppi, maa ja alkuperänimitys parantavat arviota. Tallenna, niin viini on kellarissa.';
+
+  @override
+  String get faqLabelQuestion => 'Miten luen etiketin, myös Google Lensillä?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Napauta Lisää ja kuvaa etu- ja takapuoli: Vinoozy lukee etiketin suoraan puhelimessa. Valitse Google Lensissä teksti ja jaa se Vinoozylle, tai kopioi se ja käytä lomakkeessa Liitä Lensistä. Tarkista kentät aina ennen tallennusta.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Miten paras juoma-aika lasketaan, ja voinko muuttaa sitä?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy arvioi ikkunan (alku, huippu, loppu) viinin tyypin, alkuperänimityksen, vuosikerran ja tason perusteella. Se on suuntaa antava: myös säilytys vaikuttaa. Avaa viini ja napauta Korjaa asettaaksesi oman päivämääräsi, tai vaihda Taso.';
+
+  @override
+  String get faqOfflineQuestion => 'Toimiiko se ilman internetiä?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Kyllä. Voit lisätä, muokata ja juoda viinejä ilman yhteyttä: kaikki tallentuu puhelimeen ja synkronoituu tiliisi heti, kun yhteys palaa.';
+
+  @override
+  String get faqShareQuestion => 'Miten jaan kellarini?';
+
+  @override
+  String get faqShareAnswer =>
+      'Avaa kellarin valikosta Henkilöt ja kutsu joku hänen Google-sähköpostiosoitteellaan, vain luku tai muokkausoikeus. Hän asentaa Vinoozyn ja kirjautuu sillä tilillä.';
+
+  @override
+  String get faqPlusQuestion => 'Mitä ilmaispaketti sisältää, ja mikä on Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'Ilmaispakettiin kuuluu enintään $limit eri viiniä kellarissa, ja satunnaisia mainoksia vain Yleiskuvassa. Vinoozy Plus poistaa rajan ja mainokset.';
+  }
+
+  @override
+  String get faqDrinkQuestion =>
+      'Miksi kirjata, mitä join ja millainen se oli?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'Historia säilyttää, mitä olet juonut ja miten pidit siitä. Kun kerrot, millainen pullo oli (vielä liian nuori, juuri sopiva, huippu jo ohi), Vinoozy korjaa saman viinin arviota.';
+
+  @override
+  String get faqDeleteQuestion => 'Miten poistan tilini?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Avaa Profiili ja napauta Poista tili. Tarvitset yhteyden, ja kirjaudut sitten uudelleen Googlella vahvistaaksesi. Kellari, Historia ja jaot poistetaan pysyvästi.';
+
+  @override
+  String get faqNotFound => 'Etkö löytänyt vastausta? Kirjoita meille';
 }

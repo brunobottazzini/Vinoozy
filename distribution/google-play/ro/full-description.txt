@@ -1,18 +1,18 @@
-Pivnița ta de vinuri, mereu la îndemână.
+Vinoozy este aplicația de gestionare a pivniței de vinuri pentru sticlele pe care le ai: ține inventarul vinurilor, află când să bei fiecare vin și găsește asocieri culinare, chiar și offline.
 
-Vinoozy te ajută să îți organizezi sticlele și să explorezi estimări despre cum pot evolua: începutul, apogeul și sfârșitul orientativ al ferestrei de consum.
+Fiecare vin primește o fereastră de consum orientativă (început, apogeu și sfârșit), estimată din tip, denumire, recoltă și nivel. Panoul îți arată ce vinuri să deschizi acum și pe care merită să le mai păstrezi.
 
-ADAUGĂ VINURILE
-Introdu datele de mână, citește o etichetă cu camera, folosește un cod de bare sau importă text din Google Lens. Verifică întotdeauna datele sugerate înainte de a salva.
+CE POȚI FACE
+• Inventarul pivniței chiar și offline: adaugă, editează și notează ce bei fără conexiune; totul se sincronizează când revine rețeaua.
+• Când să bei fiecare vin: o fereastră de consum cu început, apogeu și sfârșit, pe care o poți corecta oricând.
+• Citirea etichetei pe telefon: fotografiază fața și spatele, folosește codul de bare sau importă text din Google Lens. Verifici mereu datele înainte de a salva.
+• Panou: vinuri gata de băut, de păstrat și de băut curând, dintr-o privire.
+• Istoric cu note și însemnări: spune cum a fost sticla, iar estimarea pentru același vin se corectează.
+• Asocieri culinare pentru fiecare vin.
+• Pivniță partajată: invită persoane, doar citire sau cu editare.
+• Vinoozy Plus: fără limită de vinuri și fără reclame.
 
-ȚINE PIVNIȚA ÎN ORDINE
-Gestionează cantitățile, anii de recoltă și caracteristicile vinurilor. Explorează Panoul, filtrează vinurile și păstrează evaluările și notele în Istoric. Găsește sugestii de asocieri culinare.
-
-LUCREAZĂ OFFLINE
-Vezi și actualizezi datele disponibile pe telefon. Modificările se sincronizează când revine conexiunea. Prima conectare cu Google are nevoie de internet; și unele căutări au nevoie de conexiune.
-
-PARTAJEAZĂ CU CINE ALEGI TU
-Invită persoane în pivnița ta și alege dacă o pot doar vedea sau pot face și modificări.
+Prima conectare cu Google are nevoie de internet; și unele căutări au nevoie de conexiune.
 
 CITEȘTE ETICHETELE PE TELEFON
 Recunoașterea textului are loc pe dispozitivul tău. Căutările online pot trimite cuvinte și coduri de bare către Open Food Facts. Deschiderea unei fotografii în Google Lens are nevoie de confirmarea ta.

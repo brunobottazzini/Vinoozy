@@ -2,55 +2,61 @@
 
 ## Run Record
 
-- Date: 2026-11-18
-- Commit: 6f76475a278e6351ce63454b719aeca5a37b0cfd
+- Date: 2026-11-19
+- Commit: 375a581d45c96d9a0a4935e36e025c2d27bb7086
 
 ## Run Notes
 
-- Ampiezza: scansione completa del repository; i nove artefatti sostituiscono per intero quelli precedenti.
+- Ampiezza: scansione focalizzata (intent `tester-feedback`) su presentazione al primo avvio, profilo, Informazioni, link esterni, condivisione, localizzazione, manifest Android e schede dello store. Unita allo store precedente: la prosa fuori da quest'area è conservata.
+- Lo store precedente (scansione completa del 2026-11-18, commit `6f76475`) risultava non aggiornato: la sua copertura profonda (`./`) è stata spostata sotto `shallow.paths`.
 - Profondità: Minimal.
-- Sola lettura: nessun test, build o programma del progetto è stato eseguito.
-- L'area della localizzazione è stata letta file per file. Gli altri moduli sono stati letti a livello di struttura, commenti di testata e ricerche mirate; sono elencati sotto `shallow.paths`.
-- Cartelle generate o installate (`build/`, `coverage/`, `.dart_tool/`, `node_modules/`, `functions/lib/`, `.idea/`, `.cache/`, `android/.gradle/`) non sono state aperte.
+- Sola lettura: nessun test, build o programma del progetto è stato eseguito. Il fingerprint comprende le modifiche non committate del working tree.
+- Cartelle generate o installate (`build/`, `coverage/`, `.dart_tool/`, `node_modules/`, `android/.gradle/`) non sono state aperte.
 
 ## Scope of Analysis
 
 ```yaml
 scope_version: 1
-kind: full
-intent: wine-culture-languages
-fingerprint: b9afe3c0c75b43fb8b2720bbbff5b0f9f06a023c
+kind: partial
+intent: tester-feedback
+fingerprint: ff0d8dbc65487cb7b45feb0635c80667d9ae514a
 analyzed:
   paths:
-    - ./
+    - lib/app/home_shell.dart
+    - lib/app/external_links.dart
+    - lib/app/locale_resolution.dart
+    - lib/app/ui/about_screen.dart
+    - lib/app/ui/brand_footer.dart
+    - lib/account/onboarding_flag.dart
+    - lib/account/account_providers.dart
+    - lib/account/ui/onboarding_screen.dart
+    - lib/account/ui/profile_screen.dart
+    - lib/account/ui/account_gate_view.dart
+    - lib/sharing/ui/share_launcher.dart
+    - lib/l10n/app_en.arb
+    - l10n.yaml
+    - pubspec.yaml
+    - android/app/src/main/AndroidManifest.xml
+    - android/app/src/main/res/xml/locales_config.xml
+    - distribution/google-play/README.md
+    - distribution/google-play/languages.json
+    - distribution/google-play/release-notes.txt
+    - distribution/google-play/it-IT/
+    - distribution/google-play/en-US/
   components:
     - App Shell
     - Localization
     - Account
-    - Cellar
-    - Catalog
-    - Label
-    - Dashboard
-    - Sharing
-    - Sync
-    - Plan
-    - Ads
-    - Usage
-    - Firebase Bootstrap
-    - Dev Tools
-    - E2E Hooks
-    - Estimation Package
-    - Cloud Functions
-    - Firestore Rules
-    - Android Host
-    - Account Deletion Web
     - Store Listing
-    - Tooling
-    - CI/CD Workflows
-    - Test Suites
 shallow:
   paths:
+    - ./
+    - lib/app/
     - lib/account/
+    - lib/sharing/
+    - lib/usage/
+    - lib/l10n/
+    - lib/cellar/ui/cellar_screen.dart
     - lib/ads/
     - lib/catalog/
     - lib/cellar/data/
@@ -60,9 +66,7 @@ shallow:
     - lib/firebase/
     - lib/label/
     - lib/plan/
-    - lib/sharing/
     - lib/sync/
-    - lib/usage/
     - packages/estimation/lib/src/
     - packages/estimation/test/
     - functions/src/handlers/
@@ -70,6 +74,7 @@ shallow:
     - functions/src/clients/
     - functions/test/
     - android/
+    - android/app/src/main/kotlin/
     - test/
     - integration_test/
     - integration_test_perf/

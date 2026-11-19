@@ -1,18 +1,18 @@
-Dein Weinkeller, immer griffbereit.
+Vinoozy ist die App für deine Weinkeller-Verwaltung: Führe dein Weininventar, wisse, wann du jeden Wein trinken solltest, und finde passende Speisen, auch offline.
 
-Vinoozy hilft dir, deine Flaschen zu ordnen und Schätzungen zu ihrer Entwicklung zu erkunden: Beginn, Höhepunkt und voraussichtliches Ende ihres Trinkfensters.
+Jeder Wein erhält ein ungefähres Trinkfenster (Beginn, Höhepunkt und Ende), geschätzt aus Art, Herkunftsbezeichnung, Jahrgang und Stufe. Die Übersicht zeigt dir, welche Weine du jetzt öffnen kannst und welche besser noch warten.
 
-WEINE HINZUFÜGEN
-Gib die Angaben von Hand ein, lies ein Etikett mit der Kamera, nutze einen Barcode oder übernimm Text aus Google Lens. Prüfe vorgeschlagene Angaben immer, bevor du speicherst.
+WAS DU TUN KANNST
+• Kellerinventar auch offline: Weine hinzufügen, bearbeiten und Getrunkenes festhalten, ohne Verbindung; alles wird synchronisiert, sobald das Netz zurück ist.
+• Wann trinken: ein Trinkfenster mit Beginn, Höhepunkt und Ende, das du jederzeit korrigieren kannst.
+• Etikett auf dem Telefon lesen: Vorder- und Rückseite fotografieren, Barcode nutzen oder Text aus Google Lens übernehmen. Vor dem Speichern prüfst du die Angaben immer selbst.
+• Übersicht: trinkreife Weine, Weine zum Warten und Weine zum baldigen Trinken auf einen Blick.
+• Verlauf mit Bewertungen und Notizen: Gib an, wie die Flasche war, und die Schätzung für denselben Wein wird korrigiert.
+• Speiseempfehlungen zu jedem Wein.
+• Geteilter Keller: Lade Personen ein, nur lesend oder mit Bearbeitung.
+• Vinoozy Plus: kein Weinlimit und keine Werbung.
 
-DEN KELLER IN ORDNUNG HALTEN
-Verwalte Anzahl, Jahrgänge und Eigenschaften deiner Weine. Erkunde die Übersicht, filtere deine Weine und halte Bewertungen und Notizen im Verlauf fest. Finde Speiseempfehlungen.
-
-OFFLINE ARBEITEN
-Sieh dir die Daten auf deinem Telefon an und ändere sie. Änderungen werden synchronisiert, sobald die Verbindung zurück ist. Die erste Anmeldung mit Google erfordert Internet; auch manche Suchen brauchen eine Verbindung.
-
-MIT AUSGEWÄHLTEN PERSONEN TEILEN
-Lade Personen in deinen Keller ein und lege fest, ob sie ihn nur ansehen oder auch ändern dürfen.
+Die erste Anmeldung mit Google erfordert Internet; auch manche Suchen brauchen eine Verbindung.
 
 ETIKETTEN AUF DEM TELEFON LESEN
 Die Texterkennung läuft auf deinem Gerät. Online-Suchen können Wörter und Barcodes an Open Food Facts senden. Ein Foto in Google Lens zu öffnen, erfordert deine Bestätigung.

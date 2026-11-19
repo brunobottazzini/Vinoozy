@@ -2475,4 +2475,169 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get devNotice =>
       'Builds de développement avec l\'émulateur uniquement : aucun paiement, jeton ou reçu.';
+
+  @override
+  String get settingsTitle => 'Paramètres';
+
+  @override
+  String get settingsGuide => 'Revoir le guide';
+
+  @override
+  String get settingsShare => 'Partager l\'application';
+
+  @override
+  String get settingsRate => 'Noter l\'application';
+
+  @override
+  String get settingsFeedback => 'Envoyer un avis';
+
+  @override
+  String get settingsFaq => 'Questions fréquentes';
+
+  @override
+  String get settingsShareFailed =>
+      'Impossible d\'ouvrir le partage. Réessayez';
+
+  @override
+  String get settingsRateFailed =>
+      'Impossible d\'ouvrir Google Play. Réessayez';
+
+  @override
+  String get guideAddTitle => 'Ajoutez un vin';
+
+  @override
+  String get guideAddBody =>
+      'Touchez Ajouter pour mettre une bouteille dans votre cave. Le nom suffit pour commencer.';
+
+  @override
+  String get guideLabelTitle => 'Lisez l\'étiquette';
+
+  @override
+  String get guideLabelBody =>
+      'Depuis Ajouter, vous pouvez aussi photographier l\'étiquette : Vinoozy lit le nom, le millésime et l\'appellation, que vous vérifiez avant d\'enregistrer.';
+
+  @override
+  String get guideTabsTitle => 'Aperçu, Cave, Historique';
+
+  @override
+  String get guideTabsBody =>
+      'L\'Aperçu vous dit quels vins ouvrir maintenant, la Cave liste vos bouteilles et l\'Historique garde celles que vous avez bues.';
+
+  @override
+  String get guideMenuTitle => 'Le menu de la cave';
+
+  @override
+  String get guideMenuBody =>
+      'Vous y trouvez votre profil, les personnes avec qui vous partagez la cave, les vins bus et les Paramètres, où vous pouvez revoir ce guide.';
+
+  @override
+  String get guideDone => 'Terminer';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Étape $step sur $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Ici, vous voyez quels vins sont prêts à boire maintenant et lesquels il vaut mieux garder encore.';
+
+  @override
+  String get hintHistory =>
+      'Chaque bouteille que vous buvez arrive ici, avec votre note et vos commentaires.';
+
+  @override
+  String get hintAddWine =>
+      'Commencez par le nom : le millésime, le type et l\'appellation rendent la fenêtre de dégustation plus précise.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, votre cave à vin';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Je gère ma cave avec Vinoozy : l\'application me dit quand chaque bouteille est à son apogée. Essayez-la : $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Avis sur Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Données techniques (à conserver) :';
+
+  @override
+  String get feedbackNoEmailTitle => 'Aucune application d\'e-mail';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'Ce téléphone n\'a pas d\'application d\'e-mail. Écrivez-nous à $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Copier';
+
+  @override
+  String get feedbackCopied => 'Adresse copiée';
+
+  @override
+  String get faqAddQuestion => 'Comment ajouter un vin à la main ?';
+
+  @override
+  String get faqAddAnswer =>
+      'Dans la Cave, touchez Ajouter, puis Saisir. Seul le nom est obligatoire ; le millésime, le type, le pays et l\'appellation améliorent l\'estimation. Enregistrez, et le vin est dans votre cave.';
+
+  @override
+  String get faqLabelQuestion =>
+      'Comment lire une étiquette, y compris avec Google Lens ?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Touchez Ajouter et photographiez le recto et le verso : Vinoozy lit l\'étiquette sur le téléphone. Avec Google Lens, sélectionnez le texte et partagez-le vers Vinoozy, ou copiez-le et utilisez Coller depuis Lens dans le formulaire. Vérifiez toujours les champs avant d\'enregistrer.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Comment le meilleur moment pour boire est-il calculé, et puis-je le changer ?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy estime une fenêtre (début, apogée, fin) à partir du type, de l\'appellation, du millésime et du niveau du vin. C\'est une indication : la conservation compte aussi. Ouvrez le vin et touchez Corriger pour fixer votre propre date, ou changez son Niveau.';
+
+  @override
+  String get faqOfflineQuestion => 'Ça marche sans internet ?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Oui. Vous pouvez ajouter, modifier et boire des vins hors ligne : tout est enregistré sur le téléphone et synchronisé avec votre compte dès que la connexion revient.';
+
+  @override
+  String get faqShareQuestion => 'Comment partager ma cave ?';
+
+  @override
+  String get faqShareAnswer =>
+      'Dans le menu de la Cave, ouvrez Personnes et invitez quelqu\'un avec son adresse e-mail Google, en lecture seule ou avec modification. La personne installe Vinoozy et se connecte avec ce compte.';
+
+  @override
+  String get faqPlusQuestion =>
+      'Que comprend l\'offre gratuite, et qu\'est-ce que Plus ?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'L\'offre gratuite comprend jusqu\'à $limit vins différents dans votre cave, avec quelques publicités uniquement dans l\'Aperçu. Vinoozy Plus supprime la limite et les publicités.';
+  }
+
+  @override
+  String get faqDrinkQuestion => 'Pourquoi noter les vins bus et leur état ?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'L\'Historique garde ce que vous avez bu et ce que vous en avez pensé. Quand vous indiquez l\'état de la bouteille (trop jeune, à point, sur le déclin), Vinoozy corrige l\'estimation du même vin.';
+
+  @override
+  String get faqDeleteQuestion => 'Comment supprimer mon compte ?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Ouvrez Profil et touchez Supprimer le compte. Il faut une connexion, puis vous vous reconnectez avec Google pour confirmer. Votre cave, l\'Historique et les partages sont supprimés définitivement.';
+
+  @override
+  String get faqNotFound => 'Vous n\'avez pas trouvé la réponse ? Écrivez-nous';
 }

@@ -8,12 +8,14 @@ import '../../account/ui/profile_screen.dart';
 import '../../app/providers.dart';
 import '../../app/ui/about_screen.dart';
 import '../../l10n/app_localizations.dart';
+import '../../settings/ui/settings_screen.dart';
 import '../../sharing/sharing_providers.dart';
 import '../../sharing/ui/cellar_switcher.dart';
 import '../../sharing/ui/sharing_screen.dart';
 import '../../sync/ui/offline_banner.dart';
 import '../../sync/ui/rejected_wine_notice.dart';
 import '../../dashboard/today_provider.dart';
+import '../../guide/ui/guide_tour.dart';
 import '../../sharing/domain/membership.dart';
 import '../cellar_providers.dart';
 import '../data/wine_repository.dart';
@@ -51,11 +53,16 @@ class CellarScreen extends ConsumerWidget {
     required this.setup,
     required this.onRetrySetup,
     this.onAdd,
+    this.isActiveTab = true,
   });
 
   final AppUser user;
   final CellarSetup setup;
   final Future<void> Function() onRetrySetup;
+
+  /// Whether the Cellar is the tab on screen (the shell keeps every tab
+  /// mounted): the guided tour starts only then (tester-feedback FR2.2).
+  final bool isActiveTab;
 
   /// "Aggiungi" when the shell routes it elsewhere (u6-label-recognition
   /// BR1.1: the three ways to add); without it the form opens, as before.
@@ -123,6 +130,7 @@ class CellarScreen extends ConsumerWidget {
         cellar?.value?.cellar != null;
 
     final loaded = wines?.value?.wines ?? const <Wine>[];
+    final targets = ref.watch(guideTargetsProvider);
     // ux-redesign: "Add" is a floating button. The cellar has its own
     // messenger, so the "Drink recorded" message is laid out above the
     // button instead of covering it (first-version feedback).
@@ -132,18 +140,28 @@ class CellarScreen extends ConsumerWidget {
         appBar: AppBar(
           title: Text(l10n.cellarTitle),
           actions: [
-            _CellarMenu(
-              onProfile: () => ProfileScreen.open(context, user),
-              onPeople: () => _openPeople(context),
-              onArchive: setup == CellarSetup.ready
-                  ? () => _openArchive(context, active)
-                  : null,
-              onAbout: () => AboutScreen.open(context),
+            // tester-feedback FR2.2: the last control of the guided tour.
+            KeyedSubtree(
+              key: targets.menu,
+              child: _CellarMenu(
+                onProfile: () => ProfileScreen.open(context, user),
+                onPeople: () => _openPeople(context),
+                onArchive: setup == CellarSetup.ready
+                    ? () => _openArchive(context, active)
+                    : null,
+                onSettings: () => SettingsScreen.open(context, user),
+                onAbout: () => AboutScreen.open(context),
+              ),
             ),
           ],
         ),
         body: Column(
           children: [
+            // tester-feedback FR2.2: the tour, on the wines already loaded.
+            GuideTourStarter(
+              active: isActiveTab && setup == CellarSetup.ready,
+              snapshot: wines?.value,
+            ),
             CellarSwitcher(user: user),
             // The banner derives from both listeners (syncStatusProvider).
             if (!preparing) OfflineBanner(cellarId: cellarId),
@@ -155,13 +173,16 @@ class CellarScreen extends ConsumerWidget {
           ],
         ),
         floatingActionButton: active.canEdit
-            ? _AddButton(
-                label: l10n.addWine,
-                onPressed: canAdd
-                    ? () => onAdd != null
-                          ? onAdd!(active, loaded)
-                          : _openForm(context, active, wines: loaded)
-                    : null,
+            ? KeyedSubtree(
+                key: targets.addButton,
+                child: _AddButton(
+                  label: l10n.addWine,
+                  onPressed: canAdd
+                      ? () => onAdd != null
+                            ? onAdd!(active, loaded)
+                            : _openForm(context, active, wines: loaded)
+                      : null,
+                ),
               )
             : null,
       ),
@@ -223,11 +244,14 @@ class _AddButton extends StatelessWidget {
 /// The cellar menu (u7-sharing frontend-components.md): "People" for
 /// everyone, and since u4-cellar "Drunk", the finished wines (BR1.7).
 /// Renaming is the owner's only, and the app has no rename command yet.
-/// Since u8-account it also opens the profile (BR1.2).
+/// Since u8-account it also opens the profile (BR1.2). Since tester-feedback
+/// "Settings" comes before "About"; the other entries stay where they were
+/// (FR1.1, FR1.3).
 class _CellarMenu extends StatelessWidget {
   const _CellarMenu({
     required this.onProfile,
     required this.onPeople,
+    required this.onSettings,
     required this.onAbout,
     this.onArchive,
   });
@@ -235,6 +259,9 @@ class _CellarMenu extends StatelessWidget {
   final VoidCallback onProfile;
   final VoidCallback onPeople;
   final VoidCallback? onArchive;
+
+  /// "Settings" (tester-feedback FR1.1).
+  final VoidCallback onSettings;
 
   /// "Informazioni" (label-recognition BR6.3), always last.
   final VoidCallback onAbout;
@@ -262,6 +289,11 @@ class _CellarMenu extends StatelessWidget {
             onTap: onArchive,
             child: Text(l10n.cellarArchiveTitle),
           ),
+        PopupMenuItem<void>(
+          key: const Key('cellar-menu-settings'),
+          onTap: onSettings,
+          child: Text(l10n.settingsTitle),
+        ),
         PopupMenuItem<void>(
           key: const Key('cellar-menu-about'),
           onTap: onAbout,

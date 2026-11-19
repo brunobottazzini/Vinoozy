@@ -14,7 +14,7 @@ C. Preparo solo il commit in locale, sul ramo che scegli tu; il push e il merge 
 
 X. Other (please specify)
 
-[Answer]:
+[Answer]: B
 
 ## Q2. [Responsabile dei rilasci] Versione dell'app
 
@@ -26,7 +26,7 @@ B. Lascio `0.2.1`.
 
 X. Other (please specify)
 
-[Answer]:
+[Answer]: A
 
 ## Q3. [Responsabile dei rilasci] Le tue altre modifiche non salvate
 
@@ -36,4 +36,4 @@ B. Le includo in un commit separato sullo stesso ramo, prima di quello delle lin
 
 X. Other (please specify)
 
-[Answer]:
+[Answer]: B

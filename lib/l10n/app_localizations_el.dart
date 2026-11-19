@@ -2469,4 +2469,169 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get devNotice =>
       'Μόνο για εκδόσεις ανάπτυξης με τον εξομοιωτή: χωρίς πληρωμές, διακριτικά ή αποδείξεις.';
+
+  @override
+  String get settingsTitle => 'Ρυθμίσεις';
+
+  @override
+  String get settingsGuide => 'Δείτε ξανά τον οδηγό';
+
+  @override
+  String get settingsShare => 'Κοινοποίηση της εφαρμογής';
+
+  @override
+  String get settingsRate => 'Αξιολόγηση της εφαρμογής';
+
+  @override
+  String get settingsFeedback => 'Αποστολή σχολίων';
+
+  @override
+  String get settingsFaq => 'Συχνές ερωτήσεις';
+
+  @override
+  String get settingsShareFailed =>
+      'Δεν ήταν δυνατό να ανοίξει η κοινοποίηση. Δοκιμάστε ξανά';
+
+  @override
+  String get settingsRateFailed =>
+      'Δεν ήταν δυνατό να ανοίξει το Google Play. Δοκιμάστε ξανά';
+
+  @override
+  String get guideAddTitle => 'Προσθέστε ένα κρασί';
+
+  @override
+  String get guideAddBody =>
+      'Πατήστε Προσθήκη για να βάλετε ένα μπουκάλι στην κάβα σας. Για αρχή αρκεί το όνομα.';
+
+  @override
+  String get guideLabelTitle => 'Διαβάστε την ετικέτα';
+
+  @override
+  String get guideLabelBody =>
+      'Από την Προσθήκη μπορείτε επίσης να φωτογραφίσετε την ετικέτα: το Vinoozy διαβάζει όνομα, σοδειά και ονομασία προέλευσης, και εσείς τα ελέγχετε πριν από την αποθήκευση.';
+
+  @override
+  String get guideTabsTitle => 'Επισκόπηση, Κάβα, Ιστορικό';
+
+  @override
+  String get guideTabsBody =>
+      'Η Επισκόπηση σας λέει ποια κρασιά να ανοίξετε τώρα, η Κάβα δείχνει τα μπουκάλια σας και το Ιστορικό κρατά όσα ήπιατε.';
+
+  @override
+  String get guideMenuTitle => 'Το μενού της κάβας';
+
+  @override
+  String get guideMenuBody =>
+      'Εδώ βρίσκετε το προφίλ σας, τα άτομα με τα οποία μοιράζεστε την κάβα, τα καταναλωμένα κρασιά και τις Ρυθμίσεις, όπου μπορείτε να δείτε ξανά αυτόν τον οδηγό.';
+
+  @override
+  String get guideDone => 'Τέλος';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Βήμα $step από $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Εδώ βλέπετε ποια κρασιά είναι έτοιμα να πιωθούν τώρα και ποια αξίζει να περιμένουν ακόμη.';
+
+  @override
+  String get hintHistory =>
+      'Κάθε μπουκάλι που πίνετε καταλήγει εδώ, με τη βαθμολογία και τις σημειώσεις σας.';
+
+  @override
+  String get hintAddWine =>
+      'Ξεκινήστε από το όνομα: η σοδειά, ο τύπος και η ονομασία προέλευσης κάνουν πιο ακριβές το παράθυρο κατανάλωσης.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, η κάβα σας';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Οργανώνω την κάβα μου με το Vinoozy: μου λέει πότε κάθε μπουκάλι είναι στην καλύτερη στιγμή του. Δοκιμάστε το: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Σχόλια για το Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Τεχνικά στοιχεία (μην τα διαγράψετε):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Καμία εφαρμογή email';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'Σε αυτό το τηλέφωνο δεν υπάρχει εφαρμογή email. Γράψτε μας στο $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Αντιγραφή';
+
+  @override
+  String get feedbackCopied => 'Η διεύθυνση αντιγράφηκε';
+
+  @override
+  String get faqAddQuestion => 'Πώς προσθέτω ένα κρασί χειροκίνητα;';
+
+  @override
+  String get faqAddAnswer =>
+      'Στην Κάβα πατήστε Προσθήκη και μετά Πληκτρολόγηση. Μόνο το όνομα είναι υποχρεωτικό· η σοδειά, ο τύπος, η χώρα και η ονομασία προέλευσης βελτιώνουν την εκτίμηση. Αποθηκεύστε και το κρασί είναι στην κάβα σας.';
+
+  @override
+  String get faqLabelQuestion =>
+      'Πώς διαβάζω μια ετικέτα, και με το Google Lens;';
+
+  @override
+  String get faqLabelAnswer =>
+      'Πατήστε Προσθήκη και φωτογραφίστε την μπροστινή και την πίσω πλευρά: το Vinoozy διαβάζει την ετικέτα στο ίδιο το τηλέφωνο. Στο Google Lens επιλέξτε το κείμενο και κοινοποιήστε το στο Vinoozy, ή αντιγράψτε το και χρησιμοποιήστε την Επικόλληση από το Lens στη φόρμα. Ελέγχετε πάντα τα πεδία πριν από την αποθήκευση.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Πώς υπολογίζεται η ιδανική στιγμή για να το πιείτε, και μπορώ να την αλλάξω;';
+
+  @override
+  String get faqWindowAnswer =>
+      'Το Vinoozy εκτιμά ένα παράθυρο (αρχή, κορύφωση, τέλος) από τον τύπο, την ονομασία προέλευσης, τη σοδειά και το επίπεδο του κρασιού. Είναι ενδεικτικό: μετράει και η φύλαξη της φιάλης. Ανοίξτε το κρασί και πατήστε Διόρθωση για να ορίσετε τη δική σας ημερομηνία, ή αλλάξτε το Επίπεδο.';
+
+  @override
+  String get faqOfflineQuestion => 'Λειτουργεί χωρίς internet;';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Ναι. Μπορείτε να προσθέτετε, να επεξεργάζεστε και να πίνετε κρασιά χωρίς σύνδεση: όλα αποθηκεύονται στο τηλέφωνο και συγχρονίζονται με τον λογαριασμό σας μόλις επανέλθει η σύνδεση.';
+
+  @override
+  String get faqShareQuestion => 'Πώς μοιράζομαι την κάβα μου;';
+
+  @override
+  String get faqShareAnswer =>
+      'Στο μενού της Κάβας ανοίξτε τα Άτομα και προσκαλέστε κάποιον με τη διεύθυνση email Google του, μόνο για προβολή ή με επεξεργασία. Εκείνος εγκαθιστά το Vinoozy και συνδέεται με αυτόν τον λογαριασμό.';
+
+  @override
+  String get faqPlusQuestion =>
+      'Τι περιλαμβάνει το δωρεάν πρόγραμμα, και τι είναι το Plus;';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'Το δωρεάν πρόγραμμα περιλαμβάνει έως $limit διαφορετικά κρασιά στην κάβα σας, με περιστασιακές διαφημίσεις μόνο στην Επισκόπηση. Το Vinoozy Plus καταργεί το όριο και τις διαφημίσεις.';
+  }
+
+  @override
+  String get faqDrinkQuestion => 'Γιατί να καταγράφω τι ήπια και πώς ήταν;';
+
+  @override
+  String get faqDrinkAnswer =>
+      'Το Ιστορικό κρατά τι ήπιατε και πόσο σας άρεσε. Όταν λέτε πώς ήταν το μπουκάλι (ακόμη πολύ νέο, στην ώρα του, μετά την κορύφωσή του), το Vinoozy διορθώνει την εκτίμηση για το ίδιο κρασί.';
+
+  @override
+  String get faqDeleteQuestion => 'Πώς διαγράφω τον λογαριασμό μου;';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Ανοίξτε το Προφίλ και πατήστε Διαγραφή λογαριασμού. Χρειάζεστε σύνδεση και μετά συνδέεστε ξανά με το Google για επιβεβαίωση. Η κάβα, το Ιστορικό και οι κοινοποιήσεις σας διαγράφονται οριστικά.';
+
+  @override
+  String get faqNotFound => 'Δεν βρήκατε την απάντηση; Γράψτε μας';
 }

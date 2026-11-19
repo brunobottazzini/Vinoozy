@@ -2481,4 +2481,168 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get devNotice =>
       'Jen vývojové buildy s emulátorem: žádné platby, tokeny ani účtenky.';
+
+  @override
+  String get settingsTitle => 'Nastavení';
+
+  @override
+  String get settingsGuide => 'Znovu zobrazit průvodce';
+
+  @override
+  String get settingsShare => 'Sdílet aplikaci';
+
+  @override
+  String get settingsRate => 'Ohodnotit aplikaci';
+
+  @override
+  String get settingsFeedback => 'Poslat zpětnou vazbu';
+
+  @override
+  String get settingsFaq => 'Časté dotazy';
+
+  @override
+  String get settingsShareFailed =>
+      'Sdílení se nepodařilo otevřít. Zkuste to znovu';
+
+  @override
+  String get settingsRateFailed =>
+      'Google Play se nepodařilo otevřít. Zkuste to znovu';
+
+  @override
+  String get guideAddTitle => 'Přidejte víno';
+
+  @override
+  String get guideAddBody =>
+      'Klepněte na Přidat a uložte láhev do sklepa. Na začátek stačí název.';
+
+  @override
+  String get guideLabelTitle => 'Přečtěte etiketu';
+
+  @override
+  String get guideLabelBody =>
+      'V nabídce Přidat můžete etiketu také vyfotit: Vinoozy přečte název, ročník a označení původu a vy je před uložením zkontrolujete.';
+
+  @override
+  String get guideTabsTitle => 'Přehled, Sklep, Historie';
+
+  @override
+  String get guideTabsBody =>
+      'Přehled vám řekne, která vína otevřít teď, Sklep ukazuje vaše láhve a Historie uchovává ty, které jste vypili.';
+
+  @override
+  String get guideMenuTitle => 'Nabídka sklepa';
+
+  @override
+  String get guideMenuBody =>
+      'Najdete tu svůj profil, lidi, se kterými sklep sdílíte, vypitá vína a Nastavení, kde si tohoto průvodce můžete znovu zobrazit.';
+
+  @override
+  String get guideDone => 'Hotovo';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Krok $step z $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Tady vidíte, která vína jsou teď připravená k pití a která je lepší ještě nechat ležet.';
+
+  @override
+  String get hintHistory =>
+      'Každá láhev, kterou vypijete, skončí tady, s vaším hodnocením a poznámkami.';
+
+  @override
+  String get hintAddWine =>
+      'Začněte názvem: ročník, typ a označení původu zpřesní okno pro pití.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, váš vinný sklep';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Svůj vinný sklep vedu ve Vinoozy: řekne mi, kdy je každá láhev v nejlepší kondici. Vyzkoušejte ji: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Zpětná vazba k aplikaci Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Technické údaje (nemažte):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Žádná e-mailová aplikace';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'V tomto telefonu není žádná e-mailová aplikace. Napište nám na $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Kopírovat';
+
+  @override
+  String get feedbackCopied => 'Adresa zkopírována';
+
+  @override
+  String get faqAddQuestion => 'Jak ručně přidám víno?';
+
+  @override
+  String get faqAddAnswer =>
+      'Ve Sklepu klepněte na Přidat a pak na Napsat. Povinný je jen název; ročník, typ, země a označení původu zlepšují odhad. Uložte a víno je ve sklepě.';
+
+  @override
+  String get faqLabelQuestion => 'Jak přečtu etiketu, i pomocí Google Lens?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Klepněte na Přidat a vyfoťte přední i zadní stranu: Vinoozy přečte etiketu přímo v telefonu. V Google Lens označte text a sdílejte ho do Vinoozy, nebo ho zkopírujte a ve formuláři použijte Vložit z Lens. Před uložením vždy zkontrolujte pole.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Jak se počítá ideální doba k pití a mohu ji změnit?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy odhaduje okno (začátek, vrchol, konec) podle typu, označení původu, ročníku a úrovně vína. Je to orientační: záleží i na tom, jak byla láhev skladována. Otevřete víno a klepněte na Opravit, abyste nastavili vlastní datum, nebo změňte Úroveň.';
+
+  @override
+  String get faqOfflineQuestion => 'Funguje bez internetu?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Ano. Vína můžete přidávat, upravovat i pít bez připojení: vše se uloží v telefonu a synchronizuje s vaším účtem, jakmile se připojení obnoví.';
+
+  @override
+  String get faqShareQuestion => 'Jak sdílím svůj sklep?';
+
+  @override
+  String get faqShareAnswer =>
+      'V nabídce Sklepa otevřete Lidé a pozvěte někoho přes jeho e-mailovou adresu Google, jen pro čtení nebo s úpravami. Ten si nainstaluje Vinoozy a přihlásí se tímto účtem.';
+
+  @override
+  String get faqPlusQuestion => 'Co zahrnuje bezplatný tarif a co je Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'Bezplatný tarif zahrnuje až $limit různých vín ve sklepě, s občasnými reklamami jen v Přehledu. Vinoozy Plus odstraní limit i reklamy.';
+  }
+
+  @override
+  String get faqDrinkQuestion =>
+      'Proč zaznamenávat, co jsem vypil a jaké to bylo?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'Historie uchovává, co jste vypili a jak vám to chutnalo. Když uvedete, jaká láhev byla (ještě příliš mladé, tak akorát, za vrcholem), Vinoozy opraví odhad u stejného vína.';
+
+  @override
+  String get faqDeleteQuestion => 'Jak smažu svůj účet?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Otevřete Profil a klepněte na Smazat účet. Potřebujete připojení a pak se pro potvrzení znovu přihlásíte přes Google. Sklep, Historie a sdílení se smažou natrvalo.';
+
+  @override
+  String get faqNotFound => 'Nenašli jste odpověď? Napište nám';
 }

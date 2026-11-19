@@ -2,6 +2,18 @@
 
 Stato all'11 novembre 2026. Il test chiuso Alpha è pubblicato e Vinoozy è stata inviata a **Testers Community**, lo stesso servizio usato per Trasloco, con il piano Starter scelto e pagato dal proprietario. I tester useranno i propri account Google; la password dell'account riservato ai revisori resta soltanto in Play Console.
 
+## Scheda in 25 lingue e Alpha 5 (0.3.0) — 18 novembre 2026
+
+Il proprietario ha inviato **26 modifiche per la revisione di Google il 18 novembre 2026 alle 16:00** (ora di Roma). Play Console registra lo stato **«In revisione»**. [Dettagli dell'invio n. 2](https://play.google.com/console/u/1/developers/7355456641864294998/app/4974010218208182861/publishing/submission-activity/2/details)
+
+| Modifiche | Riscontro in Play Console |
+|---|---|
+| 22 nuove lingue della scheda principale | `pt-PT`, `fr-FR`, `es-ES`, `de-DE`, `ca`, `el-GR`, `ro`, `hu-HU`, `hr`, `sl`, `cs-CZ`, `sk`, `bg`, `sr`, `ka-GE`, `nl-NL`, `pl-PL`, `uk`, `da-DK`, `sv-SE`, `no-NO`, `fi-FI`. Nome, descrizione breve e descrizione completa copiati dai file sotto `distribution/google-play/` e verificati nei campi prima del salvataggio. Nessun rifiuto sui testi o blocco per la grafica. |
+| 3 descrizioni complete aggiornate | `it-IT`, `en-US` e `pt-BR`, con il riferimento alle 25 lingue. La Console mostra l'italiano come lingua predefinita. |
+| 1 release nel test chiuso Alpha | `5 (0.3.0)`, «Avvio dell'implementazione completa». Ultima release del test interno verificata. Completata la bozza Alpha già presente con lo stesso bundle. La Console ha accettato le note di `distribution/google-play/release-notes.txt` per **25 su 25 lingue**. L'anteprima non ha mostrato avvisi bloccanti e ha indicato zero variazioni nei dispositivi supportati. |
+
+La pubblicazione gestita è disattivata. Al momento della verifica dopo l'invio erano in corso i controlli rapidi di Play Console. Dopo l'approvazione di Google, verificare i testi di tutte le 25 lingue sul Play Store e lo stato «Disponibile per tester selezionati» della release Alpha `5 (0.3.0)`.
+
 ## Aggiornamento configurazione — 11 novembre 2026
 
 Verifica effettuata nella Play Console reale:

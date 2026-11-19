@@ -1,18 +1,18 @@
-Tu bodega, siempre a mano.
+Vinoozy es la app para gestionar tu bodega de vinos: lleva el inventario de tus vinos, sabe cuándo beber cada botella y encuentra maridajes, incluso sin conexión.
 
-Vinoozy te ayuda a organizar las botellas que tienes y a consultar estimaciones de su evolución: inicio, apogeo y final orientativo de su ventana de consumo.
+Cada vino recibe una ventana de consumo orientativa (inicio, apogeo y final), estimada a partir del tipo, la denominación, la añada y el nivel. El Panel te muestra qué vinos abrir ahora y cuáles conviene esperar.
 
-AÑADE TUS VINOS
-Introduce los datos a mano, lee una etiqueta con la cámara, usa un código de barras o importa texto desde Google Lens. Revisa siempre los datos sugeridos antes de guardar.
+QUÉ PUEDES HACER
+• Inventario de la bodega incluso sin conexión: añade, edita y anota lo que bebes; todo se sincroniza cuando vuelve la red.
+• Cuándo beber cada vino: una ventana de consumo con inicio, apogeo y final, que puedes corregir cuando quieras.
+• Lectura de la etiqueta en el teléfono: fotografía la parte delantera y trasera, usa el código de barras o importa texto desde Google Lens. Siempre revisas los datos antes de guardar.
+• Panel: vinos listos, para esperar y para beber pronto, de un vistazo.
+• Historial de lo que bebes con valoraciones y notas: di cómo estaba la botella y la estimación del mismo vino se corrige.
+• Maridaje con comida para cada vino.
+• Bodega compartida: invita a otras personas, solo lectura o con edición.
+• Vinoozy Plus: sin límite de vinos y sin anuncios.
 
-MANTÉN TU BODEGA EN ORDEN
-Gestiona cantidades, añadas y características de los vinos. Consulta el Panel, filtra tus vinos y guarda valoraciones y notas en el Historial. Encuentra sugerencias de maridaje.
-
-ÚSALA SIN CONEXIÓN
-Consulta y actualiza los datos disponibles en tu teléfono. Los cambios se sincronizan cuando vuelve la conexión. El primer inicio de sesión con Google necesita Internet; algunas búsquedas también requieren conexión.
-
-COMPARTE CON QUIEN TÚ ELIJAS
-Invita a otras personas a tu bodega y elige si pueden solo consultarla o también hacer cambios.
+El primer inicio de sesión con Google necesita Internet; algunas búsquedas también requieren conexión.
 
 LEE LAS ETIQUETAS EN TU TELÉFONO
 El reconocimiento de texto se hace en tu dispositivo. Las búsquedas en línea pueden enviar palabras y códigos de barras a Open Food Facts. Abrir una foto en Google Lens requiere tu confirmación.

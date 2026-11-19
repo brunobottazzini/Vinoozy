@@ -2477,4 +2477,167 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get devNotice =>
       'Doar versiuni de dezvoltare cu emulatorul: fără plăți, tokenuri sau chitanțe.';
+
+  @override
+  String get settingsTitle => 'Setări';
+
+  @override
+  String get settingsGuide => 'Revezi ghidul';
+
+  @override
+  String get settingsShare => 'Distribuie aplicația';
+
+  @override
+  String get settingsRate => 'Evaluează aplicația';
+
+  @override
+  String get settingsFeedback => 'Trimite feedback';
+
+  @override
+  String get settingsFaq => 'Întrebări frecvente';
+
+  @override
+  String get settingsShareFailed =>
+      'Nu s-a putut deschide distribuirea. Încearcă din nou';
+
+  @override
+  String get settingsRateFailed =>
+      'Nu s-a putut deschide Google Play. Încearcă din nou';
+
+  @override
+  String get guideAddTitle => 'Adaugă un vin';
+
+  @override
+  String get guideAddBody =>
+      'Atinge Adaugă ca să pui o sticlă în pivniță. Pentru început ajunge numele.';
+
+  @override
+  String get guideLabelTitle => 'Citește eticheta';
+
+  @override
+  String get guideLabelBody =>
+      'Din Adaugă poți fotografia și eticheta: Vinoozy citește numele, recolta și denumirea, iar tu le verifici înainte de a salva.';
+
+  @override
+  String get guideTabsTitle => 'Panou, Pivniță, Istoric';
+
+  @override
+  String get guideTabsBody =>
+      'Panoul îți spune ce vinuri să deschizi acum, Pivnița îți arată sticlele, iar Istoricul le păstrează pe cele băute.';
+
+  @override
+  String get guideMenuTitle => 'Meniul pivniței';
+
+  @override
+  String get guideMenuBody =>
+      'Aici găsești profilul, persoanele cu care împarți pivnița, vinurile băute și Setările, unde poți revedea acest ghid.';
+
+  @override
+  String get guideDone => 'Gata';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Pasul $step din $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Aici vezi ce vinuri sunt gata de băut acum și pe care e mai bine să le mai păstrezi.';
+
+  @override
+  String get hintHistory =>
+      'Fiecare sticlă pe care o bei ajunge aici, cu nota și însemnările tale.';
+
+  @override
+  String get hintAddWine =>
+      'Începe cu numele: recolta, tipul și denumirea fac fereastra de consum mai precisă.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, pivnița ta de vinuri';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Îmi țin pivnița cu Vinoozy: îmi spune când fiecare sticlă e în cea mai bună formă. Încearc-o: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Feedback despre Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Date tehnice (nu le șterge):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Nicio aplicație de e-mail';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'Pe acest telefon nu există o aplicație de e-mail. Scrie-ne la $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Copiază';
+
+  @override
+  String get feedbackCopied => 'Adresa a fost copiată';
+
+  @override
+  String get faqAddQuestion => 'Cum adaug manual un vin?';
+
+  @override
+  String get faqAddAnswer =>
+      'În Pivniță atinge Adaugă, apoi Scrie. Doar numele este obligatoriu; recolta, tipul, țara și denumirea îmbunătățesc estimarea. Salvează și vinul e în pivniță.';
+
+  @override
+  String get faqLabelQuestion => 'Cum citesc o etichetă, și cu Google Lens?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Atinge Adaugă și fotografiază fața și spatele: Vinoozy citește eticheta chiar pe telefon. În Google Lens selectează textul și distribuie-l către Vinoozy sau copiază-l și folosește Lipește din Lens în formular. Verifică mereu câmpurile înainte de a salva.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Cum se calculează momentul ideal de băut și îl pot schimba?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy estimează o fereastră (început, apogeu, sfârșit) din tipul, denumirea, recolta și nivelul vinului. Este orientativă: contează și cum a fost păstrată sticla. Deschide vinul și atinge Corectează ca să pui data ta sau schimbă-i Nivelul.';
+
+  @override
+  String get faqOfflineQuestion => 'Funcționează fără internet?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Da. Poți adăuga, edita și bea vinuri fără conexiune: totul se salvează pe telefon și se sincronizează cu contul tău imediat ce revine conexiunea.';
+
+  @override
+  String get faqShareQuestion => 'Cum îmi împart pivnița?';
+
+  @override
+  String get faqShareAnswer =>
+      'Din meniul Pivniței deschide Persoane și invită pe cineva cu adresa de e-mail Google, doar citire sau cu editare. Persoana instalează Vinoozy și se conectează cu acel cont.';
+
+  @override
+  String get faqPlusQuestion => 'Ce include planul gratuit și ce este Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'Planul gratuit include până la $limit vinuri diferite în pivniță, cu reclame ocazionale doar în Panou. Vinoozy Plus elimină limita și reclamele.';
+  }
+
+  @override
+  String get faqDrinkQuestion => 'De ce să notez ce beau și cum a fost?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'Istoricul păstrează ce ai băut și cât ți-a plăcut. Când spui cum a fost sticla (încă prea tânăr, tocmai bun, trecut de apogeu), Vinoozy corectează estimarea pentru același vin.';
+
+  @override
+  String get faqDeleteQuestion => 'Cum îmi șterg contul?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Deschide Profil și atinge Șterge contul. Ai nevoie de conexiune, apoi te conectezi din nou cu Google ca să confirmi. Pivnița, Istoricul și partajările se șterg definitiv.';
+
+  @override
+  String get faqNotFound => 'N-ai găsit răspunsul? Scrie-ne';
 }

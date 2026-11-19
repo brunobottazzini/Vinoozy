@@ -1,18 +1,18 @@
-Sua adega sempre à mão.
+O Vinoozy é o app de gerenciamento de adega para as garrafas que você tem: controle o estoque de vinhos, saiba quando beber cada vinho e encontre harmonizações, mesmo sem internet.
 
-Com o Vinoozy, você organiza as garrafas que possui e consulta estimativas de sua evolução: início, auge e fim indicativo da janela de consumo.
+Cada vinho recebe uma janela de consumo indicativa (início, auge e fim), estimada a partir do tipo, da denominação, da safra e do nível. O Painel mostra quais vinhos abrir agora e quais vale a pena guardar.
 
-ADICIONE SEUS VINHOS
-Insira os dados manualmente, leia um rótulo com a câmera, use um código de barras ou importe texto do Google Lens. Confira os dados sugeridos antes de salvar.
+O QUE VOCÊ PODE FAZER
+• Estoque da adega mesmo offline: adicione, edite e registre o que bebeu sem conexão; tudo é sincronizado quando a internet voltar.
+• Quando beber cada vinho: uma janela de consumo com início, auge e fim, que você pode corrigir quando quiser.
+• Leitura do rótulo no celular: fotografe a frente e o verso, use o código de barras ou importe texto do Google Lens. Você sempre confere os dados antes de salvar.
+• Painel: vinhos prontos, para guardar e para beber logo, num relance.
+• Histórico com notas e comentários: diga como estava a garrafa e a estimativa do mesmo vinho é corrigida.
+• Harmonização com comida para cada vinho.
+• Adega compartilhada: convide outras pessoas, somente leitura ou com edição.
+• Vinoozy Plus: sem limite de vinhos e sem anúncios.
 
-MANTENHA SUA ADEGA ORGANIZADA
-Gerencie quantidades, safras e características. Consulte o Painel, filtre seus vinhos e guarde avaliações e notas no Histórico. Encontre sugestões de harmonização com alimentos.
-
-USE MESMO SEM CONEXÃO
-Consulte e atualize os dados disponíveis no celular. As alterações serão sincronizadas quando a conexão voltar. O primeiro acesso com o Google exige Internet; algumas buscas também precisam de conexão.
-
-COMPARTILHE COM QUEM VOCÊ ESCOLHER
-Convide outras pessoas para sua adega e escolha se elas podem apenas consultar ou também fazer alterações.
+O primeiro acesso com o Google exige Internet; algumas buscas também precisam de conexão.
 
 LEIA O RÓTULO NO CELULAR
 O reconhecimento de texto acontece no aparelho. As buscas online podem enviar palavras e códigos de barras ao Open Food Facts. A abertura de uma foto no Google Lens exige sua confirmação.

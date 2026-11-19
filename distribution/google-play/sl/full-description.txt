@@ -1,18 +1,18 @@
-Vaša vinska klet, vedno pri roki.
+Vinoozy je aplikacija za upravljanje vinske kleti za steklenice, ki jih imate: vodite inventar vin, vedite, kdaj popiti katero vino, in poiščite ujemanje s hrano, tudi brez povezave.
 
-Vinoozy vam pomaga urediti steklenice, ki jih imate, in raziskati napovedi njihovega možnega razvoja: začetek, vrhunec in okvirni konec njihovega okna pitnosti.
+Vsako vino dobi okvirno okno pitnosti (začetek, vrhunec in konec), ocenjeno iz vrste, označbe porekla, letnika in ravni. Pregled vam pokaže, katera vina odpreti zdaj in katera je bolje še počakati.
 
-DODAJTE SVOJA VINA
-Podatke vnesite ročno, etiketo preberite s fotoaparatom, uporabite črtno kodo ali uvozite besedilo iz aplikacije Google Lens. Pred shranjevanjem vedno preverite predlagane podatke.
+KAJ LAHKO POČNETE
+• Inventar kleti tudi brez povezave: dodajajte, urejajte in beležite popito brez interneta; vse se sinhronizira, ko se omrežje vrne.
+• Kdaj popiti katero vino: okno pitnosti z začetkom, vrhuncem in koncem, ki ga lahko kadar koli popravite.
+• Branje etikete v telefonu: fotografirajte sprednjo in zadnjo stran, uporabite črtno kodo ali uvozite besedilo iz aplikacije Google Lens. Podatke pred shranjevanjem vedno preverite sami.
+• Pregled: vina, pripravljena za pitje, za čakanje in za kmalu, na prvi pogled.
+• Zgodovina z ocenami in opombami: povejte, kakšna je bila steklenica, in ocena za isto vino se popravi.
+• Ujemanje s hrano za vsako vino.
+• Skupna klet: povabite osebe, samo za branje ali z urejanjem.
+• Vinoozy Plus: brez omejitve števila vin in brez oglasov.
 
-IMEJTE KLET UREJENO
-Upravljajte količine, letnike in lastnosti vin. Raziščite Pregled, filtrirajte vina ter hranite ocene in opombe v Zgodovini. Poiščite predloge za ujemanje s hrano.
-
-DELAJTE BREZ POVEZAVE
-Pregledujte in posodabljajte podatke, ki so na voljo v telefonu. Spremembe se sinhronizirajo, ko se povezava vrne. Prva prijava z računom Google zahteva internet; povezavo zahtevajo tudi nekatera iskanja.
-
-DELITE Z OSEBAMI, KI JIH IZBERETE
-Povabite osebe v svojo klet in izberite, ali si jo lahko le ogledujejo ali jo tudi spreminjajo.
+Prva prijava z računom Google zahteva internet; povezavo zahtevajo tudi nekatera iskanja.
 
 BERITE ETIKETE V TELEFONU
 Prepoznavanje besedila poteka v vaši napravi. Iskanja na spletu lahko pošiljajo besede in črtne kode storitvi Open Food Facts. Odpiranje fotografije v aplikaciji Google Lens zahteva vašo potrditev.

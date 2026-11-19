@@ -1,18 +1,18 @@
-Votre cave à vin, toujours à portée de main.
+Vinoozy est une application de gestion de cave à vin pour les bouteilles que vous possédez : tenez l'inventaire de vos vins, sachez quand boire chaque vin et trouvez des accords mets-vins, même hors ligne.
 
-Vinoozy vous aide à organiser les bouteilles que vous possédez et à explorer des estimations de leur évolution : début, apogée et fin indicative de leur fenêtre de dégustation.
+Chaque vin reçoit une fenêtre de dégustation indicative (début, apogée et fin), estimée à partir du type, de l'appellation, du millésime et du niveau. L'Aperçu vous montre quels vins ouvrir maintenant et lesquels attendre.
 
-AJOUTEZ VOS VINS
-Saisissez les informations à la main, lisez une étiquette avec l'appareil photo, utilisez un code-barres ou importez du texte depuis Google Lens. Vérifiez toujours les informations suggérées avant d'enregistrer.
+CE QUE VOUS POUVEZ FAIRE
+• Inventaire de cave même hors ligne : ajoutez, modifiez et notez vos dégustations sans connexion ; tout se synchronise au retour du réseau.
+• Quand boire chaque vin : une fenêtre de dégustation avec début, apogée et fin, que vous pouvez corriger à tout moment.
+• Lecture de l'étiquette sur le téléphone : photographiez le recto et le verso, utilisez le code-barres ou importez le texte depuis Google Lens. Vous vérifiez toujours les informations avant d'enregistrer.
+• Aperçu : vins prêts, à attendre et à boire bientôt, en un coup d'œil.
+• Historique des dégustations avec notes et commentaires : indiquez l'état de la bouteille et l'estimation du même vin est corrigée.
+• Accords mets-vins pour chaque vin.
+• Cave partagée : invitez des personnes, en lecture seule ou avec modification.
+• Vinoozy Plus : aucune limite de vins et aucune publicité.
 
-GARDEZ VOTRE CAVE EN ORDRE
-Gérez les quantités, les millésimes et les caractéristiques des vins. Explorez l'Aperçu, filtrez vos vins et conservez notes et commentaires dans l'Historique. Trouvez des suggestions d'accords mets-vins.
-
-UTILISEZ-LA HORS LIGNE
-Consultez et modifiez les données disponibles sur votre téléphone. Les modifications se synchronisent au retour de la connexion. La première connexion avec Google nécessite Internet ; certaines recherches ont aussi besoin d'une connexion.
-
-PARTAGEZ AVEC LES PERSONNES DE VOTRE CHOIX
-Invitez des personnes dans votre cave et choisissez si elles peuvent la consulter ou aussi la modifier.
+La première connexion avec Google nécessite Internet ; certaines recherches ont aussi besoin d'une connexion.
 
 LISEZ LES ÉTIQUETTES SUR VOTRE TÉLÉPHONE
 La reconnaissance de texte s'effectue sur votre appareil. Les recherches en ligne peuvent envoyer des mots et des codes-barres à Open Food Facts. L'ouverture d'une photo dans Google Lens nécessite votre confirmation.

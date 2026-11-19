@@ -2459,4 +2459,168 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get devNotice =>
       'Solo build di sviluppo con l\'emulatore: nessun pagamento, token o ricevuta.';
+
+  @override
+  String get settingsTitle => 'Impostazioni';
+
+  @override
+  String get settingsGuide => 'Rivedi la guida';
+
+  @override
+  String get settingsShare => 'Condividi l\'app';
+
+  @override
+  String get settingsRate => 'Valuta l\'app';
+
+  @override
+  String get settingsFeedback => 'Invia un feedback';
+
+  @override
+  String get settingsFaq => 'Domande frequenti';
+
+  @override
+  String get settingsShareFailed =>
+      'Impossibile aprire la condivisione. Riprova';
+
+  @override
+  String get settingsRateFailed => 'Impossibile aprire Google Play. Riprova';
+
+  @override
+  String get guideAddTitle => 'Aggiungi un vino';
+
+  @override
+  String get guideAddBody =>
+      'Tocca Aggiungi per mettere una bottiglia in cantina. Per iniziare basta il nome.';
+
+  @override
+  String get guideLabelTitle => 'Leggi l\'etichetta';
+
+  @override
+  String get guideLabelBody =>
+      'Da Aggiungi puoi anche fotografare l\'etichetta: Vinoozy legge nome, annata e denominazione, e tu li controlli prima di salvare.';
+
+  @override
+  String get guideTabsTitle => 'Cruscotto, Cantina, Storico';
+
+  @override
+  String get guideTabsBody =>
+      'Il Cruscotto ti dice quali vini aprire adesso, la Cantina elenca le tue bottiglie e lo Storico conserva quelle che hai bevuto.';
+
+  @override
+  String get guideMenuTitle => 'Il menu della cantina';
+
+  @override
+  String get guideMenuBody =>
+      'Qui trovi il profilo, le persone con cui condividi la cantina, i vini bevuti e le Impostazioni, dove puoi rivedere questa guida.';
+
+  @override
+  String get guideDone => 'Fine';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Passo $step di $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Qui vedi quali vini sono pronti da bere adesso e quali conviene tenere ancora da parte.';
+
+  @override
+  String get hintHistory =>
+      'Ogni bottiglia che bevi finisce qui, con il tuo voto e le tue note.';
+
+  @override
+  String get hintAddWine =>
+      'Parti dal nome: annata, tipo e denominazione rendono più precisa la finestra di consumo.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, la tua cantina';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Gestisco la mia cantina con Vinoozy: mi dice quando ogni bottiglia dà il meglio. Provala: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Feedback su Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Dati tecnici (non cancellare):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Nessuna app email';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'Su questo telefono non c\'è un\'app email. Scrivici a $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Copia';
+
+  @override
+  String get feedbackCopied => 'Indirizzo copiato';
+
+  @override
+  String get faqAddQuestion => 'Come aggiungo un vino a mano?';
+
+  @override
+  String get faqAddAnswer =>
+      'Nella Cantina tocca Aggiungi, poi Scrivi. Serve solo il nome; annata, tipo, paese e denominazione migliorano la stima. Salva e il vino è in cantina.';
+
+  @override
+  String get faqLabelQuestion =>
+      'Come leggo un\'etichetta, anche con Google Lens?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Tocca Aggiungi e fotografa fronte e retro: Vinoozy legge l\'etichetta sul telefono. Con Google Lens seleziona il testo e condividilo con Vinoozy, oppure copialo e usa Incolla da Lens nel modulo. Controlla sempre i campi prima di salvare.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Come si calcola il momento ideale per bere, e posso cambiarlo?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy stima una finestra (inizio, apice, fine) da tipo, denominazione, annata e livello del vino. È un\'indicazione: conta anche come è stata conservata la bottiglia. Apri il vino e tocca Correggi per mettere la tua data, oppure cambia il Livello.';
+
+  @override
+  String get faqOfflineQuestion => 'Funziona senza internet?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Sì. Puoi aggiungere, modificare e bere vini senza rete: tutto resta salvato sul telefono e si sincronizza con il tuo account appena torna la connessione.';
+
+  @override
+  String get faqShareQuestion => 'Come condivido la mia cantina?';
+
+  @override
+  String get faqShareAnswer =>
+      'Dal menu della Cantina apri Persone e invita qualcuno con il suo indirizzo email Google, in sola lettura o con la modifica. La persona installa Vinoozy e accede con quell\'account.';
+
+  @override
+  String get faqPlusQuestion =>
+      'Cosa comprende il piano gratuito, e cos\'è Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'Il piano gratuito comprende fino a $limit vini diversi in cantina, con qualche annuncio solo nel Cruscotto. Vinoozy Plus toglie il limite e gli annunci.';
+  }
+
+  @override
+  String get faqDrinkQuestion => 'Perché registrare le bevute e com\'erano?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'Lo Storico conserva cosa hai bevuto e quanto ti è piaciuto. Quando dici com\'era la bottiglia (troppo giovane, al punto giusto, già in declino), Vinoozy corregge la stima dello stesso vino.';
+
+  @override
+  String get faqDeleteQuestion => 'Come cancello il mio account?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Apri Profilo e tocca Cancella account. Serve la connessione, poi accedi di nuovo con Google per confermare. La cantina, lo Storico e le condivisioni vengono cancellati per sempre.';
+
+  @override
+  String get faqNotFound => 'Non hai trovato la risposta? Scrivici';
 }

@@ -4167,6 +4167,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Development builds with the emulator only: no payments, tokens or receipts.'**
   String get devNotice;
+
+  /// tester-feedback FR1.1: the Cellar menu entry and the title of the Settings screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// tester-feedback FR2.4: restarts the guided tour and the hints.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the guide again'**
+  String get settingsGuide;
+
+  /// tester-feedback FR4.1.
+  ///
+  /// In en, this message translates to:
+  /// **'Share the app'**
+  String get settingsShare;
+
+  /// tester-feedback FR5.1: Google Play review window or the store page.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate the app'**
+  String get settingsRate;
+
+  /// tester-feedback FR6.1: opens the email app.
+  ///
+  /// In en, this message translates to:
+  /// **'Send feedback'**
+  String get settingsFeedback;
+
+  /// tester-feedback FR7.1: the entry and the title of the FAQ screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequently asked questions'**
+  String get settingsFaq;
+
+  /// tester-feedback FR4.1: the share sheet failed (a cancel shows nothing).
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open sharing. Try again'**
+  String get settingsShareFailed;
+
+  /// tester-feedback FR5.1: neither the review window nor the store page opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open Google Play. Try again'**
+  String get settingsRateFailed;
+
+  /// tester-feedback FR2.2: tour step 1, on the Add button.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a wine'**
+  String get guideAddTitle;
+
+  /// tester-feedback FR2.2: tour step 1.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap Add to put a bottle in your cellar. Only the name is needed to start.'**
+  String get guideAddBody;
+
+  /// tester-feedback FR2.2: tour step 2, the label photo behind Add.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the label'**
+  String get guideLabelTitle;
+
+  /// tester-feedback FR2.2: tour step 2.
+  ///
+  /// In en, this message translates to:
+  /// **'Under Add you can also photograph the label: Vinoozy reads name, vintage and appellation, and you check them before saving.'**
+  String get guideLabelBody;
+
+  /// tester-feedback FR2.2: tour step 3, on the tab bar. Use the tab names of the app.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard, Cellar, History'**
+  String get guideTabsTitle;
+
+  /// tester-feedback FR2.2: tour step 3.
+  ///
+  /// In en, this message translates to:
+  /// **'The Dashboard tells you which wines to open now, the Cellar lists your bottles and the History keeps the ones you drank.'**
+  String get guideTabsBody;
+
+  /// tester-feedback FR2.2: tour step 4, on the Cellar menu.
+  ///
+  /// In en, this message translates to:
+  /// **'The cellar menu'**
+  String get guideMenuTitle;
+
+  /// tester-feedback FR2.2: tour step 4.
+  ///
+  /// In en, this message translates to:
+  /// **'Here you find your profile, the people you share the cellar with, the wines you drank and the Settings, where you can see this guide again.'**
+  String get guideMenuBody;
+
+  /// tester-feedback FR2.2: closes the last step of the tour.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get guideDone;
+
+  /// tester-feedback NFR5: read by TalkBack on every tour step.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of {count}'**
+  String guideStepOf(int step, int count);
+
+  /// tester-feedback FR2.3: first visit of the Dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Here you see which wines are ready to drink now and which ones are better kept for later.'**
+  String get hintDashboard;
+
+  /// tester-feedback FR2.3: first visit of the History.
+  ///
+  /// In en, this message translates to:
+  /// **'Every bottle you drink ends up here, with your rating and notes.'**
+  String get hintHistory;
+
+  /// tester-feedback FR2.3: first visit of the add form.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with the name: vintage, type and appellation make the drinking window more precise.'**
+  String get hintAddWine;
+
+  /// tester-feedback FR4.1: subject of the share sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Vinoozy, your wine cellar'**
+  String get shareAppSubject;
+
+  /// tester-feedback FR4.1: promotional message with the Play Store link.
+  ///
+  /// In en, this message translates to:
+  /// **'I keep my wine cellar with Vinoozy: it tells me when each bottle is at its best. Try it: {link}'**
+  String shareAppMessage(String link);
+
+  /// tester-feedback FR6.1: subject of the feedback email.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback on Vinoozy'**
+  String get feedbackSubject;
+
+  /// tester-feedback FR6.1: header of the technical lines at the end of the email.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical data (please keep):'**
+  String get feedbackTechHeader;
+
+  /// tester-feedback FR6.3.
+  ///
+  /// In en, this message translates to:
+  /// **'No email app'**
+  String get feedbackNoEmailTitle;
+
+  /// tester-feedback FR6.3: shows the support address.
+  ///
+  /// In en, this message translates to:
+  /// **'There is no email app on this phone. Write to us at {email}'**
+  String feedbackNoEmailBody(String email);
+
+  /// tester-feedback FR6.3: copies the support address.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get feedbackCopy;
+
+  /// tester-feedback FR6.3.
+  ///
+  /// In en, this message translates to:
+  /// **'Address copied'**
+  String get feedbackCopied;
+
+  /// tester-feedback FR7.1.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I add a wine by hand?'**
+  String get faqAddQuestion;
+
+  /// tester-feedback FR7.1.
+  ///
+  /// In en, this message translates to:
+  /// **'In the Cellar tap Add, then Write. Only the name is required; vintage, type, country and appellation make the estimate better. Save, and the wine is in your cellar.'**
+  String get faqAddAnswer;
+
+  /// tester-feedback FR7.1.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I read a label, also with Google Lens?'**
+  String get faqLabelQuestion;
+
+  /// tester-feedback FR7.1.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap Add and take a photo of the front and back: Vinoozy reads the label on the phone. With Google Lens select the text and share it to Vinoozy, or copy it and use Paste from Lens in the form. Always check the fields before saving.'**
+  String get faqLabelAnswer;
+
+  /// tester-feedback FR7.1.
+  ///
+  /// In en, this message translates to:
+  /// **'How is the right moment to drink calculated, and can I change it?'**
+  String get faqWindowQuestion;
+
+  /// tester-feedback FR7.1.
+  ///
+  /// In en, this message translates to:
+  /// **'Vinoozy estimates a window (start, peak, end) from type, appellation, vintage and level of the wine. It is an indication: storage matters too. Open the wine and tap Correct to set your own date, or change its Level.'**
+  String get faqWindowAnswer;
+
+  /// tester-feedback FR7.1.
+  ///
+  /// In en, this message translates to:
+  /// **'Does it work without internet?'**
+  String get faqOfflineQuestion;
+
+  /// tester-feedback FR7.1.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes. You can add, edit and drink wines offline: everything is saved on the phone and synced with your account as soon as the connection is back.'**
+  String get faqOfflineAnswer;
+
+  /// tester-feedback FR7.1.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I share my cellar?'**
+  String get faqShareQuestion;
+
+  /// tester-feedback FR7.1.
+  ///
+  /// In en, this message translates to:
+  /// **'From the Cellar menu open People and invite someone with their Google email address, read only or with editing. They install Vinoozy and sign in with that account.'**
+  String get faqShareAnswer;
+
+  /// tester-feedback FR7.1.
+  ///
+  /// In en, this message translates to:
+  /// **'What does the free plan include, and what is Plus?'**
+  String get faqPlusQuestion;
+
+  /// tester-feedback FR7.1, review R-07: the limit comes from the app constant.
+  ///
+  /// In en, this message translates to:
+  /// **'The free plan includes up to {limit} different wines in your cellar, with occasional ads only on the Dashboard. Vinoozy Plus removes the limit and the ads.'**
+  String faqPlusAnswer(int limit);
+
+  /// tester-feedback FR7.1.
+  ///
+  /// In en, this message translates to:
+  /// **'Why record the drinks and how they were?'**
+  String get faqDrinkQuestion;
+
+  /// tester-feedback FR7.1.
+  ///
+  /// In en, this message translates to:
+  /// **'The History keeps what you drank and how you liked it. When you say how the bottle was (too young, just right, past its best), Vinoozy corrects the estimate of the same wine.'**
+  String get faqDrinkAnswer;
+
+  /// tester-feedback FR7.1.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I delete my account?'**
+  String get faqDeleteQuestion;
+
+  /// tester-feedback FR7.1.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Profile and tap Delete account. You need a connection, then you sign in again with Google to confirm. Your cellar, History and shares are deleted for good.'**
+  String get faqDeleteAnswer;
+
+  /// tester-feedback FR7.3: opens the feedback email.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t find the answer? Write to us'**
+  String get faqNotFound;
 }
 
 class _AppLocalizationsDelegate

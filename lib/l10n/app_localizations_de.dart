@@ -2476,4 +2476,170 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get devNotice =>
       'Nur Entwicklungs-Builds mit dem Emulator: keine Zahlungen, Tokens oder Belege.';
+
+  @override
+  String get settingsTitle => 'Einstellungen';
+
+  @override
+  String get settingsGuide => 'Anleitung erneut ansehen';
+
+  @override
+  String get settingsShare => 'App teilen';
+
+  @override
+  String get settingsRate => 'App bewerten';
+
+  @override
+  String get settingsFeedback => 'Feedback senden';
+
+  @override
+  String get settingsFaq => 'Häufige Fragen';
+
+  @override
+  String get settingsShareFailed =>
+      'Teilen konnte nicht geöffnet werden. Bitte erneut versuchen';
+
+  @override
+  String get settingsRateFailed =>
+      'Google Play konnte nicht geöffnet werden. Bitte erneut versuchen';
+
+  @override
+  String get guideAddTitle => 'Wein hinzufügen';
+
+  @override
+  String get guideAddBody =>
+      'Tippe auf Hinzufügen, um eine Flasche in deinen Keller zu legen. Für den Anfang reicht der Name.';
+
+  @override
+  String get guideLabelTitle => 'Etikett lesen';
+
+  @override
+  String get guideLabelBody =>
+      'Unter Hinzufügen kannst du auch das Etikett fotografieren: Vinoozy liest Name, Jahrgang und Herkunftsbezeichnung, und du prüfst sie vor dem Speichern.';
+
+  @override
+  String get guideTabsTitle => 'Übersicht, Keller, Verlauf';
+
+  @override
+  String get guideTabsBody =>
+      'Die Übersicht zeigt, welche Weine du jetzt öffnen solltest, der Keller listet deine Flaschen und der Verlauf bewahrt die getrunkenen auf.';
+
+  @override
+  String get guideMenuTitle => 'Das Kellermenü';
+
+  @override
+  String get guideMenuBody =>
+      'Hier findest du dein Profil, die Personen, mit denen du den Keller teilst, die getrunkenen Weine und die Einstellungen, wo du diese Anleitung erneut ansehen kannst.';
+
+  @override
+  String get guideDone => 'Fertig';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Schritt $step von $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Hier siehst du, welche Weine jetzt trinkreif sind und welche du besser noch liegen lässt.';
+
+  @override
+  String get hintHistory =>
+      'Jede Flasche, die du trinkst, landet hier, mit deiner Bewertung und deinen Notizen.';
+
+  @override
+  String get hintAddWine =>
+      'Fang mit dem Namen an: Jahrgang, Art und Herkunftsbezeichnung machen das Trinkfenster genauer.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, dein Weinkeller';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Ich verwalte meinen Weinkeller mit Vinoozy: Die App sagt mir, wann jede Flasche am besten ist. Probier sie aus: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Feedback zu Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Technische Daten (bitte nicht löschen):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Keine E-Mail-App';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'Auf diesem Telefon gibt es keine E-Mail-App. Schreib uns an $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Kopieren';
+
+  @override
+  String get feedbackCopied => 'Adresse kopiert';
+
+  @override
+  String get faqAddQuestion => 'Wie füge ich einen Wein von Hand hinzu?';
+
+  @override
+  String get faqAddAnswer =>
+      'Tippe im Keller auf Hinzufügen und dann auf Eingeben. Nur der Name ist Pflicht; Jahrgang, Art, Land und Herkunftsbezeichnung verbessern die Schätzung. Speichern, und der Wein liegt in deinem Keller.';
+
+  @override
+  String get faqLabelQuestion =>
+      'Wie lese ich ein Etikett, auch mit Google Lens?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Tippe auf Hinzufügen und fotografiere Vorder- und Rückseite: Vinoozy liest das Etikett direkt auf dem Telefon. In Google Lens markierst du den Text und teilst ihn mit Vinoozy, oder du kopierst ihn und nutzt im Formular Aus Lens einfügen. Prüfe die Felder immer vor dem Speichern.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Wie wird der beste Trinkzeitpunkt berechnet, und kann ich ihn ändern?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy schätzt ein Fenster (Beginn, Höhepunkt, Ende) aus Art, Herkunftsbezeichnung, Jahrgang und Stufe des Weins. Das ist ein Richtwert: Auch die Lagerung zählt. Öffne den Wein und tippe auf Korrigieren, um dein eigenes Datum zu setzen, oder ändere die Stufe.';
+
+  @override
+  String get faqOfflineQuestion => 'Funktioniert es ohne Internet?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Ja. Du kannst Weine offline hinzufügen, bearbeiten und trinken: Alles wird auf dem Telefon gespeichert und mit deinem Konto synchronisiert, sobald die Verbindung zurück ist.';
+
+  @override
+  String get faqShareQuestion => 'Wie teile ich meinen Keller?';
+
+  @override
+  String get faqShareAnswer =>
+      'Öffne im Kellermenü Personen und lade jemanden mit seiner Google-E-Mail-Adresse ein, nur lesend oder mit Bearbeitung. Die Person installiert Vinoozy und meldet sich mit diesem Konto an.';
+
+  @override
+  String get faqPlusQuestion =>
+      'Was enthält der kostenlose Plan, und was ist Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'Der kostenlose Plan umfasst bis zu $limit verschiedene Weine im Keller, mit gelegentlicher Werbung nur in der Übersicht. Vinoozy Plus entfernt das Limit und die Werbung.';
+  }
+
+  @override
+  String get faqDrinkQuestion =>
+      'Warum getrunkene Flaschen und ihren Zustand festhalten?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'Der Verlauf bewahrt, was du getrunken hast und wie es dir gefallen hat. Wenn du angibst, wie die Flasche war (noch zu jung, genau richtig, Höhepunkt schon vorbei), korrigiert Vinoozy die Schätzung für denselben Wein.';
+
+  @override
+  String get faqDeleteQuestion => 'Wie lösche ich mein Konto?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Öffne Profil und tippe auf Konto löschen. Du brauchst eine Verbindung und meldest dich zur Bestätigung erneut mit Google an. Dein Keller, der Verlauf und deine Freigaben werden endgültig gelöscht.';
+
+  @override
+  String get faqNotFound => 'Keine Antwort gefunden? Schreib uns';
 }

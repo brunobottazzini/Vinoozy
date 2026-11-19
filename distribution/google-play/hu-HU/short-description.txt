@@ -1,1 +1,1 @@
-Rendszerezd boraidat, nézd meg az érési becsléseket, és oszd meg a pincédet.
+Borleltár ivási ablakkal: mikor igyad, címkeolvasás, internet nélkül is.

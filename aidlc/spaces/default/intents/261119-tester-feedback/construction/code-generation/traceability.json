@@ -1,0 +1,211 @@
+{
+  "stage": "code-generation",
+  "upstream_ids": [
+    "FR1.1",
+    "FR1.2",
+    "FR1.3",
+    "FR2.1",
+    "FR2.2",
+    "FR2.3",
+    "FR2.4",
+    "FR2.5",
+    "FR2.6",
+    "FR3.1",
+    "FR3.2",
+    "FR3.3",
+    "FR3.4",
+    "FR4.1",
+    "FR4.2",
+    "FR5.1",
+    "FR5.2.1",
+    "FR5.2.2",
+    "FR5.2.3",
+    "FR5.3",
+    "FR5.4",
+    "FR6.1",
+    "FR6.2",
+    "FR6.3",
+    "FR7.1",
+    "FR7.2",
+    "FR7.3",
+    "NFR1",
+    "NFR2",
+    "NFR3",
+    "NFR4",
+    "NFR5",
+    "NFR6",
+    "NFR7"
+  ],
+  "coverage": [
+    {
+      "id": "FR1.1",
+      "status": "OK",
+      "target": "lib/settings/ui/settings_screen.dart"
+    },
+    {
+      "id": "FR1.2",
+      "status": "OK",
+      "target": "lib/settings/ui/settings_screen.dart"
+    },
+    {
+      "id": "FR1.3",
+      "status": "OK",
+      "target": "lib/cellar/ui/cellar_screen.dart"
+    },
+    {
+      "id": "FR2.1",
+      "status": "OK",
+      "target": "lib/guide/ui/guide_tour.dart"
+    },
+    {
+      "id": "FR2.2",
+      "status": "OK",
+      "target": "lib/guide/guide_policy.dart"
+    },
+    {
+      "id": "FR2.3",
+      "status": "OK",
+      "target": "lib/guide/ui/first_visit_hint.dart"
+    },
+    {
+      "id": "FR2.4",
+      "status": "OK",
+      "target": "lib/settings/ui/settings_screen.dart"
+    },
+    {
+      "id": "FR2.5",
+      "status": "OK",
+      "target": "lib/guide/guide_state_store.dart"
+    },
+    {
+      "id": "FR2.6",
+      "status": "OK",
+      "target": "lib/guide/guide_providers.dart"
+    },
+    {
+      "id": "FR3.1",
+      "status": "OK",
+      "target": "distribution/google-play/it-IT/full-description.txt"
+    },
+    {
+      "id": "FR3.2",
+      "status": "OK",
+      "target": "distribution/google-play/en-US/full-description.txt"
+    },
+    {
+      "id": "FR3.3",
+      "status": "OK",
+      "target": "distribution/google-play/de-DE/full-description.txt"
+    },
+    {
+      "id": "FR3.4",
+      "status": "OK",
+      "target": "test/app/store_listing_test.dart"
+    },
+    {
+      "id": "FR4.1",
+      "status": "OK",
+      "target": "lib/app/store_links.dart"
+    },
+    {
+      "id": "FR4.2",
+      "status": "OK",
+      "target": "lib/sharing/ui/share_launcher.dart"
+    },
+    {
+      "id": "FR5.1",
+      "status": "OK",
+      "target": "lib/settings/app_review.dart"
+    },
+    {
+      "id": "FR5.2.1",
+      "status": "OK",
+      "target": "lib/guide/review_prompt_policy.dart"
+    },
+    {
+      "id": "FR5.2.2",
+      "status": "OK",
+      "target": "lib/guide/review_prompt_policy.dart"
+    },
+    {
+      "id": "FR5.2.3",
+      "status": "OK",
+      "target": "lib/guide/review_prompt_policy.dart"
+    },
+    {
+      "id": "FR5.3",
+      "status": "OK",
+      "target": "lib/guide/guide_state_store.dart"
+    },
+    {
+      "id": "FR5.4",
+      "status": "OK",
+      "target": "lib/settings/app_review.dart"
+    },
+    {
+      "id": "FR6.1",
+      "status": "OK",
+      "target": "lib/settings/feedback_email.dart"
+    },
+    {
+      "id": "FR6.2",
+      "status": "OK",
+      "target": "android/app/src/main/kotlin/com/vinoozy/vinoozy/LinksChannelHandler.kt"
+    },
+    {
+      "id": "FR6.3",
+      "status": "OK",
+      "target": "lib/settings/ui/feedback_flow.dart"
+    },
+    {
+      "id": "FR7.1",
+      "status": "OK",
+      "target": "lib/settings/ui/faq_screen.dart"
+    },
+    {
+      "id": "FR7.2",
+      "status": "OK",
+      "target": "lib/settings/ui/faq_screen.dart"
+    },
+    {
+      "id": "FR7.3",
+      "status": "OK",
+      "target": "lib/settings/ui/faq_screen.dart"
+    },
+    {
+      "id": "NFR1",
+      "status": "OK",
+      "target": "lib/l10n/app_it.arb"
+    },
+    {
+      "id": "NFR2",
+      "status": "OK",
+      "target": "test/settings/settings_screen_test.dart"
+    },
+    {
+      "id": "NFR3",
+      "status": "OK",
+      "target": "lib/guide/guide_state_store.dart"
+    },
+    {
+      "id": "NFR4",
+      "status": "OK",
+      "target": "lib/guide/review_prompter.dart"
+    },
+    {
+      "id": "NFR5",
+      "status": "OK",
+      "target": "lib/guide/ui/guide_tour.dart"
+    },
+    {
+      "id": "NFR6",
+      "status": "OK",
+      "target": "lib/cellar/ui/drink_flow.dart"
+    },
+    {
+      "id": "NFR7",
+      "status": "OK",
+      "target": "lib/app/external_links.dart"
+    }
+  ]
+}

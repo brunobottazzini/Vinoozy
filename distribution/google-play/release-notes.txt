@@ -1,75 +1,75 @@
 <it-IT>
-Versione 0.2.1: corretto l'arresto all'avvio della 0.2.0. Nel Profilo compare il tuo piano (Gratuito); Vinoozy Plus arriverà presto. Le stime di spumanti e Champagne tengono conto dello stile e della data di sboccatura. Pagina per cancellare l'account online e correzioni varie.
+Versione 0.4.0: nuove Impostazioni dal menu della Cantina, con giro guidato per chi inizia, domande frequenti, feedback via email, condivisione e valutazione dell'app. Grazie ai tester per i suggerimenti.
 </it-IT>
 <en-US>
-Version 0.2.1: fixes the crash at start of 0.2.0. Your plan (Free) now shows in Profile; Vinoozy Plus is on its way. Sparkling wine and Champagne estimates now use the style and disgorgement date. Online account deletion page and various fixes.
+Version 0.4.0: new Settings in the Cellar menu, with a guided tour for new users, frequently asked questions, feedback by email, and ways to share and rate the app. Thanks to our testers for their suggestions.
 </en-US>
 <pt-BR>
-Versão 0.2.1: corrige o fechamento ao abrir da 0.2.0. O seu plano (Gratuito) aparece no Perfil; o Vinoozy Plus chega em breve. As estimativas de espumantes e Champagne usam o estilo e a data de dégorgement. Página online para excluir a conta e várias correções.
+Versão 0.4.0: novas Configurações no menu da Adega, com tour guiado para quem está começando, perguntas frequentes, feedback por e-mail e opções para compartilhar e avaliar o app. Obrigado aos testadores pelas sugestões.
 </pt-BR>
 <pt-PT>
-Versão 0.2.1: corrige o encerramento inesperado ao iniciar da 0.2.0. O seu plano (Gratuito) aparece agora no Perfil; o Vinoozy Plus chega em breve. As estimativas de espumantes e Champagne têm em conta o estilo e a data de dégorgement. Página online para eliminar a conta e várias correções.
+Versão 0.4.0: novas Definições no menu da Garrafeira, com visita guiada para quem começa, perguntas frequentes, comentários por e-mail e opções para partilhar e avaliar a app. Obrigado aos testadores pelas sugestões.
 </pt-PT>
 <fr-FR>
-Version 0.2.1 : corrige le plantage au démarrage de la 0.2.0. Votre formule (Gratuite) apparaît désormais dans le Profil ; Vinoozy Plus arrive bientôt. Les estimations des effervescents et du Champagne tiennent compte du style et de la date de dégorgement. Page de suppression du compte en ligne et corrections diverses.
+Version 0.4.0 : nouveaux Paramètres dans le menu de la Cave, avec une visite guidée pour bien démarrer, des questions fréquentes, un avis par e-mail et de quoi partager et noter l'app. Merci aux testeurs pour leurs suggestions.
 </fr-FR>
 <es-ES>
-Versión 0.2.1: corrige el cierre inesperado al iniciar de la 0.2.0. Tu plan (Gratuito) aparece ahora en el Perfil; Vinoozy Plus llegará pronto. Las estimaciones de espumosos y Champagne tienen en cuenta el estilo y la fecha de degüelle. Página para eliminar la cuenta en línea y varias correcciones.
+Versión 0.4.0: nuevos Ajustes en el menú de la Bodega, con una guía para empezar, preguntas frecuentes, comentarios por correo y opciones para compartir y valorar la app. Gracias a quienes la han probado por sus sugerencias.
 </es-ES>
 <de-DE>
-Version 0.2.1: behebt den Absturz beim Start von 0.2.0. Dein Tarif (Kostenlos) steht jetzt im Profil; Vinoozy Plus kommt bald. Schätzungen für Schaumwein und Champagner berücksichtigen jetzt Stil und Degorgierdatum. Seite zum Löschen des Kontos im Web und verschiedene Korrekturen.
+Version 0.4.0: neue Einstellungen im Kellermenü, mit einer geführten Tour für den Einstieg, häufigen Fragen, Feedback per E-Mail und Möglichkeiten, die App zu teilen und zu bewerten. Danke an die Tester für ihre Vorschläge.
 </de-DE>
 <ca>
-Versió 0.2.1: corregeix el tancament inesperat en iniciar de la 0.2.0. El teu pla (Gratuït) ara apareix al Perfil; Vinoozy Plus arribarà aviat. Les estimacions d'escumosos i Champagne tenen en compte l'estil i la data de desgorjament. Pàgina per suprimir el compte en línia i diverses correccions.
+Versió 0.4.0: nova Configuració al menú del Celler, amb una guia per començar, preguntes freqüents, comentaris per correu i opcions per compartir i valorar l'app. Gràcies a qui l'ha provada pels suggeriments.
 </ca>
 <el-GR>
-Έκδοση 0.2.1: διορθώνει το κλείσιμο κατά την εκκίνηση της 0.2.0. Το πρόγραμμά σας (Δωρεάν) εμφανίζεται πλέον στο Προφίλ· το Vinoozy Plus έρχεται σύντομα. Οι εκτιμήσεις για αφρώδη κρασιά και σαμπάνιες λαμβάνουν πλέον υπόψη το στιλ και την ημερομηνία ντεγκορζαρίσματος. Σελίδα στο διαδίκτυο για τη διαγραφή του λογαριασμού και διάφορες διορθώσεις.
+Έκδοση 0.4.0: νέες Ρυθμίσεις στο μενού της Κάβας, με ξενάγηση για όσους ξεκινούν, συχνές ερωτήσεις, σχόλια μέσω email και επιλογές κοινοποίησης και αξιολόγησης της εφαρμογής. Ευχαριστούμε τους δοκιμαστές για τις προτάσεις τους.
 </el-GR>
 <ro>
-Versiunea 0.2.1: corectează oprirea la pornire din 0.2.0. Planul tău (Gratuit) apare acum în Profil; Vinoozy Plus vine în curând. Estimările pentru spumante și Champagne țin cont de stil și de data degorjării. Pagină online pentru ștergerea contului și diverse corecții.
+Versiunea 0.4.0: Setări noi în meniul Pivniței, cu un ghid pentru început, întrebări frecvente, feedback prin e-mail și opțiuni de distribuire și evaluare a aplicației. Mulțumim testerilor pentru sugestii.
 </ro>
 <hu-HU>
-0.2.1-es verzió: javítja a 0.2.0 indításkori összeomlását. A csomagod (Ingyenes) mostantól látszik a Profilban; a Vinoozy Plus hamarosan érkezik. A pezsgők és a Champagne becslése figyelembe veszi a stílust és a degorzsálás dátumát. Online oldal a fiók törléséhez és különféle javítások.
+0.4.0-s verzió: új Beállítások a pince menüjében, útmutatóval a kezdéshez, gyakori kérdésekkel, e-mailes visszajelzéssel, valamint az alkalmazás megosztásával és értékelésével. Köszönjük a tesztelők javaslatait.
 </hu-HU>
 <hr>
-Verzija 0.2.1: ispravlja rušenje pri pokretanju verzije 0.2.0. U Profilu se sada prikazuje vaš plan (Besplatni); Vinoozy Plus stiže uskoro. Procjene za pjenušava vina i Champagne sada uzimaju u obzir stil i datum degoržiranja. Stranica za brisanje računa na internetu i razni ispravci.
+Verzija 0.4.0: nove Postavke u izborniku Podruma, s vodičem za početak, čestim pitanjima, povratnim informacijama e-poštom te dijeljenjem i ocjenjivanjem aplikacije. Hvala testerima na prijedlozima.
 </hr>
 <sl>
-Različica 0.2.1: odpravlja sesutje ob zagonu različice 0.2.0. V Profilu je zdaj prikazan vaš paket (Brezplačni); Vinoozy Plus prihaja kmalu. Napovedi za peneča vina in Champagne zdaj upoštevajo slog in datum degoržiranja. Spletna stran za izbris računa in različni popravki.
+Različica 0.4.0: nove Nastavitve v meniju Kleti, z vodnikom za začetek, pogostimi vprašanji, povratnimi informacijami po e-pošti ter deljenjem in ocenjevanjem aplikacije. Hvala preizkuševalcem za predloge.
 </sl>
 <cs-CZ>
-Verze 0.2.1: opravuje pád při spuštění verze 0.2.0. V Profilu se nově zobrazuje váš tarif (Bezplatný); Vinoozy Plus bude brzy. Odhady šumivých vín a Champagne nově zohledňují styl a datum degoržáže. Stránka pro smazání účtu online a různé opravy.
+Verze 0.4.0: nové Nastavení v nabídce Sklepa, s průvodcem pro začátek, častými dotazy, zpětnou vazbou e-mailem a možností aplikaci sdílet a ohodnotit. Děkujeme testerům za návrhy.
 </cs-CZ>
 <sk>
-Verzia 0.2.1: opravuje pád pri spustení verzie 0.2.0. V Profile sa po novom zobrazuje váš plán (Bezplatný); Vinoozy Plus bude čoskoro. Odhady šumivých vín a Champagne po novom zohľadňujú štýl a dátum degoržáže. Stránka na odstránenie účtu online a rôzne opravy.
+Verzia 0.4.0: nové Nastavenia v ponuke Pivnice, so sprievodcom na začiatok, častými otázkami, spätnou väzbou e-mailom a možnosťou aplikáciu zdieľať a ohodnotiť. Ďakujeme testerom za návrhy.
 </sk>
 <bg>
-Версия 0.2.1: отстранен е сривът при стартиране от 0.2.0. Вашият план (Безплатен) вече се показва в Профил; Vinoozy Plus идва скоро. Прогнозите за пенливи вина и шампанско вече отчитат стила и датата на дегоржиране. Онлайн страница за изтриване на акаунта и различни поправки.
+Версия 0.4.0: нови Настройки в менюто на Избата, с ръководство за начинаещи, често задавани въпроси, отзиви по имейл и възможност да споделите и оцените приложението. Благодарим на тестерите за предложенията.
 </bg>
 <sr>
-Верзија 0.2.1: исправљено је рушење при покретању верзије 0.2.0. Ваш план (Бесплатан) сада се види у Профилу; Vinoozy Plus стиже ускоро. Процене за пенушава вина и шампањац сада узимају у обзир стил и датум дегоржирања. Страница за брисање налога на интернету и разне исправке.
+Верзија 0.4.0: нова Подешавања у менију Подрума, са водичем за почетак, честим питањима, повратним информацијама имејлом и дељењем и оцењивањем апликације. Хвала тестерима на предлозима.
 </sr>
 <ka-GE>
-ვერსია 0.2.1: გასწორდა 0.2.0 ვერსიის გაშვებისას გათიშვა. თქვენი გეგმა (უფასო) ახლა პროფილში ჩანს; Vinoozy Plus მალე გამოჩნდება. ცქრიალა ღვინოებისა და შამპანურის პროგნოზები ახლა ითვალისწინებს სტილსა და დეგორჟაჟის თარიღს. ანგარიშის ონლაინ წაშლის გვერდი და სხვადასხვა შესწორება.
+ვერსია 0.4.0: ახალი პარამეტრები მარნის მენიუში, დამწყებთათვის გზამკვლევით, ხშირად დასმული კითხვებით, ელფოსტით გამოხმაურებით და აპის გაზიარებისა და შეფასების შესაძლებლობით. მადლობა ტესტერებს რჩევებისთვის.
 </ka-GE>
 <nl-NL>
-Versie 0.2.1: verhelpt de crash bij het opstarten van 0.2.0. Je pakket (Gratis) staat nu in je Profiel; Vinoozy Plus komt eraan. Schattingen voor mousserende wijn en Champagne houden nu rekening met de stijl en de datum van dégorgement. Online pagina om je account te verwijderen en diverse verbeteringen.
+Versie 0.4.0: nieuwe Instellingen in het kelder-menu, met een rondleiding voor nieuwe gebruikers, veelgestelde vragen, feedback per e-mail en manieren om de app te delen en te beoordelen. Dank aan de testers voor hun suggesties.
 </nl-NL>
 <pl-PL>
-Wersja 0.2.1: naprawia awarię przy uruchamianiu wersji 0.2.0. W Profilu widać teraz Twój plan (Bezpłatny); Vinoozy Plus już wkrótce. Szacunki dla win musujących i Champagne uwzględniają styl i datę degorżowania. Strona do usuwania konta online i różne poprawki.
+Wersja 0.4.0: nowe Ustawienia w menu Piwniczki, z przewodnikiem na start, częstymi pytaniami, opinią przez e-mail oraz udostępnianiem i ocenianiem aplikacji. Dziękujemy testerom za sugestie.
 </pl-PL>
 <uk>
-Версія 0.2.1: виправлено збій під час запуску у версії 0.2.0. Ваш план (Безплатний) тепер видно в Профілі; Vinoozy Plus незабаром з’явиться. Прогнози для ігристих вин і шампанського тепер враховують стиль і дату дегоржажу. Онлайн-сторінка для видалення облікового запису та різні виправлення.
+Версія 0.4.0: нові Налаштування в меню Льоху, з посібником для початківців, поширеними запитаннями, відгуком електронною поштою та можливістю поділитися застосунком і оцінити його. Дякуємо тестувальникам за пропозиції.
 </uk>
 <da-DK>
-Version 0.2.1: retter nedbruddet ved start i 0.2.0. Din pakke (Gratis) vises nu i Profil; Vinoozy Plus er på vej. Estimater for mousserende vin og Champagne tager nu højde for stil og degorgeringsdato. Onlineside til sletning af kontoen og diverse rettelser.
+Version 0.4.0: nye Indstillinger i kældermenuen med en guide til nye brugere, ofte stillede spørgsmål, feedback via mail og mulighed for at dele og bedømme appen. Tak til testerne for deres forslag.
 </da-DK>
 <sv-SE>
-Version 0.2.1: åtgärdar kraschen vid start i 0.2.0. Ditt abonnemang (Gratis) visas nu i Profil; Vinoozy Plus är på väg. Uppskattningar för mousserande vin och Champagne tar nu hänsyn till stil och degorgeringsdatum. Webbsida för att radera kontot och diverse rättningar.
+Version 0.4.0: nya Inställningar i källarmenyn med en guide för nya användare, vanliga frågor, feedback via e-post och möjlighet att dela och betygsätta appen. Tack till testarna för förslagen.
 </sv-SE>
 <no-NO>
-Versjon 0.2.1: retter krasjen ved oppstart i 0.2.0. Pakken din (Gratis) vises nå i Profil; Vinoozy Plus er på vei. Anslag for musserende vin og Champagne tar nå hensyn til stil og degorgeringsdato. Nettside for å slette kontoen og diverse rettelser.
+Versjon 0.4.0: nye Innstillinger i kjellermenyen med en veiledning for nye brukere, vanlige spørsmål, tilbakemelding på e-post og mulighet til å dele og vurdere appen. Takk til testerne for forslagene.
 </no-NO>
 <fi-FI>
-Versio 0.2.1: korjaa version 0.2.0 kaatumisen käynnistyksessä. Pakettisi (Ilmainen) näkyy nyt Profiilissa; Vinoozy Plus on tulossa pian. Kuohuviinien ja Champagnen arviot huomioivat nyt tyylin ja degorgointipäivän. Verkkosivu tilin poistamiseen ja useita korjauksia.
+Versio 0.4.0: uudet Asetukset kellarin valikossa: opas uusille käyttäjille, usein kysytyt kysymykset, palaute sähköpostilla sekä sovelluksen jakaminen ja arviointi. Kiitos testaajille ehdotuksista.
 </fi-FI>

@@ -2472,4 +2472,169 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get devNotice =>
       'Alleen ontwikkelbuilds met de emulator: geen betalingen, tokens of bonnen.';
+
+  @override
+  String get settingsTitle => 'Instellingen';
+
+  @override
+  String get settingsGuide => 'De rondleiding opnieuw bekijken';
+
+  @override
+  String get settingsShare => 'De app delen';
+
+  @override
+  String get settingsRate => 'De app beoordelen';
+
+  @override
+  String get settingsFeedback => 'Feedback versturen';
+
+  @override
+  String get settingsFaq => 'Veelgestelde vragen';
+
+  @override
+  String get settingsShareFailed =>
+      'Het deelmenu kon niet worden geopend. Probeer het opnieuw';
+
+  @override
+  String get settingsRateFailed =>
+      'Google Play kon niet worden geopend. Probeer het opnieuw';
+
+  @override
+  String get guideAddTitle => 'Een wijn toevoegen';
+
+  @override
+  String get guideAddBody =>
+      'Tik op Toevoegen om een fles in je kelder te leggen. Om te beginnen is de naam voldoende.';
+
+  @override
+  String get guideLabelTitle => 'Het etiket laten lezen';
+
+  @override
+  String get guideLabelBody =>
+      'Onder Toevoegen kun je ook het etiket fotograferen: Vinoozy leest de naam, het oogstjaar en de herkomstbenaming, en jij controleert ze voordat je opslaat.';
+
+  @override
+  String get guideTabsTitle => 'Overzicht, Kelder, Geschiedenis';
+
+  @override
+  String get guideTabsBody =>
+      'Het Overzicht vertelt je welke wijnen je nu kunt openen, de Kelder toont al je flessen en de Geschiedenis bewaart de flessen die je al hebt gedronken.';
+
+  @override
+  String get guideMenuTitle => 'Het kelder-menu';
+
+  @override
+  String get guideMenuBody =>
+      'Hier vind je je profiel, de personen met wie je de kelder deelt, de gedronken wijnen en de Instellingen, waar je deze rondleiding altijd opnieuw kunt bekijken.';
+
+  @override
+  String get guideDone => 'Klaar';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Stap $step van $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Hier zie je welke wijnen nu klaar zijn om te drinken en welke je beter nog een tijdje kunt laten liggen.';
+
+  @override
+  String get hintHistory =>
+      'Elke fles die je drinkt komt hier terecht, samen met je beoordeling en je notities.';
+
+  @override
+  String get hintAddWine =>
+      'Begin met de naam: het oogstjaar, het type en de herkomstbenaming maken het drinkvenster nauwkeuriger.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, jouw wijnkelder';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Ik beheer mijn wijnkelder met Vinoozy: de app vertelt me wanneer elke fles op haar best is. Probeer het zelf: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Feedback over Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Technische gegevens (graag laten staan):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Geen e-mailapp gevonden';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'Er staat geen e-mailapp op deze telefoon. Schrijf ons op $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Kopiëren';
+
+  @override
+  String get feedbackCopied => 'Adres gekopieerd';
+
+  @override
+  String get faqAddQuestion => 'Hoe voeg ik met de hand een wijn toe?';
+
+  @override
+  String get faqAddAnswer =>
+      'Tik in de Kelder op Toevoegen en daarna op Invoeren. Alleen de naam is verplicht; het oogstjaar, het type, het land en de herkomstbenaming maken de schatting beter. Sla op en de wijn ligt in je kelder.';
+
+  @override
+  String get faqLabelQuestion => 'Hoe lees ik een etiket, ook met Google Lens?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Tik op Toevoegen en fotografeer de voorkant en de achterkant: Vinoozy leest het etiket rechtstreeks op je telefoon. Selecteer in Google Lens de tekst en deel die met Vinoozy, of kopieer de tekst en gebruik Plakken uit Lens in het formulier. Controleer altijd de velden voordat je opslaat.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Hoe wordt het beste moment om te drinken berekend, en kan ik het aanpassen?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy schat een venster (begin, hoogtepunt, einde) op basis van het type, de herkomstbenaming, het oogstjaar en het niveau van de wijn. Het is een richtlijn: ook de manier waarop de fles is bewaard telt mee. Open de wijn en tik op Corrigeren om je eigen datum in te stellen, of verander het Niveau.';
+
+  @override
+  String get faqOfflineQuestion => 'Werkt het zonder internet?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Ja. Je kunt wijnen offline toevoegen, bewerken en drinken: alles wordt op de telefoon opgeslagen en met je account gesynchroniseerd zodra de verbinding terug is.';
+
+  @override
+  String get faqShareQuestion => 'Hoe deel ik mijn kelder?';
+
+  @override
+  String get faqShareAnswer =>
+      'Open in het kelder-menu Personen en nodig iemand uit met zijn of haar Google-e-mailadres, alleen lezen of met bewerken. Die persoon installeert Vinoozy en logt in met dat account.';
+
+  @override
+  String get faqPlusQuestion =>
+      'Wat zit er in het gratis abonnement, en wat is Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'Het gratis abonnement omvat tot $limit verschillende wijnen in je kelder, met af en toe een advertentie, alleen in het Overzicht. Vinoozy Plus haalt de limiet en de advertenties weg.';
+  }
+
+  @override
+  String get faqDrinkQuestion =>
+      'Waarom zou ik bijhouden wat ik dronk en hoe het was?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'De Geschiedenis bewaart wat je hebt gedronken en hoe je het vond. Als je aangeeft hoe de fles was (nog te jong, precies goed, over het hoogtepunt), corrigeert Vinoozy de schatting voor dezelfde wijn.';
+
+  @override
+  String get faqDeleteQuestion => 'Hoe verwijder ik mijn account?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Open Profiel en tik op Account verwijderen. Je hebt een verbinding nodig en logt daarna opnieuw in met Google om te bevestigen. Je kelder, de Geschiedenis en alles wat je hebt gedeeld worden definitief verwijderd.';
+
+  @override
+  String get faqNotFound => 'Het antwoord niet gevonden? Schrijf ons';
 }

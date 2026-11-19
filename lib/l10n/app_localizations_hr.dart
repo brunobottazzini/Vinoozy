@@ -2474,4 +2474,168 @@ class AppLocalizationsHr extends AppLocalizations {
   @override
   String get devNotice =>
       'Samo razvojne verzije s emulatorom: bez plaćanja, tokena i računa.';
+
+  @override
+  String get settingsTitle => 'Postavke';
+
+  @override
+  String get settingsGuide => 'Ponovno pogledaj vodič';
+
+  @override
+  String get settingsShare => 'Podijeli aplikaciju';
+
+  @override
+  String get settingsRate => 'Ocijeni aplikaciju';
+
+  @override
+  String get settingsFeedback => 'Pošalji povratne informacije';
+
+  @override
+  String get settingsFaq => 'Česta pitanja';
+
+  @override
+  String get settingsShareFailed =>
+      'Dijeljenje se nije moglo otvoriti. Pokušajte ponovno';
+
+  @override
+  String get settingsRateFailed =>
+      'Google Play se nije mogao otvoriti. Pokušajte ponovno';
+
+  @override
+  String get guideAddTitle => 'Dodajte vino';
+
+  @override
+  String get guideAddBody =>
+      'Dodirnite Dodaj i stavite bocu u svoj podrum. Za početak je dovoljno ime.';
+
+  @override
+  String get guideLabelTitle => 'Pročitajte etiketu';
+
+  @override
+  String get guideLabelBody =>
+      'Pod Dodaj možete i fotografirati etiketu: Vinoozy čita ime, berbu i oznaku podrijetla, a vi ih provjerite prije spremanja.';
+
+  @override
+  String get guideTabsTitle => 'Pregled, Podrum, Povijest';
+
+  @override
+  String get guideTabsBody =>
+      'Pregled vam govori koja vina otvoriti sada, Podrum prikazuje vaše boce, a Povijest čuva one koje ste popili.';
+
+  @override
+  String get guideMenuTitle => 'Izbornik podruma';
+
+  @override
+  String get guideMenuBody =>
+      'Ovdje su vaš profil, osobe s kojima dijelite podrum, popijena vina i Postavke, gdje možete ponovno pogledati ovaj vodič.';
+
+  @override
+  String get guideDone => 'Gotovo';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Korak $step od $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Ovdje vidite koja su vina spremna za pijenje sada, a koja je bolje još čuvati.';
+
+  @override
+  String get hintHistory =>
+      'Svaka boca koju popijete završi ovdje, s vašom ocjenom i bilješkama.';
+
+  @override
+  String get hintAddWine =>
+      'Počnite s imenom: berba, vrsta i oznaka podrijetla čine razdoblje pijenja preciznijim.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, vaš vinski podrum';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Svoj vinski podrum vodim u aplikaciji Vinoozy: kaže mi kada je svaka boca u najboljem trenutku. Isprobajte je: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Povratne informacije o aplikaciji Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Tehnički podaci (molimo ne brisati):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Nema aplikacije za e-poštu';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'Na ovom telefonu nema aplikacije za e-poštu. Pišite nam na $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Kopiraj';
+
+  @override
+  String get feedbackCopied => 'Adresa je kopirana';
+
+  @override
+  String get faqAddQuestion => 'Kako ručno dodati vino?';
+
+  @override
+  String get faqAddAnswer =>
+      'U Podrumu dodirnite Dodaj, zatim Upiši. Obavezno je samo ime; berba, vrsta, zemlja i oznaka podrijetla poboljšavaju procjenu. Spremite i vino je u podrumu.';
+
+  @override
+  String get faqLabelQuestion => 'Kako pročitati etiketu, i s Google Lensom?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Dodirnite Dodaj i fotografirajte prednju i stražnju stranu: Vinoozy čita etiketu na samom telefonu. U Google Lensu označite tekst i podijelite ga s aplikacijom Vinoozy ili ga kopirajte i u obrascu upotrijebite Zalijepi iz Lensa. Uvijek provjerite polja prije spremanja.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Kako se računa najbolji trenutak za pijenje i mogu li ga promijeniti?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy procjenjuje razdoblje (početak, vrhunac, kraj) prema vrsti, oznaci podrijetla, berbi i razini vina. To je okvirno: važno je i kako je boca čuvana. Otvorite vino i dodirnite Ispravi da postavite svoj datum ili promijenite Razinu.';
+
+  @override
+  String get faqOfflineQuestion => 'Radi li bez interneta?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Da. Vina možete dodavati, uređivati i piti bez veze: sve se sprema na telefonu i sinkronizira s vašim računom čim se veza vrati.';
+
+  @override
+  String get faqShareQuestion => 'Kako podijeliti svoj podrum?';
+
+  @override
+  String get faqShareAnswer =>
+      'U izborniku Podruma otvorite Osobe i pozovite nekoga njegovom Google adresom e-pošte, samo za čitanje ili s uređivanjem. Ta osoba instalira Vinoozy i prijavi se tim računom.';
+
+  @override
+  String get faqPlusQuestion => 'Što uključuje besplatni plan, a što je Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'Besplatni plan uključuje do $limit različitih vina u podrumu, uz povremene oglase samo u Pregledu. Vinoozy Plus uklanja ograničenje i oglase.';
+  }
+
+  @override
+  String get faqDrinkQuestion =>
+      'Zašto bilježiti što sam popio i kakvo je bilo?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'Povijest čuva što ste popili i koliko vam se svidjelo. Kad kažete kakva je boca bila (još premlado, baš kako treba, prošlo vrhunac), Vinoozy ispravlja procjenu za isto vino.';
+
+  @override
+  String get faqDeleteQuestion => 'Kako izbrisati svoj račun?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Otvorite Profil i dodirnite Izbriši račun. Potrebna je veza, a zatim se ponovno prijavite Googleom radi potvrde. Podrum, Povijest i dijeljenja trajno se brišu.';
+
+  @override
+  String get faqNotFound => 'Niste pronašli odgovor? Pišite nam';
 }

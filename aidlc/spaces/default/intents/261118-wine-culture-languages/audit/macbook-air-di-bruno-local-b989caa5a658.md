@@ -3066,3 +3066,423 @@
 **Message Id**: 4b53920f
 
 ---
+
+## Host Turn
+**Timestamp**: 2026-11-18T14:08:12Z
+**Event**: HOST_TURN
+**Session**: 2562916c-233d-41c4-9d6b-7e797c1c8be1
+**Origin**: host
+**Reason**: claude task notification
+**Source**: template
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-11-18T14:08:13Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a76561c63fb5757db
+**Message**: ok aspettiamo la CI
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-11-18T14:08:16Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a4bb7cc48a853e538
+**Message**: ok aspettiamo la CI
+
+---
+
+## Host Turn
+**Timestamp**: 2026-11-18T14:09:10Z
+**Event**: HOST_TURN
+**Session**: 2562916c-233d-41c4-9d6b-7e797c1c8be1
+**Origin**: host
+**Reason**: claude task notification
+**Source**: template
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-11-18T14:09:15Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a16b6c4f5ab1f6c3e
+**Message**: ok aspettiamo la CI
+
+---
+
+## Host Turn
+**Timestamp**: 2026-11-18T14:11:14Z
+**Event**: HOST_TURN
+**Session**: 2562916c-233d-41c4-9d6b-7e797c1c8be1
+**Origin**: host
+**Reason**: claude task notification
+**Source**: template
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-11-18T14:14:20Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: afa3572d529c03715
+**Message**: Stiamo portando Vinoozy a 25 lingue: il lavoro è su main e la CI su GitHub sta verificando. Aspetto la fine dei test con copertura e di quelli end-to-end, poi completo il riepilogo del rilascio.
+
+---
+
+## Host Turn
+**Timestamp**: 2026-11-18T14:33:57Z
+**Event**: HOST_TURN
+**Session**: 2562916c-233d-41c4-9d6b-7e797c1c8be1
+**Origin**: host
+**Reason**: claude task notification
+**Source**: template
+
+---
+
+## Host Turn
+**Timestamp**: 2026-11-18T14:34:05Z
+**Event**: HOST_TURN
+**Session**: 2562916c-233d-41c4-9d6b-7e797c1c8be1
+**Origin**: host
+**Reason**: claude task notification
+**Source**: template
+
+---
+
+## Host Turn
+**Timestamp**: 2026-11-18T14:34:14Z
+**Event**: HOST_TURN
+**Session**: 2562916c-233d-41c4-9d6b-7e797c1c8be1
+**Origin**: host
+**Reason**: claude task notification
+**Source**: template
+
+---
+
+## Human Turn
+**Timestamp**: 2026-11-18T14:34:53Z
+**Event**: HUMAN_TURN
+**Session**: 2562916c-233d-41c4-9d6b-7e797c1c8be1
+**Origin**: person
+**Source**: typed
+**Message Id**: 498c288c
+**Open Questions**: 8cc7f1fa
+**Questions Digest**: {"file":"aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/deployment-execution-questions.md","entries":{"Q1":"3401b8cd27c14f86","Q2":"52b665666f5aebc1","Q3":"3f6db9c7711dc29e"}}
+
+---
+
+## Human Turn
+**Timestamp**: 2026-11-18T14:35:21Z
+**Event**: HUMAN_TURN
+**Session**: 2562916c-233d-41c4-9d6b-7e797c1c8be1
+**Origin**: person
+**Source**: typed
+**Message Id**: c9ee2ff3
+**Open Questions**: 8cc7f1fa
+**Questions Digest**: {"file":"aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/deployment-execution-questions.md","entries":{"Q1":"3401b8cd27c14f86","Q2":"52b665666f5aebc1","Q3":"3f6db9c7711dc29e"}}
+
+---
+
+## Human Turn
+**Timestamp**: 2026-11-18T14:35:33Z
+**Event**: HUMAN_TURN
+**Session**: 2562916c-233d-41c4-9d6b-7e797c1c8be1
+**Origin**: person
+**Source**: typed
+**Message Id**: 2b1fcf91
+**Open Questions**: 8cc7f1fa
+**Questions Digest**: {"file":"aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/deployment-execution-questions.md","entries":{"Q1":"3401b8cd27c14f86","Q2":"52b665666f5aebc1","Q3":"3f6db9c7711dc29e"}}
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-11-18T14:36:05Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: a7d7acd74ff8be678
+**Message**: sì, aggiungi il caricamento automatico su Alpha
+
+---
+
+## Session Start
+**Timestamp**: 2026-11-18T14:36:17Z
+**Event**: SESSION_STARTED
+**Source**: startup
+**Session**: ca676ebe-f4c1-4c81-826e-a8b43e120a47
+
+---
+
+## Human Turn
+**Timestamp**: 2026-11-18T14:36:54Z
+**Event**: HUMAN_TURN
+**Session**: b0ae1268-1cb1-4d7c-8001-5efd0f6ffbd2
+**Origin**: person
+**Source**: typed
+**Message Id**: b0856a28
+**Questions Digest**: {"file":"aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/deployment-execution-questions.md","entries":{"Q1":"3401b8cd27c14f86","Q2":"52b665666f5aebc1","Q3":"3f6db9c7711dc29e"}}
+
+---
+
+## Human Turn
+**Timestamp**: 2026-11-18T14:38:00Z
+**Event**: HUMAN_TURN
+**Session**: b0ae1268-1cb1-4d7c-8001-5efd0f6ffbd2
+**Origin**: person
+**Source**: typed
+**Message Id**: 0dc06d0b
+**Questions Digest**: {"file":"aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/deployment-execution-questions.md","entries":{"Q1":"3401b8cd27c14f86","Q2":"52b665666f5aebc1","Q3":"3f6db9c7711dc29e"}}
+
+---
+
+## Subagent Completed
+**Timestamp**: 2026-11-18T14:41:09Z
+**Event**: SUBAGENT_COMPLETED
+**Agent Type**: unknown
+**Agent ID**: ab10060a408d917f1
+**Message**: Stiamo portando Vinoozy a 25 lingue: il codice è su main e la CI è verde. Aspetto che GitHub Actions carichi la 0.3.0 sul test interno; poi tu la promuovi al test chiuso Alpha in Play Console.
+
+---
+
+## Host Turn
+**Timestamp**: 2026-11-18T14:46:16Z
+**Event**: HOST_TURN
+**Session**: b0ae1268-1cb1-4d7c-8001-5efd0f6ffbd2
+**Origin**: host
+**Reason**: claude task notification
+**Source**: template
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-11-18T14:46:49Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/deployment-log.md
+**Context**: operation > deployment-execution > deployment-log.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-11-18T14:46:53Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/smoke-test-results.md
+**Context**: operation > deployment-execution > smoke-test-results.md
+
+---
+
+## Artifact Created
+**Timestamp**: 2026-11-18T14:46:56Z
+**Event**: ARTIFACT_CREATED
+**Tool**: Write
+**File**: <project-dir>/aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/health-check-report.md
+**Context**: operation > deployment-execution > health-check-report.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-11-18T14:47:03Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/deployment-execution-questions.md
+**Context**: operation > deployment-execution > deployment-execution-questions.md
+
+---
+
+## Human Turn
+**Timestamp**: 2026-11-18T14:47:05Z
+**Event**: HUMAN_TURN
+**Session**: b0ae1268-1cb1-4d7c-8001-5efd0f6ffbd2
+**Origin**: person
+**Source**: typed
+**Message Id**: c78242a9
+**Questions Digest**: {"file":"aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/deployment-execution-questions.md","entries":{"Q1":"3401b8cd27c14f86","Q2":"52b665666f5aebc1","Q3":"3f6db9c7711dc29e"}}
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-11-18T14:47:05Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/deployment-execution-questions.md
+**Context**: operation > deployment-execution > deployment-execution-questions.md
+
+---
+
+## Artifact Updated
+**Timestamp**: 2026-11-18T14:47:06Z
+**Event**: ARTIFACT_UPDATED
+**Tool**: Edit
+**File**: <project-dir>/aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/deployment-execution-questions.md
+**Context**: operation > deployment-execution > deployment-execution-questions.md
+
+---
+
+## Stage Awaiting Approval
+**Timestamp**: 2026-11-18T14:47:07Z
+**Event**: STAGE_AWAITING_APPROVAL
+**Stage**: deployment-execution
+**Next Stage**: observability-setup
+**Brief Digest**: none
+**Sensor State**: required-sections@aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/deployment-log.md=not-run; required-sections@aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/smoke-test-results.md=not-run; required-sections@aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/health-check-report.md=not-run; required-sections@aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/deployment-execution-questions.md=not-run; upstream-coverage@aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/deployment-log.md=not-run
+**Open Decisions**: 0
+**Question Id**: 7cef5d2d
+**Question Type**: gate
+**Question Chat**: b0ae1268-1cb1-4d7c-8001-5efd0f6ffbd2
+**Question Shows**: sha256:5171737a0eee89b3a06c45214bbfbf650e09e7ff163d04b61263504f2e2ea3af
+
+---
+
+## Human Turn
+**Timestamp**: 2026-11-18T14:48:31Z
+**Event**: HUMAN_TURN
+**Session**: b0ae1268-1cb1-4d7c-8001-5efd0f6ffbd2
+**Origin**: person
+**Source**: picker
+**Picked**: ["mi fai un handoff per aggiungere tutte le traduzioni darò ad un agente di configurare la store"]
+**Message Id**: c8da9efe
+**Open Questions**: 7cef5d2d
+**Questions Digest**: {"file":"aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/deployment-execution-questions.md","entries":{"Q1":"3401b8cd27c14f86","Q2":"52b665666f5aebc1","Q3":"3f6db9c7711dc29e"}}
+
+---
+
+## Question Replied
+**Timestamp**: 2026-11-18T14:48:32Z
+**Event**: QUESTION_REPLIED
+**Session**: b0ae1268-1cb1-4d7c-8001-5efd0f6ffbd2
+**Question**: Rilascio completato: 0.3.0 (5) sul test interno di Google Play, CI tutta verde. Come vuoi procedere?
+**Reply**: mi fai un handoff per aggiungere tutte le traduzioni darò ad un agente di configurare la store 
+**Options**: ["Approve","Request Changes"]
+
+---
+
+## Human Turn
+**Timestamp**: 2026-11-18T14:50:17Z
+**Event**: HUMAN_TURN
+**Session**: b0ae1268-1cb1-4d7c-8001-5efd0f6ffbd2
+**Origin**: person
+**Source**: picker
+**Picked**: ["Approve"]
+**Message Id**: 3f758de8
+**Open Questions**: 7cef5d2d
+**Questions Digest**: {"file":"aidlc/spaces/default/intents/261118-wine-culture-languages/operation/deployment-execution/deployment-execution-questions.md","entries":{"Q1":"3401b8cd27c14f86","Q2":"52b665666f5aebc1","Q3":"3f6db9c7711dc29e"}}
+
+---
+
+## Question Replied
+**Timestamp**: 2026-11-18T14:50:17Z
+**Event**: QUESTION_REPLIED
+**Session**: b0ae1268-1cb1-4d7c-8001-5efd0f6ffbd2
+**Question**: Rilascio completato: 0.3.0 (5) sul test interno, CI verde; handoff per le traduzioni dello store in docs/store-translations-handoff.md. Come vuoi procedere?
+**Reply**: Approve
+**Options**: ["Approve","Request Changes"]
+
+---
+
+## Gate Approved
+**Timestamp**: 2026-11-18T14:50:20Z
+**Event**: GATE_APPROVED
+**Stage**: deployment-execution
+**User Input**: Approve
+**Person Reply**: come posso pubblicare per test chiuso alpha>\nok grazie\nciccio nim dai la nota di rilascio in tutte le lingue supportate \n\n\n\n<pasted_content id="02d6">\n<it-IT>\nInserisci o incolla qui le tue note di rilascio per it-IT\n</it-IT>\n<en-US>\nInserisci o incolla qui le tue note di rilascio per en-US\n</en-US>\n<pt-BR>\nInserisci o incolla qui le tue note di rilascio per pt-BR\n</pt-BR>\n</pasted_content id="02d6">\nmi fai un handoff per aggiungere tutte le traduzioni darò ad un agente di configurare la store \nApprove
+**Message Id**: 3f758de8
+**Message Ids**: b0856a28,0dc06d0b,c78242a9,c8da9efe,3f758de8
+**Brief Digest**: none
+
+---
+
+## Stage Completion
+**Timestamp**: 2026-11-18T14:50:20Z
+**Event**: STAGE_COMPLETED
+**Stage**: deployment-execution
+**Validation Basis**: {"graphContract":"sha256:9324fac9ed5362e892b6f0c448c7cd3701eec134e2e24178d842efc36efe955a","inputs":[{"artifact":"build-test-results","contentHash":"sha256:8de3271fa449c2012940ade10440d2cc89d2a96e45385e644388852590fc7983","instanceCount":1,"presentCount":1,"producer":"build-and-test","required":true,"structureHash":"sha256:af833878c05aaf0148169a45f27b8a39a35b08459b3335ee96e1c224ccd6dfa4"},{"artifact":"cd-config","contentHash":"sha256:cdffdaee532e4e6a4be64bb529d5a3ae6d43c0f499aef4b2c42e81594805de62","instanceCount":1,"presentCount":0,"producer":"deployment-pipeline","required":true,"structureHash":"sha256:8e7a23483816ac86645956c362090586405e0580ee9989eb134b4a393592374f"},{"artifact":"deployment-strategy","contentHash":"sha256:1ec54b6e41f12224520af0e1337119874b7f2e1a65ec09cd43a8489e157c51f0","instanceCount":1,"presentCount":0,"producer":"deployment-pipeline","required":true,"structureHash":"sha256:407b21de485899f4f500c56a9b955058e6b26e4d2c06850a89870249b0bbcb5c"},{"artifact":"environment-inventory","contentHash":"sha256:4daf02592d4c4f85d7563789ef57c8c353f69e5e6c611afa81030d886dc380c1","instanceCount":1,"presentCount":0,"producer":"environment-provisioning","required":true,"structureHash":"sha256:f6a4fa64f2fe5aeaab7335a5129154b383a94775a25ece3532505d35d36f8214"}],"outputs":[{"artifact":"deployment-execution-questions","contentHash":"sha256:d2f7d940eaa34c5b16b21335629752027ab362970b11a425c47d24f4b88b446c","instanceCount":1,"presentCount":1,"producer":"deployment-execution","required":true,"structureHash":"sha256:bc19971b7896fb80680791572c9bc77acb39eb0b693cdce3d31c60a936410881"},{"artifact":"deployment-log","contentHash":"sha256:add885a0db3e4efdcb1645330230a7b92163ce37734b03dc882103a1eafdcc0d","instanceCount":1,"presentCount":1,"producer":"deployment-execution","required":true,"structureHash":"sha256:328501361f868471541d2ac375b05d9de4d852572367bf3499b1ebdd2443c151"},{"artifact":"health-check-report","contentHash":"sha256:2fa1183082bc458eae174a3654ba6e8ab490091f084651b4856239d3c23ad444","instanceCount":1,"presentCount":1,"producer":"deployment-execution","required":true,"structureHash":"sha256:ffd2cc35d602584d95045cf53315c9f16471e93ceb56a9074b5ee53322022f20"},{"artifact":"smoke-test-results","contentHash":"sha256:0e387152c69fb2209ddc1815544231d99db8539c196e74e5f1e8db3061532624","instanceCount":1,"presentCount":1,"producer":"deployment-execution","required":true,"structureHash":"sha256:f60d9672c478636fa81be7035b43cd86aef8c37e22b41bd256adde5b793c3e08"}],"projectType":"brownfield","schema":3}
+**Details**: Stage Deployment Execution approved by gate
+**Tokens In**: 586
+**Tokens Out**: 280211
+**Cache Read**: 161549111
+**Cache Write**: 2298510
+**Cost USD**: 44.17
+**By Model**: opus-5-5=44.17; claude-fable-5-2=null; <synthetic>=null
+**By Agent**: main=44.17
+**Tokens By Model**: opus-5-5=448/107.8k/145.8M/1.6M; claude-fable-5-2=138/172.4k/15.7M/691.8k
+**Tokens By Agent**: main=586/280.2k/161.5M/2.3M
+
+---
+
+## Stage Start
+**Timestamp**: 2026-11-18T14:50:20Z
+**Event**: STAGE_STARTED
+**Stage**: observability-setup
+**Agent**: aidlc-operations-agent
+**Answer Mode**: guide (reused from requirements-analysis)
+
+---
+
+## Stage Skip
+**Timestamp**: 2026-11-18T14:50:47Z
+**Event**: STAGE_SKIPPED
+**Stage**: observability-setup
+**Reason**: No monitoring, dashboards, alarms or tracing need configuration: this work adds interface languages to the existing app and creates no new service, endpoint or backend component. Crash and error monitoring stays on the existing Firebase Crashlytics setup, which already reports every build including 0.3.0; watching it after the Alpha promotion is noted in deployment-execution/health-check-report.md.
+**Skip Kind**: conditional-runtime
+
+---
+
+## Phase Completion
+**Timestamp**: 2026-11-18T14:50:47Z
+**Event**: PHASE_COMPLETED
+**From phase**: operation
+**To phase**: (end)
+**Stages completed**: 8
+
+---
+
+## Phase Verification
+**Timestamp**: 2026-11-18T14:50:47Z
+**Event**: PHASE_VERIFIED
+**Phase boundary**: operation → end
+
+---
+
+## Workflow Completion
+**Timestamp**: 2026-11-18T14:50:47Z
+**Event**: WORKFLOW_COMPLETED
+**Scope**: express
+**Details**: Scope: express, final stage observability-setup skipped
+**Reason**: No monitoring, dashboards, alarms or tracing need configuration: this work adds interface languages to the existing app and creates no new service, endpoint or backend component. Crash and error monitoring stays on the existing Firebase Crashlytics setup, which already reports every build including 0.3.0; watching it after the Alpha promotion is noted in deployment-execution/health-check-report.md.
+**Tokens In**: 1696
+**Tokens Out**: 1731188
+**Cache Read**: 392343574
+**Cache Write**: 7409297
+**Cost USD**: 96.54
+**By Model**: claude-fable-5-2=null; <synthetic>=null; opus-5-5=96.54
+**By Agent**: main=70.47; aidlc-developer-agent=26.07
+**Tokens By Model**: claude-fable-5-2=662/1.4M/74M/3.7M; opus-5-5=1k/350.4k/318.3M/3.7M
+**Tokens By Agent**: main=1k/521.8k/271.9M/3.7M; aidlc-developer-agent=674/1.2M/120.5M/3.7M
+
+---
+
+## Session Start
+**Timestamp**: 2026-11-19T07:42:57Z
+**Event**: SESSION_STARTED
+**Source**: startup
+**Session**: c368a2dc-acff-477f-904b-4b8fb7b24913
+
+---
+
+## Question Asked
+**Timestamp**: 2026-11-19T07:44:33Z
+**Event**: QUESTION_ASKED
+**Question Id**: 6cdc8387
+**Question Type**: scope-confirm
+**Question Chat**: c368a2dc-acff-477f-904b-4b8fb7b24913
+**Question Shows**: sha256:5496ddc0db080af1081f25bfeba71334919fc1771f655936761c658ac1cd7eb4
+**Stage**: observability-setup
+**Options**: ["Go ahead with the \"express\" plan","Use a different plan","Tailor a plan to this task"]
+**State Digest**: 55f7a6e390e20d11ec124aec2399ce1d47abcb4d4909eceac6c5aa123118e226
+**Question Text SHA-256**: 46653ca028c3587c3908ecef4483d40d2de9e07bef9138b2fdcf67e1d0b34811
+
+---

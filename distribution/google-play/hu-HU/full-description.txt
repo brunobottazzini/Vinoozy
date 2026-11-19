@@ -1,18 +1,18 @@
-A borospincéd, mindig kéznél.
+A Vinoozy borospince-kezelő alkalmazás a saját palackjaidhoz: vezesd a borleltárt, tudd, mikor érdemes meginni az egyes borokat, és találj ételpárosításokat, akár internet nélkül is.
 
-A Vinoozy segít rendszerezni a palackjaidat, és becsléseket mutat arról, hogyan fejlődhetnek: az ivási ablak kezdetét, csúcsát és tájékoztató végét.
+Minden bor tájékoztató ivási ablakot kap (kezdet, csúcs és vég), amelyet a típus, az eredetmegjelölés, az évjárat és a szint alapján becsül. Az Áttekintés megmutatja, mely borokat nyithatod ki most, és melyeket érdemes még várni.
 
-ADD HOZZÁ A BORAIDAT
-Írd be az adatokat kézzel, olvasd be a címkét a kamerával, használj vonalkódot, vagy importálj szöveget a Google Lensből. Mentés előtt mindig ellenőrizd a javasolt adatokat.
+MIT TEHETSZ
+• Pinceleltár offline is: adj hozzá, szerkessz és rögzítsd, mit ittál, kapcsolat nélkül is; minden szinkronizálódik, amint visszatér a hálózat.
+• Mikor igyad az egyes borokat: ivási ablak kezdettel, csúccsal és véggel, amelyet bármikor javíthatsz.
+• Címkeolvasás a telefonon: fotózd le az elejét és a hátát, használj vonalkódot, vagy importálj szöveget a Google Lensből. Mentés előtt mindig te ellenőrzöd az adatokat.
+• Áttekintés: fogyasztható, várni való és hamarosan meginni való borok egy pillantással.
+• Előzmények értékelésekkel és jegyzetekkel: add meg, milyen volt a palack, és ugyanannál a bornál pontosodik a becslés.
+• Ételpárosítási javaslatok minden borhoz.
+• Megosztott pince: hívj meg másokat, csak olvasásra vagy szerkesztési joggal.
+• Vinoozy Plus: nincs borkorlát és nincs hirdetés.
 
-TARTSD RENDBEN A PINCÉDET
-Kezeld a mennyiségeket, az évjáratokat és a borok jellemzőit. Fedezd fel az Áttekintést, szűrd a boraidat, és őrizd meg az értékeléseket és a jegyzeteket az Előzményekben. Találj ételpárosítási javaslatokat.
-
-HASZNÁLD OFFLINE
-Megnézheted és frissítheted a telefonodon elérhető adatokat. A módosítások szinkronizálódnak, amint visszatér a kapcsolat. Az első Google-bejelentkezéshez internet kell; néhány kereséshez is kapcsolat szükséges.
-
-OSZD MEG AZZAL, AKIVEL SZERETNÉD
-Hívj meg másokat a pincédbe, és döntsd el, hogy csak megnézhetik, vagy módosíthatják is.
+Az első Google-bejelentkezéshez internet kell; néhány kereséshez is kapcsolat szükséges.
 
 OLVASD BE A CÍMKÉKET A TELEFONODON
 A szövegfelismerés az eszközödön fut. Az online keresések szavakat és vonalkódokat küldhetnek az Open Food Facts szolgáltatásnak. Egy fotó megnyitásához a Google Lensben a megerősítésed kell.

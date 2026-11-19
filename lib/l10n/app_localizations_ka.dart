@@ -2449,4 +2449,167 @@ class AppLocalizationsKa extends AppLocalizations {
   @override
   String get devNotice =>
       'მხოლოდ დეველოპერული ვერსიებისთვის ემულატორით: გადახდების, ტოკენებისა და ქვითრების გარეშე.';
+
+  @override
+  String get settingsTitle => 'პარამეტრები';
+
+  @override
+  String get settingsGuide => 'გზამკვლევის ხელახლა ნახვა';
+
+  @override
+  String get settingsShare => 'აპის გაზიარება';
+
+  @override
+  String get settingsRate => 'აპის შეფასება';
+
+  @override
+  String get settingsFeedback => 'გამოხმაურების გაგზავნა';
+
+  @override
+  String get settingsFaq => 'ხშირად დასმული კითხვები';
+
+  @override
+  String get settingsShareFailed =>
+      'გაზიარების გახსნა ვერ მოხერხდა. სცადეთ ხელახლა';
+
+  @override
+  String get settingsRateFailed =>
+      'Google Play-ის გახსნა ვერ მოხერხდა. სცადეთ ხელახლა';
+
+  @override
+  String get guideAddTitle => 'დაამატეთ ღვინო';
+
+  @override
+  String get guideAddBody =>
+      'შეეხეთ დამატებას, რომ ბოთლი მარანში შეინახოთ. დასაწყისისთვის სახელიც საკმარისია.';
+
+  @override
+  String get guideLabelTitle => 'წაიკითხეთ ეტიკეტი';
+
+  @override
+  String get guideLabelBody =>
+      'დამატებიდან ეტიკეტის გადაღებაც შეგიძლიათ: Vinoozy კითხულობს სახელს, მოსავლის წელს და დასახელებას, თქვენ კი შენახვამდე ამოწმებთ.';
+
+  @override
+  String get guideTabsTitle => 'მიმოხილვა, მარანი, ისტორია';
+
+  @override
+  String get guideTabsBody =>
+      'მიმოხილვა გეუბნებათ, რომელი ღვინო გახსნათ ახლა, მარანში თქვენი ბოთლებია, ისტორია კი დალეულს ინახავს.';
+
+  @override
+  String get guideMenuTitle => 'მარნის მენიუ';
+
+  @override
+  String get guideMenuBody =>
+      'აქ არის თქვენი პროფილი, ადამიანები, ვისაც მარანს უზიარებთ, დალეული ღვინოები და პარამეტრები, სადაც ამ გზამკვლევის ხელახლა ნახვა შეგიძლიათ.';
+
+  @override
+  String get guideDone => 'დასრულება';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'ნაბიჯი $step / $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'აქ ხედავთ, რომელი ღვინოა ახლა დასალევად მზად და რომელი სჯობს კიდევ შეინახოთ.';
+
+  @override
+  String get hintHistory =>
+      'ყველა ბოთლი, რომელსაც დალევთ, აქ ხვდება, თქვენი შეფასებითა და შენიშვნებით.';
+
+  @override
+  String get hintAddWine =>
+      'დაიწყეთ სახელით: მოსავლის წელი, ტიპი და დასახელება დალევის ფანჯარას უფრო ზუსტს ხდის.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, თქვენი ღვინის მარანი';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'ჩემს მარანს Vinoozy-ით ვმართავ: მეუბნება, როდის არის თითოეული ბოთლი საუკეთესო ფორმაში. სცადეთ: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'გამოხმაურება Vinoozy-ზე';
+
+  @override
+  String get feedbackTechHeader => 'ტექნიკური მონაცემები (არ წაშალოთ):';
+
+  @override
+  String get feedbackNoEmailTitle => 'ელფოსტის აპი არ არის';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'ამ ტელეფონზე ელფოსტის აპი არ არის. მოგვწერეთ: $email';
+  }
+
+  @override
+  String get feedbackCopy => 'კოპირება';
+
+  @override
+  String get feedbackCopied => 'მისამართი დაკოპირდა';
+
+  @override
+  String get faqAddQuestion => 'როგორ დავამატო ღვინო ხელით?';
+
+  @override
+  String get faqAddAnswer =>
+      'მარანში შეეხეთ დამატებას, შემდეგ ჩაწერას. სავალდებულოა მხოლოდ სახელი; მოსავლის წელი, ტიპი, ქვეყანა და დასახელება შეფასებას აუმჯობესებს. შეინახეთ და ღვინო მარანშია.';
+
+  @override
+  String get faqLabelQuestion => 'როგორ წავიკითხო ეტიკეტი, Google Lens-ითაც?';
+
+  @override
+  String get faqLabelAnswer =>
+      'შეეხეთ დამატებას და გადაიღეთ წინა და უკანა მხარე: Vinoozy ეტიკეტს თავად ტელეფონზე კითხულობს. Google Lens-ში მონიშნეთ ტექსტი და გაუზიარეთ Vinoozy-ს, ან დააკოპირეთ და ფორმაში გამოიყენეთ „ჩასმა Lens-იდან“. შენახვამდე ყოველთვის შეამოწმეთ ველები.';
+
+  @override
+  String get faqWindowQuestion =>
+      'როგორ ითვლება დალევის საუკეთესო დრო და შემიძლია მისი შეცვლა?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy ფანჯარას (დასაწყისი, პიკი, დასასრული) ღვინის ტიპის, დასახელების, მოსავლის წლისა და დონის მიხედვით აფასებს. ეს მიახლოებითია: მნიშვნელობა აქვს ბოთლის შენახვის პირობებსაც. გახსენით ღვინო და შეეხეთ შესწორებას საკუთარი თარიღისთვის, ან შეცვალეთ დონე.';
+
+  @override
+  String get faqOfflineQuestion => 'მუშაობს ინტერნეტის გარეშე?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'დიახ. ღვინის დამატება, რედაქტირება და დალევა კავშირის გარეშეც შეგიძლიათ: ყველაფერი ტელეფონზე ინახება და კავშირის აღდგენისთანავე თქვენს ანგარიშთან სინქრონიზდება.';
+
+  @override
+  String get faqShareQuestion => 'როგორ გავუზიარო ჩემი მარანი?';
+
+  @override
+  String get faqShareAnswer =>
+      'მარნის მენიუში გახსენით „ადამიანები“ და მოიწვიეთ ვინმე მისი Google ელფოსტით, მხოლოდ ნახვით ან რედაქტირებით. ის აყენებს Vinoozy-ს და ამ ანგარიშით შედის.';
+
+  @override
+  String get faqPlusQuestion => 'რას მოიცავს უფასო გეგმა და რა არის Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'უფასო გეგმა მარანში $limit-მდე სხვადასხვა ღვინოს მოიცავს, იშვიათი რეკლამით მხოლოდ მიმოხილვაში. Vinoozy Plus ხსნის ლიმიტსაც და რეკლამასაც.';
+  }
+
+  @override
+  String get faqDrinkQuestion => 'რატომ უნდა ჩავწერო, რა დავლიე და როგორი იყო?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'ისტორია ინახავს, რა დალიეთ და რამდენად მოგეწონათ. როცა მიუთითებთ, როგორი იყო ბოთლი (ჯერ ძალიან ახალგაზრდა, ზუსტად დროზე, პიკი უკვე გასული), Vinoozy იმავე ღვინის შეფასებას ასწორებს.';
+
+  @override
+  String get faqDeleteQuestion => 'როგორ წავშალო ანგარიში?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'გახსენით პროფილი და შეეხეთ ანგარიშის წაშლას. საჭიროა კავშირი, შემდეგ დასადასტურებლად ხელახლა შედიხართ Google-ით. მარანი, ისტორია და გაზიარებები სამუდამოდ იშლება.';
+
+  @override
+  String get faqNotFound => 'პასუხი ვერ იპოვეთ? მოგვწერეთ';
 }

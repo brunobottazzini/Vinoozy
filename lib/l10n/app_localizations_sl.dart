@@ -2495,4 +2495,169 @@ class AppLocalizationsSl extends AppLocalizations {
   @override
   String get devNotice =>
       'Samo razvojne različice z emulatorjem: brez plačil, žetonov ali potrdil.';
+
+  @override
+  String get settingsTitle => 'Nastavitve';
+
+  @override
+  String get settingsGuide => 'Znova poglej vodnik';
+
+  @override
+  String get settingsShare => 'Deli aplikacijo';
+
+  @override
+  String get settingsRate => 'Oceni aplikacijo';
+
+  @override
+  String get settingsFeedback => 'Pošlji povratne informacije';
+
+  @override
+  String get settingsFaq => 'Pogosta vprašanja';
+
+  @override
+  String get settingsShareFailed =>
+      'Deljenja ni bilo mogoče odpreti. Poskusite znova';
+
+  @override
+  String get settingsRateFailed =>
+      'Googla Play ni bilo mogoče odpreti. Poskusite znova';
+
+  @override
+  String get guideAddTitle => 'Dodajte vino';
+
+  @override
+  String get guideAddBody =>
+      'Tapnite Dodaj in postavite steklenico v svojo klet. Za začetek je dovolj ime.';
+
+  @override
+  String get guideLabelTitle => 'Preberite etiketo';
+
+  @override
+  String get guideLabelBody =>
+      'Pod Dodaj lahko tudi fotografirate etiketo: Vinoozy prebere ime, letnik in označbo porekla, vi pa jih pred shranjevanjem preverite.';
+
+  @override
+  String get guideTabsTitle => 'Pregled, Klet, Zgodovina';
+
+  @override
+  String get guideTabsBody =>
+      'Pregled vam pove, katera vina odpreti zdaj, Klet prikaže vaše steklenice, Zgodovina pa hrani tiste, ki ste jih popili.';
+
+  @override
+  String get guideMenuTitle => 'Meni kleti';
+
+  @override
+  String get guideMenuBody =>
+      'Tu najdete svoj profil, osebe, s katerimi delite klet, popita vina in Nastavitve, kjer si lahko ta vodnik znova ogledate.';
+
+  @override
+  String get guideDone => 'Končaj';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Korak $step od $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Tu vidite, katera vina so zdaj pripravljena za pitje in katera je bolje še shraniti.';
+
+  @override
+  String get hintHistory =>
+      'Vsaka steklenica, ki jo popijete, pristane tukaj, z vašo oceno in zapiski.';
+
+  @override
+  String get hintAddWine =>
+      'Začnite z imenom: letnik, vrsta in označba porekla naredijo obdobje pitja natančnejše.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, vaša vinska klet';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Svojo vinsko klet vodim z aplikacijo Vinoozy: pove mi, kdaj je vsaka steklenica v najboljši formi. Preizkusite jo: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Povratne informacije o aplikaciji Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Tehnični podatki (prosimo, ne brišite):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Ni aplikacije za e-pošto';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'Na tem telefonu ni aplikacije za e-pošto. Pišite nam na $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Kopiraj';
+
+  @override
+  String get feedbackCopied => 'Naslov kopiran';
+
+  @override
+  String get faqAddQuestion => 'Kako ročno dodam vino?';
+
+  @override
+  String get faqAddAnswer =>
+      'V Kleti tapnite Dodaj in nato Vpiši. Obvezno je samo ime; letnik, vrsta, država in označba porekla izboljšajo oceno. Shranite in vino je v kleti.';
+
+  @override
+  String get faqLabelQuestion => 'Kako preberem etiketo, tudi z Google Lens?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Tapnite Dodaj in fotografirajte sprednjo in zadnjo stran: Vinoozy prebere etiketo kar na telefonu. V Google Lens označite besedilo in ga delite z aplikacijo Vinoozy ali ga kopirajte in v obrazcu uporabite Prilepi iz Lensa. Pred shranjevanjem vedno preverite polja.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Kako se izračuna najboljši trenutek za pitje in ga lahko spremenim?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy oceni obdobje (začetek, vrhunec, konec) iz vrste, označbe porekla, letnika in ravni vina. To je okvirno: šteje tudi, kako je bila steklenica shranjena. Odprite vino in tapnite Popravi, da nastavite svoj datum, ali spremenite Raven.';
+
+  @override
+  String get faqOfflineQuestion => 'Ali deluje brez interneta?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Da. Vina lahko dodajate, urejate in pijete brez povezave: vse se shrani na telefonu in se sinhronizira z vašim računom, takoj ko je povezava spet na voljo.';
+
+  @override
+  String get faqShareQuestion => 'Kako delim svojo klet?';
+
+  @override
+  String get faqShareAnswer =>
+      'V meniju Kleti odprite Osebe in povabite nekoga z njegovim e-poštnim naslovom Google, samo za branje ali z urejanjem. Oseba namesti Vinoozy in se prijavi s tem računom.';
+
+  @override
+  String get faqPlusQuestion =>
+      'Kaj vključuje brezplačni paket in kaj je Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'Brezplačni paket vključuje do $limit različnih vin v kleti, z občasnimi oglasi samo v Pregledu. Vinoozy Plus odstrani omejitev in oglase.';
+  }
+
+  @override
+  String get faqDrinkQuestion =>
+      'Zakaj beležiti, kaj sem popil in kakšno je bilo?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'Zgodovina hrani, kaj ste popili in kako vam je bilo všeč. Ko poveste, kakšna je bila steklenica (še premlado, ravno prav, čez vrhunec), Vinoozy popravi oceno za isto vino.';
+
+  @override
+  String get faqDeleteQuestion => 'Kako izbrišem svoj račun?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Odprite Profil in tapnite Izbriši račun. Potrebujete povezavo, nato se za potrditev znova prijavite z Googlom. Klet, Zgodovina in deljenja se trajno izbrišejo.';
+
+  @override
+  String get faqNotFound => 'Niste našli odgovora? Pišite nam';
 }

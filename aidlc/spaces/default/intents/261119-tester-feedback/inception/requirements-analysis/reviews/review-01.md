@@ -1,0 +1,23 @@
+## Review
+
+**Verdict:** READY
+**Reviewer:** aidlc-product-lead-agent
+**Date:** 2026-11-19T08:21:44Z
+**Iteration:** 1
+**Verdict Dictated:** no
+
+### Findings
+
+| ID | Severity | Location | Finding | Required action | Status |
+|---|---|---|---|---|---|
+| R-01 | Major | aidlc/spaces/default/intents/261119-tester-feedback/inception/requirements-analysis/requirements.md > FR6.1 and Constraints (Dipendenze nuove) | FR6.1 requires the phone model and Android version in the feedback email, but Constraints say the only new dependency is `in_app_review`. `pubspec.yaml` has `package_info_plus` (app version) but no package that reads model or Android version, and NFR7 only extends the link channel for `mailto:` and the Play fallback. A developer cannot tell whether to add a package, extend the native channel, or drop the field. | Decide and state how model and Android version are read (extra dependency or native channel method), and update Constraints and NFR3/NFR7 accordingly. Or limit FR6.1 to the app version and language. | New |
+| R-02 | Minor | aidlc/spaces/default/intents/261119-tester-feedback/inception/requirements-analysis/requirements.md > FR2.2 and Assumptions | Existing installs have no "tour seen" flag, so every current user (including the testers) will get the guided tour and all three hints on the first launch after the update. FR5.2.2 settles this case for the review date but FR2 is silent. Whether the tour should show to people who already know the app is a product decision left implicit. | Add an assumption or requirement: either existing users see the tour once, or users with existing wines are treated as having seen it. | New |
+| R-03 | Minor | aidlc/spaces/default/intents/261119-tester-feedback/inception/requirements-analysis/requirements.md > FR2.2 and FR2.3 | The overlap between the guided tour and the hints is not defined. The Cruscotto is the first screen and also the tour's target, so its hint could appear together with the tour. The tour steps can also point at "foto dell'etichetta" when the cellar is empty or the control is not visible, and nothing covers rotation or screen-size changes mid-tour. | State that hints are suppressed while the tour runs (or appear only after it ends), and what the tour does when a target control is not on screen. | New |
+| R-04 | Minor | aidlc/spaces/default/intents/261119-tester-feedback/inception/requirements-analysis/requirements.md > FR3.1 and FR3 acceptance criteria | The criterion "almeno 5 delle parole chiave italiane scelte" has no fixed list, because FR3.1 gives only examples. QA cannot test it as written. The 23 adapted listings have no check beyond length. | Fix the Italian and English keyword list in the requirement, or reword the criterion to point at that list. For the 23 other languages, state the acceptance check (for example, structure matches the English listing and the length limits hold). | New |
+| R-05 | Minor | aidlc/spaces/default/intents/261119-tester-feedback/inception/requirements-analysis/requirements.md > FR5.2.1 | "Almeno 5 vini in cantina" does not say whether finished or consumed wines count, and whether the count includes the wine just drunk. The test "4 vini" is therefore ambiguous at the edge. | State which wines are counted, for example the active bottles in the cellar before or after the drink is registered. | New |
+| R-06 | Minor | aidlc/spaces/default/intents/261119-tester-feedback/inception/requirements-analysis/requirements.md > FR5.1 and FR5.2.3 | The prompt date is saved even when Google Play decides not to show the dialog, which is correct. It is not stated that a build outside Play (debug, E2E) must not trigger the automatic request. Only FR2.6 covers E2E, and only for the guide. | Extend the E2E and debug exclusion of FR2.6 to the automatic review request. | New |
+| R-07 | Minor | aidlc/spaces/default/intents/261119-tester-feedback/inception/requirements-analysis/requirements.md > FR7.1 | The FAQ asks for 6-8 questions, but the theme list has 8 items and ties answers to the Plus bottle limit, which can go stale in 25 languages. | Say whether the Plus limit in the answer is read from the app's limit constant or written as text, so it cannot drift. | New |
+
+### Summary
+
+The requirements are clear, traceable to the testers' report, and testable. Out of scope is explicit, and the corners around offline use, a missing email app, a failed share and an unreadable local store are settled. Before approving, settle how the device model and Android version reach the feedback email (the one real gap against the declared dependencies), and decide whether existing users should see the tour after the update.

@@ -35,6 +35,8 @@ import '../e2e/e2e_locale.dart';
 import '../e2e/emulator_google_auth_service.dart';
 import '../firebase/firebase_env.dart';
 import '../firebase/firestore_bootstrap.dart';
+import '../guide/guide_providers.dart';
+import '../guide/guide_state_store.dart';
 import '../l10n/app_localizations.dart';
 import '../label/label_providers.dart';
 import '../plan/plan_providers.dart';
@@ -317,6 +319,13 @@ abstract final class AppBootstrap {
       clock: const SystemClock(),
       reporter: reporter,
     );
+    // tester-feedback FR2.5, FR5.3: tour, hints and review dates on the
+    // phone; the first use is recorded at start-up (FR5.2.2).
+    final guide = GuideStateStore(
+      SharedPreferences.getInstance,
+      reporter: reporter,
+    );
+    unawaited(guide.ensureFirstUse(const SystemClock().now()));
     container = ProviderContainer(
       overrides: [
         errorReporterProvider.overrideWithValue(reporter),
@@ -339,6 +348,7 @@ abstract final class AppBootstrap {
         onboardingFlagProvider.overrideWithValue(
           OnboardingFlag(SharedPreferences.getInstance),
         ),
+        guideStateStoreProvider.overrideWithValue(guide),
         ...plan.overrides(),
       ],
     );

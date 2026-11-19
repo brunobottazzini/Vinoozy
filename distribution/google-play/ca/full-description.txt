@@ -1,18 +1,18 @@
-El teu celler, sempre a mà.
+Vinoozy és l'app per gestionar el teu celler de vins: porta l'inventari dels teus vins, sàpigues quan beure cada ampolla i troba maridatges, fins i tot sense connexió.
 
-Vinoozy t'ajuda a organitzar les ampolles que tens i a consultar estimacions de la seva evolució: inici, apogeu i final orientatiu de la finestra de consum.
+Cada vi rep una finestra de consum orientativa (inici, apogeu i final), estimada a partir del tipus, la denominació, l'anyada i el nivell. El Tauler et mostra quins vins obrir ara i quins val més esperar.
 
-AFEGEIX ELS TEUS VINS
-Introdueix les dades a mà, llegeix una etiqueta amb la càmera, fes servir un codi de barres o importa text des de Google Lens. Revisa sempre les dades suggerides abans de desar.
+QUÈ POTS FER
+• Inventari del celler fins i tot sense connexió: afegeix, edita i anota el que beus; tot se sincronitza quan torna la xarxa.
+• Quan beure cada vi: una finestra de consum amb inici, apogeu i final, que pots corregir quan vulguis.
+• Lectura de l'etiqueta al telèfon: fotografia la part davantera i la del darrere, fes servir el codi de barres o importa text des de Google Lens. Sempre revises les dades abans de desar.
+• Tauler: vins a punt, per esperar i per beure aviat, d'un cop d'ull.
+• Historial del que beus amb valoracions i notes: digues com era l'ampolla i l'estimació del mateix vi es corregeix.
+• Maridatge amb menjar per a cada vi.
+• Celler compartit: convida altres persones, només lectura o amb edició.
+• Vinoozy Plus: sense límit de vins i sense anuncis.
 
-MANTÉN EL CELLER ENDREÇAT
-Gestiona quantitats, anyades i característiques dels vins. Consulta el Tauler, filtra els teus vins i desa valoracions i notes a l'Historial. Troba suggeriments de maridatge.
-
-FES-LA SERVIR SENSE CONNEXIÓ
-Consulta i actualitza les dades disponibles al telèfon. Els canvis se sincronitzen quan torna la connexió. El primer inici de sessió amb Google necessita Internet; algunes cerques també requereixen connexió.
-
-COMPARTEIX AMB QUI TU TRIÏS
-Convida altres persones al teu celler i tria si només el poden consultar o també fer-hi canvis.
+El primer inici de sessió amb Google necessita Internet; algunes cerques també requereixen connexió.
 
 LLEGEIX LES ETIQUETES AL TELÈFON
 El reconeixement de text es fa al teu dispositiu. Les cerques en línia poden enviar paraules i codis de barres a Open Food Facts. Obrir una foto a Google Lens requereix la teva confirmació.

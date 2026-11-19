@@ -1,6 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
+// The app on Google Play, put in the invitation message (BR1.3). Since
+// tester-feedback FR4.2 it lives in one place, shared with "Share the app";
+// re-exported here for the invitation code that already imports it.
+export '../../app/store_links.dart' show playStoreLink;
+
 /// Opens the Android share sheet with a ready-made message (BR1.3). Behind an
 /// interface so the tests replace it (unit-test-instructions.md).
 abstract interface class ShareLauncher {
@@ -20,7 +25,3 @@ class SharePlusLauncher implements ShareLauncher {
 final shareLauncherProvider = Provider<ShareLauncher>(
   (ref) => const SharePlusLauncher(),
 );
-
-/// The app on Google Play, put in the invitation message (BR1.3).
-const String playStoreLink =
-    'https://play.google.com/store/apps/details?id=com.vinoozy.app';

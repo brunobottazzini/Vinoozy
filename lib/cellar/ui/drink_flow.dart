@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../account/app_user.dart';
 import '../../app/providers.dart';
+import '../../guide/guide_providers.dart';
+import '../../guide/review_prompter.dart';
 import '../../l10n/app_localizations.dart';
+import '../../settings/app_review.dart';
 import '../../sharing/domain/membership.dart';
 import '../cellar_providers.dart';
 import '../data/drinking_record_repository.dart';
@@ -46,6 +49,10 @@ Future<void> drinkWithUndo(
   final confirmation = await DrinkConfirmSheet.show(context, wine);
   // "Cancel", back or a tap outside: no write at all (FR2.2).
   if (confirmation == null) return;
+  // tester-feedback FR5.2.1, review R-05: the active wines of the cellar
+  // before the drink, from the list already in memory (no Firestore read,
+  // NFR6); a list nobody listens to counts as unknown, so no prompt.
+  final activeWineCount = _loadedWineCount(container, cellar.cellarId);
   final outcome = await actions.drink(
     cellar: cellar,
     user: user,
@@ -101,4 +108,21 @@ Future<void> drinkWithUndo(
       );
     },
   );
+  // tester-feedback FR5.2: a positive moment, after the "Drunk" message.
+  await maybeAskForReview(
+    store: container.read(guideStateStoreProvider),
+    launcher: container.read(appReviewLauncherProvider),
+    rating: confirmation.rating,
+    activeWineCount: activeWineCount,
+    now: clock.now(),
+    enabled: container.read(autoReviewEnabledProvider),
+  );
+}
+
+/// The wines of [cellarId] already loaded by the Cellar and the Dashboard
+/// (quantity > 0, archived ones excluded), or 0 when the list is not open.
+int _loadedWineCount(ProviderContainer container, String cellarId) {
+  final wines = winesStreamProvider(cellarId);
+  if (!container.exists(wines)) return 0;
+  return container.read(wines).value?.wines.length ?? 0;
 }

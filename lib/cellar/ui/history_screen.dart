@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../account/app_user.dart';
 import '../../app/providers.dart';
+import '../../guide/guide_state_store.dart' show GuideScreen;
+import '../../guide/ui/first_visit_hint.dart';
 import '../../l10n/app_localizations.dart';
 import '../../sharing/sharing_providers.dart';
 import '../cellar_providers.dart';
@@ -120,9 +122,17 @@ class HistoryScreen extends ConsumerWidget {
     return Scaffold(
       key: const Key('history-screen'),
       appBar: AppBar(title: Text(l10n.historyTitle)),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: body,
+      body: Column(
+        children: [
+          // tester-feedback FR2.3: shown once, after the guided tour.
+          const FirstVisitHint(screen: GuideScreen.history),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: body,
+            ),
+          ),
+        ],
       ),
     );
   }

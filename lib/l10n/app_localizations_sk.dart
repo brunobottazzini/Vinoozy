@@ -2488,4 +2488,169 @@ class AppLocalizationsSk extends AppLocalizations {
   @override
   String get devNotice =>
       'Len vývojové zostavy s emulátorom: žiadne platby, tokeny ani účtenky.';
+
+  @override
+  String get settingsTitle => 'Nastavenia';
+
+  @override
+  String get settingsGuide => 'Znova zobraziť sprievodcu';
+
+  @override
+  String get settingsShare => 'Zdieľať aplikáciu';
+
+  @override
+  String get settingsRate => 'Ohodnotiť aplikáciu';
+
+  @override
+  String get settingsFeedback => 'Poslať spätnú väzbu';
+
+  @override
+  String get settingsFaq => 'Časté otázky';
+
+  @override
+  String get settingsShareFailed =>
+      'Zdieľanie sa nepodarilo otvoriť. Skúste to znova';
+
+  @override
+  String get settingsRateFailed =>
+      'Google Play sa nepodarilo otvoriť. Skúste to znova';
+
+  @override
+  String get guideAddTitle => 'Pridajte víno';
+
+  @override
+  String get guideAddBody =>
+      'Ťuknite na Pridať a uložte fľašu do pivnice. Na začiatok stačí názov.';
+
+  @override
+  String get guideLabelTitle => 'Prečítajte etiketu';
+
+  @override
+  String get guideLabelBody =>
+      'V ponuke Pridať môžete etiketu aj odfotiť: Vinoozy prečíta názov, ročník a označenie pôvodu a vy ich pred uložením skontrolujete.';
+
+  @override
+  String get guideTabsTitle => 'Prehľad, Pivnica, História';
+
+  @override
+  String get guideTabsBody =>
+      'Prehľad vám povie, ktoré vína otvoriť teraz, Pivnica ukazuje vaše fľaše a História uchováva tie, ktoré ste vypili.';
+
+  @override
+  String get guideMenuTitle => 'Ponuka pivnice';
+
+  @override
+  String get guideMenuBody =>
+      'Nájdete tu svoj profil, ľudí, s ktorými pivnicu zdieľate, vypité vína a Nastavenia, kde si tohto sprievodcu môžete znova zobraziť.';
+
+  @override
+  String get guideDone => 'Hotovo';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Krok $step z $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Tu vidíte, ktoré vína sú teraz pripravené na pitie a ktoré je lepšie ešte nechať ležať.';
+
+  @override
+  String get hintHistory =>
+      'Každá fľaša, ktorú vypijete, skončí tu, s vaším hodnotením a poznámkami.';
+
+  @override
+  String get hintAddWine =>
+      'Začnite názvom: ročník, typ a označenie pôvodu spresnia okno na pitie.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, vaša vínna pivnica';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Svoju vínnu pivnicu vediem vo Vinoozy: povie mi, kedy je každá fľaša v najlepšej forme. Vyskúšajte ju: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Spätná väzba k aplikácii Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Technické údaje (nemažte):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Žiadna e-mailová aplikácia';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'V tomto telefóne nie je žiadna e-mailová aplikácia. Napíšte nám na $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Kopírovať';
+
+  @override
+  String get feedbackCopied => 'Adresa skopírovaná';
+
+  @override
+  String get faqAddQuestion => 'Ako ručne pridám víno?';
+
+  @override
+  String get faqAddAnswer =>
+      'V Pivnici ťuknite na Pridať a potom na Napísať. Povinný je len názov; ročník, typ, krajina a označenie pôvodu zlepšujú odhad. Uložte a víno je v pivnici.';
+
+  @override
+  String get faqLabelQuestion =>
+      'Ako prečítam etiketu, aj pomocou Google Lens?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Ťuknite na Pridať a odfoťte prednú aj zadnú stranu: Vinoozy prečíta etiketu priamo v telefóne. V Google Lens označte text a zdieľajte ho do Vinoozy, alebo ho skopírujte a vo formulári použite Vložiť z Lens. Pred uložením vždy skontrolujte polia.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Ako sa počíta ideálny čas na pitie a môžem ho zmeniť?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy odhaduje okno (začiatok, vrchol, koniec) podľa typu, označenia pôvodu, ročníka a úrovne vína. Je to orientačné: záleží aj na tom, ako bola fľaša skladovaná. Otvorte víno a ťuknite na Opraviť, aby ste nastavili vlastný dátum, alebo zmeňte Úroveň.';
+
+  @override
+  String get faqOfflineQuestion => 'Funguje bez internetu?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Áno. Vína môžete pridávať, upravovať aj piť bez pripojenia: všetko sa uloží v telefóne a synchronizuje s vaším účtom, hneď ako sa pripojenie obnoví.';
+
+  @override
+  String get faqShareQuestion => 'Ako zdieľam svoju pivnicu?';
+
+  @override
+  String get faqShareAnswer =>
+      'V ponuke Pivnice otvorte Ľudia a pozvite niekoho cez jeho e-mailovú adresu Google, len na čítanie alebo s úpravami. Ten si nainštaluje Vinoozy a prihlási sa týmto účtom.';
+
+  @override
+  String get faqPlusQuestion => 'Čo zahŕňa bezplatný plán a čo je Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'Bezplatný plán zahŕňa až $limit rôznych vín v pivnici, s občasnými reklamami len v Prehľade. Vinoozy Plus odstráni limit aj reklamy.';
+  }
+
+  @override
+  String get faqDrinkQuestion =>
+      'Prečo zaznamenávať, čo som vypil a aké to bolo?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'História uchováva, čo ste vypili a ako vám to chutilo. Keď uvediete, aká fľaša bola (ešte príliš mladé, tak akurát, za vrcholom), Vinoozy opraví odhad pri tom istom víne.';
+
+  @override
+  String get faqDeleteQuestion => 'Ako odstránim svoj účet?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Otvorte Profil a ťuknite na Odstrániť účet. Potrebujete pripojenie a potom sa na potvrdenie znova prihlásite cez Google. Pivnica, História a zdieľania sa odstránia natrvalo.';
+
+  @override
+  String get faqNotFound => 'Nenašli ste odpoveď? Napíšte nám';
 }

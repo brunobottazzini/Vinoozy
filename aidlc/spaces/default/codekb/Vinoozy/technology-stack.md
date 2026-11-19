@@ -1,6 +1,6 @@
 # Technology Stack
 
-Le versioni dell'app sono i vincoli di `pubspec.yaml` (il lockfile `pubspec.lock` è versionato); quelle Node sono fissate esatte nei rispettivi `package.json`.
+Le versioni dell'app sono i vincoli di `pubspec.yaml` (il lockfile `pubspec.lock` è versionato); quelle Node sono fissate esatte nei rispettivi `package.json`. `pubspec.yaml` riverificato il 2026-11-19; le altre tabelle vengono dallo store precedente.
 
 ## Languages
 
@@ -24,7 +24,7 @@ Le versioni dell'app sono i vincoli di `pubspec.yaml` (il lockfile `pubspec.lock
 | Node.js | 22 | Functions e strumenti |
 | JDK | 17 per la build Android; 21 nei job `rules` ed `e2e` | Build e emulatori |
 
-## App Libraries (`pubspec.yaml`)
+## App Libraries (`pubspec.yaml`, versione app `0.3.0+3`)
 
 | Pacchetto | Vincolo | Uso |
 |---|---|---|
@@ -44,13 +44,15 @@ Le versioni dell'app sono i vincoli di `pubspec.yaml` (il lockfile `pubspec.lock
 | `google_mobile_ads` | ^9.2.0 | Annuncio del Cruscotto |
 | `http` | ^1.6.0 | Open Food Facts |
 | `connectivity_plus` | ^7.3.2 | Stato della rete |
-| `shared_preferences` | ^2.5.6 | Registro locale e preferenze |
+| `shared_preferences` | ^2.5.6 | Registro locale, preferenze, flag `onboarding.seen` |
 | `path_provider` | ^2.1.6 | Cache del catalogo |
 | `package_info_plus` | ^10.2.2 | Versione dell'app |
-| `share_plus` | ^13.3.1 | Messaggio d'invito |
+| `share_plus` | ^13.3.1 | Foglio di condivisione (messaggio d'invito) |
 | `image_picker` | ^1.2.4 | Fotocamera e selettore foto di sistema |
 | `crypto` | ^3.0.8 | Hash del proprietario della cache |
 | `estimation` | path `packages/estimation` | Stima |
+
+Assenti: `in_app_review` (recensione nell'app) e `url_launcher` (i link passano dal canale `com.vinoozy.app/links`).
 
 Sviluppo: `flutter_test`, `integration_test`, `flutter_driver` (SDK), `flutter_lints` ^6.0.0, `mocktail` ^1.0.5. Pacchetto `estimation`: `test` ^1.33.0, `coverage` ^1.16.0, `lints` ^6.1.0, `benchmark_harness` ^2.4.0.
 
@@ -84,18 +86,19 @@ Sviluppo: `flutter_test`, `integration_test`, `flutter_driver` (SDK), `flutter_l
 | Elemento | Valore |
 |---|---|
 | Generatore | `flutter gen-l10n`, attivato da `generate: true` e configurato in `l10n.yaml` |
-| Formato dei testi | ARB con sintassi ICU (`plural`, `select`, segnaposto tipizzati `String` e `int`) |
-| Modello | `lib/l10n/app_en.arb` |
-| Uscita | `lib/l10n/app_localizations*.dart`, versionati, classe `AppLocalizations` |
-| Formati | `intl` 0.20.x (`DateFormat`, `NumberFormat`) e `MaterialLocalizations` |
-| Lingue dei widget di sistema | Quelle fornite da `flutter_localizations` |
-| Lingue oggi | `en` (modello e ripiego), `it`, `pt_BR`; `pt` solo come base richiesta dal generatore |
+| Formato dei testi | ARB con sintassi ICU (`plural`, `select`, segnaposto tipizzati) |
+| Modello | `lib/l10n/app_en.arb` (670 messaggi) |
+| Uscita | `lib/l10n/app_localizations*.dart`, versionati, classe `AppLocalizations`, `nullable-getter: false` |
+| Messaggi non tradotti | `l10n_untranslated.json` alla radice, ignorato da git (oggi `{}`) |
+| Test generato | `test/l10n/l10n_exercise_test.dart` da `tool/gen_l10n_exercise.dart`: chiama ogni messaggio di ogni lingua |
+| Formati | `intl` 0.20.x con `intlLocaleNameOf` e `MaterialLocalizations` |
+| Lingue | 25: en (modello e ripiego), it, pt-BR, pt (europeo), fr, es, de, ca, el, ro, hu, hr, sl, cs, sk, bg, sr, ka, nl, pl, uk, da, sv, nb, fi |
 
 ## Hosting and Delivery
 
 | Servizio | Uso |
 |---|---|
 | GitHub e GitHub Actions | Repository e CI/CD nel piano gratuito |
-| Google Play | Canale di test interno a ogni merge, produzione con approvazione manuale e rilascio graduale |
+| Google Play | Canale di test interno a ogni merge, produzione con approvazione manuale e rilascio graduale; package `com.vinoozy.app` |
 | GitHub Pages | Pagine di privacy e cancellazione account |
 | Firebase Emulator Suite | Sviluppo e test, progetto `demo-vinoozy` |

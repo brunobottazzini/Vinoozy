@@ -1,18 +1,18 @@
-Your wine cellar, close at hand.
+Vinoozy is a wine cellar manager for the bottles you own: keep your wine inventory, know when to drink each wine and find food pairing ideas, even offline.
 
-Vinoozy helps you organise the bottles you own and explore estimates of how they may evolve: the start, peak and indicative end of their drinking window.
+Every wine gets an indicative drinking window (start, peak and end), estimated from its type, appellation, vintage and level. The Dashboard shows which wines are ready to open now and which ones to keep.
 
-ADD YOUR WINES
-Enter details manually, read a label with your camera, use a barcode or import text from Google Lens. Always review suggested details before saving.
+WHAT YOU CAN DO
+• Offline wine inventory: add, edit and record drinks without a connection; everything syncs when you are back online.
+• When to drink each wine: a drinking window with start, peak and end, which you can correct at any time.
+• Wine label reading on your phone: photograph the front and back, use a barcode or import text from Google Lens. You always review the details before saving.
+• Dashboard: wines ready now, wines to wait for and wines to drink soon, at a glance.
+• Drinking history with ratings and notes: say how a bottle was and the estimate of the same wine is corrected.
+• Food pairing suggestions for every wine.
+• Shared cellar: invite people, read only or with editing.
+• Vinoozy Plus: no wine limit and no ads.
 
-KEEP YOUR CELLAR ORGANISED
-Manage quantities, vintages and wine characteristics. Explore the Dashboard, filter your wines and keep ratings and notes in History. Find food pairing suggestions.
-
-WORK OFFLINE
-View and update data available on your phone. Changes synchronise when your connection returns. Your first Google sign-in requires Internet; some searches also require a connection.
-
-SHARE WITH PEOPLE YOU CHOOSE
-Invite people to your cellar and choose whether they can view it or also make changes.
+Your first Google sign-in requires Internet; some searches also require a connection.
 
 READ LABELS ON YOUR PHONE
 Text recognition runs on your device. Online searches may send words and barcodes to Open Food Facts. Opening a photo in Google Lens requires your confirmation.

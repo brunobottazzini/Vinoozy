@@ -17,6 +17,7 @@ import '../dashboard/ui/dashboard_screen.dart';
 import '../dev/dev_cheats.dart';
 import '../dev/dev_providers.dart';
 import '../dev/ui/dev_tools_screen.dart';
+import '../guide/ui/guide_tour.dart' show guideTargetsProvider;
 import '../l10n/app_localizations.dart';
 import '../label/autofill_providers.dart';
 import '../label/core/label_session.dart';
@@ -314,6 +315,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
             setup: widget.setup,
             onRetrySetup: widget.onRetrySetup,
             onAdd: _openAdd,
+            isActiveTab: _tab == HomeShell.cellarTab,
           ),
           if (_historyOpened && widget.setup == CellarSetup.ready)
             HistoryScreen(user: widget.user)
@@ -321,32 +323,38 @@ class _HomeShellState extends ConsumerState<HomeShell> {
             const SizedBox.shrink(),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _tab,
-        onDestinationSelected: _select,
-        destinations: [
-          NavigationDestination(
-            key: const Key('home-nav-dashboard'),
-            icon: const Icon(Icons.bar_chart_outlined),
-            selectedIcon: const Icon(Icons.bar_chart),
-            label: l10n.dashboardTitle,
-          ),
-          // ux-redesign R-11: the Cellar is the bottle; "I drank one" keeps
-          // the glasses (Icons.wine_bar), so the two never look alike.
-          NavigationDestination(
-            key: const Key('home-nav-cellar'),
-            icon: const Icon(Icons.liquor_outlined),
-            selectedIcon: const Icon(Icons.liquor),
-            label: l10n.cellarTitle,
-          ),
-          NavigationDestination(
-            key: const Key('home-nav-history'),
-            icon: const Icon(Icons.menu_book_outlined),
-            selectedIcon: const Icon(Icons.menu_book),
-            label: l10n.historyTitle,
-          ),
-        ],
+      // tester-feedback FR2.2: the tab bar is a step of the guided tour.
+      bottomNavigationBar: KeyedSubtree(
+        key: ref.watch(guideTargetsProvider).tabs,
+        child: _navigationBar(l10n),
       ),
     );
   }
+
+  Widget _navigationBar(AppLocalizations l10n) => NavigationBar(
+    selectedIndex: _tab,
+    onDestinationSelected: _select,
+    destinations: [
+      NavigationDestination(
+        key: const Key('home-nav-dashboard'),
+        icon: const Icon(Icons.bar_chart_outlined),
+        selectedIcon: const Icon(Icons.bar_chart),
+        label: l10n.dashboardTitle,
+      ),
+      // ux-redesign R-11: the Cellar is the bottle; "I drank one" keeps
+      // the glasses (Icons.wine_bar), so the two never look alike.
+      NavigationDestination(
+        key: const Key('home-nav-cellar'),
+        icon: const Icon(Icons.liquor_outlined),
+        selectedIcon: const Icon(Icons.liquor),
+        label: l10n.cellarTitle,
+      ),
+      NavigationDestination(
+        key: const Key('home-nav-history'),
+        icon: const Icon(Icons.menu_book_outlined),
+        selectedIcon: const Icon(Icons.menu_book),
+        label: l10n.historyTitle,
+      ),
+    ],
+  );
 }

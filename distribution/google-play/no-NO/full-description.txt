@@ -1,18 +1,18 @@
-Vinkjelleren din, alltid for hånden.
+Vinoozy er appen for å styre vinkjelleren din med flaskene du eier: hold oversikt over vinlageret, vit når du skal drikke hver vin, og finn mat som passer, også uten nett.
 
-Vinoozy hjelper deg med å holde orden på flaskene du eier, og utforske anslag for hvordan de kan utvikle seg: starten, toppen og den veiledende slutten på drikkevinduet.
+Hver vin får et veiledende drikkevindu (start, topp og slutt), anslått ut fra type, opprinnelsesbetegnelse, årgang og nivå. Oversikten viser hvilke viner du kan åpne nå, og hvilke som bør vente.
 
-LEGG TIL VINENE DINE
-Skriv inn opplysningene selv, les en etikett med kameraet, bruk en strekkode eller hent tekst fra Google Lens. Sjekk alltid foreslåtte opplysninger før du lagrer.
+DETTE KAN DU GJØRE
+• Vinlager i kjelleren også uten nett: legg til, rediger og registrer hva du drikker uten forbindelse; alt synkroniseres når nettet er tilbake.
+• Når du skal drikke hver vin: et drikkevindu med start, topp og slutt, som du kan rette når du vil.
+• Les etiketten på telefonen: fotografer for- og baksiden, bruk strekkoden eller hent tekst fra Google Lens. Du sjekker alltid opplysningene før du lagrer.
+• Oversikt: viner som er klare, viner som bør vente og viner som bør drikkes snart, med ett blikk.
+• Historikk med vurderinger og notater: oppgi hvordan flasken var, så rettes anslaget for den samme vinen.
+• Mat som passer til hver vin.
+• Delt kjeller: inviter personer, kun lese eller med redigering.
+• Vinoozy Plus: ingen grense for antall viner og ingen annonser.
 
-HOLD ORDEN I KJELLEREN
-Hold styr på antall, årganger og vinenes egenskaper. Utforsk Oversikt, filtrer vinene dine og ta vare på vurderinger og notater i Historikk. Finn forslag til mat som passer til vinen.
-
-JOBB UTEN NETT
-Se og oppdater dataene som ligger på telefonen din. Endringene synkroniseres når forbindelsen er tilbake. Første innlogging med Google krever internett; noen søk krever også forbindelse.
-
-DEL MED DEM DU VELGER
-Inviter personer til kjelleren din, og velg om de bare kan se den eller også kan gjøre endringer.
+Første innlogging med Google krever internett; noen søk krever også forbindelse.
 
 LES ETIKETTER PÅ TELEFONEN
 Tekstgjenkjenningen kjører på enheten din. Søk på nett kan sende ord og strekkoder til Open Food Facts. Et bilde åpnes i Google Lens først når du har bekreftet det.

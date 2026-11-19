@@ -1,18 +1,18 @@
-Din vinkällare, alltid nära till hands.
+Vinoozy är appen för att hantera din vinkällare med flaskorna du äger: håll koll på ditt vinlager, vet när du ska dricka varje vin och hitta mat som passar, även offline.
 
-Vinoozy hjälper dig att hålla ordning på flaskorna du äger och utforska uppskattningar av hur de kan utvecklas: början, toppen och det ungefärliga slutet på deras drickfönster.
+Varje vin får ett ungefärligt drickfönster (början, topp och slut), uppskattat utifrån typ, ursprungsbeteckning, årgång och nivå. Översikten visar vilka viner du kan öppna nu och vilka som hellre bör vänta.
 
-LÄGG TILL DINA VINER
-Skriv in uppgifterna själv, läs en etikett med kameran, använd en streckkod eller hämta text från Google Lens. Kontrollera alltid föreslagna uppgifter innan du sparar.
+DET HÄR KAN DU GÖRA
+• Vinlager i källaren även offline: lägg till, redigera och registrera vad du dricker utan anslutning; allt synkroniseras när nätet är tillbaka.
+• När du ska dricka varje vin: ett drickfönster med början, topp och slut, som du kan rätta när du vill.
+• Läs etiketten i telefonen: fotografera fram- och baksidan, använd streckkoden eller hämta text från Google Lens. Du kontrollerar alltid uppgifterna innan du sparar.
+• Översikt: viner som är redo, viner att vänta på och viner att dricka snart, i en blick.
+• Historik med betyg och anteckningar: ange hur flaskan var så rättas uppskattningen för samma vin.
+• Mat som passar till varje vin.
+• Delad källare: bjud in personer, endast läsa eller med redigering.
+• Vinoozy Plus: ingen gräns för antal viner och inga annonser.
 
-HÅLL ORDNING I KÄLLAREN
-Håll koll på antal, årgångar och vinernas egenskaper. Utforska Översikt, filtrera dina viner och spara betyg och anteckningar i Historik. Hitta förslag på mat som passar till vinet.
-
-ARBETA OFFLINE
-Se och uppdatera de data som finns på din telefon. Ändringarna synkroniseras när anslutningen är tillbaka. Första inloggningen med Google kräver internet; vissa sökningar kräver också anslutning.
-
-DELA MED DEM DU VÄLJER
-Bjud in personer till din källare och välj om de bara får titta eller också får göra ändringar.
+Första inloggningen med Google kräver internet; vissa sökningar kräver också anslutning.
 
 LÄS ETIKETTER PÅ TELEFONEN
 Textigenkänningen körs på din enhet. Onlinesökningar kan skicka ord och streckkoder till Open Food Facts. Ett foto öppnas i Google Lens först när du har bekräftat det.

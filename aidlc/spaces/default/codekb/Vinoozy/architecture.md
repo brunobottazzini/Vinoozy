@@ -48,6 +48,7 @@ flowchart TD
   Shell --> Cellar
   Shell --> Dashboard
   Shell --> L10n
+  Shell --> Host
   Account --> Auth
   Account --> Sync
   Cellar --> Estimation
@@ -70,46 +71,97 @@ flowchart TD
   Web --> Store
 ```
 
-<!-- Text fallback: l'App Shell avvia Account, Cellar, Dashboard e usa Localization. Account usa Firebase Auth e Sync. Cellar usa Estimation Package, Catalog, Sync e Firestore. Label usa Catalog, Estimation Package e l'Android Host. Catalog chiama Open Food Facts. Dashboard legge Cellar. Sharing scrive in Firestore. Plan, Ads e Usage chiamano le Cloud Functions; Plan usa anche Google Play. Le Cloud Functions leggono e scrivono Firestore e interrogano Google Play. La pagina web di cancellazione account usa Firebase Auth e Firestore. -->
+<!-- Text fallback: l'App Shell avvia Account, Cellar, Dashboard, usa Localization e apre i link esterni tramite l'Android Host. Account usa Firebase Auth e Sync. Cellar usa Estimation Package, Catalog, Sync e Firestore. Label usa Catalog, Estimation Package e l'Android Host. Catalog chiama Open Food Facts. Dashboard legge Cellar. Sharing scrive in Firestore. Plan, Ads e Usage chiamano le Cloud Functions; Plan usa anche Google Play. Le Cloud Functions leggono e scrivono Firestore e interrogano Google Play. La pagina web di cancellazione account usa Firebase Auth e Firestore. -->
 
 ### Data Flow
 
-1. **Avvio** (`lib/app/bootstrap.dart`): Firebase, poi App Check, poi in parallelo Crashlytics e lettura del registro locale; nessuna chiamata ad Auth o Firestore prima di App Check. Poi si collegano i servizi e parte `AccountGate`.
+1. **Avvio** (`lib/app/bootstrap.dart`): Firebase, poi App Check, poi in parallelo Crashlytics e lettura del registro locale; nessuna chiamata ad Auth o Firestore prima di App Check. Poi si collegano i servizi (compreso `OnboardingFlag` su `SharedPreferences`) e parte `AccountGate`.
 2. **Scrittura di un vino**: il modulo registra l'intenzione nel registro locale, scrive in Firestore (coda offline se manca la rete), e `SyncWatcher` verifica più tardi che il server abbia accettato. Un rifiuto arriva alla radice dell'app come evento (`SyncErrorBus`) e diventa un messaggio tradotto.
 3. **Stima**: `lib/cellar/wine_estimator.dart` trasforma i dati del vino nei fatti del contratto C2 e chiama il pacchetto `estimation`; la finestra viene salvata con il vino.
 4. **Etichetta**: l'immagine è preparata in Kotlin, letta da ML Kit sul telefono, e il testo passa a `estimation` (campi) e a `Catalog` (database offline, catalogo interno, Open Food Facts).
 5. **Piano e uso**: i contatori d'uso restano sul telefono e vengono inviati con `reportUsage`; l'acquisto Plus è verificato da `verifyPurchase`.
 
+### Navigation Structure
+
+Aggiornato dalla scansione del 2026-11-19.
+
+- `AccountGateView` (`lib/account/ui/account_gate_view.dart`) sceglie la schermata dallo stato di `AccountGate`: caricamento, presentazione o login, account bloccato, errore, cancellazione in corso, oppure `HomeShell`.
+- `HomeShell` (`lib/app/home_shell.dart`) ha tre schede in un `IndexedStack` con `NavigationBar`: Cruscotto (0), Cantina (1), Storico (2, montato alla prima apertura). Le altre schermate si aprono con `Navigator.push` e `MaterialPageRoute`; non c'è un router con nomi.
+- Il menu a tendina della Cantina (`_CellarMenu` in `lib/cellar/ui/cellar_screen.dart`) apre Profilo, Persone, Bevuti (se la cantina è pronta) e Informazioni, in quest'ordine.
+- Il piè di pagina del Cruscotto (`BrandFooter`) apre Informazioni.
+
+### Onboarding, Profile and Outbound Links
+
+Aggiornato dalla scansione del 2026-11-19.
+
+- **Presentazione al primo avvio**: `OnboardingScreen` (`lib/account/ui/onboarding_screen.dart`), tre pagine in un `PageView` (icona, titolo, testo), "Salta" in alto, "Avanti" e infine "Inizia". Viene mostrata da `_SignInOrOnboarding` al posto del login finché `onboardingSeenProvider` vale `false`.
+- **Stato del primo avvio**: chiave locale `onboarding.seen` in `SharedPreferences` (`OnboardingFlag`). Diventa vera con "Salta" o "Inizia" e all'avvio quando esiste già una sessione salvata (`bootstrap.dart`, riga 288). Non torna falsa all'uscita né alla cancellazione dell'account. Un archivio illeggibile conta come "già vista". Senza flag iniettato (test di altri moduli) la presentazione conta come vista.
+- **Profilo**: `ProfileScreen` (`lib/account/ui/profile_screen.dart`) è una colonna scorrevole di widget fissi (avatar, nome, email, `ProfilePlanRow`, "Esci", "Elimina account", "Informativa sulla privacy"). Non c'è un elenco configurabile di voci.
+- **Informazioni**: `AboutScreen` (`lib/app/ui/about_screen.dart`) è un `ListView` di schede informative (versione, database, licenze, denominazioni, foto).
+- **Link esterni**: `openExternalLink(url)` (`lib/app/external_links.dart`) usa il canale `com.vinoozy.app/links`; Kotlin apre solo URL `https` con host, con `ACTION_VIEW` e `CATEGORY_BROWSABLE`. Il provider `externalLinkOpenerProvider` permette di sostituirlo nei test.
+- **Condivisione**: `ShareLauncher` (`lib/sharing/ui/share_launcher.dart`) avvolge `share_plus`; oggi serve solo al messaggio d'invito a una cantina, che contiene `playStoreLink`.
+- **Recensione nell'app**: assente.
+
 ### Localization Architecture
 
-- Fonte dei testi: file ARB in `lib/l10n/`, con `app_en.arb` come modello. `flutter gen-l10n` genera `AppLocalizations` e una classe per lingua; i file generati sono versionati.
-- Lingue offerte: decise da `lib/app/locale_resolution.dart` (`appLocales`, `resolveAppLocale`, `fallbackLocale`), non dalla lista generata. `VinoozyApp` le passa a `MaterialApp` insieme ai delegate generati.
-- Nessuno stato di lingua nell'app: niente provider, niente preferenza salvata. L'unica forzatura è `appLocaleOverride` per le build E2E.
-- I widget leggono i testi con `AppLocalizations.of(context)`; funzioni di etichetta come `lib/cellar/ui/wine_labels.dart` mappano i valori di dominio (enum del pacchetto `estimation`) sulle chiavi tradotte.
-- I nomi di paesi e regioni non stanno negli ARB: sono dati Dart con un campo per lingua (`lib/cellar/domain/wine_origins.dart`).
-- Date e numeri: `intl` con la lingua del contesto.
+Aggiornato dalla scansione del 2026-11-19 (25 lingue dalla versione 0.3.0).
 
-Inventario completo dei punti toccati dalle lingue: `code-structure.md`, sezione "Localization Touchpoints".
+- Fonte dei testi: file ARB in `lib/l10n/`, con `app_en.arb` come modello (670 messaggi, uguali in ogni ARB). `flutter gen-l10n` genera `AppLocalizations` e una classe per lingua; i file generati sono versionati. `l10n.yaml` scrive i messaggi mancanti in `l10n_untranslated.json`, ignorato da git.
+- Lingue offerte: decise da `lib/app/locale_resolution.dart` (`appLocales`, 25 voci, dichiarata unica fonte dell'insieme delle lingue). `resolveAppLocale` sceglie la prima lingua del telefono offerta (lingua e paese, poi lingua base; `no` e `nn` ricevono `nb`), con l'inglese come ripiego.
+- Android: `android:localeConfig` punta a `res/xml/locales_config.xml`, che elenca le 25 lingue con `androidLocaleTagOf` (`pt` diventa `pt-PT`, `sr` diventa `sr-Cyrl`); da Android 13 la lingua si sceglie nelle impostazioni di sistema dell'app.
+- Nessuno stato di lingua nell'app: niente provider, niente preferenza salvata. L'unica forzatura è `appLocaleOverride` per le build E2E.
+- I widget leggono i testi con `AppLocalizations.of(context)`; funzioni di etichetta come `lib/cellar/ui/wine_labels.dart` mappano i valori di dominio sulle chiavi tradotte.
+- Date e numeri: `intl` con `intlLocaleNameOf` (il `pt` europeo diventa `pt_PT`).
+
+Inventario dei punti toccati dalle lingue: `code-structure.md`, sezione "Localization Touchpoints".
 
 ### Key Design Decisions
 
 | Decisione | Implicazione |
 |---|---|
-| Lingua dal telefono, inglese come ripiego, senza selettore | Semplice; chi ha il telefono in una lingua non offerta non può scegliere |
-| `pt-BR` distinto da `pt`, con `app_pt.arb` vuoto imposto dal generatore | Una classe generata in inglese che conta nella copertura |
+| Lingua dal telefono o dalle impostazioni di sistema dell'app (Android 13+), inglese come ripiego, nessun selettore nell'app | Semplice; sotto Android 13 chi ha il telefono in una lingua non offerta riceve l'inglese |
+| `appLocales` come unica fonte, verificata da un test contro Android, store e ARB | Aggiungere o togliere una lingua fa fallire un test finché tutto non è allineato |
 | Valori salvati indipendenti dalla lingua (codice ISO, nome canonico, chiavi enum) | Cambiare lingua non richiede migrazioni dei dati |
 | Regole Firestore come unica autorizzazione, cancellazione account senza Functions | Le Functions restano facoltative per il funzionamento di base |
-| Copertura all'80% su tutto, generato compreso | Ogni file generato aggiunto pesa sulla soglia |
+| Copertura all'80% su tutto, generato compreso | Ogni messaggio nuovo moltiplicato per 25 lingue pesa sulla soglia; lo copre il test generato `l10n_exercise_test.dart` |
+| Presentazione decisa da un flag del telefono, non dal profilo cloud | Funziona prima del login; un nuovo telefono la mostra di nuovo |
+| Link esterni solo `https` attraverso un canale proprio, senza `url_launcher` | Nessuna dipendenza in più; schemi come `market://` sono rifiutati |
 | Build E2E sempre in italiano | I test end-to-end non dipendono dalla lingua dell'emulatore |
 
 ### Improvement Opportunities
 
-- Una sola fonte per l'elenco delle lingue, da cui derivare risoluzione, harness dei test, strumenti dello store e del web.
-- Separare i dati di `wine_origins.dart` (paesi, regioni) dalla logica, e renderne i nomi estendibili per lingua senza un campo per ogni lingua.
-- Un controllo di CI che confronti i file di localizzazione versionati con quelli rigenerati, e un file dei messaggi non tradotti.
-- Un test che eserciti tutti i messaggi di ogni lingua, per coprire il codice generato.
+- Separare i dati di `wine_origins.dart` (paesi, regioni) dalla logica (dallo store precedente, non riverificato).
+- Un controllo di CI che confronti i file di localizzazione versionati con quelli rigenerati (dallo store precedente, non riverificato).
+- Portare `playStoreLink` in un punto condiviso dell'App Shell se servirà anche fuori dagli inviti.
+- Rendere il numero di pagine della presentazione indipendente dal testo `onboardingPageOf` ("Pagina {page} di 3").
 
 ## Interaction Diagrams
+
+### Primo avvio e presentazione
+
+```mermaid
+sequenceDiagram
+  participant Boot as AppBootstrap
+  participant Prefs as SharedPreferences
+  participant Gate as AccountGateView
+  participant Seen as onboardingSeenProvider
+  participant Onb as OnboardingScreen
+  participant SignIn as SignInScreen
+
+  Boot->>Prefs: OnboardingFlag iniettato
+  Boot->>Seen: markSeen se esiste una sessione salvata
+  Gate->>Seen: watch
+  Seen->>Prefs: getBool onboarding.seen
+  Prefs-->>Seen: false al primo avvio
+  Seen-->>Gate: AsyncData false
+  Gate->>Onb: mostra le 3 pagine
+  Onb->>Seen: Salta oppure Inizia, markSeen
+  Seen->>Prefs: setBool onboarding.seen true
+  Seen-->>Gate: AsyncData true
+  Gate->>SignIn: mostra il login
+```
+
+<!-- Text fallback: AppBootstrap inietta OnboardingFlag su SharedPreferences e segna la presentazione come vista se esiste già una sessione. AccountGateView osserva onboardingSeenProvider, che legge onboarding.seen; al primo avvio è falso e si mostra OnboardingScreen. "Salta" o "Inizia" chiamano markSeen, che scrive true; da quel momento si mostra il login. -->
 
 ### Risoluzione della lingua all'avvio
 
@@ -123,7 +175,7 @@ sequenceDiagram
 
   Phone->>App: lista delle lingue preferite
   App->>Res: localeListResolutionCallback
-  Res-->>App: it, en, pt_BR oppure en come ripiego
+  Res-->>App: una delle 25 lingue oppure en come ripiego
   App->>Del: load della lingua scelta
   Del-->>App: classe di lingua generata
   App->>UI: build
@@ -131,7 +183,7 @@ sequenceDiagram
   Del-->>UI: testi tradotti
 ```
 
-<!-- Text fallback: il telefono passa la lista delle lingue preferite a VinoozyApp; VinoozyApp chiama resolveAppLocale, che restituisce it, en o pt_BR, oppure en come ripiego; il delegate generato carica la classe della lingua; ogni schermata chiede i testi con AppLocalizations.of(context). -->
+<!-- Text fallback: il telefono passa la lista delle lingue preferite a VinoozyApp; VinoozyApp chiama resolveAppLocale, che restituisce una delle 25 lingue offerte, oppure en come ripiego; il delegate generato carica la classe della lingua; ogni schermata chiede i testi con AppLocalizations.of(context). -->
 
 ### Aggiunta di un vino con rete assente
 

@@ -2459,4 +2459,170 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get devNotice =>
       'Csak fejlesztői buildek emulátorral: nincs fizetés, token vagy nyugta.';
+
+  @override
+  String get settingsTitle => 'Beállítások';
+
+  @override
+  String get settingsGuide => 'Útmutató újra';
+
+  @override
+  String get settingsShare => 'Alkalmazás megosztása';
+
+  @override
+  String get settingsRate => 'Alkalmazás értékelése';
+
+  @override
+  String get settingsFeedback => 'Visszajelzés küldése';
+
+  @override
+  String get settingsFaq => 'Gyakori kérdések';
+
+  @override
+  String get settingsShareFailed =>
+      'Nem sikerült megnyitni a megosztást. Próbáld újra';
+
+  @override
+  String get settingsRateFailed =>
+      'Nem sikerült megnyitni a Google Playt. Próbáld újra';
+
+  @override
+  String get guideAddTitle => 'Adj hozzá egy bort';
+
+  @override
+  String get guideAddBody =>
+      'Koppints a Hozzáadás gombra, és tedd a palackot a pincédbe. Kezdetnek elég a név.';
+
+  @override
+  String get guideLabelTitle => 'Olvasd be a címkét';
+
+  @override
+  String get guideLabelBody =>
+      'A Hozzáadás alatt a címkét is lefotózhatod: a Vinoozy kiolvassa a nevet, az évjáratot és az eredetmegjelölést, te pedig mentés előtt ellenőrzöd őket.';
+
+  @override
+  String get guideTabsTitle => 'Áttekintés, Pince, Előzmények';
+
+  @override
+  String get guideTabsBody =>
+      'Az Áttekintés megmutatja, mely borokat érdemes most kinyitni, a Pince felsorolja a palackjaidat, az Előzmények pedig megőrzi a megivottakat.';
+
+  @override
+  String get guideMenuTitle => 'A pince menüje';
+
+  @override
+  String get guideMenuBody =>
+      'Itt találod a profilodat, azokat, akikkel megosztod a pincét, a megivott borokat és a Beállításokat, ahol újra megnézheted ezt az útmutatót.';
+
+  @override
+  String get guideDone => 'Kész';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return '$step. lépés / $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Itt látod, mely borok fogyaszthatók most, és melyeket érdemes még pihentetni.';
+
+  @override
+  String get hintHistory =>
+      'Minden palack, amit megiszol, ide kerül az értékeléseddel és a jegyzeteiddel.';
+
+  @override
+  String get hintAddWine =>
+      'Kezdd a névvel: az évjárat, a típus és az eredetmegjelölés pontosabbá teszi a fogyasztási ablakot.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, a borpincéd';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'A Vinoozyval vezetem a borpincémet: megmondja, mikor van minden palack a legjobb formájában. Próbáld ki: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Visszajelzés a Vinoozyról';
+
+  @override
+  String get feedbackTechHeader => 'Műszaki adatok (kérjük, ne töröld):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Nincs e-mail-alkalmazás';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'Ezen a telefonon nincs e-mail-alkalmazás. Írj nekünk: $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Másolás';
+
+  @override
+  String get feedbackCopied => 'Cím kimásolva';
+
+  @override
+  String get faqAddQuestion => 'Hogyan adhatok hozzá bort kézzel?';
+
+  @override
+  String get faqAddAnswer =>
+      'A Pincében koppints a Hozzáadás, majd a Beírás gombra. Csak a név kötelező; az évjárat, a típus, az ország és az eredetmegjelölés javítja a becslést. Mentsd el, és a bor már a pincédben van.';
+
+  @override
+  String get faqLabelQuestion =>
+      'Hogyan olvashatok be egy címkét, akár a Google Lensszel is?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Koppints a Hozzáadás gombra, és fotózd le az elejét és a hátát: a Vinoozy magán a telefonon olvassa ki a címkét. A Google Lensben jelöld ki a szöveget, és oszd meg a Vinoozyval, vagy másold ki, és az űrlapon használd a Beillesztés a Lensből lehetőséget. Mentés előtt mindig ellenőrizd a mezőket.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Hogyan számolja ki az ideális fogyasztási időt, és megváltoztathatom?';
+
+  @override
+  String get faqWindowAnswer =>
+      'A Vinoozy a bor típusából, eredetmegjelöléséből, évjáratából és szintjéből becsül egy ablakot (kezdet, csúcs, vég). Ez tájékoztató jellegű: a tárolás is számít. Nyisd meg a bort, és koppints a Javítás gombra a saját dátumodhoz, vagy változtasd meg a Szintet.';
+
+  @override
+  String get faqOfflineQuestion => 'Működik internet nélkül?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Igen. Kapcsolat nélkül is hozzáadhatsz, szerkeszthetsz és elfogyaszthatsz borokat: minden a telefonon marad, és a kapcsolat visszatérésekor szinkronizálódik a fiókoddal.';
+
+  @override
+  String get faqShareQuestion => 'Hogyan oszthatom meg a pincémet?';
+
+  @override
+  String get faqShareAnswer =>
+      'A Pince menüjében nyisd meg a Személyek pontot, és hívj meg valakit a Google e-mail-címével, csak olvasásra vagy szerkesztési joggal. Ő telepíti a Vinoozyt, és ezzel a fiókkal jelentkezik be.';
+
+  @override
+  String get faqPlusQuestion =>
+      'Mit tartalmaz az ingyenes csomag, és mi a Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'Az ingyenes csomagban legfeljebb $limit különböző bor lehet a pincédben, alkalmankénti hirdetésekkel csak az Áttekintésben. A Vinoozy Plus megszünteti a korlátot és a hirdetéseket.';
+  }
+
+  @override
+  String get faqDrinkQuestion =>
+      'Miért érdemes rögzíteni, mit ittam és milyen volt?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'Az Előzmények megőrzik, mit ittál és mennyire ízlett. Ha megadod, milyen volt a palack (még túl fiatal, éppen jó, túl a csúcson), a Vinoozy ugyanannál a bornál pontosítja a becslést.';
+
+  @override
+  String get faqDeleteQuestion => 'Hogyan törölhetem a fiókomat?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Nyisd meg a Profilt, és koppints a Fiók törlése gombra. Internetkapcsolat kell, majd a megerősítéshez újra bejelentkezel a Google-lal. A pincéd, az Előzmények és a megosztások végleg törlődnek.';
+
+  @override
+  String get faqNotFound => 'Nem találtad a választ? Írj nekünk';
 }

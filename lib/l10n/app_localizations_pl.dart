@@ -2493,4 +2493,168 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get devNotice =>
       'Tylko kompilacje deweloperskie z emulatorem: bez płatności, tokenów i paragonów.';
+
+  @override
+  String get settingsTitle => 'Ustawienia';
+
+  @override
+  String get settingsGuide => 'Zobacz przewodnik ponownie';
+
+  @override
+  String get settingsShare => 'Udostępnij aplikację';
+
+  @override
+  String get settingsRate => 'Oceń aplikację';
+
+  @override
+  String get settingsFeedback => 'Wyślij opinię';
+
+  @override
+  String get settingsFaq => 'Częste pytania';
+
+  @override
+  String get settingsShareFailed =>
+      'Nie udało się otworzyć udostępniania. Spróbuj ponownie';
+
+  @override
+  String get settingsRateFailed =>
+      'Nie udało się otworzyć Google Play. Spróbuj ponownie';
+
+  @override
+  String get guideAddTitle => 'Dodaj wino';
+
+  @override
+  String get guideAddBody =>
+      'Dotknij Dodaj, aby odłożyć butelkę do piwniczki. Na początek wystarczy nazwa.';
+
+  @override
+  String get guideLabelTitle => 'Odczytaj etykietę';
+
+  @override
+  String get guideLabelBody =>
+      'W Dodaj możesz też sfotografować etykietę: Vinoozy odczyta nazwę, rocznik i apelację, a Ty sprawdzisz je przed zapisaniem.';
+
+  @override
+  String get guideTabsTitle => 'Pulpit, Piwniczka, Historia';
+
+  @override
+  String get guideTabsBody =>
+      'Pulpit podpowiada, które wina otworzyć teraz, Piwniczka pokazuje Twoje butelki, a Historia przechowuje te wypite.';
+
+  @override
+  String get guideMenuTitle => 'Menu piwniczki';
+
+  @override
+  String get guideMenuBody =>
+      'Tu znajdziesz swój profil, osoby, którym udostępniasz piwniczkę, wypite wina i Ustawienia, gdzie możesz ponownie zobaczyć ten przewodnik.';
+
+  @override
+  String get guideDone => 'Gotowe';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Krok $step z $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Tu widzisz, które wina są gotowe do picia teraz, a które lepiej jeszcze odłożyć.';
+
+  @override
+  String get hintHistory =>
+      'Każda wypita butelka trafia tutaj, z Twoją oceną i notatkami.';
+
+  @override
+  String get hintAddWine =>
+      'Zacznij od nazwy: rocznik, rodzaj i apelacja sprawiają, że okno picia jest dokładniejsze.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, Twoja piwniczka z winem';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Prowadzę swoją piwniczkę w Vinoozy: aplikacja mówi mi, kiedy każda butelka jest w najlepszej formie. Wypróbuj ją: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Opinia o Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Dane techniczne (prosimy nie usuwać):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Brak aplikacji poczty';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'Na tym telefonie nie ma aplikacji poczty. Napisz do nas na $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Kopiuj';
+
+  @override
+  String get feedbackCopied => 'Adres skopiowany';
+
+  @override
+  String get faqAddQuestion => 'Jak ręcznie dodać wino?';
+
+  @override
+  String get faqAddAnswer =>
+      'W Piwniczce dotknij Dodaj, a potem Wpisz. Wymagana jest tylko nazwa; rocznik, rodzaj, kraj i apelacja poprawiają szacunek. Zapisz i wino jest w piwniczce.';
+
+  @override
+  String get faqLabelQuestion =>
+      'Jak odczytać etykietę, także za pomocą Google Lens?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Dotknij Dodaj i sfotografuj przód i tył: Vinoozy odczytuje etykietę na samym telefonie. W Google Lens zaznacz tekst i udostępnij go do Vinoozy albo skopiuj go i użyj Wklej z Lens w formularzu. Zawsze sprawdź pola przed zapisaniem.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Jak obliczany jest najlepszy moment do picia i czy mogę go zmienić?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy szacuje okno (początek, szczyt, koniec) na podstawie rodzaju, apelacji, rocznika i poziomu wina. To wskazówka: liczy się też sposób przechowywania butelki. Otwórz wino i dotknij Popraw, aby ustawić własną datę, albo zmień Poziom.';
+
+  @override
+  String get faqOfflineQuestion => 'Czy działa bez internetu?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Tak. Możesz dodawać, edytować i pić wina bez połączenia: wszystko zapisuje się na telefonie i synchronizuje z Twoim kontem, gdy tylko połączenie wróci.';
+
+  @override
+  String get faqShareQuestion => 'Jak udostępnić swoją piwniczkę?';
+
+  @override
+  String get faqShareAnswer =>
+      'W menu Piwniczki otwórz Osoby i zaproś kogoś przez jego adres e-mail Google, tylko do odczytu lub z edycją. Ta osoba instaluje Vinoozy i loguje się tym kontem.';
+
+  @override
+  String get faqPlusQuestion => 'Co obejmuje darmowy plan i czym jest Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'Darmowy plan obejmuje do $limit różnych win w piwniczce, z okazjonalnymi reklamami tylko na Pulpicie. Vinoozy Plus usuwa limit i reklamy.';
+  }
+
+  @override
+  String get faqDrinkQuestion => 'Po co zapisywać, co wypiłem i jakie było?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'Historia przechowuje, co wypiłeś i jak Ci smakowało. Gdy podasz, jaka była butelka (jeszcze za młode, w sam raz, po szczycie), Vinoozy poprawia szacunek dla tego samego wina.';
+
+  @override
+  String get faqDeleteQuestion => 'Jak usunąć konto?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Otwórz Profil i dotknij Usuń konto. Potrzebne jest połączenie, a potem logujesz się ponownie przez Google, aby potwierdzić. Piwniczka, Historia i udostępnienia zostaną usunięte na zawsze.';
+
+  @override
+  String get faqNotFound => 'Nie znalazłeś odpowiedzi? Napisz do nas';
 }

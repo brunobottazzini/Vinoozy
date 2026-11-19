@@ -1,18 +1,18 @@
-La tua cantina, a portata di mano.
+Vinoozy è l'app per la gestione della cantina: tieni l'inventario dei tuoi vini, sai quando bere ogni bottiglia e trovi gli abbinamenti con il cibo, anche senza rete.
 
-Con Vinoozy organizzi le bottiglie che possiedi e consulti una stima della loro evoluzione nel tempo: inizio della finestra, picco e fine indicativa.
+Ogni vino riceve una finestra di consumo indicativa (inizio, picco e fine), stimata da tipo, denominazione, annata e livello. Il Cruscotto ti mostra quali vini aprire adesso e quali conviene aspettare.
 
-AGGIUNGI I TUOI VINI
-Inserisci i dati a mano, leggi un'etichetta con la fotocamera, usa un codice a barre o importa il testo da Google Lens. Controlla sempre i dati proposti prima di salvarli.
+COSA PUOI FARE
+• Inventario della cantina anche offline: aggiungi, modifica e segna le bevute senza connessione; tutto si sincronizza quando torna la rete.
+• Quando bere ogni vino: una finestra di consumo con inizio, picco e fine, che puoi correggere quando vuoi.
+• Lettura dell'etichetta sul telefono: fotografa fronte e retro, usa il codice a barre o importa il testo da Google Lens. Controlli sempre i dati prima di salvarli.
+• Cruscotto: vini pronti, da aspettare e da bere presto, a colpo d'occhio.
+• Storico delle bevute con voti e note: quando dici com'era la bottiglia, la stima dello stesso vino si corregge.
+• Abbinamenti con il cibo per ogni vino.
+• Cantina condivisa: invita altre persone, in sola lettura o con la modifica.
+• Vinoozy Plus: nessun limite di vini e nessun annuncio.
 
-TIENI IN ORDINE LA CANTINA
-Gestisci quantità, annate e caratteristiche. Consulta il Cruscotto, filtra i vini e ritrova nello Storico le registrazioni con voti e note. Scopri gli abbinamenti con il cibo.
-
-ANCHE SENZA RETE
-Consulta e aggiorna i dati disponibili sul telefono: le modifiche si sincronizzano quando torna la connessione. Il primo accesso con Google richiede Internet; alcune ricerche richiedono la rete.
-
-CONDIVIDI CON LE PERSONE CHE SCEGLI
-Invita altre persone nella tua cantina e scegli se possono soltanto consultarla o anche modificarla.
+Il primo accesso con Google richiede Internet; alcune ricerche richiedono la rete.
 
 LEGGI L'ETICHETTA SUL TELEFONO
 Il riconoscimento del testo avviene sul dispositivo. Le ricerche online possono inviare parole e codici a barre a Open Food Facts. L'apertura di una foto in Google Lens richiede la tua conferma.

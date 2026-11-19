@@ -2457,4 +2457,167 @@ class AppLocalizationsNb extends AppLocalizations {
   @override
   String get devNotice =>
       'Bare utviklingsbygg med emulatoren: ingen betalinger, tokener eller kvitteringer.';
+
+  @override
+  String get settingsTitle => 'Innstillinger';
+
+  @override
+  String get settingsGuide => 'Se veiledningen igjen';
+
+  @override
+  String get settingsShare => 'Del appen';
+
+  @override
+  String get settingsRate => 'Vurder appen';
+
+  @override
+  String get settingsFeedback => 'Send tilbakemelding';
+
+  @override
+  String get settingsFaq => 'Vanlige spørsmål';
+
+  @override
+  String get settingsShareFailed => 'Kunne ikke åpne deling. Prøv igjen';
+
+  @override
+  String get settingsRateFailed => 'Kunne ikke åpne Google Play. Prøv igjen';
+
+  @override
+  String get guideAddTitle => 'Legg til en vin';
+
+  @override
+  String get guideAddBody =>
+      'Trykk på Legg til for å legge en flaske i kjelleren. Navnet holder for å begynne.';
+
+  @override
+  String get guideLabelTitle => 'Les etiketten';
+
+  @override
+  String get guideLabelBody =>
+      'Under Legg til kan du også fotografere etiketten: Vinoozy leser navn, årgang og opprinnelsesbetegnelse, og du sjekker dem før du lagrer.';
+
+  @override
+  String get guideTabsTitle => 'Oversikt, Kjeller, Historikk';
+
+  @override
+  String get guideTabsBody =>
+      'Oversikten forteller hvilke viner du bør åpne nå, Kjelleren viser flaskene dine og Historikken tar vare på dem du har drukket.';
+
+  @override
+  String get guideMenuTitle => 'Kjellermenyen';
+
+  @override
+  String get guideMenuBody =>
+      'Her finner du profilen din, personene du deler kjelleren med, de drukne vinene og Innstillinger, der du kan se denne veiledningen igjen.';
+
+  @override
+  String get guideDone => 'Ferdig';
+
+  @override
+  String guideStepOf(int step, int count) {
+    return 'Trinn $step av $count';
+  }
+
+  @override
+  String get hintDashboard =>
+      'Her ser du hvilke viner som er klare til å drikkes nå, og hvilke som bør vente litt til.';
+
+  @override
+  String get hintHistory =>
+      'Hver flaske du drikker havner her, med vurderingen og notatene dine.';
+
+  @override
+  String get hintAddWine =>
+      'Begynn med navnet: årgang, type og opprinnelsesbetegnelse gjør drikkevinduet mer presist.';
+
+  @override
+  String get shareAppSubject => 'Vinoozy, vinkjelleren din';
+
+  @override
+  String shareAppMessage(String link) {
+    return 'Jeg holder orden på vinkjelleren min med Vinoozy: den forteller meg når hver flaske er på sitt beste. Prøv den: $link';
+  }
+
+  @override
+  String get feedbackSubject => 'Tilbakemelding om Vinoozy';
+
+  @override
+  String get feedbackTechHeader => 'Tekniske data (ikke slett):';
+
+  @override
+  String get feedbackNoEmailTitle => 'Ingen e-postapp';
+
+  @override
+  String feedbackNoEmailBody(String email) {
+    return 'Det finnes ingen e-postapp på denne telefonen. Skriv til oss på $email';
+  }
+
+  @override
+  String get feedbackCopy => 'Kopier';
+
+  @override
+  String get feedbackCopied => 'Adressen er kopiert';
+
+  @override
+  String get faqAddQuestion => 'Hvordan legger jeg til en vin manuelt?';
+
+  @override
+  String get faqAddAnswer =>
+      'Trykk på Legg til i Kjelleren og deretter på Skriv. Bare navnet er påkrevd; årgang, type, land og opprinnelsesbetegnelse forbedrer anslaget. Lagre, så ligger vinen i kjelleren.';
+
+  @override
+  String get faqLabelQuestion =>
+      'Hvordan leser jeg en etikett, også med Google Lens?';
+
+  @override
+  String get faqLabelAnswer =>
+      'Trykk på Legg til og fotografer for- og baksiden: Vinoozy leser etiketten direkte på telefonen. Merk teksten i Google Lens og del den med Vinoozy, eller kopier den og bruk Lim inn fra Lens i skjemaet. Sjekk alltid feltene før du lagrer.';
+
+  @override
+  String get faqWindowQuestion =>
+      'Hvordan beregnes det beste tidspunktet å drikke, og kan jeg endre det?';
+
+  @override
+  String get faqWindowAnswer =>
+      'Vinoozy anslår et vindu (start, topp, slutt) ut fra vinens type, opprinnelsesbetegnelse, årgang og nivå. Det er veiledende: lagringen teller også. Åpne vinen og trykk på Rett for å sette din egen dato, eller endre Nivå.';
+
+  @override
+  String get faqOfflineQuestion => 'Fungerer den uten internett?';
+
+  @override
+  String get faqOfflineAnswer =>
+      'Ja. Du kan legge til, redigere og drikke viner uten nett: alt lagres på telefonen og synkroniseres med kontoen din så snart forbindelsen er tilbake.';
+
+  @override
+  String get faqShareQuestion => 'Hvordan deler jeg kjelleren min?';
+
+  @override
+  String get faqShareAnswer =>
+      'Åpne Personer i kjellermenyen og inviter noen med Google-e-postadressen deres, kun lese eller med redigering. Personen installerer Vinoozy og logger inn med den kontoen.';
+
+  @override
+  String get faqPlusQuestion => 'Hva inneholder gratisplanen, og hva er Plus?';
+
+  @override
+  String faqPlusAnswer(int limit) {
+    return 'Gratisplanen omfatter opptil $limit forskjellige viner i kjelleren, med enkelte annonser bare i Oversikten. Vinoozy Plus fjerner grensen og annonsene.';
+  }
+
+  @override
+  String get faqDrinkQuestion =>
+      'Hvorfor registrere hva jeg drakk og hvordan det var?';
+
+  @override
+  String get faqDrinkAnswer =>
+      'Historikken tar vare på hva du har drukket og hvor godt du likte det. Når du oppgir hvordan flasken var (fortsatt for ung, akkurat passe, forbi toppen), retter Vinoozy anslaget for den samme vinen.';
+
+  @override
+  String get faqDeleteQuestion => 'Hvordan sletter jeg kontoen min?';
+
+  @override
+  String get faqDeleteAnswer =>
+      'Åpne Profil og trykk på Slett konto. Du trenger nett og logger deretter inn igjen med Google for å bekrefte. Kjelleren, Historikken og delingene slettes for godt.';
+
+  @override
+  String get faqNotFound => 'Fant du ikke svaret? Skriv til oss';
 }
