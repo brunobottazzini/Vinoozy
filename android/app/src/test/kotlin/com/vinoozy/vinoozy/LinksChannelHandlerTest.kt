@@ -16,7 +16,8 @@ import org.robolectric.annotation.Config
 /**
  * LinksChannelHandler (tester-feedback FR6.1, FR6.3, NFR7): the feedback
  * email goes only to the fixed support address, "no email app" is false,
- * `open` still refuses anything but https, and `deviceInfo` answers.
+ * `open` still refuses anything but https, `deviceInfo` and `supportEmail`
+ * answer.
  * The start of the activity is replaced: no real app is opened.
  */
 @RunWith(RobolectricTestRunner::class)
@@ -73,6 +74,14 @@ class LinksChannelHandlerTest {
         assertTrue(started.isEmpty())
         assertEquals(true, call("open", mapOf("url" to "https://example.com")).value)
         assertEquals(Intent.ACTION_VIEW, started.single().action)
+    }
+
+    @Test
+    fun supportEmailAnswersTheFixedAddressWithoutStartingAnything() {
+        val result = call("supportEmail")
+        assertEquals("bottazzinibruno@gmail.com", result.value)
+        assertEquals(LinksChannelHandler.SUPPORT_EMAIL, result.value)
+        assertTrue(started.isEmpty())
     }
 
     @Test

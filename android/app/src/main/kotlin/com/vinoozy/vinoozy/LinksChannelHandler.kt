@@ -15,13 +15,19 @@ import io.flutter.plugin.common.MethodChannel
  *   `ACTION_SENDTO` and `mailto:` to the fixed support address only; the
  *   recipient never comes from Dart. False when no app handles it;
  * - `deviceInfo` (FR6.1, review R-01): manufacturer, model and Android
- *   version for the end of the feedback email, read without a dependency.
+ *   version for the end of the feedback email, read without a dependency;
+ * - `supportEmail` (FR6.3): [SUPPORT_EMAIL], shown with "Copy" in the
+ *   "no email app" dialog. It is read only, never sent back as a recipient.
  *
  * [start] starts an activity; the tests replace it.
  */
 class LinksChannelHandler(private val start: (Intent) -> Unit) : MethodChannel.MethodCallHandler {
     companion object {
-        /** Same value as `supportEmail` in lib/app/store_links.dart. */
+        /**
+         * The support address declared in the store listing
+         * (distribution/google-play/README.md). The only copy in the app: Dart
+         * reads it with the `supportEmail` method (lib/app/external_links.dart).
+         */
         const val SUPPORT_EMAIL = "bottazzinibruno@gmail.com"
 
         /** The feedback email: `mailto:` to [SUPPORT_EMAIL], never another address. */
@@ -46,6 +52,7 @@ class LinksChannelHandler(private val start: (Intent) -> Unit) : MethodChannel.M
                 startOrFalse(supportEmailIntent(call.argument("subject"), call.argument("body"))),
             )
             "deviceInfo" -> result.success(deviceInfo())
+            "supportEmail" -> result.success(SUPPORT_EMAIL)
             else -> result.notImplemented()
         }
     }

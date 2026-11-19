@@ -37,6 +37,9 @@ void main() {
           return emailOpens;
         }),
         deviceInfoReaderProvider.overrideWithValue(() async => null),
+        supportEmailReaderProvider.overrideWithValue(
+          () async => 'support@example.com',
+        ),
         catalogAppVersionProvider.overrideWith((ref) async => '0.4.0'),
       ],
     );
@@ -104,6 +107,8 @@ void main() {
     await tester.tap(find.byKey(const Key('faq-feedback')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('feedback-no-email-dialog')), findsOneWidget);
+    expect(find.textContaining('support@example.com'), findsOneWidget);
+    expect(find.byKey(const Key('feedback-copy-address')), findsOneWidget);
   });
 
   test('FR7.1 every answer is there in every language', () {

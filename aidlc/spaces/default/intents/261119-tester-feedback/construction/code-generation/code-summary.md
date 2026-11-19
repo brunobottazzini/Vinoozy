@@ -56,6 +56,13 @@ Origine: sul telefono del proprietario il riquadro del giro sul passo "Aggiungi"
 - **Step 20** (R-04): nuovo `test/app/support_email_consistency_test.dart` confronta `SUPPORT_EMAIL` di `LinksChannelHandler.kt` con `supportEmail`; 4 test.
 - Verifiche: 182 test delle aree toccate superati, `dart format` stabile, `flutter analyze --fatal-infos` senza problemi. R-02 e R-04 non sono più rischi aperti.
 
+## Loop-back 2 dalla CI (2026-11-19, Step 21)
+
+Origine: dopo il push di `7830428` il job `analyze` di GitHub Actions è fallito in `tool/check_off_config.sh`, perché `lib/app/store_links.dart` conteneva l'indirizzo di supporto (decisione e000ed61).
+
+- **Step 21**: l'indirizzo resta solo in `LinksChannelHandler.kt` (`SUPPORT_EMAIL`), che lo restituisce con il metodo di canale `supportEmail`; Dart lo legge con `readSupportEmail` / `supportEmailReaderProvider` (`lib/app/external_links.dart`) solo nel dialogo "nessuna app email" di `feedback_flow.dart`. Se la lettura fallisce (caso quasi impossibile, errore segnalato come `SupportEmailReadFailed`) il dialogo mostra solo titolo e "Chiudi", senza testi nuovi negli ARB. Eliminato `test/app/support_email_consistency_test.dart` (una sola copia); aggiornati `external_links_test.dart`, `settings_screen_test.dart`, `faq_screen_test.dart`, `LinksChannelHandlerTest.kt` (6 test).
+- Verifiche: `check_off_config.sh` OK, tutti i controlli del job `analyze` di `ci.yml` OK, `dart format` stabile, `flutter analyze --fatal-infos` senza problemi, 568 test delle aree toccate superati. Revisione `reviews/review-03.md`: READY, tre osservazioni minori.
+
 ## Decisioni di dettaglio
 
 - R-02: al primo avvio dopo l'aggiornamento, se la cantina ha già vini, giro e suggerimenti contano come visti; "Rivedi la guida" li riattiva.

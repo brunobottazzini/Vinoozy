@@ -35,3 +35,8 @@ tool/check_release_build.sh                 # build di rilascio senza codice di 
 - **`compileReleaseJavaWithJavac` fallisce su `integration_test`**: il `GeneratedPluginRegistrant.java` locale è rimasto dalla build di debug o dai test Gradle. Eseguire `flutter clean` e `flutter pub get`, poi rilanciare.
 - **Testi mancanti dopo una modifica agli ARB**: rieseguire `flutter gen-l10n` e `dart run tool/gen_l10n_exercise.dart`.
 - **La finestra di In-App Review non compare** in build installate fuori da Google Play: è il comportamento previsto di Play, non un errore; si prova dalla build del canale di test interno.
+
+## Controlli del job `analyze` della CI
+
+Prima del push eseguire anche tutti i passi `run:` del job `analyze` di `.github/workflows/ci.yml`, in particolare `tool/check_off_config.sh` (nessun indirizzo email nel codice Dart di `lib/`): nel tentativo 2 non era stato eseguito in locale ed è fallito in CI (Loop-back 2).
+

@@ -9,8 +9,9 @@ import 'error_reporter.dart';
 import 'providers.dart' show errorReporterProvider;
 
 /// The links channel (MainActivity.kt, LinksChannelHandler.kt). It opens
-/// only an `https` page, the email app towards the fixed support address and
-/// reads the phone model; no other scheme (tester-feedback NFR7).
+/// only an `https` page, the email app towards the fixed support address,
+/// reads the phone model and the support address; no other scheme
+/// (tester-feedback NFR7).
 const MethodChannel _links = MethodChannel('com.vinoozy.app/links');
 
 /// Called with a platform failure, so it is reported and never silent.
@@ -50,6 +51,20 @@ final deviceInfoReaderProvider = Provider<Future<DeviceInfo?> Function()>(
           error,
           stack,
           'DeviceInfoFailed',
+        ),
+      ),
+);
+
+/// Reads the support address from the Android side (FR6.3); null when the
+/// channel fails. The address is never written in the Dart code.
+final supportEmailReaderProvider = Provider<Future<String?> Function()>(
+  (ref) =>
+      () => readSupportEmail(
+        onError: (error, stack) => reportPlatformError(
+          () => ref.read(errorReporterProvider),
+          error,
+          stack,
+          'SupportEmailReadFailed',
         ),
       ),
 );
@@ -97,6 +112,27 @@ Future<DeviceInfo?> readDeviceInfo({PlatformErrorHandler? onError}) async {
     return DeviceInfo.fromChannel(
       await _links.invokeMethod<Object?>('deviceInfo'),
     );
+  } on PlatformException catch (error, stack) {
+    onError?.call(error, stack);
+    return null;
+  } on MissingPluginException catch (error, stack) {
+    onError?.call(error, stack);
+    return null;
+  }
+}
+
+/// The support address held by LinksChannelHandler.kt (`SUPPORT_EMAIL`), or
+/// null (the "no email app" dialog then shows no address); a platform
+/// failure or an answer that is not a non-empty text goes to [onError].
+Future<String?> readSupportEmail({PlatformErrorHandler? onError}) async {
+  try {
+    final value = await _links.invokeMethod<Object?>('supportEmail');
+    if (value is String && value.isNotEmpty) return value;
+    onError?.call(
+      FormatException('supportEmail: unexpected ${value.runtimeType}'),
+      StackTrace.current,
+    );
+    return null;
   } on PlatformException catch (error, stack) {
     onError?.call(error, stack);
     return null;

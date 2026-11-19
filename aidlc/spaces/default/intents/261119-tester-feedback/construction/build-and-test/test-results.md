@@ -1,3 +1,20 @@
+# Risultati di build e test — tentativo 3 (2026-11-19, dopo il Loop-back 2)
+
+| Comando | Esito |
+|---|---|
+| `tool/check_off_config.sh` | OK (1311 file) — era il controllo fallito in CI |
+| Altri controlli del job `analyze` di `ci.yml` (dashboard, rule ids, label imports, lens manifest, wine db, appellations, release inputs, play api, web pins, web config, `check_publication.mjs --draft`) | tutti OK |
+| `dart format --output=none --set-exit-if-changed .` | OK, 0 file cambiati |
+| `flutter analyze --fatal-infos` | OK, "No issues found!" |
+| `flutter test --coverage` (suite completa) | 5186 superati, 3 saltati, 0 falliti |
+| Copertura `tool/check_coverage.sh 80` | **97,40%** (40674/41760) |
+| `./gradlew :app:testDebugUnitTest --tests '*LinksChannelHandlerTest*'` | 6/6 |
+| `flutter clean && flutter pub get && tool/check_release_build.sh` | OK (uscita 0) |
+
+Gli E2E non sono stati ripetuti: il cambiamento tocca solo il dialogo di ripiego del feedback, che gli E2E non percorrono; girano comunque in CI al push.
+
+---
+
 # Risultati di build e test — tentativo 2 (2026-11-19, dopo il Loop-back 1)
 
 ## Build
@@ -75,3 +92,11 @@ Il proprietario ha scelto di lasciare la verifica completa di `e2e_force_stop` a
 - **Root-cause stage**: code-generation.
 - **Planned fix**: (1) il giro ricalcola il rettangolo a ogni fotogramma con un `Ticker` e ridisegna solo quando cambia; test con un comando che si sposta dopo l'apertura. (2) R-02: `maybeAskForReview` chiede la recensione solo se `markPrompted` restituisce `true`; test con archivio che rifiuta la scrittura. (3) R-04: test che legge `LinksChannelHandler.kt` e confronta `SUPPORT_EMAIL` con `supportEmail`.
 - **Estimated impact**: 3 file di codice e 3 di test, circa 30 minuti; nessuna dipendenza nuova, nessun costo, rischio basso (solo interfaccia del giro e richiesta di recensione).
+
+### Loop-back 2 — 2026-11-19T14:55:00Z
+
+- **Diagnosis**: dopo il push di `7830428` il job `analyze` di GitHub Actions fallisce in `tool/check_off_config.sh` (controllo 2: nessun indirizzo email nei file Dart di `lib/`, a protezione del contatto Open Food Facts): `lib/app/store_links.dart:16` contiene `supportEmail = 'bottazzinibruno@gmail.com'`. Il controllo non era tra quelli eseguiti in locale in Build and Test. La release è stata saltata, nulla è arrivato al canale interno.
+- **Root-cause stage**: code-generation.
+- **Planned fix**: Step 21 del piano: l'indirizzo resta solo in `LinksChannelHandler.kt` e Dart lo legge dal canale (`supportEmail`); test aggiornati; `check_off_config.sh` e tutti i controlli del job `analyze` di `ci.yml` aggiunti alle verifiche locali.
+- **Estimated impact**: 4 file di codice e 3–4 di test, circa 20 minuti; nessuna dipendenza nuova, rischio basso (solo il dialogo di ripiego del feedback).
+

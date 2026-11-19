@@ -117,6 +117,48 @@ void main() {
       expect(errors, hasLength(2));
     });
 
+    test('reads the support address from the Android side', () async {
+      MethodCall? received;
+      messenger.setMockMethodCallHandler(channel, (call) async {
+        received = call;
+        return 'support@example.com';
+      });
+      final errors = <Object>[];
+      expect(
+        await readSupportEmail(onError: (error, _) => errors.add(error)),
+        'support@example.com',
+      );
+      expect(received!.method, 'supportEmail');
+      expect(received!.arguments, isNull);
+      expect(errors, isEmpty);
+    });
+
+    test('support address unavailable is null and reported', () async {
+      final errors = <Object>[];
+      Future<String?> read() =>
+          readSupportEmail(onError: (error, _) => errors.add(error));
+
+      messenger.setMockMethodCallHandler(
+        channel,
+        (_) async => throw PlatformException(code: 'boom'),
+      );
+      expect(await read(), isNull);
+      messenger.setMockMethodCallHandler(channel, null);
+      expect(await read(), isNull);
+      messenger.setMockMethodCallHandler(channel, (_) async => 42);
+      expect(await read(), isNull);
+      messenger.setMockMethodCallHandler(channel, (_) async => '');
+      expect(await read(), isNull);
+      expect(errors, [
+        isA<PlatformException>(),
+        isA<MissingPluginException>(),
+        isA<FormatException>(),
+        isA<FormatException>(),
+      ]);
+      // Without a handler a failure still ends in null.
+      expect(await readSupportEmail(), isNull);
+    });
+
     test('open still refuses mailto: and market:', () async {
       var calls = 0;
       messenger.setMockMethodCallHandler(channel, (_) async {
@@ -154,8 +196,13 @@ void main() {
         isFalse,
       );
       expect(await container.read(deviceInfoReaderProvider)(), isNull);
+      expect(await container.read(supportEmailReaderProvider)(), isNull);
       await pumpEventQueue();
-      expect(sink.reasons, ['SupportEmailFailed', 'DeviceInfoFailed']);
+      expect(sink.reasons, [
+        'SupportEmailFailed',
+        'DeviceInfoFailed',
+        'SupportEmailReadFailed',
+      ]);
     });
 
     test('without an injected reporter a failure is still handled', () async {
@@ -166,6 +213,7 @@ void main() {
         (_) async => throw PlatformException(code: 'boom'),
       );
       expect(await container.read(deviceInfoReaderProvider)(), isNull);
+      expect(await container.read(supportEmailReaderProvider)(), isNull);
     });
   });
 

@@ -12,7 +12,6 @@ import 'package:vinoozy/account/ui/profile_screen.dart';
 import 'package:vinoozy/app/device_info.dart';
 import 'package:vinoozy/app/external_links.dart';
 import 'package:vinoozy/app/providers.dart';
-import 'package:vinoozy/app/store_links.dart';
 import 'package:vinoozy/app/ui/about_screen.dart';
 import 'package:vinoozy/catalog/core/catalog_event_logger.dart'
     show WineDbFailure;
@@ -76,6 +75,9 @@ class _Launcher extends StatelessWidget {
   );
 }
 
+/// A neutral fake: the real address lives only on the Android side.
+const String _supportAddress = 'support@example.com';
+
 const List<String> _entryKeys = [
   'settings-profile',
   'settings-guide',
@@ -92,6 +94,7 @@ void main() {
   late RecordingErrorSink sink;
   late List<(String, String)> emails;
   late bool emailOpens;
+  late String? supportAddress;
   late _MockGate gate;
 
   setUp(() {
@@ -105,6 +108,7 @@ void main() {
     sink = RecordingErrorSink();
     emails = [];
     emailOpens = true;
+    supportAddress = _supportAddress;
     gate = _MockGate();
     when(() => gate.state).thenReturn(ValueNotifier(const GateCellar(mario)));
     when(() => gate.current).thenAnswer((_) => const GateCellar(mario));
@@ -129,6 +133,7 @@ void main() {
         release: '15',
       ),
     ),
+    supportEmailReaderProvider.overrideWithValue(() async => supportAddress),
     catalogAppVersionProvider.overrideWith((ref) async => '0.4.0'),
     wineDbStatusProvider.overrideWith(
       (ref) => Future.value(const WineDbUnavailable(WineDbFailure.missing)),
@@ -384,13 +389,35 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('feedback-no-email-dialog')), findsOneWidget);
-      expect(find.textContaining(supportEmail), findsOneWidget);
+      final l10n = lookupAppLocalizations(const Locale('it'));
+      expect(
+        find.text(l10n.feedbackNoEmailBody(_supportAddress)),
+        findsOneWidget,
+      );
       await tester.tap(find.byKey(const Key('feedback-copy-address')));
       await tester.pumpAndSettle();
       expect(copied, [
-        {'text': supportEmail},
+        {'text': _supportAddress},
       ]);
       expect(find.byKey(const Key('feedback-address-copied')), findsOneWidget);
+      expect(find.byKey(const Key('feedback-no-email-dialog')), findsNothing);
+    });
+
+    testWidgets('FR6.3 no email app and no readable address: no address, '
+        'no "Copy"', (tester) async {
+      emailOpens = false;
+      supportAddress = null;
+      await pumpSettings(tester);
+      await tester.tap(find.byKey(const Key('settings-feedback')));
+      await tester.pumpAndSettle();
+
+      final l10n = lookupAppLocalizations(const Locale('it'));
+      expect(find.byKey(const Key('feedback-no-email-dialog')), findsOneWidget);
+      expect(find.text(l10n.feedbackNoEmailTitle), findsOneWidget);
+      expect(find.textContaining('@'), findsNothing);
+      expect(find.byKey(const Key('feedback-copy-address')), findsNothing);
+      await tester.tap(find.byKey(const Key('feedback-dialog-close')));
+      await tester.pumpAndSettle();
       expect(find.byKey(const Key('feedback-no-email-dialog')), findsNothing);
     });
 
